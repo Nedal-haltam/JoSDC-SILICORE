@@ -17,7 +17,7 @@ namespace Real_Time_CAS_ASSEM
 
         void copy_insts_to_tb()
         {
-            lblnumofinst.Text = curr_mc.Count.ToString();
+            
             string tb_tocopy = "";
             for (int i = 0; i < curr_mc.Count; i++)
             {
@@ -96,6 +96,7 @@ namespace Real_Time_CAS_ASSEM
             else
             {
                 lblcycles.Text = c.ToString();
+                lblnumofinst.Text = mc.Count.ToString();
                 List<string> toout = get_regs_DM(cpu);
                 output.Lines = toout.ToArray();
             }
