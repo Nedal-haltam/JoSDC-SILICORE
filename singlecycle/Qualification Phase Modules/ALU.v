@@ -42,9 +42,9 @@ module ALU (operand1, operand2, opSel, result, zero);
 		  // Changed operand comparison to reflect the proper SLT logic
 
 		  // 3 : Incorrect SLT Comparison for Signed Operands 
-                       // Changed operation to use a signed comparison 
+                     // Changed operation to use a signed comparison 
       
-                       _SLT: result = ($signed(operand1) < $signed(operand2)) ? 32'b1 : 32'b0; 
+                     _SLT: result = ($signed(operand1) < $signed(operand2)) ? 32'b1 : 32'b0; 
 			
 		  // 4: Missing Default Case in ALU Operation 
 
