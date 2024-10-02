@@ -19,7 +19,7 @@ module registerFile (clk, rst, we,
 	assign readData1 = registers[readRegister1];
   assign readData2 = registers[readRegister2];
 						
-  						//design specifications about reset; sync vs. async? *check
+  						
   always@(posedge clk,  negedge rst) begin : Write_on_register_file_block
 	
 		integer i;
