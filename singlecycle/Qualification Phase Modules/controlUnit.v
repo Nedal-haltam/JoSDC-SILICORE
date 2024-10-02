@@ -57,7 +57,7 @@ module controlUnit(opCode, funct,
 						ALUOp = 3'b100; // correct op - compare = 4
 					end
 					
-					default: ; // we can add RegWriteEn = 0 to prevent rando values for invalid funct
+					default: RegWriteEn = 1'b0; // ensures register file is not changed for invalid funct
 				
 				endcase
 				
