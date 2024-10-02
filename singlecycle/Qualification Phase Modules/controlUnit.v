@@ -57,7 +57,7 @@ module controlUnit(opCode, funct,
 						ALUOp = 3'b100; // correct op - compare = 4
 					end
 					
-					default: ; // can this be empty??????
+					default: ; // we can add RegWriteEn = 0 to prevent rando values for invalid funct
 				
 				endcase
 				
@@ -109,7 +109,7 @@ module controlUnit(opCode, funct,
 				MemWriteEn = 1'b0; // prevents writing random values to data memory
 				RegWriteEn = 1'b0; // prevents writing random values to register file
 			end
-			
+
 		endcase
 			
 	end
