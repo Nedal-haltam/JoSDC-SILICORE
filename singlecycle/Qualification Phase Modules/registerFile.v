@@ -22,7 +22,7 @@ module registerFile (clk, rst, we,
   						//design specifications about reset; sync vs. async? *check
   always@(posedge clk,  negedge rst) begin : Write_on_register_file_block
 	
-		integer i;   //usually variable definition is outside of the always-statement *check if it causes issues
+		integer i;
 		// Reset the register file
 		if(~rst) begin
       for(i=0; i<32; i = i + 1) registers[i] <= 0; //it was = I changed it to <= for non-blocking assignment 
