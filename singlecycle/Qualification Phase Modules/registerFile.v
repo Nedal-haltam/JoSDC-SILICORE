@@ -37,39 +37,3 @@ module registerFile (clk, rst, we,
 		
 	end
 endmodule
-
-/*
-//additional testbench 
-module tb();
-  reg clk, rst, we;
-  reg [4:0] readRegister1, readRegister2, writeRegister;
-  reg [31:0] writeData;
-  
-  wire [31:0] readData1, readData2;
-  
-  registerFile testing(clk, rst, we, 
-					             readRegister1, readRegister2, writeRegister,
-					             writeData, readData1, readData2);
-  
-  always #50 clk = ~clk;
-  
-  initial begin
-    clk = 0;
-    rst = 0;
-    #100
-    rst = 1;
-    readRegister1 = 5'b1;
-    readRegister2 = 5'b11;
-    writeRegister = 5'b11;
-    writeData = 32'b1010101;
-    we = 1'b1; 
-    #100 $display(readData1, " ", readData2);
-    
-    we = 1'b0;
-    #100 $display(readData1, " ", readData2);
-    
-    #1000 $finish;
-    
-  end
-endmodule
-*/
