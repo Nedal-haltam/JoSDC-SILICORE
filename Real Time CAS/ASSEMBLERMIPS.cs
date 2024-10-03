@@ -223,8 +223,20 @@ public static class ASSEMBLERMIPS
         }
         else
         {
+            // andi, ori, xori (they do zero extend)
             string immed = inst[3];
-            if (ushort.TryParse(immed, out ushort usb))
+            if ((immed.StartsWith("0x") || immed.StartsWith("0X")))
+            {
+                short temp;
+                try { temp = Convert.ToInt16(immed, 16); }
+                catch { return invinst; }
+                immed = Convert.ToString(temp, 2);
+                if (islogicalimmed(inst[0]))
+                    immed = immed.PadLeft(16, '0');
+                else
+                    immed = immed.PadLeft(16,immed[0]);
+            }
+            else if (ushort.TryParse(immed, out ushort usb))
             {
                 immed = Convert.ToString(usb, 2);
                 immed = immed.PadLeft(16, '0');

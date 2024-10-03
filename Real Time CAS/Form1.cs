@@ -146,20 +146,4 @@ namespace Real_Time_CAS_ASSEM
         }
     }
 }
-/*
-addi x1, x0, 10
-l:
-sw x2, x2, 0
-addi x2, x2, 1
-bne x1, x2, l
 
-
-
-addi x1, x0, 10
-addi x2, x0, 1
-
-l:
-sw x1, x1, 0
-sub x1, x1, x2
-bne x1, x0, l
- */
