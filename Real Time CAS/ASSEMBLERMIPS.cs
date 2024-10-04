@@ -230,11 +230,8 @@ public static class ASSEMBLERMIPS
                 short temp;
                 try { temp = Convert.ToInt16(immed, 16); }
                 catch { return invinst; }
-                immed = Convert.ToString(temp, 2);
-                if (islogicalimmed(inst[0]))
-                    immed = immed.PadLeft(16, '0');
-                else
-                    immed = immed.PadLeft(16,immed[0]);
+
+                immed = Convert.ToString(temp, 2).PadLeft(16, '0');
             }
             else if (ushort.TryParse(immed, out ushort usb))
             {
@@ -261,8 +258,8 @@ public static class ASSEMBLERMIPS
 
         if (inst.Count != 2 || !labels.ContainsKey(inst[1]))
             return invinst;
-        int l = labels[inst[1]];
-        string immed = Convert.ToString(l, 2);
+        int lbl = labels[inst[1]];
+        string immed = Convert.ToString(lbl, 2);
         immed = immed.PadLeft(26, '0');
         mc = opcodes[inst[0]] + immed;
 
