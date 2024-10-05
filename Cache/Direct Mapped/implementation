@@ -214,9 +214,9 @@ module cache(clk, rst_n, cpu_req_addr, cpu_req_datain, cpu_req_rw, cpu_req_valid
 	        if(!mem_req_valid && mem_req_ready)	
 	          begin
 	            write_datamem_mem = 1'b1; 
-    	        valid_bit = 1'b1;	
-    	        dirty_bit = 1'b0;
-    	        tagmem_enable = 1'b1;
+    	            valid_bit = 1'b1;	
+    	            dirty_bit = 1'b0;
+    	            tagmem_enable = 1'b1;
 	            next_state = COMPARE_TAG;
 	          end
 
