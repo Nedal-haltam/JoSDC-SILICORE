@@ -1,10 +1,11 @@
-module controlUnit(opCode, funct,
+module controlUnit(opCode, funct, rst
 				   RegDst, Branch, MemReadEn, MemtoReg,
 				   ALUOp, MemWriteEn, RegWriteEn, ALUSrc);
 				   
 		
 	// inputs 
 	input wire [5:0] opCode, funct; // correct inputs and sizes
+	input reset; // added reset input signal
 	
 	// outputs (signals)
 	output reg RegDst, Branch, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc; // correct outputs
@@ -18,11 +19,17 @@ module controlUnit(opCode, funct,
 	// unit logic - generate signals
 	always @(*) begin
 		
+		if(~rst) begin // initializes all output signals to zero when the reset signal is set
+			RegDst = 1'b0; Branch = 1'b0; MemReadEn = 1'b0; MemtoReg = 1'b0;
+			MemWriteEn = 1'b0; RegWriteEn = 1'b0; ALUSrc = 1'b0;
+			ALUOp = 3'b0;
+		end
+
 		// initializes all output signals to zero
 		RegDst = 1'b0; Branch = 1'b0; MemReadEn = 1'b0; MemtoReg = 1'b0;
 		MemWriteEn = 1'b0; RegWriteEn = 1'b0; ALUSrc = 1'b0;
 		ALUOp = 3'b0;
-		
+
 		case(opCode)
 				
 			_RType : begin
