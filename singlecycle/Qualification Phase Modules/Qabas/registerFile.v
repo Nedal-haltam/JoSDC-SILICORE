@@ -25,12 +25,12 @@ module registerFile (clk, rst, we,
 		integer i;
 		// Reset the register file
 		if(~rst) begin
-      for(i=0; i<32; i = i + 1) registers[i] <= 0; //it was = I changed it to <= for non-blocking assignment 
+			for(i=0; i<32; i = i + 1) registers[i] <= 0; //it was = I changed it to <= for non-blocking assignment ID = 8
 		end
 		// Write to the register file
 		else if(we) begin
 			registers[writeRegister] <= writeData;
-      registers[0] <= 32'b0; //added this line because writing on register 0 is illegal for MIPS-like architecture 
+			registers[0] <= 32'b0; //added this line because writing on register 0 is illegal for MIPS-like architecture ID = 9
 		end
 		// Defualt to prevent latching
 		else;
