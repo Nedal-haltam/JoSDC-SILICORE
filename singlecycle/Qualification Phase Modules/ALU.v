@@ -19,8 +19,8 @@ module ALU (operand1, operand2, opSel, result, zero);
   // ....................
 
   // 1 : Missing Size Specifiers for Binary Literals in ALU Operation Parameters
-
-  parameter   _AND  = 3'b000, _SUB  = 3'b001, _ADD = 3'b010,
+  // 2: Inconsistent ALUOp with guidelines: AND and ADD codes switched (AND -> 2 and ADD -> 0)
+  parameter   _ADD  = 3'b000, _SUB  = 3'b001, _AND = 3'b010,
                 _OR   = 3'b011, _SLT  = 3'b100;   // Added width specifier for each parameter
     
   // Perform Operation
@@ -38,15 +38,15 @@ module ALU (operand1, operand2, opSel, result, zero);
 
 		  _OR : result = operand1 | operand2;
 			
-		  // 2 : Incorrect Operand Comparison in SLT Operation 
+		  // 3 : Incorrect Operand Comparison in SLT Operation 
 		  // Changed operand comparison to reflect the proper SLT logic
 
-		  // 3 : Incorrect SLT Comparison for Signed Operands 
+		  // 4 : Incorrect SLT Comparison for Signed Operands 
                   // Changed operation to use a signed comparison 
       
                   _SLT: result = ($signed(operand1) < $signed(operand2)) ? 32'b1 : 32'b0; 
 			
-		  // 4: Missing Default Case in ALU Operation 
+		  // 5: Missing Default Case in ALU Operation 
 
 		  default: result = 32'b0;  // Added default case to prevent latching  
 
