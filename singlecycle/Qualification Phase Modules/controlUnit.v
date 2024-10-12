@@ -5,7 +5,7 @@ module controlUnit(opCode, funct, rst
 		
 	// inputs 
 	input wire [5:0] opCode, funct; // correct inputs and sizes
-	input reset; // added reset input signal
+	input rst; // added reset input signal
 	
 	// outputs (signals)
 	output reg RegDst, Branch, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc; // correct outputs
@@ -24,7 +24,7 @@ module controlUnit(opCode, funct, rst
 			MemWriteEn = 1'b0; RegWriteEn = 1'b0; ALUSrc = 1'b0;
 			ALUOp = 3'b0;
 		end
-		else if begin
+		else begin
 			// initializes all output signals to zero
 			RegDst = 1'b0; Branch = 1'b0; MemReadEn = 1'b0; MemtoReg = 1'b0;
 			MemWriteEn = 1'b0; RegWriteEn = 1'b0; ALUSrc = 1'b0;
