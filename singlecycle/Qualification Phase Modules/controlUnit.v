@@ -1,4 +1,4 @@
-module controlUnit(opCode, funct, rst
+module controlUnit(opCode, funct, rst,
 				   RegDst, Branch, MemReadEn, MemtoReg,
 				   ALUOp, MemWriteEn, RegWriteEn, ALUSrc);
 				   
@@ -19,6 +19,7 @@ module controlUnit(opCode, funct, rst
 	// unit logic - generate signals
 	always @(*) begin
 		
+		// Bug ID = 21, initialize control signals to zeros when reseting
 		if(~rst) begin // initializes all output signals to zero when the reset signal is set
 			// Bug ID = 6: non-blocking used to assign signal values
 			RegDst <= 1'b0; Branch <= 1'b0; MemReadEn <= 1'b0; MemtoReg <= 1'b0;
@@ -57,8 +58,8 @@ module controlUnit(opCode, funct, rst
 							ALUOp <= 3'b010; // correct op - and = 2
 						end
 							
-						_or_ : begin
-							ALUOp <= 3'd011; // correct op - or = 3
+						_or_ : begin 
+							ALUOp <= 3'b011; // Bug ID = 22: correct op - or = 3
 						end
 							
 						_slt_ : begin
