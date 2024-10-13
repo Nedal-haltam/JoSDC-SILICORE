@@ -64,7 +64,7 @@ module controlUnit(opCode, funct, rst
 							ALUOp = 3'b100; // correct op - compare = 4
 						end
 						
-						default: RegWriteEn = 1'b0; // ensures register file is not changed for invalid funct
+						default: RegWriteEn = 1'b0; // Bug ID = 7: ensures register file is not changed for invalid funct
 					
 					endcase
 					
@@ -82,14 +82,14 @@ module controlUnit(opCode, funct, rst
 				end
 					
 				_lw : begin
-					RegDst = 1'b0; // was 1, changed to 0 - destination register is rt
+					RegDst = 1'b0; // Bug ID = 1: was 1, changed to 0 - destination register is rt
 					Branch = 1'b0; // correct signal - not a branch instruction 
-					MemReadEn = 1'b1; // was 0, changed to 1 - will read from memory
+					MemReadEn = 1'b1; // Bug ID = 2: was 0, changed to 1 - will read from memory
 					ALUOp = 3'b000; // correct op - add = 0
-					MemWriteEn = 1'b0; // was 1, changed to 0 - will not write to memory
+					MemWriteEn = 1'b0; // Bug ID = 3: was 1, changed to 0 - will not write to memory 
 					RegWriteEn = 1'b1; // correct signal - will write back to rt
 					ALUSrc = 1'b1; // correct signal - operand is the immediate
-					MemtoReg = 1'b1; // added signal - write back to register from data memory
+					MemtoReg = 1'b1; // Bug ID = 4: added signal - write back to register from data memory
 				end
 					
 				_sw : begin
@@ -107,7 +107,7 @@ module controlUnit(opCode, funct, rst
 					ALUOp = 3'b001; // correct signal - sub = 1
 					MemWriteEn = 1'b0; // correct signal - will not write to memory
 					RegWriteEn = 1'b0; // correct signal - will not write to register file
-					ALUSrc = 1'b0; // was 1, changed to 0 - operand is rt
+					ALUSrc = 1'b0; // Bug ID =  5: was 1, changed to 0 - operand is rt
 				end
 				
 				default: begin
