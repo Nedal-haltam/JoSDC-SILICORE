@@ -20,6 +20,7 @@ module controlUnit(opCode, funct, rst
 	always @(*) begin
 		
 		if(~rst) begin // initializes all output signals to zero when the reset signal is set
+			// Bug ID = 6: non-blocking used to assign signal values
 			RegDst <= 1'b0; Branch <= 1'b0; MemReadEn <= 1'b0; MemtoReg <= 1'b0;
 			MemWriteEn <= 1'b0; RegWriteEn <= 1'b0; ALUSrc <= 1'b0;
 			ALUOp <= 3'b0;
