@@ -5,6 +5,11 @@ using static ProjectCPUCL.MIPS;
 
 namespace ProjectCPUCL
 {
+    public enum CPU_type
+    {
+        PipeLined, SingleCycle
+    }
+
     public static class Macros
     {
         public static void cout(string str, params object[] args)
@@ -763,33 +768,47 @@ namespace ProjectCPUCL
         }
         Instruction decodemc(string mc, int pc)
         {
-            Instruction inst = new Instruction() 
+            if (mc == nop)
             {
-                mc = mc,
-                PC = pc,
-                opcode = mc.Substring(mc.Length - (1 + 31), 6),
-                rsind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 25), 5), 2),
-                rtind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 20), 5), 2),
-                rdind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 15), 5), 2),
-                shamt = mc.Substring(mc.Length - (1 + 10), 5),
-                funct = mc.Substring(mc.Length - (1 + 5), 6) ,
-                immeds = Convert.ToInt32(sx(mc.Substring(mc.Length - (1 + 15), 16)), 2),
-                immedz = Convert.ToInt32(zx(mc.Substring(mc.Length - (1 + 15), 16)), 2),
-                address = Convert.ToInt32(zx(mc.Substring(mc.Length - (1 + 25), 26)), 2),
-            };
+                return new Instruction().Init();
+            }
+            Instruction inst = new Instruction().Init();
+            inst.mc = mc;
+            inst.PC = pc;
+            inst.opcode = mc.Substring(mc.Length - (1 + 31), 6);
+            inst.rsind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 25), 5), 2);
+            inst.rtind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 20), 5), 2);
+            inst.rdind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 15), 5), 2);
+            inst.shamt = mc.Substring(mc.Length - (1 + 10), 5);
+            inst.funct = mc.Substring(mc.Length - (1 + 5), 6);
+            inst.immeds = Convert.ToInt32(sx(mc.Substring(mc.Length - (1 + 15), 16)), 2);
+            inst.immedz = Convert.ToInt32(zx(mc.Substring(mc.Length - (1 + 15), 16)), 2);
+            inst.address = Convert.ToInt32(zx(mc.Substring(mc.Length - (1 + 25), 26)), 2);
+            // mips integer instruction map for formats (R, I, J)
             inst.rs = regs[inst.rsind];
             inst.rt = regs[inst.rtind];
 
-            if (inst.opcode != "000000") inst.opcode = "0" + inst.opcode;
-            // it depends on one of them or may be both
+
+            string opcode;
             if (inst.opcode == "000000")
-                inst.mnem  = mnemonicmap[inst.funct];
-            else             
-                inst.mnem  = mnemonicmap[inst.opcode];
-            inst.aluop  = get_inst_aluop(inst.mnem);
+                opcode = "0" + inst.funct;
+            else
+                opcode = "1" + inst.opcode;
+            if (!mnemonicmap.TryGetValue(opcode, out Mnemonic value))
+            {
+                Exception e = new Exception("1")
+                {
+                    Source = "exception",
+                };
+                throw e;
+            }
+            else
+                inst.mnem = value;
+
+            inst.aluop = get_inst_aluop(inst.mnem);
             inst.format = get_format(inst.mnem);
-            inst.oper1  = get_oper1(inst);
-            inst.oper2  = get_oper2(inst);
+            inst.oper1 = get_oper1(inst);
+            inst.oper2 = get_oper2(inst);
             if (inst.format == "I")
             {
                 inst.rdind = inst.rtind;
@@ -800,6 +819,7 @@ namespace ProjectCPUCL
             }
             return inst;
         }
+
         void mem(ref Instruction inst)
         {
             if (inst.mnem == Mnemonic.lw)
@@ -854,23 +874,16 @@ namespace ProjectCPUCL
             else
                 PC += 1;
         }
-        public int Run(int? n = null)
+        public int Run()
         {
             int i = 0;
-            if (n == null)
+            while (PC < IM.Count)
             {
-                while (PC < IM.Count)
+                i++;
+                ConsumeInst();
+                if (i == 1_000_000)
                 {
-                    ConsumeInst();
-                    i++;
-                }
-            }
-            else
-            {
-                while (n-- > 0 && PC < IM.Count)
-                {
-                    ConsumeInst();
-                    i++;
+                    return -2;
                 }
             }
             return i;

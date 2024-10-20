@@ -41,6 +41,7 @@
             this.lblcycles = new System.Windows.Forms.Label();
             this.lblinfloop = new System.Windows.Forms.Label();
             this.btntbcopy = new System.Windows.Forms.Button();
+            this.cmbcpulist = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // input
@@ -51,7 +52,7 @@
             this.input.Location = new System.Drawing.Point(30, 34);
             this.input.Margin = new System.Windows.Forms.Padding(4);
             this.input.Name = "input";
-            this.input.Size = new System.Drawing.Size(439, 670);
+            this.input.Size = new System.Drawing.Size(439, 579);
             this.input.TabIndex = 7;
             this.input.Text = "";
             this.input.TextChanged += new System.EventHandler(this.input_TextChanged);
@@ -140,7 +141,7 @@
             this.output.Location = new System.Drawing.Point(523, 34);
             this.output.Margin = new System.Windows.Forms.Padding(4);
             this.output.Name = "output";
-            this.output.Size = new System.Drawing.Size(682, 670);
+            this.output.Size = new System.Drawing.Size(545, 579);
             this.output.TabIndex = 8;
             this.output.Text = "";
             // 
@@ -195,11 +196,26 @@
             this.btntbcopy.UseVisualStyleBackColor = true;
             this.btntbcopy.Click += new System.EventHandler(this.btntbcopy_Click);
             // 
+            // cmbcpulist
+            // 
+            this.cmbcpulist.FormattingEnabled = true;
+            this.cmbcpulist.Items.AddRange(new object[] {
+            "Pipe Lined",
+            "Single Cycle"});
+            this.cmbcpulist.Location = new System.Drawing.Point(1101, 41);
+            this.cmbcpulist.MaxDropDownItems = 4;
+            this.cmbcpulist.Name = "cmbcpulist";
+            this.cmbcpulist.Size = new System.Drawing.Size(121, 24);
+            this.cmbcpulist.Sorted = true;
+            this.cmbcpulist.TabIndex = 18;
+            this.cmbcpulist.SelectedIndexChanged += new System.EventHandler(this.cmbcpulist_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1549, 755);
+            this.ClientSize = new System.Drawing.Size(1346, 664);
+            this.Controls.Add(this.cmbcpulist);
             this.Controls.Add(this.btntbcopy);
             this.Controls.Add(this.lblinfloop);
             this.Controls.Add(this.lblcycles);
@@ -234,6 +250,7 @@
         private System.Windows.Forms.Label lblcycles;
         private System.Windows.Forms.Label lblinfloop;
         private System.Windows.Forms.Button btntbcopy;
+        private System.Windows.Forms.ComboBox cmbcpulist;
     }
 }
 
