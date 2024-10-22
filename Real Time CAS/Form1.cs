@@ -17,7 +17,6 @@ namespace Real_Time_CAS_ASSEM
         CPU_type curr_cpu = CPU_type.SingleCycle;
         void copy_insts_to_tb()
         {
-            
             string tb_tocopy = "";
             for (int i = 0; i < curr_mc.Count; i++)
             {

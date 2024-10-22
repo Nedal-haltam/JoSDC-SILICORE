@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using static ProjectCPUCL.Macros;
 using static ProjectCPUCL.MIPS;
 
@@ -24,7 +25,7 @@ namespace ProjectCPUCL
         {
             add, sub, and, andi, or, ori, xor, xori, nor, slt, sll, srl, addi, addu, subu,
             beq, bne, bltz, bgez, j, jr, jal,
-            lw, sw, nop
+            lw, sw, nop, hlt
         }
         public enum Aluop
         {
@@ -119,6 +120,9 @@ namespace ProjectCPUCL
                 // J-format depends on opcode field
                 { "1000010" , Mnemonic.j    }, // PC = zx(addr) << 2  , note.1 , 0x42
                 { "1000011" , Mnemonic.jal  }, // R[31] = PC+1, PC = zx(addr) << 2  , note.1 , 0x43
+
+
+                { "1111111" , Mnemonic.hlt  },
             };
         // note.1 : apparently the shift left by 2 is optional because because the IM may be word addressable rather than byte addressable.
         // in other words if the IM was byte addressable each location holds one of four bytes of an instruction and when we do a branch for example the offset by it self
@@ -184,7 +188,8 @@ namespace ProjectCPUCL
                  case Mnemonic.jr   : return "R";
                  case Mnemonic.jal  : return "J";
                  case Mnemonic.lw   : return "I";
-                 case Mnemonic.sw: return "I"   ;
+                 case Mnemonic.sw   : return "I";
+                case Mnemonic.hlt   : return "I";
                  default: return "";
             };
         }
@@ -235,10 +240,19 @@ namespace ProjectCPUCL
                 default: return false;
             };
         }
+        public static bool isbranch_taken(Instruction inst)
+        {
+            return (inst.mnem == Mnemonic.beq  && inst.oper1 == inst.oper2) || 
+                   (inst.mnem == Mnemonic.bgez && inst.oper1 >= inst.oper2) ||
+                   (inst.mnem == Mnemonic.bltz && inst.oper1 <= inst.oper2) || 
+                   (inst.mnem == Mnemonic.bne  && inst.oper1 != inst.oper2) ;
+        }
         public static bool isbranch(Mnemonic mnem)
         {
-            return mnem == Mnemonic.beq || mnem == Mnemonic.bgez ||
-                mnem == Mnemonic.bltz || mnem == Mnemonic.bne;
+            return mnem == Mnemonic.beq  ||
+                   mnem == Mnemonic.bgez ||
+                   mnem == Mnemonic.bltz ||
+                   mnem == Mnemonic.bne  ;
         }
         public static int get_oper1(Instruction inst)
         {
@@ -608,6 +622,8 @@ namespace ProjectCPUCL
                 MEM_HAZ = 0;
                 return;
             }
+            if (inst.mnem == Mnemonic.hlt)
+                hlt = true;
             if (!iswb(inst.mnem) || inst.rdind == 0)
                 return;
             detect_exception(inst, Stage.write_back);
@@ -648,7 +664,7 @@ namespace ProjectCPUCL
         }
         void detect_exception(Instruction inst, Stage stage)
         {
-            if (PC == IM.Count) hlt = true;
+
             Exception e = new Exception(((int)stage).ToString())
             {
                 Source = "exception",
@@ -662,7 +678,7 @@ namespace ProjectCPUCL
                 }
                 if (isbranch(inst.mnem) || inst.mnem == Mnemonic.j || inst.mnem == Mnemonic.jal || inst.mnem == Mnemonic.jr)
                 {
-                    if (!is_in_range_inc(PC, 0, IM.Count - 1) && !hlt)
+                    if (!is_in_range_inc(PC, 0, IM.Count - 1) && !(PC == IM.Count))
                         throw e;
                 }
             }
@@ -699,6 +715,8 @@ namespace ProjectCPUCL
             try
             {
                 write_back(MEMWB);
+                if (hlt)
+                    return;
                 memed_in_MEM_MIPS = mem(EXMEM);
                 executed_in_EX_MIPS = execute(IDEX);
                 decoded_in_ID_MIPS = decode(IFID.mc);
@@ -733,7 +751,9 @@ namespace ProjectCPUCL
             {
                 i++;
                 ConsumeInst();
-                if (i == 1_000_000)
+                if (hlt)
+                    return i;
+                if (i == 100 * 1000)
                 {
                     return -2;
                 }
@@ -755,6 +775,7 @@ namespace ProjectCPUCL
         public List<int> regs;
         public List<string> IM; // Instruction Mem
         public int PC;
+        public bool hlt;
         public List<string> DM; // Data Mem
         public SingleCycle(List<string> insts = null)
         {
@@ -765,6 +786,7 @@ namespace ProjectCPUCL
             DM = new List<string>();
             for (int i = 0; i < 1000; i++) DM.Add("0");
             PC = 0;
+            hlt = false;
         }
         Instruction decodemc(string mc, int pc)
         {
@@ -841,6 +863,9 @@ namespace ProjectCPUCL
         }
         void write_back(Instruction inst)
         {
+            if (inst.mnem == Mnemonic.hlt)
+                hlt = true;
+
             if (!iswb(inst.mnem))
                 return;
             regs[inst.rdind] = (inst.mnem == Mnemonic.lw) ? inst.memout : inst.aluout;
@@ -857,7 +882,8 @@ namespace ProjectCPUCL
             mem(ref inst);
             // writing back
             write_back(inst);
-
+            if (hlt)
+                return;
             // updating the PC
             if (inst.format == "J")
             {
@@ -865,7 +891,10 @@ namespace ProjectCPUCL
             }
             else if (isbranch(inst.mnem))
             {
-                PC += inst.immeds;
+                if (isbranch_taken(inst))
+                    PC += inst.immeds;
+                else
+                    PC += 1;
             }
             else if (inst.mnem == Mnemonic.jr)
             {
@@ -881,7 +910,9 @@ namespace ProjectCPUCL
             {
                 i++;
                 ConsumeInst();
-                if (i == 1_000_000)
+                if (hlt)
+                    return i;
+                if (i == 100 * 1000)
                 {
                     return -2;
                 }

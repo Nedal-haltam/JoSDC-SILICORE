@@ -51,6 +51,9 @@ public static class ASSEMBLERMIPS
         // J-format
         { "j"    , "000010" }, 
         { "jal"  , "000011" }, 
+
+
+        { "hlt"  , "11111100000000000000000000000000" }, 
     };
     public static Dictionary<string, int> labels = new Dictionary<string, int>();
     // the invInst is a string that come up when an invalid instruction is entered from the user
@@ -259,6 +262,8 @@ public static class ASSEMBLERMIPS
     // this function takes the instructio and it's type and based on it, it passes it to the suitable fucntion to generate the machine code
     static string GetMcOfInst(InstType type, List<string> inst)
     {
+        if (inst.Count > 0 && inst[0] == "hlt")
+            return opcodes[inst[0]];
         // here we construct the binaries of a given instruction
         switch (type)
         {
