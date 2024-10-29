@@ -23,7 +23,7 @@ namespace Real_Time_CAS_ASSEM
                 int num = Convert.ToInt32(curr_mc[i], 2);
                 string hex = num.ToString("X");
                 //tb_tocopy += $"addr_to_wr = {i}; Inst_to_wr = 32'h{hex}; #2; \n";
-                tb_tocopy += $"inst_mem[{i}] <= 32'h{hex}; \n";
+                tb_tocopy += $"InstMem[{i}] <= 32'h{hex}; \n";
             }
             if (tb_tocopy.Length > 0)
                 Clipboard.SetText(tb_tocopy);

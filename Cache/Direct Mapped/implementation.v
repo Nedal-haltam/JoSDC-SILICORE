@@ -1,6 +1,8 @@
 //read=0 write=1
 
-module cache(clk, rst_n, cpu_req_addr, cpu_req_datain, cpu_req_rw, cpu_req_valid, mem_req_datain, mem_req_ready, cpu_req_dataout, mem_req_addr, mem_req_dataout, mem_req_rw, mem_req_valid, cache_ready, cache_flush, cache_flush_done);
+module cache(clk, rst_n, cpu_req_addr, cpu_req_datain, cpu_req_rw, 
+             cpu_req_valid, mem_req_datain, mem_req_ready, cpu_req_dataout, mem_req_addr, 
+             mem_req_dataout, mem_req_rw, mem_req_valid, cache_ready, cache_flush, cache_flush_done);
   
   input clk, rst_n;
   
