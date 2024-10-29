@@ -14,16 +14,17 @@ namespace Real_Time_CAS_ASSEM
             InitializeComponent();
         }
         List<string> curr_mc = new List<string>();
+        List<List<string>> curr_insts = new List<List<string>>();
         CPU_type curr_cpu = CPU_type.SingleCycle;
         void copy_insts_to_tb()
         {
             string tb_tocopy = "";
             for (int i = 0; i < curr_mc.Count; i++)
             {
-                int num = Convert.ToInt32(curr_mc[i], 2);
-                string hex = num.ToString("X");
-                //tb_tocopy += $"addr_to_wr = {i}; Inst_to_wr = 32'h{hex}; #2; \n";
-                tb_tocopy += $"InstMem[{i}] <= 32'h{hex}; \n";
+                string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
+                string inst = "";
+                curr_insts[i].ForEach(x => { inst += x + " "; });
+                tb_tocopy += $"InstMem[{i, 3}] <= 32'h{hex}; // {inst, -20} \n";
             }
             if (tb_tocopy.Length > 0)
                 Clipboard.SetText(tb_tocopy);
@@ -33,8 +34,9 @@ namespace Real_Time_CAS_ASSEM
         List<string> assemble(string[] input)
         {
             ASSEMBLERMIPS.input.Lines = input;
-            List<string> mc = ASSEMBLERMIPS.TOP_MAIN();
+            (List<string> mc, List<List<string>> insts) = ASSEMBLERMIPS.TOP_MAIN();
             curr_mc = mc;
+            curr_insts = insts;
             lblinvinst.Visible = ASSEMBLERMIPS.lblinvinst.Visible;
             lblinvlabel.Visible = ASSEMBLERMIPS.lblinvlabel.Visible;
             lblmultlabels.Visible = ASSEMBLERMIPS.lblmultlabels.Visible;

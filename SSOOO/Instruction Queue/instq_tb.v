@@ -24,14 +24,17 @@ instq dut
     .address(address)
 );
 
-integer i;
+integer i, index;
 initial begin
 
-$monitor("PC = %h\nopcode = %h\nfunct = %h\nrs = %h\nrt = %h\nrd = %h\nshamt = %h\nimmediate = %h\address = %h\n");
+$monitor("Instruction: %d\nPC = %d\nopcode = %h\nfunct = %h\nrd = %d\nrs = %d\nrt = %d\nshamt = %d\nimmediate = %d\naddress = %d\n"
+         ,index,PC, opcode, funct, rd, rs, rt, shamt, immediate, address);
 
-`define N 42 
-for (i = 0; i < N; i++) begin
-    PC = i;
+`define N 14
+for (i = 0; i < `N; i++) begin
+    PC <= i; 
+    index <= i + 1;
+    #1;
 end
 
 end

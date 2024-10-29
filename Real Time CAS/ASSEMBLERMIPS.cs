@@ -376,11 +376,8 @@ public static class ASSEMBLERMIPS
         // it removes any label from the list of instructions
         insts.RemoveAll(x => x.Any(y => y.Contains(':')));
     }
-    // here we write on the output the machine code and it's hex value for easy use ane readability
-    
 
-
-    public static List<string> TOP_MAIN()
+    public static (List<string>, List<List<string>>) TOP_MAIN()
     {
         lblinvinst.Visible = false;
         lblinvlabel.Visible   = false;
@@ -397,18 +394,19 @@ public static class ASSEMBLERMIPS
         if (insts.Count != 0)
         {
             List<string> mc = GetMachineCode(insts);
-            if (insts.Count != mc.Count) throw new Exception("Instruction Count doesn't match MC Count");
+            if (insts.Count != mc.Count) 
+                throw new Exception("Instruction Count doesn't match MC Count");
 
             lblinvinst.Visible = mc.Any(x => x.Contains(invinst)) || lblinvlabel.Visible || lblmultlabels.Visible;
             if (lblinvinst.Visible)
-                return new List<string>();
+                return (new List<string>(), new List<List<string>>());
 
-            return mc;
+            return (mc, insts);
         }
         else
         {
             lblinvinst.Visible = lblinvlabel.Visible || lblmultlabels.Visible;
-            return new List<string>();
+            return (new List<string>(), new List<List<string>>());
         }
     }
 }
