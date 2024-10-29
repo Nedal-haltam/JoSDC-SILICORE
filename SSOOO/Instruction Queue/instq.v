@@ -1,4 +1,4 @@
-module instq
+module InstQ
 (
     input  [31:0] PC,
     output [ 5:0] opcode, funct,
