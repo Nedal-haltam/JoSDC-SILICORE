@@ -26,16 +26,18 @@ InstQ dut
 
 integer i, index;
 initial begin
+$dumpfile("testout.vcd");
+$dumpvars;
 
-$monitor(
-    "Instruction: %d\nPC = %d\nopcode = %h\nfunct = %h\nrd = %d\nrs = %d\nrt = %d\nshamt = %d\nimmediate = %d\naddress = %d\n"
-         ,index,PC, opcode, funct, rd, rs, rt, shamt, immediate, address);
 
 `define N 14
 for (i = 0; i < `N; i++) begin
-    PC <= i; 
-    index <= i + 1;
+    PC = i; 
+    index = i + 1;
     #1;
+$display(
+    "Instruction: %d\nPC = %d\nopcode = %h\nfunct = %h\nrd = %d\nrs = %d\nrt = %d\nshamt = %d\nimmediate = %d\naddress = %d\n"
+         ,index,PC, opcode, funct, rd, rs, rt, shamt, immediate, address);
 end
 
 end

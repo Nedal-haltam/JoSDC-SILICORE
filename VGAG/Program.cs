@@ -493,7 +493,6 @@ unsafe void main()
             }
             if (IsKeyPressed(KeyboardKey.S))
             {
-                // TODO: change to 12 bit for the DE10-Lite Board
                 string path = GetClipboardText_();
                 path = path.Replace("\"", "");
                 List<List<Color>> gridc = GetGridColor(ref grid);
@@ -545,7 +544,6 @@ unsafe void main()
                 {
                     load_path += (char)pathbytes[b++];
                 }
-                // TODO: -support new lines to add more content
                 List<List<Color>> gridc = MIF2Grid(load_path);
                 float f = (small && gridc.Count * gridc[0].Count < 307200) ? rectsize : 1;
                 gridc = RescaleGrid(gridc, f);
