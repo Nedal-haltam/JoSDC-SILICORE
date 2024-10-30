@@ -57,7 +57,7 @@ WP1_Wen <= 1'b1;
 WP1_Data <= 32'd123; 
 WP1_DRindex <= 5'd1; 
 WP1_ROBEN <= 2;
-#2;
+
 WP1_Wen_IQ <= 1'b1;
 WP1_ROBEN_IQ <= 2;
 WP1_DRindex_IQ <= 1;
@@ -65,6 +65,8 @@ WP1_DRindex_IQ <= 1;
 
 `DISPLAYVALS(msg_RP1_Reg1, RP1_index1, RP1_Reg1, 10)
 `DISPLAYVALS(msg_ROB_read, WP1_DRindex_IQ, output_ROBEN_test, 10)
+
+// TODO: testing to be continued for sure but this is a good indicator that the thing works
 
 
 // it is important to put $stop or $finish to terminate the simulation becase 
