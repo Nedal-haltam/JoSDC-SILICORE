@@ -27,7 +27,8 @@ InstQ dut
 integer i, index;
 initial begin
 
-$monitor("Instruction: %d\nPC = %d\nopcode = %h\nfunct = %h\nrd = %d\nrs = %d\nrt = %d\nshamt = %d\nimmediate = %d\naddress = %d\n"
+$monitor(
+    "Instruction: %d\nPC = %d\nopcode = %h\nfunct = %h\nrd = %d\nrs = %d\nrt = %d\nshamt = %d\nimmediate = %d\naddress = %d\n"
          ,index,PC, opcode, funct, rd, rs, rt, shamt, immediate, address);
 
 `define N 14
