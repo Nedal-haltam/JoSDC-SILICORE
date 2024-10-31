@@ -22,6 +22,8 @@ reg [4:0]                   WP1_DRindex = 0, WP1_DRindex_IQ = 0;
 reg [31:0]                  WP1_Data;
 reg [4:0]   RP1_index1, RP1_index2;
 wire [31:0] RP1_Reg1, RP1_Reg2;
+wire [(1 << ROB_Entry_WIDTH) - 1 : 0] RP1_Reg1_ROBEN, RP1_Reg2_ROBEN;
+
 
 reg [4:0] input_WP1_DRindex_test;
 wire [(1 << ROB_Entry_WIDTH) - 1 : 0] output_ROBEN_test;
@@ -38,10 +40,14 @@ RegFile #(.ROB_Entry_WIDTH(ROB_Entry_WIDTH)) dut
 .WP1_Data(WP1_Data),
 .WP1_ROBEN_IQ(WP1_ROBEN_IQ),
 .WP1_DRindex_IQ(WP1_DRindex_IQ),
+
 .RP1_index1(RP1_index1), 
 .RP1_index2(RP1_index2),
 .RP1_Reg1(RP1_Reg1),
-.RP1_Reg2(RP1_Reg2)
+.RP1_Reg2(RP1_Reg2),
+.RP1_Reg1_ROBEN(RP1_Reg1_ROBEN),
+.RP1_Reg2_ROBEN(RP1_Reg2_ROBEN)
+
 
 , .input_WP1_DRindex_test(input_WP1_DRindex_test)
 , .output_ROBEN_test(output_ROBEN_test)
