@@ -1,0 +1,12 @@
+
+module Branch_or_Jump_TargGen(PC , Immed , targ_addr);//
+
+input [31:0] PC , Immed;
+
+
+output reg [31:0] targ_addr;
+
+always@ (*)
+    targ_addr = PC + Immed;
+
+endmodule

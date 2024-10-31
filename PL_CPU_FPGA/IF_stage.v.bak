@@ -1,0 +1,28 @@
+module IF_stage(pfc, pc_src, inst_mem_in, addr_to_wr, pc_write, clk, inst, inst_to_wr, inst_wr);
+	
+	input [31:0] pfc;
+	input [1:0] pc_src;
+	input pc_write, clk;
+    input [31:0] addr_to_wr;
+	output [31:0] inst;
+	
+	inout [31:0] inst_mem_in;
+	
+	input [31:0] inst_to_wr;
+	input inst_wr;
+	
+    wire [31:0] pc_next, pc_reg_in, out;
+	
+	MUX_4x1 pc_src_mux(pc_next, {18'd0, 14'h0fff}, pfc, 0, pc_src, pc_reg_in);
+	 
+    PC_register pc_reg(pc_reg_in, inst_mem_in, pc_write, clk, inst_wr); 
+  
+    MUX_2x1 mux_to_select_addr(inst_mem_in , addr_to_wr , inst_wr , out);
+	
+    MEM inst_mem(out , inst_to_wr, inst , inst_wr , clk, 3'd0);
+	
+    Branch_or_Jump_TargGen pc_plus_four(inst_mem_in , 32'd4 , pc_next);
+  
+    	
+	
+endmodule

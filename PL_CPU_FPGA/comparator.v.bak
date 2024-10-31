@@ -1,0 +1,39 @@
+
+module comparator(A, B, PC_src, exception_flag, opcode, func3);
+	
+	input [31:0] A, B;
+	input [6:0] opcode;
+	input [2:0] func3;
+	input exception_flag;
+	
+	output reg [1:0] PC_src;
+	
+	
+	always@(*) begin
+		
+		if (exception_flag) // this flag is from the exception_detect_unit
+			PC_src <= 2'b01;
+		
+		else begin
+			
+			if (opcode == 7'h63) begin // if it is a BRANCH instruction
+				
+				if (func3 == 3'b001 && A == B) // beq
+					PC_src <= 2'b10;
+				else if (func3 == 3'b000 && A != B) // bne
+					PC_src <= 2'b10;
+				else // else if none of the branches are taken we continue with normal flow (PC + )
+					PC_src <= 2'b00;
+			end
+            
+            else if (opcode == 7'h67 || opcode == 7'h6f)
+            	PC_src <= 2'b10;
+			
+          else // else if it is not (branch instruction or jal or jalr) we continue with normal flow (PC + 4)
+				PC_src <= 2'b00;
+			
+		end
+		
+	end
+	
+endmodule

@@ -1,0 +1,33 @@
+
+module Branch_flag_Gen(Rs1 , Rs2 , eq , lt , ltu, lte, lteu, gt, gtu, gte, gteu);//
+
+input [31:0] Rs1 , Rs2;
+output reg eq , lt , ltu, gt, gtu, lte, lteu, gte, gteu ;
+
+  // this module outputs the comparison flags for the operands rs1 and rs2 (combinational) 
+  // could be used for multiple purposes
+  
+
+  always@(*) begin
+
+eq = (Rs1 == Rs2) ? 1'b1 : 1'b0;
+
+lt = ($signed(Rs1) < $signed(Rs2)) ? 1'b1 : 1'b0;
+
+ltu = (Rs1 < Rs2) ? 1'b1 : 1'b0;
+    
+gt = ($signed(Rs1) > $signed(Rs2)) ? 1'b1 : 1'b0;
+
+gtu = (Rs1 > Rs2) ? 1'b1 : 1'b0;
+    
+lte = ($signed(Rs1) <= $signed(Rs2)) ? 1'b1 : 1'b0;
+
+lteu = (Rs1 <= Rs2) ? 1'b1 : 1'b0;
+    
+gte = ($signed(Rs1) >= $signed(Rs2)) ? 1'b1 : 1'b0;
+
+gteu = (Rs1 >= Rs2) ? 1'b1 : 1'b0;
+
+end
+
+endmodule

@@ -1,0 +1,1312 @@
+
+
+
+
+
+module MUX_2x1(ina , inb , sel , out);
+
+input [31:0] ina , inb;
+input sel;
+
+output reg [31:0] out;
+
+always@ (*)
+    out = (!sel) ? ina : inb;
+
+endmodule
+
+module MUX_4x1(ina, inb, inc, ind, sel, out);
+
+input [31:0] ina , inb , inc , ind; 
+input [1:0] sel;
+
+output reg [31:0] out;
+
+always@ (*) begin
+
+case (sel)
+
+    2'b00: out = ina;
+
+    2'b01: out = inb;
+    
+    2'b10: out = inc;
+    
+    2'b11: out = ind;
+    
+endcase
+end
+endmodule
+
+
+
+module MUX_8x1(ina , inb , inc , ind , ine , inf , ing , inh, sel, out);
+
+input [31:0] ina , inb , inc , ind , ine , inf , ing , inh;
+input [2:0] sel;
+
+output reg [31:0] out;
+
+always@ (*) begin
+
+case (sel)
+
+    3'b000: out = ina;
+
+    3'b001: out = inb;
+    
+    3'b010: out = inc;
+    
+    3'b011: out = ind;
+    
+    3'b100: out = ine;
+
+    3'b101: out = inf;
+    
+    3'b110: out = ing;
+    
+    3'b111: out = inh;
+    
+endcase
+end 
+endmodule
+
+module ALU(A, B, res, ZF, CF, ALUOP);
+
+parameter BW = 32; // BIT WIDTH
+input [31:0] A,B;
+input [3:0] ALUOP;
+output reg [31:0] res;
+output reg ZF, CF;
+  
+  // ALUOP -> OP 
+  // 0000   -> add
+  // 0001   -> sub
+  // 0010   -> and
+  // 0011   -> or
+  // 0100   -> xor
+  // 0101   -> shift left here we shift A, B times
+  // 0110   -> shift right
+  // 0111   -> set less than
+  // 1000	-> LUI -> res = 0 + the second operand (rs2) which is the immed in the LUI case
+  always @(*) begin
+
+case (ALUOP)
+
+    4'b0000: begin
+    {CF , res} = A + B;
+    end
+    4'b0001: begin
+    {CF , res} = A - B;
+    end   
+    4'b0010: begin
+    {CF , res} = A & B;
+    end   
+    4'b0011: begin
+    {CF , res} = A | B;
+    end   
+    4'b0100: begin
+    {CF , res} = A ^ B;
+    end
+    4'b0101: begin // I shift A (B times)
+    // if B (the shift amount) is greater than 64(BW) we let it zero else we take the last bit shifted to the left of A
+    CF = (B > BW) ? 0 : CF&(B == 0) | (A[BW - B])&(B != 0);
+    res = A << B;
+    end
+    4'b0110: begin
+      // when shifting to the right I let the carry equal to the last bit shifted to the right (opposite of shift left)
+    CF = (B > BW) ? 0 : CF&(B == 0) | (A[B - 1])&(B != 0);
+    res = A >> B;
+    end
+  	4'b0111: begin
+    res = ($signed(A) < $signed(B)) ? 32'd1 : 32'd0;
+    CF = 1'b0;
+    end
+	4'b1000: begin
+	res = B;
+	CF = 1'b0;
+	end
+endcase
+    // the zero flag is high if and only if all bits are low so I did an or gate first (as a reduction operator) 
+    // and then invert it
+    ZF = ~|res;
+end
+endmodule
+
+module REG_FILE(rd_reg1, rd_reg2, wr_reg, wr_data, rd_data1, rd_data2, reg_wr,clk);///
+
+input [31:0] wr_data;
+input [4:0] rd_reg1, rd_reg2, wr_reg;
+input reg_wr, clk;
+
+output reg [31:0] rd_data1, rd_data2;
+
+reg [31:0] reg_file [31:0];
+
+
+initial
+    reg_file[0] = 32'd0; 
+  
+
+  always@(*) begin
+	
+    rd_data1 <= reg_file[rd_reg1];
+
+	rd_data2 <= reg_file[rd_reg2];
+    
+  end
+
+
+always@ (posedge clk) begin
+    
+  if(reg_wr == 1 && wr_reg != 5'd0)
+	reg_file[wr_reg] <= wr_data;
+
+end
+endmodule
+
+module MEM(addr , Data_In , Data_Out , WR , clk, func3);//
+
+input [31:0] addr , Data_In;
+input [2:0] func3;
+input WR , clk;
+output reg [31:0] Data_Out;
+
+  reg [7:0] data_mem [8191: 0];
+
+  always@ (*) begin
+    
+    if (func3 == 3'b000) begin
+      
+      Data_Out[7:0]   = data_mem[addr + 0];
+      Data_Out[15:8]  = data_mem[addr + 1];
+      Data_Out[23:16] = data_mem[addr + 2];
+      Data_Out[31:24] = data_mem[addr + 3];
+      
+    // $display("%d , mem[addr + 0] : %h = Data_In[7 :0 ] : %h",addr,data_mem[addr + 0], Data_In[7:0]);
+    // $display("%d , mem[addr + 1] : %h = Data_In[15:8 ] : %h",addr,data_mem[addr + 1], Data_In[15:8]);
+    // $display("%d , mem[addr + 2] : %h = Data_In[23:16] : %h",addr,data_mem[addr + 2], Data_In[23:16]);
+    // $display("%d , mem[addr + 3] : %h = Data_In[31:24] : %h",addr,data_mem[addr + 3], Data_In[31:24]);
+
+    end
+      	
+    
+    else if (func3 == 3'b010)
+      Data_Out <= { {24{data_mem[addr][7]}} , data_mem[addr]};
+    
+    else begin
+      
+      Data_Out[7:0]   = data_mem[addr + 0];
+      
+    end
+    
+  end
+    
+
+   
+  always@ (posedge clk)  
+    if (WR == 1'b1) begin
+      
+      if (func3 == 3'b000) begin
+        
+      data_mem[addr + 0] = Data_In[7:0];
+      data_mem[addr + 1] = Data_In[15:8];
+      data_mem[addr + 2] = Data_In[23:16];
+      data_mem[addr + 3] = Data_In[31:24];
+        
+   //   $display("%d , mem[addr + 0] : %h = Data_In[7 :0 ] : %h",addr,data_mem[addr + 0], Data_In[7:0]);
+   //   $display("%d , mem[addr + 1] : %h = Data_In[15:8 ] : %h",addr,data_mem[addr + 1], Data_In[15:8]);
+   //   $display("%d , mem[addr + 2] : %h = Data_In[23:16] : %h",addr,data_mem[addr + 2], Data_In[23:16]);
+   //   $display("%d , mem[addr + 3] : %h = Data_In[31:24] : %h",addr,data_mem[addr + 3], Data_In[31:24]);
+        
+        
+        
+      end
+      
+      else if (func3 == 3'b010) begin
+        
+      data_mem[addr + 0] <= Data_In[7:0];
+        
+      end
+      
+    end
+    	
+      
+endmodule
+
+
+
+module Branch_flag_Gen(Rs1 , Rs2 , eq , lt , ltu, lte, lteu, gt, gtu, gte, gteu);//
+
+input [31:0] Rs1 , Rs2;
+output reg eq , lt , ltu, gt, gtu, lte, lteu, gte, gteu ;
+
+  // this module outputs the comparison flags for the operands rs1 and rs2 (combinational) 
+  // could be used for multiple purposes
+  
+
+  always@(*) begin
+
+eq = (Rs1 == Rs2) ? 1'b1 : 1'b0;
+
+lt = ($signed(Rs1) < $signed(Rs2)) ? 1'b1 : 1'b0;
+
+ltu = (Rs1 < Rs2) ? 1'b1 : 1'b0;
+    
+gt = ($signed(Rs1) > $signed(Rs2)) ? 1'b1 : 1'b0;
+
+gtu = (Rs1 > Rs2) ? 1'b1 : 1'b0;
+    
+lte = ($signed(Rs1) <= $signed(Rs2)) ? 1'b1 : 1'b0;
+
+lteu = (Rs1 <= Rs2) ? 1'b1 : 1'b0;
+    
+gte = ($signed(Rs1) >= $signed(Rs2)) ? 1'b1 : 1'b0;
+
+gteu = (Rs1 >= Rs2) ? 1'b1 : 1'b0;
+
+end
+
+endmodule
+
+
+
+module Branch_or_Jump_TargGen(PC , Immed , targ_addr);//
+
+input [31:0] PC , Immed;
+
+
+output reg [31:0] targ_addr;
+
+always@ (*)
+    targ_addr = PC + Immed;
+
+endmodule
+
+module forward_unit(if_id_opcode, if_id_rs1, if_id_rs2, id_ex_opcode, id_ex_rs1, id_ex_rs2, id_ex_rd, id_ex_wr, ex_mem_rd, ex_mem_wr, mem_wb_rd, mem_wb_wr, 
+					sel_target_address_adder_mux_InDecodeStage, 
+					comparator_mux_selA, comparator_mux_selB, 
+					forwardA, forwardB, store_rs2_forward
+					);
+
+
+	input [6:0] if_id_opcode, id_ex_opcode;
+	input [4:0] if_id_rs1, if_id_rs2, id_ex_rs1, id_ex_rs2;				
+	input [4:0] id_ex_rd, ex_mem_rd, mem_wb_rd; 
+	input id_ex_wr, ex_mem_wr, mem_wb_wr;
+	
+	output reg [1:0] forwardA; // the selection lines for the ALU oprands mux
+	output reg [2:0] forwardB; 
+    output reg [1:0] store_rs2_forward;
+	output reg [2:0] sel_target_address_adder_mux_InDecodeStage;
+	output reg [1:0] comparator_mux_selA, comparator_mux_selB;
+	
+	
+	always@(*) begin
+	//-----------------------------------------------------------------------------------------
+	// in this section of the module we forward to the ALU oprands mux for the execution haz and mem hazard if needed
+	
+	// for the first ALU Operand:
+	if (id_ex_opcode == 7'h38) // if LUI -> operand1 = rs1 but the ALU_OP will drive the ALU to output the immed value which is in the second Operand
+		forwardA <= 2'b11;
+	else if (id_ex_opcode == 7'h6f || id_ex_opcode == 7'h67) // if jal or jalr -> operand1 = PC
+		forwardA <= 2'b00;
+    else if (ex_mem_wr && ex_mem_rd != 5'd0 && ex_mem_rd == id_ex_rs1) // if EX haz 
+		forwardA <= 2'b01;// but it will come from a mux whos sel line is EX_MEM_memread. 
+						   // if zero then from the buffer that is from the alu 
+						   // else if one then from the mem out (same thing with rs2)
+    else if (mem_wb_wr && mem_wb_rd != 5'd0 && mem_wb_rd == id_ex_rs1) // else if MEM haz
+		forwardA <= 2'b10;
+	else // else normal operation -> rs1 from the register file
+		forwardA <= 2'b11;
+    
+	
+	// for the second ALU Operand:
+	if (id_ex_opcode == 7'h38 || id_ex_opcode == 7'h03 || id_ex_opcode == 7'h1b || id_ex_opcode == 7'h13 || id_ex_opcode == 7'h23) // if LUI or I-type or store(other than jal,jalr) -> operand2 = immed
+		forwardB <= 3'b000;
+	else if (id_ex_opcode == 7'h6f || id_ex_opcode == 7'h67) // if jal or jalr -> operand2 = 4
+		forwardB <= 3'b001;
+    else if (ex_mem_wr && ex_mem_rd != 5'd0 && ex_mem_rd == id_ex_rs2) // else if EX haz
+		forwardB <= 3'b010;
+    else if (mem_wb_wr && mem_wb_rd != 5'd0 && mem_wb_rd == id_ex_rs2) // else if MEM haz
+		forwardB <= 3'b011;
+	else // else noraml operation -> rs2 from the register file
+		forwardB <= 3'b100;
+      
+      // here we forward the rs2 value for storing the right value in the memory
+      if (ex_mem_wr && ex_mem_rd != 5'd0 && ex_mem_rd == id_ex_rs2)
+        store_rs2_forward <= 2'b01;
+      else if (mem_wb_wr && mem_wb_rd != 5'd0 && mem_wb_rd == id_ex_rs2)
+        store_rs2_forward <= 2'b10;
+      else 
+        store_rs2_forward <= 2'b00;
+
+	end
+	
+	
+	
+	always@(*) begin
+	
+	//-----------------------------------------------------------------------------------------
+	// in this section of the module we forward the wanted register to compute the address that we want to 
+	// jump to for the jalr instruction. we will forward it from the alu out 
+	// or MEM stage or from the wb_mux		
+	 
+	if (if_id_opcode == 7'h67) begin // if the instruction is a jalr in the decode stage then we will select where to forward from
+	
+		if (id_ex_wr && id_ex_rd != 5'd0 && if_id_rs1 == id_ex_rd) // from the ALU out
+			sel_target_address_adder_mux_InDecodeStage <= 3'b000;
+			
+		else if (ex_mem_wr && ex_mem_rd != 5'd0 && if_id_rs1 == ex_mem_rd) // from the MEM stage
+			sel_target_address_adder_mux_InDecodeStage <= 3'b001;
+			
+		else if (mem_wb_wr && mem_wb_rd != 5'd0 && if_id_rs1 == mem_wb_rd) // from the wb_mux
+			sel_target_address_adder_mux_InDecodeStage <= 3'b010;
+			
+		else 
+			sel_target_address_adder_mux_InDecodeStage <= 3'b011; // or from the register file it self if there is no dependencies
+			
+	end else // any instruction other than jalr (e.g. branch or jal). the first Operand of the adder that will calculate the target address will be the PC not a register
+			sel_target_address_adder_mux_InDecodeStage <= 3'b100;
+		
+	end
+	
+	always@(*) begin
+	
+	//-----------------------------------------------------------------------------------------
+	// 									BRANCH FORWARDING COMPARATOR
+	// in this section of the module we decide whether we forward the results that will be written on the
+	// register file from the following places to the operands of the comparator
+	// the places are : alu out , MEM stage , wb_mux
+	// any branch instruction can use this section to decide whether to branch or not (just add the neccessary comparison)
+	
+	// for Operand1	
+	if (id_ex_wr && id_ex_rd != 5'd0 && if_id_rs1 == id_ex_rd)
+		comparator_mux_selA <= 2'b00;
+	else if (ex_mem_wr && ex_mem_rd != 5'd0 && if_id_rs1 == ex_mem_rd)
+		comparator_mux_selA <= 2'b01;
+	else if (mem_wb_wr && mem_wb_rd != 5'd0 && if_id_rs1 == mem_wb_rd)
+		comparator_mux_selA <= 2'b10;
+	else
+		comparator_mux_selA <= 2'b11;
+	
+	
+	
+	// for Operand2
+	if (id_ex_wr && id_ex_rd != 5'd0 && if_id_rs2 == id_ex_rd)
+		comparator_mux_selB <= 2'b00;
+	else if (ex_mem_wr && ex_mem_rd != 5'd0 && if_id_rs2 == ex_mem_rd)
+		comparator_mux_selB <= 2'b01;
+	else if (mem_wb_wr && mem_wb_rd != 5'd0 && if_id_rs2 == mem_wb_rd)
+		comparator_mux_selB <= 2'b10;
+	else
+		comparator_mux_selB <= 2'b11;
+	
+	end
+	
+endmodule
+ 
+
+ 
+ 
+// this module detects if there is a load instruction followed by a (branch or jal or jalr) instruction.
+// and if it's the case then it inserts one nop starting from the execute stage (activate the ID_FLUSH). 
+// because we can't forward the load result from the execute stage but we can from the memory stage
+// and we will not fetch any instruction after the branch so we won't have any IF Flush regardless whether the (branch) is taken or not.
+
+module BAL(id_ex_memrd, if_id_opcode, if_id_rs1, if_id_rs2, id_ex_rd, PC_Write, if_id_Write, id_ex_cntrl_mux_sel);
+  
+    input id_ex_memrd; // Memread signal from the ID_EX buffer to detect if it is a load inst, and a branch signal from the control unit of the decode stage	
+    input [6:0] if_id_opcode;
+									 // to tell us if it is a branch instruction
+    input [4:0] if_id_rs1, if_id_rs2, id_ex_rd; // the required rs1, rs2 to be used
+    output reg PC_Write, if_id_Write, id_ex_cntrl_mux_sel; // control signals to control the updation of the PC, IF_ID buffer
+														   // , and the cntrl mux that passes the control signals to ID_EX buffer
+  
+    always@(*) begin
+	
+    if (id_ex_memrd && (if_id_opcode == 7'h63 || if_id_opcode == 7'h67 || if_id_opcode == 7'h6f) && id_ex_rd != 0 && (if_id_rs1 == id_ex_rd || if_id_rs2 == id_ex_rd)) begin
+		
+		PC_Write <= 1'b0; // we hold the PC
+		if_id_Write <= 1'b0; // we hold the IF_ID_Buffer
+		id_ex_cntrl_mux_sel <= 1'b1; // and we insert a nop -> control signals are zeros
+      
+    end      
+    else begin
+		// otherwise we operate normally
+		PC_Write <= 1'b1; // we update the PC
+		if_id_Write <= 1'b1; // we update the IF_ID_Buffer
+		id_ex_cntrl_mux_sel <= 1'b0; // and we bypass the current control signals
+      
+    end
+    
+  end
+endmodule
+
+
+
+
+
+  // ALUOP -> OP 
+  // 0000   -> add
+  // 0001   -> sub
+  // 0010   -> and
+  // 0011   -> or
+  // 0100   -> xor
+  // 0101   -> shift left here we shift A, B times
+  // 0110   -> shift right
+  // 0111   -> set less than
+  // 1000	-> LUI -> res = 0 + the second operand (rs2) which is the immed in the LUI case
+  // this module takes the opcode and based on it. it decides what operation the ALU should do.
+
+module ALU_OPER(opcode, func3, ALU_OP);
+	
+	input [6:0] opcode;
+	input [2:0] func3;
+	
+	output reg [3:0] ALU_OP;
+	
+	always@(*) begin
+		
+		if (opcode == 7'h33) begin // R-format
+			case (func3)
+				
+				3'b000: ALU_OP <= 4'b0110;
+				3'b001: ALU_OP <= 4'b0001;
+				3'b010: ALU_OP <= 4'b0101;
+				3'b011: ALU_OP <= 4'b0011;
+				3'b100: ALU_OP <= 4'b0111;
+				3'b101: ALU_OP <= 4'b0010;
+				3'b110: ALU_OP <= 4'b0000;
+				3'b111: ALU_OP <= 4'b0100;			
+				
+			endcase
+		end
+		
+		
+		// load, store, jal, jalr
+		else if (opcode == 7'h23 || opcode == 7'h03 || opcode == 7'h67 || opcode == 7'h6f)
+			ALU_OP <= 4'b0000;
+			
+		else if (opcode == 7'h1b) // add immediate
+			ALU_OP <= 4'b0000;
+		
+		else if (opcode == 7'h13) begin
+			case (func3)
+				
+				3'b110: ALU_OP <= 4'b0010; // and immediate
+				3'b111: ALU_OP <= 4'b0011; // or immediate
+				
+			endcase
+		end
+		
+		else if (opcode == 7'h38) // LUI
+			ALU_OP <= 4'b1000;
+		
+		
+		
+		
+	end
+endmodule
+
+
+
+module comparator(A, B, PC_src, exception_flag, opcode, func3);
+	
+	input [31:0] A, B;
+	input [6:0] opcode;
+	input [2:0] func3;
+	input exception_flag;
+	
+	output reg [1:0] PC_src;
+	
+	
+	always@(*) begin
+		
+		if (exception_flag) // this flag is from the exception_detect_unit
+			PC_src <= 2'b01;
+		
+		else begin
+			
+			if (opcode == 7'h63) begin // if it is a BRANCH instruction
+				
+				if (func3 == 3'b001 && A == B) // beq
+					PC_src <= 2'b10;
+				else if (func3 == 3'b000 && A != B) // bne
+					PC_src <= 2'b10;
+				else // else if none of the branches are taken we continue with normal flow (PC + )
+					PC_src <= 2'b00;
+			end
+            
+            else if (opcode == 7'h67 || opcode == 7'h6f)
+            	PC_src <= 2'b10;
+			
+          else // else if it is not (branch instruction or jal or jalr) we continue with normal flow (PC + 4)
+				PC_src <= 2'b00;
+			
+		end
+		
+	end
+	
+endmodule
+
+ 
+ 
+ 
+ 
+ 
+module IF_ID_buffer(IF_PC, IF_INST, IF_FLUSH, if_id_Write, clk,
+					ID_opcode, ID_func7, ID_func3,
+					ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_PC, ID_INST);
+
+	input [31:0] IF_PC, IF_INST;
+	input IF_FLUSH, if_id_Write, clk;
+	
+	// in this buffer we want to break down the instruction into valid little pieces that can be used in the next stages
+	output reg [6:0] ID_opcode, ID_func7;
+	output reg [2:0] ID_func3;
+	output reg [4:0] ID_rs1_ind, ID_rs2_ind, ID_rd_ind;
+	output reg [31:0] ID_PC, ID_INST;
+
+always @ (negedge clk) begin
+	
+	if (if_id_Write) begin
+		
+		// we flush only whenever there is an exception
+		if (!IF_FLUSH) begin
+			
+			ID_opcode  <= IF_INST[6:0];
+			ID_func3  <= IF_INST[14:12];
+			ID_func7 <= IF_INST[31:25]; 
+			ID_INST <= IF_INST;
+			ID_PC  <= IF_PC;
+			
+			// we will force the unused places to be zero
+			
+			// if the instruction is U or UJ we don't consider rs1 from the begining
+			if (IF_INST[6:0] == 7'h6f || IF_INST[6:0] == 7'h38)
+				ID_rs1_ind <= 0;
+			else
+				ID_rs1_ind <= IF_INST[19:15];
+				 
+			// if the instruction is U or UJ or I-type we don't consider rs2 from the begining
+			if (IF_INST[6:0] == 7'h38 || IF_INST[6:0] == 7'h67 || IF_INST[6:0] == 7'h6f || IF_INST[6:0] == 7'h03 || IF_INST[6:0] == 7'h1b || IF_INST[6:0] == 7'h13)
+				ID_rs2_ind <= 0;
+			else
+				ID_rs2_ind <= IF_INST[24:20];
+				
+				
+			// if the instruction is S or SB we don't consider rd from the begining			
+			if (IF_INST[6:0] == 7'h23 || IF_INST[6:0] == 7'h63)
+				ID_rd_ind <= 0;
+			else
+				ID_rd_ind <= IF_INST[11:7];
+			
+		end
+			
+		else begin
+		
+			ID_opcode     <= 0;
+			ID_rs1_ind   <= 0;
+			ID_rs2_ind  <= 0;
+			ID_rd_ind  <= 0;
+			ID_func3  <= 0;
+			ID_func7 <= 0;
+			ID_INST <= 0;
+			ID_PC  <= 0;
+			
+		end
+		
+	end	
+
+	
+end
+
+endmodule
+
+module ID_EX_buffer(ID_opcode, ID_func7, ID_func3, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
+					ID_PC, ID_INST, ID_Immed, ID_rs1, ID_rs2, ID_regwrite,
+					ID_memread, ID_memwrite, clk, ID_FLUSH,
+					EX_opcode, EX_func7, EX_func3, EX_rs1_ind,
+					EX_rs2_ind, EX_rd_ind, EX_PC,
+					EX_INST, EX_Immed, EX_rs1,
+					EX_rs2, EX_regwrite, EX_memread, EX_memwrite);
+	
+	input [6:0] ID_opcode, ID_func7;
+	input [2:0] ID_func3;
+	input [4:0] ID_rs1_ind, ID_rs2_ind, ID_rd_ind;
+	input [31:0] ID_PC, ID_INST, ID_Immed, ID_rs1, ID_rs2;
+	input ID_regwrite, ID_memread, ID_memwrite, clk;
+	input ID_FLUSH;
+	
+	output reg [6:0] EX_opcode, EX_func7;
+	output reg [2:0] EX_func3;
+	output reg [4:0] EX_rs1_ind, EX_rs2_ind, EX_rd_ind;
+	output reg [31:0] EX_PC, EX_INST, EX_Immed, EX_rs1, EX_rs2;
+	output reg EX_regwrite, EX_memread, EX_memwrite;
+	
+	always@(negedge clk) begin
+		
+		if (!ID_FLUSH) begin
+			
+			EX_opcode <= ID_opcode;
+			EX_func7 <= ID_func7;
+			EX_func3 <= ID_func3;
+			EX_rs1_ind <= ID_rs1_ind;
+			EX_rs2_ind <= ID_rs2_ind;
+			EX_rd_ind <= ID_rd_ind;
+			EX_PC <= ID_PC;
+			EX_INST <= ID_INST;
+			EX_Immed <= ID_Immed;
+			EX_rs1 <= ID_rs1;
+			EX_rs2 <= ID_rs2;
+			EX_regwrite <= ID_regwrite;
+			EX_memread <= ID_memread;
+			EX_memwrite <= ID_memwrite;
+			
+			
+		end else
+				{EX_opcode, EX_func7, EX_func3, EX_rs1_ind, EX_rs2_ind, EX_rd_ind, EX_PC, EX_INST, EX_Immed, EX_rs1, EX_rs2, EX_regwrite, EX_memread, EX_memwrite} <= 0;
+		
+	end
+	
+endmodule
+
+module EX_MEM_buffer(EX_ALU_OUT, EX_rs2, EX_rs1_ind, EX_rs2_ind, EX_rd_ind,
+					 EX_PC, EX_INST, EX_opcode, EX_func3, EX_memread, EX_memwrite, EX_regwrite, EX_FLUSH, clk,
+					 MEM_ALU_OUT, MEM_rs2, MEM_rs1_ind, MEM_rs2_ind,
+					 MEM_rd_ind, MEM_PC, MEM_INST, MEM_opcode, MEM_func3, MEM_memread, MEM_memwrite, MEM_regwrite);
+	
+	input [31:0] EX_ALU_OUT, EX_rs2, EX_PC, EX_INST;
+    input [2:0] EX_func3;
+	input [4:0] EX_rs1_ind, EX_rs2_ind, EX_rd_ind;
+	input [6:0] EX_opcode;
+	input EX_memread, EX_memwrite, EX_regwrite, EX_FLUSH, clk;
+	
+	
+	output reg [31:0] MEM_ALU_OUT, MEM_rs2, MEM_PC, MEM_INST;
+    output reg [2:0] MEM_func3;
+	output reg [4:0] MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind;
+	output reg [6:0] MEM_opcode;
+	output reg MEM_memread, MEM_memwrite, MEM_regwrite;
+	
+	
+	
+	always@(negedge clk) begin
+		
+		if (!EX_FLUSH) begin
+			
+			MEM_ALU_OUT <= EX_ALU_OUT;
+			MEM_rs2 <= EX_rs2;
+			MEM_rs1_ind <= EX_rs1_ind;
+			MEM_rs2_ind <= EX_rs2_ind;
+			MEM_rd_ind <= EX_rd_ind;
+			MEM_opcode <= EX_opcode;
+            MEM_func3 <= EX_func3;
+			MEM_memread <= EX_memread;
+			MEM_memwrite <= EX_memwrite;
+			MEM_regwrite <= EX_regwrite;
+			MEM_PC <= EX_PC;
+			MEM_INST <= EX_INST;
+			
+		end else
+        {MEM_ALU_OUT, MEM_PC, MEM_INST, MEM_rs2, MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind, MEM_opcode, MEM_func3, MEM_memread, MEM_memwrite, MEM_regwrite} <= 0;
+		
+	end
+	
+endmodule
+
+module MEM_WB_buffer(MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind, MEM_PC, MEM_INST, MEM_opcode,
+					 MEM_memread, MEM_memwrite, MEM_regwrite, MEM_FLUSH, clk,
+					 WB_ALU_OUT, WB_rs2, WB_Data_mem_out, WB_rs1_ind, WB_rs2_ind,
+					 WB_rd_ind, WB_PC, WB_INST, WB_opcode, WB_memread, WB_memwrite, WB_regwrite);
+	
+	input [31:0] MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, MEM_PC, MEM_INST;
+	input [4:0] MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind;
+	input [6:0] MEM_opcode;
+	input MEM_memread, MEM_memwrite, MEM_regwrite, MEM_FLUSH, clk;
+	
+	
+    output reg [31:0] WB_ALU_OUT, WB_rs2, WB_Data_mem_out, WB_PC, WB_INST;
+	output reg [4:0] WB_rs1_ind, WB_rs2_ind, WB_rd_ind;
+	output reg [6:0] WB_opcode;
+	output reg WB_memread, WB_memwrite, WB_regwrite;	
+	
+	
+	always@(negedge clk) begin
+		
+		if(!MEM_FLUSH) begin
+			
+			WB_ALU_OUT <= MEM_ALU_OUT;
+			WB_rs2 <= MEM_rs2;
+			WB_Data_mem_out <= MEM_Data_mem_out;
+			WB_rs1_ind <= MEM_rs1_ind;
+			WB_rs2_ind <= MEM_rs2_ind;
+			WB_rd_ind <= MEM_rd_ind;
+			WB_opcode <= MEM_opcode;
+			WB_memread <= MEM_memread;
+			WB_memwrite <= MEM_memwrite;
+			WB_regwrite <= MEM_regwrite;
+			WB_PC <= MEM_PC;
+			WB_INST <= MEM_INST;
+			
+		end else 
+        {WB_ALU_OUT, WB_PC, WB_INST, WB_rs2, WB_Data_mem_out, WB_rs1_ind, WB_rs2_ind, WB_rd_ind, WB_opcode, WB_memread, WB_memwrite, WB_regwrite} <= 0;
+		
+	end
+	
+endmodule
+
+
+module control_unit(Op_Code, funct3,  RegWrite, MemRead, MemWrite, BEQ, BNE, hlt);
+
+    input [6:0] 	Op_Code;
+	input [2:0]		funct3;
+  // First 6 bits of the instructions these 6-bits determine what happens in EXE, MEM, WB stages by the use of control signals (funct is used to diffrentiate between R-type instructions)
+		
+//	output reg			RegDst; 									// 0 register destination will be rt (source register 2), 1 register destination will be rd
+	output reg			RegWrite; 								// 0 don't write to register, 1 write to register (R-type or Load)
+								// 0 ALU B comes from register file, 1 ALU B comes from Immediate Extended (Load, store)
+	output reg			MemRead; 								//	1 for load only as all other instructions dont have permission to read from data memory
+	output reg			MemWrite; 								//	1 for store only as all other instructions dont have permission to write to data memory
+									//	00 write data from  ALU to register (R-Type), 01 write data from data memory to register (Load), 10 write PC_next on register file (Jal)
+	output reg			BEQ, BNE;		//	1 for branches to change PC reigster to equal PC + offset else PC = PC + 1
+//	output reg 			Jump;										// 1 for unconditional jumps , 0 otherwise
+									//	00 for load/store, 01 branch, 10 for R-type, for R-Type Funct field is used to determine desired ALU action
+	
+	output reg hlt; // this signal is to stop the clk from runing 
+	
+	
+  always @(Op_Code or funct3) begin
+		{RegWrite, MemRead, MemWrite, BEQ, BNE, hlt} <= 0; //By Default all Control Signals are equal to zero
+		
+		case (Op_Code)
+			7'h33: begin	// R-type
+             RegWrite <= 1;
+            end
+          
+          7'h1B: RegWrite <= 1; // AddI
+          
+          7'h13: RegWrite <= 1;   // AndI ORI
+          
+          7'h63: begin
+            case (funct3)
+             3'h1: BEQ <= 1;	//BEQ
+             3'h0: BNE <= 1;	//BNE
+            endcase
+          end
+          
+          7'h6F: RegWrite <= 1;	// JAL
+            
+          7'h67: RegWrite <= 1; // JALR
+          
+          7'h03: begin		// lb lw
+            MemRead <= 1; 
+            RegWrite <= 1;
+         		 end
+          
+          7'h38: RegWrite <= 1;	// LUI
+          
+          7'h23: MemWrite <= 1; // sw sb
+		   
+		  7'h7f: hlt <= 1'b1; // hlt instruction
+                    
+        endcase		
+// 		if(control_MUX_select == 1'b1) begin
+// 			{RegDst, RegWrite, ALUSrc, MemRead, MemWrite, MemtoReg, ALUOp, BEQ, BNE, BLT, BGT, BLE, BGE, Jump} <= 0;
+// 		end
+	end	
+	
+endmodule
+
+
+module PC_register(addr_in, addr_out, PC_Write, clk, rst);
+	
+	input [31:0] addr_in;
+	input clk, rst;
+	input PC_Write;
+	
+  output reg [31:0] addr_out;
+	 
+	always@(posedge clk) begin 
+      if (rst)
+        	addr_out <= 0;
+      
+	  else if (PC_Write)
+			addr_out <= addr_in;
+		
+	end
+	
+endmodule
+
+
+module Immed_Gen_unit(Inst, Immed);
+	
+	input [31:0] Inst;
+	
+	output reg [31:0] Immed;
+	
+	
+	always@(*) begin
+		
+		if (Inst[6:0] == 7'h38) // if it is U-format -> LUI
+			Immed <= {Inst[31:12] , 12'd0};
+			
+		else if (Inst[6:0] == 7'h6f) // if it is UJ-format -> jal then we sign extend it and shift left once
+            Immed <= {{11{Inst[31]}}, Inst[31:12] , 1'b0};
+		
+		else if (Inst[6:0] == 7'h23) // if it is S-format
+			Immed <= {{20{Inst[31]}}, Inst[31:25], Inst[11:7]};
+		
+		else if (Inst[6:0] == 7'h63) // if it is SB-format
+            Immed <= {{18{Inst[31]}},  Inst[31:25], Inst[11:7], 2'b0};
+		
+		else if (Inst[6:0] == 7'h1b) // it is an I-format
+			Immed <= {{20{Inst[31]}}, Inst[31:20]}; // signe extend
+		
+		else // it is an I-format and logical instruciton
+            Immed <= {20'b0, Inst[31:20]}; zero extend
+	end
+	
+endmodule
+
+
+
+/*
+
+  module MUX_2x1(ina , inb , sel , out);
+module MUX_4x1(ina, inb, inc, ind, sel, out);
+module MUX_8x1(ina , inb , inc , ind , ine , inf , ing , inh, sel, out);
+module ALU(A, B, res, ZF, CF, ALUOP);
+module REG_FILE(rd_reg1, rd_reg2, wr_reg, wr_data, rd_data1, rd_data2, reg_wr,clk);
+module MEM(addr , Data_In , Data_Out , WR , clk);
+module Branch_flag_Gen(Rs1 , Rs2 , eq , lt , ltu, lte, lteu, gt, gtu, gte, gteu);
+module Branch_or_Jump_TargGen(PC , Immed , targ_addr);
+module forward_unit(if_id_opcode, if_id_rs1, if_id_rs2, id_ex_opcode, id_ex_rs1, id_ex_rs2, id_ex_rd, id_ex_wr, ex_mem_rd, ex_mem_wr, mem_wb_rd, mem_wb_wr, 
+					sel_target_address_adder_mux_InDecodeStage, 
+					comparator_mux_selA, comparator_mux_selB, 
+					forwardA, forwardB
+					);
+module BAL(id_ex_memrd, if_id_opcode, if_id_rs1, if_id_rs2, id_ex_rd, PC_Write, if_id_Write, id_ex_cntrl_mux_sel);
+module ALU_OPER(opcode, func3, ALU_OP);
+	
+module comparator(A, B, PC_src, exception_flag, opcode, func3);
+module control_unit(Op_Code, funct3,  RegWrite, MemRead, MemWrite, BEQ, BNE, hlt);
+module PC_register(addr_in, addr_out, PC_Write, clk);
+module Immed_Gen_unit(Inst, Immed);
+
+
+*/
+
+
+
+
+
+
+module IF_stage(pfc, pc_src, inst_mem_in, addr_to_wr, pc_write, clk, inst, inst_to_wr, inst_wr);
+	
+	input [31:0] pfc;
+	input [1:0] pc_src;
+	input pc_write, clk;
+    input [31:0] addr_to_wr;
+	output [31:0] inst;
+	
+	inout [31:0] inst_mem_in;
+	
+	input [31:0] inst_to_wr;
+	input inst_wr;
+	
+    wire [31:0] pc_next, pc_reg_in, out;
+	
+	MUX_4x1 pc_src_mux(pc_next, {18'd0, 14'h0fff}, pfc, 0, pc_src, pc_reg_in);
+	 
+    PC_register pc_reg(pc_reg_in, inst_mem_in, pc_write, clk, inst_wr); 
+  
+    MUX_2x1 mux_to_select_addr(inst_mem_in , addr_to_wr , inst_wr , out);
+	
+    MEM inst_mem(out , inst_to_wr, inst , inst_wr , clk, 3'd0);
+	
+    Branch_or_Jump_TargGen pc_plus_four(inst_mem_in , 32'd4 , pc_next);
+  
+    	
+	
+endmodule
+
+
+module ID_stage(pc, inst, id_haz, ex_haz, mem_haz, wr_reg_data, rs1_ind, rs2_ind,id_ex_rd_ind, wr_reg_from_wb, comp_selA, comp_selB, target_addr_adder_mux_sel, 
+				id_flush,id_flush_mux_sel, id_ex_memread, exception_flag, clk, pfc, rs1, rs2, pc_src, pc_write, if_id_write, imm,reg_write_from_wb, reg_write, mem_read, mem_write, hlt);
+	
+	input [31:0] pc, inst, id_haz, ex_haz, mem_haz, wr_reg_data;
+	input [4:0] rs1_ind, rs2_ind,id_ex_rd_ind, wr_reg_from_wb;
+	input [1:0] comp_selA, comp_selB;
+	input [2:0] target_addr_adder_mux_sel;
+	input id_flush, id_ex_memread, exception_flag, clk, reg_write_from_wb;
+	
+	output [31:0] pfc, rs1, rs2;
+	output [28:0] paddedbits;
+	output [1:0] pc_src;
+	output pc_write, if_id_write, hlt, reg_write, mem_read, mem_write;
+	
+	wire [31:0] mux_out, comp_oper1, comp_oper2;
+	wire reg_write_wire, mem_read_wire, mem_write_wire, BEQ, BNE, id_ex_stall;
+	
+	output wire [31:0] imm;
+	output wire id_flush_mux_sel;
+  
+	REG_FILE reg_file(rs1_ind, rs2_ind, wr_reg_from_wb, wr_reg_data, rs1, rs2, reg_write_from_wb, clk);
+	
+	Immed_Gen_unit immed_gen(inst, imm);
+	
+	// compute target address
+    MUX_8x1 target_addr_mux(id_haz, ex_haz, mem_haz, rs1 , pc , 0, 0, 0, target_addr_adder_mux_sel, mux_out);
+	
+	Branch_or_Jump_TargGen target_address(mux_out, imm, pfc);
+	
+	// comparator section
+	MUX_4x1 comp_mux_oper1(id_haz, ex_haz, mem_haz, rs1, comp_selA, comp_oper1);
+    MUX_4x1 comp_mux_oper2(id_haz, ex_haz, mem_haz, rs2, comp_selB, comp_oper2); 
+	
+    comparator comp(comp_oper1, comp_oper2, pc_src, exception_flag, inst[6:0], inst[14:12]);
+	
+	// control section
+    control_unit cu(inst[6:0], inst[14:12],  reg_write_wire, mem_read_wire, mem_write_wire, BEQ, BNE, hlt);
+	BAL bal_bubble(id_ex_memread, inst[6:0], rs1_ind, rs2_ind, id_ex_rd_ind, pc_write, if_id_write, id_ex_stall);
+	//----------------------------------------------------------------------------------------------------------------
+	
+	// control unit mux
+	or flush(id_flush_mux_sel, id_flush, id_ex_stall);
+	
+	MUX_2x1 control_mux({29'd0, reg_write_wire, mem_read_wire, mem_write_wire} , 32'd0 , id_flush_mux_sel , {paddedbits, reg_write, mem_read, mem_write});
+		
+endmodule
+
+
+module EX_stage(pc, inst, ex_haz, mem_haz, rs1, imm, rs1_ind, rs2_ind, alu_selA, alu_selB, store_rs2_forward, reg_write, mem_read, mem_write, rs2_in, rs2_out, alu_out);
+	
+	input [31:0] pc, inst, ex_haz, mem_haz, rs1, imm;
+	input [4:0] rs1_ind, rs2_ind;
+    input [1:0] alu_selA, store_rs2_forward;
+	input [2:0] alu_selB;
+	
+	inout reg_write, mem_read, mem_write;
+    input [31:0] rs2_in;
+	
+    output [31:0] alu_out, rs2_out; 
+  
+	wire [31:0] oper1, oper2;
+	wire [3:0] alu_op;
+	wire ZF, CF;
+	
+	MUX_4x1 alu_oper1(pc, ex_haz, mem_haz, rs1, alu_selA, oper1);
+	
+    MUX_8x1 alu_oper2(imm , 32'd4, ex_haz, mem_haz , rs2_in, 0,0,0, alu_selB, oper2);
+	
+	ALU alu(oper1, oper2, alu_out, ZF, CF, alu_op);
+
+    ALU_OPER alu_oper(inst[6:0], inst[14:12], alu_op);
+
+    MUX_4x1 store_rs2_mux(rs2_in, ex_haz, mem_haz, 32'd0, store_rs2_forward, rs2_out);
+  	
+endmodule
+
+module MEM_stage(addr, wdata, mem_write, mem_read, reg_write, mem_out, forwarded_data, clk, func3);
+	
+    input [31:0] addr, wdata;
+	input clk, mem_write, mem_read;
+    input [2:0] func3;
+	inout reg_write;
+	
+	output [31:0] forwarded_data;
+	
+	inout [31:0] mem_out;
+	
+    MEM data_mem(addr, wdata, mem_out, mem_write , clk, func3);
+
+	MUX_2x1 forward_mux(addr, mem_out, mem_read, forwarded_data);
+	
+endmodule
+
+
+module WB_stage(mem_out, alu_out, mem_read, wdata_to_reg_file);
+	
+	input [31:0] mem_out, alu_out;
+	input mem_read;
+	
+// 	inout reg_write;
+// 	inout [4:0] wr_reg;
+	
+	output [31:0] wdata_to_reg_file;
+
+	MUX_2x1 wb_mux(alu_out , mem_out, mem_read, wdata_to_reg_file);
+	
+endmodule
+
+
+
+
+
+module exception_detect_unit(ID_PC, ID_INST, excep_flag, id_flush, EX_FLUSH, MEM_FLUSH);
+	
+	// unit description :
+	// the exception detection unit detects whether there is an exception in any of the five stages
+	// and for now we will cover these exception and may expand it in the future if needed
+	
+	// inputs : 1- the PC and the instruction contents of every stage to save it and pass it to the handler to know what is the address of the instruction that 
+    // 			caused the exception
+	
+	// output : the exception flag and it is high if and only if there is an exception and it passes it to the comparator to select the PC_src to be the
+	// 			handler address.
+	
+	// exception to detect :
+	// 1- invalid opcode
+	// 2- invalid ALU OP
+	
+  input [31:0] ID_PC, ID_INST;
+  
+  output reg excep_flag, id_flush, EX_FLUSH, MEM_FLUSH;
+  
+  always@(*) begin
+    // if invalid or unsupported opcode then there is an exception
+	if (ID_INST[6:0] != 7'h33 && ID_INST[6:0] != 7'h1b && ID_INST[6:0] != 7'h38 && ID_INST[6:0] != 7'h63
+		&& ID_INST[6:0] != 7'h03 && ID_INST[6:0] != 7'h13 && ID_INST[6:0] != 7'h23
+		&& ID_INST[6:0] != 7'h67 && ID_INST[6:0] != 7'h6f) begin
+		excep_flag <= 1'b1;
+		id_flush   <= 1'b1;
+		EX_FLUSH   <= 1'b0;
+		MEM_FLUSH  <= 1'b0;
+	end
+	
+	else 
+		{ excep_flag, id_flush, EX_FLUSH, MEM_FLUSH } <= 0;
+	
+  end
+	
+endmodule
+
+
+module CPU;
+
+reg input_clk=1;
+  
+wire clk, hlt;
+  
+reg [31:0] i, j; 
+reg reg_sel_test, addr_sel_test;
+reg [31:0] reg_index_test, mem_addr_test, Inst_to_wr, addr_to_wr;
+
+reg inst_wr;
+
+reg IF_FLUSH=0;
+
+
+wire [31:0] pfc, IF_pc, IF_INST, ID_PC, ID_INST, alu_out, forwarded_data, wdata_to_reg_file, ID_rs1, ID_rs2, ID_Immed, EX_PC, EX_INST, EX_Immed;
+wire [31:0] EX_rs1, EX_rs2, MEM_PC, MEM_INST, WB_PC, WB_INST, MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, WB_ALU_OUT, WB_rs2, WB_Data_mem_out, ID_rs1_ind_test, MEM_ALU_OUT_test, rs2_out;
+
+wire [6:0]  ID_opcode, ID_func7, EX_opcode, EX_func7, MEM_opcode, WB_opcode;
+wire [4:0]  ID_rs1_ind, ID_rs2_ind, ID_rd_ind, EX_rd_ind, EX_rs1_ind, EX_rs2_ind, MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind, WB_rs1_ind, WB_rs2_ind, WB_rd_ind;
+wire [2:0]  ID_func3, target_addr_adder_mux_sel, EX_func3, MEM_func3, alu_selB;
+wire [1:0]  pc_src, comp_selA, comp_selB, alu_selA, store_rs2_forward;
+wire pc_write, if_id_write, ID_FLUSH_buf, EX_memread, ID_regwrite, ID_memread, ID_memwrite, EX_regwrite, EX_memwrite, MEM_memread;
+wire MEM_memwrite, MEM_regwrite, WB_memread, WB_memwrite, WB_regwrite, exception_flag, id_flush, EX_FLUSH, MEM_FLUSH; 
+
+
+ 
+  
+
+  
+// here we build the CPU with it's module to connect togther
+// 5-stages , 4-buffers, 1-forward unit, 1-BAL Unit, 1-excep det unit.
+
+ 
+	nor hlt_logic(clk, input_clk, hlt);
+	
+	forward_unit fu(ID_INST[6:0], ID_rs1_ind, ID_rs2_ind, EX_INST[6:0], EX_rs1_ind, EX_rs2_ind, EX_rd_ind, 
+				EX_regwrite, MEM_rd_ind, MEM_regwrite, WB_rd_ind, WB_regwrite, 
+				// output to the forwarded muxes
+				target_addr_adder_mux_sel,
+				comp_selA, comp_selB,
+				alu_selA, alu_selB, store_rs2_forward);
+				
+				
+	
+    IF_stage if_stage(pfc, pc_src, IF_pc, addr_to_wr, pc_write, clk, IF_INST, Inst_to_wr, inst_wr);
+ 
+	
+    IF_ID_buffer if_id_buffer(IF_pc, IF_INST, IF_FLUSH, if_id_write, clk, ID_opcode, ID_func7, ID_func3, ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_PC, ID_INST); 
+	 
+  // this mux is for selcting the index that is going in the reg file so after executing the program we can control it manually and read the reg file contents
+  MUX_2x1 reg_index_test_mux({27'd0, ID_rs1_ind} , reg_index_test, reg_sel_test, ID_rs1_ind_test);
+
+	ID_stage id_stage(ID_PC, ID_INST, alu_out, forwarded_data, wdata_to_reg_file, wdata_to_reg_file, ID_rs1_ind_test[4:0], ID_rs2_ind,
+			EX_rd_ind, WB_rd_ind, comp_selA, comp_selB, target_addr_adder_mux_sel, 
+			id_flush, ID_FLUSH_buf, EX_memread, exception_flag, clk, pfc, ID_rs1, ID_rs2, pc_src, pc_write, if_id_write, ID_Immed, WB_regwrite, ID_regwrite, ID_memread, ID_memwrite, hlt);
+	
+	
+
+	exception_detect_unit EDU(ID_PC, ID_INST, exception_flag, id_flush, EX_FLUSH, MEM_FLUSH);
+
+	
+
+	ID_EX_buffer id_ex_buffer(ID_opcode, ID_func7, ID_func3, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
+					ID_PC, ID_INST, ID_Immed, ID_rs1, ID_rs2, ID_regwrite,
+					ID_memread, ID_memwrite, clk, ID_FLUSH_buf,
+					EX_opcode, EX_func7, EX_func3, EX_rs1_ind,
+					EX_rs2_ind, EX_rd_ind, EX_PC,
+					EX_INST, EX_Immed, EX_rs1,
+					EX_rs2, EX_regwrite, EX_memread, EX_memwrite);
+
+					
+	EX_stage ex_stage(EX_PC, EX_INST, forwarded_data, wdata_to_reg_file, EX_rs1, EX_Immed, EX_rs1_ind, EX_rs2_ind, 
+			alu_selA, alu_selB, store_rs2_forward, EX_regwrite, EX_memread, EX_memwrite, EX_rs2, rs2_out, alu_out);
+	
+	
+					
+	EX_MEM_buffer ex_mem_buffer(alu_out, rs2_out, EX_rs1_ind, EX_rs2_ind, EX_rd_ind,
+					 EX_PC, EX_INST, EX_opcode, EX_func3, EX_memread, EX_memwrite, EX_regwrite, EX_FLUSH, clk,
+					 MEM_ALU_OUT, MEM_rs2, MEM_rs1_ind, MEM_rs2_ind,
+					 MEM_rd_ind, MEM_PC, MEM_INST, MEM_opcode, MEM_func3, MEM_memread, MEM_memwrite, MEM_regwrite);
+					 
+		// this mux is to control the address input of the data memory after executing the program we control the select line to change the address manually			 
+        MUX_2x1 addr_mem_test(MEM_ALU_OUT , mem_addr_test , addr_sel_test, MEM_ALU_OUT_test);
+
+	
+  MEM_stage mem_stage(MEM_ALU_OUT_test, MEM_rs2, MEM_memwrite, MEM_memread, MEM_regwrite, MEM_Data_mem_out, forwarded_data, clk, MEM_func3);
+	
+	
+	MEM_WB_buffer mem_wb_buffer(MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind,MEM_PC, MEM_INST, MEM_opcode,
+					 MEM_memread, MEM_memwrite, MEM_regwrite, MEM_FLUSH, clk,
+					 WB_ALU_OUT, WB_rs2, WB_Data_mem_out, WB_rs1_ind, WB_rs2_ind,
+					 WB_rd_ind, WB_PC, WB_INST, WB_opcode, WB_memread, WB_memwrite, WB_regwrite);
+	
+	
+	
+	WB_stage wb_stage(WB_Data_mem_out, WB_ALU_OUT, WB_memread, wdata_to_reg_file);				
+	
+
+
+always #1 input_clk <= ~input_clk;
+// in this initial block I test the CPU with various different combinations of the instructions 
+initial begin
+$dumpfile("dump.vcd");
+$dumpvars;
+  
+IF_FLUSH=0;
+reg_sel_test=0; addr_sel_test=0;
+inst_wr = 1;
+  
+$display("Writing On Instruction Memory...");
+
+
+  // Instructions to write on memory in hex.  
+addr_to_wr = 0; Inst_to_wr = 32'h0000009B; #2; 
+addr_to_wr = 4; Inst_to_wr = 32'h00009163; #2; 
+addr_to_wr = 8; Inst_to_wr = 32'h00A0809B; #2; 
+addr_to_wr = 12; Inst_to_wr = 32'h00A0809B; #2; 
+  // the collection of instruction below is a good indicator that the thing does actually work
+  // however the testing continues to be confident...
+  
+  
+  /*
+
+  // load use
+// using lb, sb
+addi x1, x0, 1
+sb x1, x0, 1
+lb x2, x1, 0
+addi x2, x2, 2
+// x2 = 3 , should be
+
+// using lw, sw
+addi x3, x0, 3
+sw x3, x0, 3
+lw x4, x3, 0
+addi x4, x4, 4
+// x4 = 7 , should be
+
+
+ 
+// BAL
+// using lb
+addi x5, x0, 5
+lb x5, x1, 0
+beq x5, x1, skip
+addi x5, x0, 123
+skip:
+add x5, x5, x5
+// x5 = 2 , should be
+
+
+// using lw
+sb x4, x0, 0
+addi x6, x0, 6
+lb x6, x0, 0
+bne x6, x1, skip2
+addi x6, x0, 123
+skip2:
+add x6, x6, x6
+// x6 = 14 , should be
+
+
+
+// general insts
+slt x7, x5, x4
+slt x8, x4, x5
+
+  
+addr_to_wr = 0; Inst_to_wr = 32'h0010009B; #2; 
+addr_to_wr = 4; Inst_to_wr = 32'h001020A3; #2; 
+addr_to_wr = 8; Inst_to_wr = 32'h0000A103; #2; 
+addr_to_wr = 12; Inst_to_wr = 32'h0021011B; #2; 
+addr_to_wr = 16; Inst_to_wr = 32'h0030019B; #2; 
+addr_to_wr = 20; Inst_to_wr = 32'h003001A3; #2; 
+addr_to_wr = 24; Inst_to_wr = 32'h00018203; #2; 
+addr_to_wr = 28; Inst_to_wr = 32'h0042021B; #2; 
+addr_to_wr = 32; Inst_to_wr = 32'h0050029B; #2; 
+addr_to_wr = 36; Inst_to_wr = 32'h0000A283; #2; 
+addr_to_wr = 40; Inst_to_wr = 32'h00129263; #2; 
+addr_to_wr = 44; Inst_to_wr = 32'h07B0029B; #2; 
+addr_to_wr = 48; Inst_to_wr = 32'h0052E2B3; #2; 
+addr_to_wr = 52; Inst_to_wr = 32'h00402023; #2; 
+addr_to_wr = 56; Inst_to_wr = 32'h0060031B; #2; 
+addr_to_wr = 60; Inst_to_wr = 32'h00002303; #2; 
+addr_to_wr = 64; Inst_to_wr = 32'h00130263; #2; 
+addr_to_wr = 68; Inst_to_wr = 32'h07B0031B; #2; 
+addr_to_wr = 72; Inst_to_wr = 32'h00636333; #2; 
+addr_to_wr = 76; Inst_to_wr = 32'h0042C3B3; #2; 
+addr_to_wr = 80; Inst_to_wr = 32'h00524433; #2; 
+
+
+*/
+  
+inst_wr = 0;
+  j = 2 * ((200 + 1) + 4); 
+  
+   
+$display("Executing...");
+
+// make sure you provide enough time for the program to run especially when using loops because in that case the IC 
+// is how much the instruction got executed not how many instruction is written in the code
+#j;
+
+// doing a for-loop iterating through the register file to check if the program changed the contents correctly
+  
+reg_sel_test = 1;
+  $display("Reading Register File : ");
+  for (i = 0; i < 32; i = i + 1) begin
+    reg_index_test <= i[4:0]; #1; 
+    $display("index = %d , reg_out : signed = %d , unsigned = %d",reg_index_test, $signed(ID_rs1), $unsigned(ID_rs1));
+  end
+  
+
+// doing a for-llop iterating through some of the addresses of the memory to check if the program loaded and stored the values properly
+addr_sel_test = 1;
+  $display("Reading Data Memory Content : ");
+  for (i = 0; i < 32; i = i + 1) begin
+    mem_addr_test <= i; #1;
+    $display("addr = %d , Mem[addr] = %h",mem_addr_test,MEM_Data_mem_out[7:0]);
+  end
+
+$finish;
+
+end
+endmodule

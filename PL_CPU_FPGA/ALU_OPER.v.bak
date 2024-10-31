@@ -1,0 +1,62 @@
+
+  // ALUOP -> OP 
+  // 0000   -> add
+  // 0001   -> sub
+  // 0010   -> and
+  // 0011   -> or
+  // 0100   -> xor
+  // 0101   -> shift left here we shift A, B times
+  // 0110   -> shift right
+  // 0111   -> set less than
+  // 1000	-> LUI -> res = 0 + the second operand (rs2) which is the immed in the LUI case
+  // this module takes the opcode and based on it. it decides what operation the ALU should do.
+
+module ALU_OPER(opcode, func3, ALU_OP);
+	
+	input [6:0] opcode;
+	input [2:0] func3;
+	
+	output reg [3:0] ALU_OP;
+	
+	always@(*) begin
+		
+		if (opcode == 7'h33) begin // R-format
+			case (func3)
+				
+				3'b000: ALU_OP <= 4'b0110;
+				3'b001: ALU_OP <= 4'b0001;
+				3'b010: ALU_OP <= 4'b0101;
+				3'b011: ALU_OP <= 4'b0011;
+				3'b100: ALU_OP <= 4'b0111;
+				3'b101: ALU_OP <= 4'b0010;
+				3'b110: ALU_OP <= 4'b0000;
+				3'b111: ALU_OP <= 4'b0100;			
+				
+			endcase
+		end
+		
+		
+		// load, store, jal, jalr
+		else if (opcode == 7'h23 || opcode == 7'h03 || opcode == 7'h67 || opcode == 7'h6f)
+			ALU_OP <= 4'b0000;
+			
+		else if (opcode == 7'h1b) // add immediate
+			ALU_OP <= 4'b0000;
+		
+		else if (opcode == 7'h13) begin
+			case (func3)
+				
+				3'b110: ALU_OP <= 4'b0010; // and immediate
+				3'b111: ALU_OP <= 4'b0011; // or immediate
+				
+			endcase
+		end
+		
+		else if (opcode == 7'h38) // LUI
+			ALU_OP <= 4'b1000;
+		
+		
+		
+		
+	end
+endmodule

@@ -1,0 +1,39 @@
+
+
+module exception_detect_unit(ID_PC, ID_INST, excep_flag, id_flush, EX_FLUSH, MEM_FLUSH);
+	
+	// unit description :
+	// the exception detection unit detects whether there is an exception in any of the five stages
+	// and for now we will cover these exception and may expand it in the future if needed
+	
+	// inputs : 1- the PC and the instruction contents of every stage to save it and pass it to the handler to know what is the address of the instruction that 
+    // 			caused the exception
+	
+	// output : the exception flag and it is high if and only if there is an exception and it passes it to the comparator to select the PC_src to be the
+	// 			handler address.
+	
+	// exception to detect :
+	// 1- invalid opcode
+	// 2- invalid ALU OP
+	
+  input [31:0] ID_PC, ID_INST;
+  
+  output reg excep_flag, id_flush, EX_FLUSH, MEM_FLUSH;
+  
+  always@(*) begin
+    // if invalid or unsupported opcode then there is an exception
+	if (ID_INST[6:0] != 7'h33 && ID_INST[6:0] != 7'h1b && ID_INST[6:0] != 7'h38 && ID_INST[6:0] != 7'h63
+		&& ID_INST[6:0] != 7'h03 && ID_INST[6:0] != 7'h13 && ID_INST[6:0] != 7'h23
+		&& ID_INST[6:0] != 7'h67 && ID_INST[6:0] != 7'h6f) begin
+		excep_flag <= 1'b1;
+		id_flush   <= 1'b1;
+		EX_FLUSH   <= 1'b0;
+		MEM_FLUSH  <= 1'b0;
+	end
+	
+	else 
+		{ excep_flag, id_flush, EX_FLUSH, MEM_FLUSH } <= 0;
+	
+  end
+	
+endmodule

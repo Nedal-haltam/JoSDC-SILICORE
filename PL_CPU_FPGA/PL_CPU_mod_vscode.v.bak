@@ -1,0 +1,183 @@
+`include "forward_unit.v"
+`include "IF_stage.v"
+`include "ID_stage.v"
+`include "EX_stage.v"
+`include "MEM_stage.v"
+`include "WB_stage.v"
+`include "IF_ID_buffer.v"
+`include "ID_EX_buffer.v"
+`include "EX_MEM_buffer.v"
+`include "MEM_WB_buffer.v"
+`include "MUX_2x1.v"
+`include "MUX_4x1.v"
+`include "MUX_8x1.v"
+`include "ALU_OPER.v"
+`include "ALU.v"
+`include "REG_FILE.v"
+`include "MEM.v"
+`include "PC_register.v"
+`include "comparator.v"
+`include "control_unit.v"
+`include "exception_detect_unit.v"
+`include "BAL.v"
+`include "Branch_flag_Gen.v"
+`include "Immed_Gen_unit.v"
+`include "Branch_or_Jump_TargGen.v"
+
+
+
+module PL_CPU_mod;
+
+reg input_clk;
+reg hlt_c;
+wire clk, hlt;
+  
+reg [31:0] i, j; 
+reg reg_sel_test, addr_sel_test;
+reg [31:0] reg_index_test, mem_addr_test, Inst_to_wr, addr_to_wr;
+
+reg inst_wr;
+
+reg IF_FLUSH=0;
+
+
+wire [31:0] pfc, IF_pc, IF_INST, ID_PC, ID_INST, alu_out, forwarded_data, wdata_to_reg_file, ID_rs1, ID_rs2, ID_Immed, EX_PC, EX_INST, EX_Immed;
+wire [31:0] EX_rs1, EX_rs2, MEM_PC, MEM_INST, WB_PC, WB_INST, MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, WB_ALU_OUT, WB_rs2, WB_Data_mem_out, ID_rs1_ind_test, MEM_ALU_OUT_test, rs2_out;
+
+wire [6:0]  ID_opcode, EX_opcode, MEM_opcode, WB_opcode;
+wire [4:0]  ID_rs1_ind, ID_rs2_ind, ID_rd_ind, EX_rd_ind, EX_rs1_ind, EX_rs2_ind, MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind, WB_rs1_ind, WB_rs2_ind, WB_rd_ind;
+wire [2:0]  target_addr_adder_mux_sel, alu_selB;
+wire [1:0]  pc_src, comp_selA, comp_selB, alu_selA, store_rs2_forward;
+wire pc_write, if_id_write, ID_FLUSH_buf, EX_memread, ID_regwrite, ID_memread, ID_memwrite, EX_regwrite, EX_memwrite, MEM_memread;
+wire MEM_memwrite, MEM_regwrite, WB_memread, WB_memwrite, WB_regwrite, exception_flag, id_flush, EX_FLUSH, MEM_FLUSH; 
+
+
+ 
+  
+
+  
+// here we build the CPU with it's module to connect togther
+// 5-stages , 4-buffers, 1-forward unit, 1-BAL Unit, 1-excep det unit.
+
+ 
+	nor hlt_logic(clk, input_clk, hlt_c);
+	
+	forward_unit fu(ID_opcode, ID_rs1_ind, ID_rs2_ind, EX_opcode, EX_rs1_ind, EX_rs2_ind, EX_rd_ind, 
+				EX_regwrite, MEM_rd_ind, MEM_regwrite, WB_rd_ind, WB_regwrite, 
+				// output to the forwarded muxes
+				target_addr_adder_mux_sel,
+				comp_selA, comp_selB,
+				alu_selA, alu_selB, store_rs2_forward);
+				
+				
+	
+    IF_stage if_stage(pfc, pc_src, IF_pc, addr_to_wr, pc_write, clk, IF_INST, Inst_to_wr, inst_wr);
+ 
+	
+    IF_ID_buffer if_id_buffer(IF_pc, IF_INST, IF_FLUSH, if_id_write, clk, ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_PC, ID_INST); 
+	 
+  // this mux is for selcting the index that is going in the reg file so after executing the program we can control it manually and read the reg file contents
+  MUX_2x1 reg_index_test_mux({27'd0, ID_rs1_ind} , reg_index_test, reg_sel_test, ID_rs1_ind_test);
+
+	ID_stage id_stage(ID_PC, ID_INST, ID_opcode, alu_out, forwarded_data, wdata_to_reg_file, wdata_to_reg_file, ID_rs1_ind_test[4:0], ID_rs2_ind,
+			EX_rd_ind, WB_rd_ind, comp_selA, comp_selB, target_addr_adder_mux_sel, 
+			id_flush, ID_FLUSH_buf, EX_memread, exception_flag, clk, pfc, ID_rs1, ID_rs2, pc_src,
+			pc_write, if_id_write, ID_Immed, WB_regwrite, ID_regwrite, ID_memread, ID_memwrite, hlt);
+	
+	
+
+	exception_detect_unit EDU(ID_PC, ID_INST, exception_flag, id_flush, EX_FLUSH, MEM_FLUSH);
+
+	
+
+	ID_EX_buffer id_ex_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
+					ID_PC, ID_INST, ID_Immed, ID_rs1, ID_rs2, ID_regwrite,
+					ID_memread, ID_memwrite, clk, ID_FLUSH_buf,
+					EX_opcode, EX_rs1_ind,
+					EX_rs2_ind, EX_rd_ind, EX_PC,
+					EX_INST, EX_Immed, EX_rs1,
+					EX_rs2, EX_regwrite, EX_memread, EX_memwrite);
+
+					
+	EX_stage ex_stage(EX_PC, EX_opcode, forwarded_data, wdata_to_reg_file, EX_rs1, EX_Immed, EX_rs1_ind, EX_rs2_ind, 
+			alu_selA, alu_selB, store_rs2_forward, EX_regwrite, EX_memread, EX_memwrite, EX_rs2, rs2_out, alu_out);
+	
+	
+					
+	EX_MEM_buffer ex_mem_buffer(alu_out, rs2_out, EX_rs1_ind, EX_rs2_ind, EX_rd_ind,
+					 EX_PC, EX_INST, EX_opcode, EX_memread, EX_memwrite, EX_regwrite, EX_FLUSH, clk,
+					 MEM_ALU_OUT, MEM_rs2, MEM_rs1_ind, MEM_rs2_ind,
+					 MEM_rd_ind, MEM_PC, MEM_INST, MEM_opcode, MEM_memread, MEM_memwrite, MEM_regwrite);
+					 
+		// this mux is to control the address input of the data memory after executing the program we control the select line to change the address manually			 
+        MUX_2x1 addr_mem_test(MEM_ALU_OUT , mem_addr_test , addr_sel_test, MEM_ALU_OUT_test);
+
+	
+  MEM_stage mem_stage(MEM_ALU_OUT_test, MEM_rs2, MEM_memwrite, MEM_memread, MEM_regwrite, MEM_Data_mem_out, forwarded_data, clk);
+	
+	
+	MEM_WB_buffer mem_wb_buffer(MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind,MEM_PC, MEM_INST, MEM_opcode,
+					 MEM_memread, MEM_memwrite, MEM_regwrite, MEM_FLUSH, clk,
+					 WB_ALU_OUT, WB_rs2, WB_Data_mem_out, WB_rs1_ind, WB_rs2_ind,
+					 WB_rd_ind, WB_PC, WB_INST, WB_opcode, WB_memread, WB_memwrite, WB_regwrite);
+	
+	
+	
+	WB_stage wb_stage(WB_Data_mem_out, WB_ALU_OUT, WB_memread, wdata_to_reg_file);				
+	
+
+
+always #1 input_clk <= ~input_clk;
+// in this initial block I test the CPU with various different combinations of the instructions 
+initial begin
+$dumpfile("testoutdump.vcd");
+$dumpvars;
+input_clk = 1;
+hlt_c = 0;
+IF_FLUSH=0;
+reg_sel_test=0; addr_sel_test=0;
+inst_wr = 1;
+   
+$display("Writing On Instruction Memory...");
+
+
+  // Instructions to write on memory in hex.  
+addr_to_wr = 0; Inst_to_wr = 32'h20010001; #2; 
+
+  // the collection of instruction below is a good indicator that the thing does actually work
+  // however the testing continues to be confident...
+  
+  
+  
+inst_wr = 0;
+j = 2 * (((addr_to_wr/4) + 1) + 4);
+  
+   
+$display("Executing...");
+
+// make sure you provide enough time for the program to run especially when using loops because in that case the IC 
+// is how much the instruction got executed not how many instruction is written in the code
+#j;
+hlt_c = 1;
+// doing a for-loop iterating through the register file to check if the program changed the contents correctly
+  
+reg_sel_test = 1;
+  $display("Reading Register File : ");
+  for (i = 0; i < 32; i = i + 1) begin
+    reg_index_test <= i[4:0]; #1; 
+    $display("index = %d , reg_out : signed = %d , unsigned = %d",reg_index_test, $signed(ID_rs1), $unsigned(ID_rs1));
+  end
+  
+
+// doing a for-llop iterating through some of the addresses of the memory to check if the program loaded and stored the values properly
+addr_sel_test = 1;
+  $display("Reading Data Memory Content : ");
+  for (i = 0; i < 32; i = i + 1) begin
+    mem_addr_test <= i; #1;
+    $display("addr = %d , Mem[addr] = %h",mem_addr_test,MEM_Data_mem_out[7:0]);
+  end
+
+$finish;
+
+end
+endmodule
