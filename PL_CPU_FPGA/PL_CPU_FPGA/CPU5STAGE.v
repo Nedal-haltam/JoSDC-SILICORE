@@ -6,7 +6,7 @@ input input_clk, rst;
 output [31:0] PC;
 output reg [31:0] cycles_consumed;
 
-
+parameter handler_addr = 32'h0000_00FE;
 
 
 
@@ -49,7 +49,7 @@ forward_unit fu(ID_opcode, ID_rs1_ind, ID_rs2_ind, EX_opcode, EX_rs1_ind, EX_rs2
 
 
 
-IF_stage if_stage(pfc, pc_src, IF_pc, pc_write, clk, IF_INST, rst);
+IF_stage #(.handler_addr(handler_addr))if_stage(pfc, pc_src, IF_pc, pc_write, clk, IF_INST, rst);
 
 
 
