@@ -1,0 +1,29 @@
+
+`define timeunits 2*12 + 2
+`define reset 2
+//`timescale 1ns/1ps
+`include "processor.v"
+module testbench;
+
+	reg clk, rst;
+	
+	wire [5:0] PC;
+	
+	initial begin
+        $dumpfile("testoutdump.vcd");
+        $dumpvars;
+		clk <= 0;
+
+		rst <= 0; #(`reset);
+		rst <= 1;
+		
+		#(`timeunits + 1);
+		$finish;
+	end
+	
+	always #1 clk <= ~clk;
+	
+	processor uut(clk, rst, PC);
+	
+	
+endmodule

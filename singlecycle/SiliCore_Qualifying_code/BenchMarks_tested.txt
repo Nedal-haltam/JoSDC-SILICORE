@@ -1,0 +1,155 @@
+/*
+// bench mark provided in the template
+// test No.0
+// 42  = 0010 1010
+// -43 = 1101 0101
+addi x5, x0, 0xff
+addi x6, x0, 0x55
+sub x7, x5, x6
+
+// changed it to be compatible with our assembler
+// sw x7, 0x0(x0)
+sw x7, x0, 0
+
+// changed it to be compatible with our assembler
+// lw x8, 0x0(x20)
+lw x8, x20, 0
+beq x6, x7, fin
+or x9, x6, x7
+and x8, x6, x7
+add x0, x6, x7
+fin : 
+slt x10, x0, x5
+inst_mem[0] <= 32'h200500FF; 
+inst_mem[1] <= 32'h20060055; 
+inst_mem[2] <= 32'hA63822; 
+inst_mem[3] <= 32'hAC070000; 
+inst_mem[4] <= 32'h8E880000; 
+inst_mem[5] <= 32'h10C70004; 
+inst_mem[6] <= 32'hC74825; 
+inst_mem[7] <= 32'hC74024; 
+inst_mem[8] <= 32'hC70020; 
+inst_mem[9] <= 32'h5502A; 
+
+// IM Initialization
+0 : 200500FF; 
+1 : 20060055; 
+2 : 00A63822; 
+3 : AC070000; 
+4 : 8E880000; 
+5 : 10C70004; 
+6 : 00C74825; 
+7 : 00C74024; 
+8 : 00C70020; 
+9 : 0005502A; 
+
+
+
+/////////////////////////////////////////////////
+// test No.1
+// general functional test
+// 123  = 0111 1011
+// -123 = 1000 0101
+// 246  = 1111 0110
+// 114  = 0111 0010
+addi x1, x0, 123
+sw x1, x0, 0
+addi x0, x1, 123
+add x2, x1, x1
+addi x0, x0, 10
+sw x2, x0, 1
+sub x3, x0, x1
+sub x4, x3, x2
+and x5, x1, x2
+slt x6, x1, x2
+slt x7, x2, x1
+slt x8, x2, x3
+slt x9, x3, x2
+slt x10, x3, x4
+slt x11, x4, x3
+sw x4, x6, 1
+or x12, x1, x3
+addi x13, x0, 0
+lw x13, x6, -1
+beq x1, x13, l
+addi x14, x1, -1 
+l:
+addi x14, x1, -3
+sw x14, x14, -117
+lw x0, x14, -117
+
+// IM Initialization
+0  : 2001007B; 
+1  : AC010000; 
+2  : 2020007B; 
+3  : 00211020; 
+4  : 2000000A; 
+5  : AC020001; 
+6  : 00011822; 
+7  : 00622022; 
+8  : 00222824; 
+9  : 0022302A; 
+10 : 0041382A; 
+11 : 0043402A; 
+12 : 0062482A; 
+13 : 0064502A; 
+14 : 0083582A; 
+15 : ACC40001; 
+16 : 00236025; 
+17 : 200D0000; 
+18 : 8CCDFFFF; 
+19 : 102D0002; 
+20 : 202EFFFF; 
+21 : 202EFFFD; 
+22 : ADCEFF8B; 
+23 : 8DC0FF8B; 
+
+/////////////////////////////////////////////////
+
+// test No.2
+// DM Initialization test
+addi x1, x0, 15
+addi x2, x0, 0
+addi x3, x0, 1
+l:
+sw x1, x2, 0
+addi x2, x2, 1
+sub x1, x1, x3
+beq x1, x0, exitloop
+beq x0, x0, l
+exitloop:
+
+// IM Initialization
+0 : 2001000F; 
+1 : 20020000; 
+2 : 20030001; 
+3 : AC410000; 
+4 : 20420001; 
+5 : 00230822; 
+6 : 10200002; 
+7 : 1000FFFC; 
+/////////////////////////////////////////////////
+*/
+
+
+
+WIDTH=32;
+DEPTH=256;
+
+ADDRESS_RADIX=UNS;
+DATA_RADIX=HEX;
+
+CONTENT BEGIN
+0  : 20010005; 
+1  : 2002FFFB; 
+2  : 00411820; 
+3  : 2004000F; 
+4  : AC040000; 
+5  : AC010002; 
+6  : 8C050000; 
+7  : 8C060002; 
+8  : 10220002; 
+9  : 00220820; 
+10 : 00421020; 
+	[11..63] : 0;
+END;

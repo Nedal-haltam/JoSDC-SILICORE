@@ -1,0 +1,33 @@
+module IM(address, clock, q);
+
+input [5:0] address;
+input clock;
+
+output [31 : 0] q;
+
+reg [5:0] internal_address;
+reg [31 : 0] inst_mem [63 : 0];
+
+always @(posedge clock) begin
+    internal_address <= address;
+end
+
+assign q = inst_mem[internal_address];
+
+initial begin
+// here we initialize the instruction memory
+inst_mem[0] <= 32'h200500FF; 
+inst_mem[1] <= 32'h20060055; 
+inst_mem[2] <= 32'h00A63822; 
+inst_mem[3] <= 32'hAC070000; 
+inst_mem[4] <= 32'h8E880000;
+inst_mem[5] <= 32'h10C70004; 
+inst_mem[6] <= 32'h00C74825; 
+inst_mem[7] <= 32'h00C74024; 
+inst_mem[8] <= 32'h00C70020; 
+inst_mem[9] <= 32'h0005502A; 
+
+end
+
+
+endmodule
