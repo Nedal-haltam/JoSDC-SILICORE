@@ -5,10 +5,8 @@ module exception_detect_unit(ID_PC, ID_opcode, excep_flag, id_flush, EX_FLUSH, M
 input clk, rst;
 input [31:0] ID_PC;
 input [6:0] ID_opcode;
-//  output reg excep_flag, id_flush, EX_FLUSH, MEM_FLUSH;
-output reg excep_flag, id_flush, EX_FLUSH, MEM_FLUSH;
 
-initial { excep_flag, id_flush, EX_FLUSH, MEM_FLUSH } <= 0;
+output excep_flag, id_flush, EX_FLUSH, MEM_FLUSH;
 
 parameter numofinst = 24;
 parameter [0 : 7 * numofinst - 1] opcodes  = {7'h20, 7'h22, 7'h21, 7'h23, 7'h48, 7'h24, 7'h4c, 7'h25, 7'h4d, 7'h26, 
@@ -20,26 +18,18 @@ parameter add = 7'h20, sub = 7'h22, addu = 7'h21, subu = 7'h23, addi = 7'h48, an
 			 j = 7'h42, jal = 7'h43, jr = 7'h08, slt = 7'h2a, hlt = 7'b1111111;
 
 
-  always@(negedge clk) begin
-    // if invalid or unsupported opcode then there is an exception
-	if (rst == 1'b1)
-		{ excep_flag, id_flush, EX_FLUSH, MEM_FLUSH } <= 0;
-	else begin
-		case (ID_opcode)
-			add, sub, addu, subu, addi, and_, andi, or_, ori, xor_, xori, nor_, sll, srl, lw, sw, beq, bne, blt, bge, j, jal, jr, slt, hlt: 
-			begin
-			{ excep_flag, id_flush, EX_FLUSH, MEM_FLUSH } <= 0;
-			end		
-			default:
-			begin
-			excep_flag <= 1'b1;
-			id_flush   <= 1'b1;
-			end		 
-		endcase
-	end
 
-			
+assign excep_flag = (rst) ? 0 : 
+					 ((ID_opcode == add || ID_opcode == sub || ID_opcode == addu || 
+					 ID_opcode == subu || ID_opcode == addi || ID_opcode == and_ || ID_opcode == andi || 
+					 ID_opcode == or_ || ID_opcode == ori || ID_opcode == xor_ || 
+					 ID_opcode == xori || ID_opcode == nor_ || ID_opcode == sll || ID_opcode == srl || 
+					 ID_opcode == lw || ID_opcode == sw || ID_opcode == beq || ID_opcode == bne || 
+					 ID_opcode == blt || ID_opcode == bge || ID_opcode == j || ID_opcode == jal || 
+					 ID_opcode == jr || ID_opcode == slt || ID_opcode == hlt) ? 0 : 1'b1);
 
-  end
-	
+
+assign id_flush = excep_flag;
+assign EX_FLUSH = excep_flag;
+assign MEM_FLUSH = excep_flag;
 endmodule

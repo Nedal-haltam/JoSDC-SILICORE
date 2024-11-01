@@ -35,7 +35,7 @@
 module PL_CPU_mod;
 
 reg input_clk;
-reg rst;
+reg rst = 0;
 wire [31:0] PC, cycles_consumed;
 CPU5STAGE cpu(PC, input_clk, rst, cycles_consumed);
 

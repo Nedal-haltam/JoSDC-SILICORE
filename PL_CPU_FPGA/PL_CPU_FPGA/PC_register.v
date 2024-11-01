@@ -8,10 +8,15 @@ module PC_register(addr_in, addr_out, PC_Write, clk, rst);
   output reg [31:0] addr_out;
 	
 
-parameter initialaddr = 0;
+parameter initialaddr = -1;
+parameter maxaddr = 'hFFF;
 
-	always@(posedge clk) begin 
-      if (rst)
+	always@(posedge clk, posedge rst) begin 
+
+	if (addr_out == maxaddr)
+		addr_out <= addr_out;
+
+    else if (rst)
         	addr_out <= initialaddr;
       
 	  else if (PC_Write)

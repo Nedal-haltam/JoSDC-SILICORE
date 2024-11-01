@@ -54,7 +54,7 @@ IF_stage if_stage(pfc, pc_src, IF_pc, pc_write, clk, IF_INST, rst);
 
 
 
-IF_ID_buffer if_id_buffer(IF_pc, IF_INST, IF_FLUSH, if_id_write, clk, ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_PC, ID_INST); 
+IF_ID_buffer if_id_buffer(IF_pc, IF_INST, IF_FLUSH, if_id_write, clk, ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_PC, ID_INST, rst); 
 
 
 ID_stage id_stage(ID_PC, ID_INST, ID_opcode, alu_out, forwarded_data, wdata_to_reg_file, wdata_to_reg_file, ID_rs1_ind, ID_rs2_ind,
@@ -75,7 +75,7 @@ ID_EX_buffer id_ex_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 			EX_opcode, EX_rs1_ind,
 			EX_rs2_ind, EX_rd_ind, EX_PC,
 			EX_INST, EX_Immed, EX_rs1,
-			EX_rs2, EX_regwrite, EX_memread, EX_memwrite);
+			EX_rs2, EX_regwrite, EX_memread, EX_memwrite, rst);
 
 EX_stage ex_stage(EX_PC, EX_opcode, forwarded_data, wdata_to_reg_file, EX_rs1, EX_Immed, EX_rs1_ind, EX_rs2_ind, 
 	alu_selA, alu_selB, store_rs2_forward, EX_regwrite, EX_memread, EX_memwrite, EX_rs2, rs2_out, alu_out);
@@ -89,7 +89,7 @@ EX_stage ex_stage(EX_PC, EX_opcode, forwarded_data, wdata_to_reg_file, EX_rs1, E
 EX_MEM_buffer ex_mem_buffer(alu_out, rs2_out, EX_rs1_ind, EX_rs2_ind, EX_rd_ind,
 			 EX_PC, EX_INST, EX_opcode, EX_memread, EX_memwrite, EX_regwrite, EX_FLUSH, clk,
 			 MEM_ALU_OUT, MEM_rs2, MEM_rs1_ind, MEM_rs2_ind,
-			 MEM_rd_ind, MEM_PC, MEM_INST, MEM_opcode, MEM_memread, MEM_memwrite, MEM_regwrite);					 
+			 MEM_rd_ind, MEM_PC, MEM_INST, MEM_opcode, MEM_memread, MEM_memwrite, MEM_regwrite, rst);					 
 
 MEM_stage mem_stage(MEM_ALU_OUT, MEM_rs2, MEM_memwrite, MEM_memread, MEM_regwrite, MEM_Data_mem_out, forwarded_data, clk);
 
@@ -101,7 +101,7 @@ MEM_stage mem_stage(MEM_ALU_OUT, MEM_rs2, MEM_memwrite, MEM_memread, MEM_regwrit
 MEM_WB_buffer mem_wb_buffer(MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind,MEM_PC, MEM_INST, MEM_opcode,
 			 MEM_memread, MEM_memwrite, MEM_regwrite, MEM_FLUSH, clk,
 			 WB_ALU_OUT, WB_rs2, WB_Data_mem_out, WB_rs1_ind, WB_rs2_ind,
-			 WB_rd_ind, WB_PC, WB_INST, WB_opcode, WB_memread, WB_memwrite, WB_regwrite, hlt);
+			 WB_rd_ind, WB_PC, WB_INST, WB_opcode, WB_memread, WB_memwrite, WB_regwrite, hlt, rst);
 			 
 WB_stage wb_stage(WB_Data_mem_out, WB_ALU_OUT, WB_memread, wdata_to_reg_file);				
 

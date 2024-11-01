@@ -1,4 +1,7 @@
-module IF_stage(pfc, pc_src, inst_mem_in, pc_write, clk, inst, rst);
+module IF_stage#(
+    parameter handler_addr = 32'h0000_00FE	
+)
+(pfc, pc_src, inst_mem_in, pc_write, clk, inst, rst);
 	
 input [31:0] pfc;
 input [1:0] pc_src;
@@ -9,9 +12,8 @@ inout [31:0] inst_mem_in;
 
 wire [31:0] pc_next, pc_reg_in, out;
 
-parameter handler_addr = {18'd0, 14'h0fff};	
-	
-MUX_4x1 pc_src_mux(pc_next, handler_addr, pfc, 0, pc_src, pc_reg_in);
+
+MUX_4x1 pc_src_mux(pc_next, handler_addr, pfc, inst_mem_in, pc_src, pc_reg_in);
 
 PC_register pc_reg(pc_reg_in, inst_mem_in, pc_write, clk, rst); 
 

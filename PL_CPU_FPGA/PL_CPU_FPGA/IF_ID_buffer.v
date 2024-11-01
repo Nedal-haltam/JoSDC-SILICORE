@@ -1,9 +1,9 @@
 module IF_ID_buffer(IF_PC, IF_INST, IF_FLUSH, if_id_Write, clk,
 					ID_opcode,
-					ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_PC, ID_INST);
+					ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_PC, ID_INST, rst);
 
 	input [31:0] IF_PC, IF_INST;
-	input IF_FLUSH, if_id_Write, clk;
+	input IF_FLUSH, if_id_Write, clk, rst;
 	
 	// in this buffer we want to break down the instruction into valid little pieces that can be used in the next stages
 	output reg [6:0] ID_opcode;
@@ -14,9 +14,16 @@ parameter add = 7'h20, sub = 7'h22, addu = 7'h21, subu = 7'h23, addi = 7'h48, an
 		    xori = 7'h4e, nor_ = 7'h27, sll = 7'h00, srl = 7'h02, lw = 7'h63, sw = 7'h6b, beq = 7'h44, bne = 7'h45, blt = 7'h50, bge = 7'h51, 
 			 j = 7'h42, jal = 7'h43, jr = 7'h08, slt = 7'h2a, hlt_inst = 7'b1111111;
 
-always @ (negedge clk) begin
-	
-	if (if_id_Write) begin
+always @ (negedge clk, posedge rst) begin
+	if (rst) begin
+		ID_opcode     <= 0;
+		ID_rs1_ind   <= 0;
+		ID_rs2_ind  <= 0;
+		ID_rd_ind  <= 0;
+		ID_INST   <= 0;
+		ID_PC    <= 0;
+	end
+	else if (if_id_Write) begin
 		
 		// we flush only whenever there is an exception
 		if (!IF_FLUSH) begin
