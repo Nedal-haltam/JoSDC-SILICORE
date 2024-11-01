@@ -24,7 +24,7 @@ wire MEM_memwrite, MEM_regwrite, WB_memread, WB_memwrite, WB_regwrite, exception
 
 
 
-always@(posedge clk, rst) begin
+always@(posedge clk, posedge rst) begin
 	if (rst)
 		cycles_consumed <= 32'd0;
 	else

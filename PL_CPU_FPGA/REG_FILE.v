@@ -13,18 +13,22 @@ reg [bit_width-1:0] reg_file [31:0];
 
 
 integer i;
-always@(rst)
-  for (i = 0; i < 32; i = i + 1)
-    reg_file[i] = 0;
  
 
 
-always@ (posedge clk) begin
+always@ (posedge clk , posedge rst) begin
     
-  if(reg_wr == 1'b1)
+if (rst) begin
+  for (i = 0; i < 32; i = i + 1)
+    reg_file[i] = 0;
+
+end
+else begin
+  if(wr_reg != 0 && reg_wr == 1'b1)
 	reg_file[wr_reg] <= wr_data;
 	
 	reg_file[0] <= 32'd0;
+end
 
 end
 

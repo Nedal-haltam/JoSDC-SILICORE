@@ -71,7 +71,7 @@ WP1_Wen <= 1'b1;
 WP1_Data <= 32'd123;
 WP1_DRindex <= 5'd1; 
 WP1_ROBEN <= 2;
-
+ 
 WP1_Wen_IQ <= 1'b1;
 WP1_ROBEN_IQ <= 2;
 WP1_DRindex_IQ <= 5'd1;
