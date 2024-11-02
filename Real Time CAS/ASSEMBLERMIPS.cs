@@ -90,6 +90,7 @@ public static class ASSEMBLERMIPS
             case "andi":
             case "ori":
             case "xori":
+            case "slti":
             case "lw":
             case "sw":
             case "beq":

@@ -89,6 +89,7 @@ namespace ProjectCPUCL
 
         public static readonly Dictionary<string, Mnemonic> mnemonicmap = new Dictionary<string, Mnemonic>()
             {
+                // the nop is not mentioned here to not conflict with sll
                 // R-format depends on the funct field, if opcode = "000000" then it is R-format else (it is an I-format or J-format either way it depends on distinct opcodes)
                 // rd = rd, rs1 = rs, rs2 = rt
                 { "0100000" , Mnemonic.add  }, // R[rd] = R[rs] op R[rt] , 0x20
@@ -100,19 +101,20 @@ namespace ProjectCPUCL
                 { "0100110" , Mnemonic.xor  }, // R[rd] = R[rs] op R[rt] , 0x26
                 { "0100111" , Mnemonic.nor  }, // R[rd] = R[rs] op R[rt] , 0x27
                 { "0101010" , Mnemonic.slt  }, // R[rd] = R[rs] op R[rt] , 0x2a
-                
+                { "0101011" , Mnemonic.sgt  }, // R[rd] = R[rs] op R[rt] , 0x2b
                 { "0000000" , Mnemonic.sll  }, // R[rd] = R[rt] op shamt , 0x00
                 { "0000010" , Mnemonic.srl  }, // R[rd] = R[rt] op shamt , 0x02
                 { "0001000" , Mnemonic.jr   }, // PC = R[rs] (here we jump to the instruciont in the IM addressed by R[rs]) , 0x08
 
                 // I-format depends on the opcode field
                 // rd = rt, rs1 = rs, rs2 = rt, immed = immed or addr
-                { "1001000" , Mnemonic.addi }, // R[rt] = R[rs] op sx(immed) , 0x48
-                { "1001100" , Mnemonic.andi }, // R[rt] = R[rs] op zx(immed) , 0x4c
-                { "1001101" , Mnemonic.ori  }, // R[rt] = R[rs] op zx(immed) , 0x4d
-                { "1001110" , Mnemonic.xori }, // R[rt] = R[rs] op zx(immed) , 0x4e
+                { "1001000" , Mnemonic.addi }, // R[rt] = R[rs] op sx(immed)   , 0x48
+                { "1001100" , Mnemonic.andi }, // R[rt] = R[rs] op zx(immed)   , 0x4c
+                { "1001101" , Mnemonic.ori  }, // R[rt] = R[rs] op zx(immed)   , 0x4d
+                { "1001110" , Mnemonic.xori }, // R[rt] = R[rs] op zx(immed)   , 0x4e
+                { "1101010" , Mnemonic.slti }, // R[rt] = R[rs] op sx(immed)   , 0x6a
                 { "1100011" , Mnemonic.lw   }, // R[rt] = Mem[R[rs]+sx(immed)] , 0x63
-                { "1101011" , Mnemonic.sw   }, // Mem[R[rs]+sx(immed)]=R[rt] , 0x6b
+                { "1101011" , Mnemonic.sw   }, // Mem[R[rs]+sx(immed)]=R[rt]   , 0x6b
                 // rs1 = rs, rs2 = rt
                 { "1000100" , Mnemonic.beq  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x44
                 { "1000101" , Mnemonic.bne  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x45
@@ -144,6 +146,8 @@ namespace ProjectCPUCL
                 case Mnemonic.xori :return Aluop.xor;
                 case Mnemonic.nor  :return Aluop.nor;
                 case Mnemonic.slt  :return Aluop.slt;
+                case Mnemonic.slti :return Aluop.slt;
+                case Mnemonic.sgt  :return Aluop.sgt;
                 case Mnemonic.sll  :return Aluop.sll;
                 case Mnemonic.srl  :return Aluop.srl;
                 case Mnemonic.addi :return Aluop.add;
@@ -173,6 +177,8 @@ namespace ProjectCPUCL
                  case Mnemonic.xori : return "I";
                  case Mnemonic.nor  : return "R";
                  case Mnemonic.slt  : return "R";
+                 case Mnemonic.sgt  : return "R";
+                 case Mnemonic.slti : return "I";
                  case Mnemonic.sll  : return "R";
                  case Mnemonic.srl  : return "R";
                  case Mnemonic.addi : return "I";
@@ -200,8 +206,13 @@ namespace ProjectCPUCL
                 case Aluop.xor         : return   inst.oper1 ^  inst.oper2;
                 case Aluop.nor         : return ~(inst.oper1 |  inst.oper2);
                 case Aluop.slt         : return  (inst.oper1 <  inst.oper2) ? 1 : 0;
+                case Aluop.sgt         : return  (inst.oper1 >  inst.oper2) ? 1 : 0;
                 case Aluop.sll         : return   inst.oper1 << inst.oper2;
-                case Aluop.srl         : return  (inst.oper1 / (int)Math.Pow(2, inst.oper2));
+                case Aluop.srl         : {
+                        if (inst.oper2 == 0) 
+                            return inst.oper1;
+                        return Math.Abs(inst.oper1 >> inst.oper2);
+                    };
                 default:  throw new Exception($"Invalid aluop provided : {inst.aluop}");
             };
         }
@@ -219,6 +230,8 @@ namespace ProjectCPUCL
                 case Mnemonic.xori : return true;
                 case Mnemonic.nor  : return true;
                 case Mnemonic.slt  : return true;
+                case Mnemonic.sgt  : return true;
+                case Mnemonic.slti : return true;
                 case Mnemonic.sll  : return true;
                 case Mnemonic.srl  : return true;
                 case Mnemonic.addi : return true;
@@ -735,7 +748,7 @@ namespace ProjectCPUCL
                 ConsumeInst();
                 if (hlt)
                     return i;
-                if (i == 100 * 1000)
+                if (i == 200 * 1000)
                 {
                     return -2;
                 }
@@ -848,9 +861,8 @@ namespace ProjectCPUCL
             if (inst.mnem == Mnemonic.hlt)
                 hlt = true;
 
-            if (!iswb(inst.mnem))
-                return;
-            regs[inst.rdind] = (inst.mnem == Mnemonic.lw) ? inst.memout : inst.aluout;
+            if (iswb(inst.mnem))
+                regs[inst.rdind] = (inst.mnem == Mnemonic.lw) ? inst.memout : inst.aluout;
         }
         void ConsumeInst()
         {
@@ -871,16 +883,13 @@ namespace ProjectCPUCL
             {
                 PC = inst.address;
             }
-            else if (isbranch(inst.mnem))
-            {
-                if (isbranch_taken(inst))
-                    PC += inst.immeds;
-                else
-                    PC += 1;
-            }
             else if (inst.mnem == Mnemonic.jr)
             {
                 PC = inst.aluout;
+            }
+            else if (isbranch(inst.mnem) && isbranch_taken(inst))
+            {
+                PC += inst.immeds;
             }
             else
                 PC += 1;
@@ -894,7 +903,7 @@ namespace ProjectCPUCL
                 ConsumeInst();
                 if (hlt)
                     return i;
-                if (i == 100 * 1000)
+                if (i == 200 * 1000)
                 {
                     return -2;
                 }

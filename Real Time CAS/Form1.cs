@@ -168,7 +168,7 @@ namespace Real_Time_CAS_ASSEM
         private void Form1_Load(object sender, EventArgs e)
         {
             layout_size();
-            cmbcpulist.SelectedIndex = 0;
+            cmbcpulist.SelectedIndex = 1;
             curr_cpu = (CPU_type)cmbcpulist.SelectedIndex;
         }
 
