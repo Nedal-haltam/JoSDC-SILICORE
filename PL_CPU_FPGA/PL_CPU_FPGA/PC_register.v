@@ -9,18 +9,14 @@ module PC_register(addr_in, addr_out, PC_Write, clk, rst);
 	
 
 parameter initialaddr = -1;
-parameter maxaddr = 'hFF;
 
 	always@(posedge clk, posedge rst) begin 
 
-	if (addr_out == maxaddr)
-		addr_out <= addr_out;
-
-    else if (rst)
-        	addr_out <= initialaddr;
+    if (rst)
+        addr_out <= initialaddr;
       
-	  else if (PC_Write)
-			addr_out <= addr_in;
+	else if (PC_Write)
+		addr_out <= addr_in;
 		
 	end
 	

@@ -13,9 +13,7 @@ parameter [0 : 7 * numofinst - 1] opcodes  = {7'h20, 7'h22, 7'h21, 7'h23, 7'h48,
 		    7'h4e, 7'h27, 7'h00, 7'h02, 7'h63, 7'h6b, 7'h44, 7'h45, 7'h50, 7'h51, 
 			7'h42, 7'h43, 7'h08, 7'h2a };
 
-parameter add = 7'h20, sub = 7'h22, addu = 7'h21, subu = 7'h23, addi = 7'h48, and_ = 7'h24, andi = 7'h4c, or_ = 7'h25, ori = 7'h4d, xor_ = 7'h26, 
-		    xori = 7'h4e, nor_ = 7'h27, sll = 7'h00, srl = 7'h02, lw = 7'h63, sw = 7'h6b, beq = 7'h44, bne = 7'h45, blt = 7'h50, bge = 7'h51, 
-			 j = 7'h42, jal = 7'h43, jr = 7'h08, slt = 7'h2a, hlt = 7'b1111111;
+`include "opcodes.v"
 
 
 
@@ -26,7 +24,7 @@ assign excep_flag = (rst) ? 0 :
 					 ID_opcode == xori || ID_opcode == nor_ || ID_opcode == sll || ID_opcode == srl || 
 					 ID_opcode == lw || ID_opcode == sw || ID_opcode == beq || ID_opcode == bne || 
 					 ID_opcode == blt || ID_opcode == bge || ID_opcode == j || ID_opcode == jal || 
-					 ID_opcode == jr || ID_opcode == slt || ID_opcode == hlt) ? 0 : 1'b1);
+					 ID_opcode == jr || ID_opcode == slt || ID_opcode == hlt_inst) ? 0 : 1'b1);
 
 
 assign id_flush = excep_flag;

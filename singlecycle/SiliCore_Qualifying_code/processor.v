@@ -13,7 +13,7 @@ module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, c
 	wire [31:0] instruction, writeData, readData1, readData2, extImm, ALUin2, ALUResult, memoryReadData;
 	wire [15:0] imm;
 	wire [5:0] opCode, funct, nextPC, PCPlus1, adderResult;
-	wire [4:0] rs, rt, rd, WriteRegister; // bug id: 10
+	wire [4:0] rs, rt, rd, WriteRegister;
 	wire [2:0] ALUOp;
 	wire RegDst, Branch, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, zero, PCsrc, hlt;
 
@@ -27,11 +27,8 @@ module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, c
 	
 	
 	assign opCode = instruction[31:26];
-	//assign rd = instruction[25:21]; // bug id: 11
 	assign rd = instruction[15:11];
-	//assign rs = instruction[20:16]; // bug id: 12
 	assign rs = instruction[25:21];
-	//assign rt = instruction[15:11]; // bug id: 13
 	assign rt = instruction[20:16];
 	assign imm = instruction[15:0];
 	assign funct = instruction[5:0];
@@ -55,7 +52,6 @@ end
 	adder PCAdder(.in1(PC), .in2(6'b1), .out(PCPlus1));	
 	
 
-	// IM instructionMemory(.address(PC), .clock(clk), .q(instruction));
 `ifdef sim
 	IM instructionMemory(.address(nextPC), .clock(clk), .q(instruction));
 `else
@@ -71,10 +67,7 @@ end
 					    .readRegister1(rs), .readRegister2(rt), .writeRegister(WriteRegister),
 					    .writeData(writeData), .readData1(readData1), .readData2(readData2),.regs0(regs0), .regs1(regs1), 
 						 .regs2(regs2), .regs3(regs3), .regs4(regs4), .regs5(regs5));
-	// registerFile RF(.clk(clk), .rst(rst), .we(RegWriteEn), 					
-	// 				    .readRegister1(rs), .readRegister2(rt), .writeRegister(WriteRegister),
-	// 				    .writeData(writeData), .readData1(readData1), .readData2(readData2));
-						 
+					 
 	SignExtender SignExtend(.in(imm), .out(extImm));
 	
 	mux2x1 #(32) ALUMux(.in1(readData2), .in2(extImm), .s(ALUSrc), .out(ALUin2));
@@ -91,7 +84,6 @@ end
 	dataMemory DM(.address(ALUResult[7:0]), .clock(~clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
 `endif	
 
-	//mux2x1 #(32) WBMux(.in1(memoryReadData), .in2(ALUResult), .s(MemtoReg), .out(writeData)); // bug id: 14
 	mux2x1 #(32) WBMux(.in1(ALUResult), .in2(memoryReadData), .s(MemtoReg), .out(writeData));
 	mux2x1 #(6) PCMux(.in1(PCPlus1), .in2(adderResult), .s(PCsrc), .out(nextPC));
 	

@@ -9,7 +9,6 @@ output reg [31:0] cycles_consumed;
 parameter handler_addr = 32'h0000_00FE;
 
 
-
 wire IF_FLUSH;
 wire clk, hlt;
 wire [31:0] pfc, IF_pc, IF_INST, ID_PC, ID_INST, alu_out, forwarded_data, wdata_to_reg_file, ID_rs1, ID_rs2, ID_Immed, EX_PC, EX_INST, EX_Immed;

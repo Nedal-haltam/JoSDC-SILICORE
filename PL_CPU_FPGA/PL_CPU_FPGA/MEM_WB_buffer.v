@@ -15,14 +15,12 @@ module MEM_WB_buffer(MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, MEM_rs1_ind, MEM_rs
 	output reg [6:0] WB_opcode;
 	output reg WB_memread, WB_memwrite, WB_regwrite, hlt;	
 	
+	`include "opcodes.v"
 	
 	always@(negedge clk, posedge rst) begin
 		if (rst) begin
 		{WB_ALU_OUT, WB_PC, WB_INST, WB_rs2, WB_Data_mem_out, WB_rs1_ind, WB_rs2_ind, WB_rd_ind, WB_opcode, WB_memread, WB_memwrite, WB_regwrite, hlt} <= 0;
 		end
-		else if (MEM_opcode == 7'b1111111)
-			hlt <= 1'b1;
-		
 		else if(!MEM_FLUSH) begin
 			
 			WB_ALU_OUT <= MEM_ALU_OUT;
@@ -37,7 +35,7 @@ module MEM_WB_buffer(MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, MEM_rs1_ind, MEM_rs
 			WB_regwrite <= MEM_regwrite;
 			WB_PC <= MEM_PC;
 			WB_INST <= MEM_INST;
-			hlt <= 1'b0;
+			hlt = (MEM_opcode == hlt_inst) ? 1'b1 : 1'b0;
 		end 
 		else 
         {WB_ALU_OUT, WB_PC, WB_INST, WB_rs2, WB_Data_mem_out, WB_rs1_ind, WB_rs2_ind, WB_rd_ind, WB_opcode, WB_memread, WB_memwrite, WB_regwrite, hlt} <= 0;
