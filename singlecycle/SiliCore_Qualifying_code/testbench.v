@@ -11,7 +11,7 @@
 `include "registerFile.v" 
 `include "SignExtender.v" 
 `include "ALU.v" 
-`include "ANDGate.v" 
+`include "BranchController.v" 
 `include "DM.v" 
 `include "processor.v"
 
