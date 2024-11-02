@@ -353,9 +353,8 @@ namespace ProjectCPUCL
     }
 
     public class CPU5STAGE
-    {   // TODO: -write the instruction beside the mc when pasting it (not necessary for the real time app)
-        //       -log the info of the run every time you run the cpu on the given instructions (necessary for the real time app) make a btn for that
-        //       -implement floating point (in terms of reg file and FP ALU) and do it in the PL_CPU_mod.v
+    {   // TODO: -log the info of the run every time you run the cpu on the given instructions (necessary for the real time app) make a btn for that
+        //       -implement floating point (in terms of reg file and FP ALU)
         //       -modify the HANDLER address to a suitable location in the instruction memory
         int PC;
         bool hlt;
@@ -379,7 +378,7 @@ namespace ProjectCPUCL
         int MEM_HAZ;
         enum PCsrc
         {
-            nextpc, pfc, exception
+            PCplus1, pfc, exception
         }
         PCsrc pcsrc;
         public CPU5STAGE(List<string> insts = null)
@@ -434,7 +433,7 @@ namespace ProjectCPUCL
         }
         void update_PC(Instruction inst)
         {
-            if (pcsrc == PCsrc.nextpc)
+            if (pcsrc == PCsrc.PCplus1)
             {
                 PC += 1;
             }
@@ -510,7 +509,7 @@ namespace ProjectCPUCL
         }
         void comparator(Instruction decoded)
         {
-            pcsrc = PCsrc.nextpc;
+            pcsrc = PCsrc.PCplus1;
             if (!isbranch(decoded.mnem))
             {
                 if (decoded.mnem == Mnemonic.j || decoded.mnem == Mnemonic.jal || decoded.mnem == Mnemonic.jr)
@@ -526,11 +525,11 @@ namespace ProjectCPUCL
 
             if (decoded.mnem == Mnemonic.beq)
             {
-                pcsrc = (comp_oper1 == comp_oper2) ? PCsrc.pfc : PCsrc.nextpc;
+                pcsrc = (comp_oper1 == comp_oper2) ? PCsrc.pfc : PCsrc.PCplus1;
             }
             else if (decoded.mnem == Mnemonic.bne)
             {
-                pcsrc = (comp_oper1 != comp_oper2) ? PCsrc.pfc : PCsrc.nextpc;
+                pcsrc = (comp_oper1 != comp_oper2) ? PCsrc.pfc : PCsrc.PCplus1;
             }
             else
                 throw new Exception($"invalid branch instruction : {decoded.mnem}");
@@ -659,7 +658,6 @@ namespace ProjectCPUCL
         }
         void detect_exception(Instruction inst, Stage stage)
         {
-
             Exception e = new Exception(((int)stage).ToString())
             {
                 Source = "exception",
