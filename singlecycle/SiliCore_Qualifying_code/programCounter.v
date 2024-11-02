@@ -7,10 +7,11 @@ module programCounter (clk, rst, PCin, PCout);
 	//outputs 
 	output reg [5:0] PCout;
 	
+	parameter initialaddr = -1;
 	//Counter logic
 	always@(posedge clk, negedge rst) begin
 		if(~rst) begin
-			PCout <= 6'b111111;
+			PCout <= initialaddr;
 		end
 		else begin
 			PCout <= PCin;

@@ -20,16 +20,17 @@ namespace ProjectCPUCL
     }
     public static class MIPS
     {
-        public static string nop = "00000000000000000000000000000000";
         public enum Mnemonic
         {
-            add, sub, and, andi, or, ori, xor, xori, nor, slt, sll, srl, addi, addu, subu,
-            beq, bne, bltz, bgez, j, jr, jal,
-            lw, sw, nop, hlt
+            add, sub, and, andi, or, ori, xor, xori, nor, slt, slti, sgt, sll, srl, addi, addu, subu,
+            beq, bne,
+            j, jr, jal,
+            lw, sw, 
+            nop, hlt
         }
         public enum Aluop
         {
-            addition, subtraction, and, or, xor, nor, sll, srl, slt, div
+            add, sub, and, or, xor, nor, sll, srl, slt, sgt, div
         }
         public struct Instruction
         {
@@ -115,8 +116,7 @@ namespace ProjectCPUCL
                 // rs1 = rs, rs2 = rt
                 { "1000100" , Mnemonic.beq  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x44
                 { "1000101" , Mnemonic.bne  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x45
-                { "1010000" , Mnemonic.bltz }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x50
-                { "1010001" , Mnemonic.bgez }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x51
+
                 // J-format depends on opcode field
                 { "1000010" , Mnemonic.j    }, // PC = zx(addr) << 2  , note.1 , 0x42
                 { "1000011" , Mnemonic.jal  }, // R[31] = PC+1, PC = zx(addr) << 2  , note.1 , 0x43
@@ -134,8 +134,8 @@ namespace ProjectCPUCL
         {
             switch (mnem)
             {
-                case Mnemonic.add  :return Aluop.addition;
-                case Mnemonic.sub  :return Aluop.subtraction;
+                case Mnemonic.add  :return Aluop.add;
+                case Mnemonic.sub  :return Aluop.sub;
                 case Mnemonic.and  :return Aluop.and;
                 case Mnemonic.andi :return Aluop.and;
                 case Mnemonic.or   :return Aluop.or;
@@ -146,18 +146,16 @@ namespace ProjectCPUCL
                 case Mnemonic.slt  :return Aluop.slt;
                 case Mnemonic.sll  :return Aluop.sll;
                 case Mnemonic.srl  :return Aluop.srl;
-                case Mnemonic.addi :return Aluop.addition;
-                case Mnemonic.addu :return Aluop.addition;
-                case Mnemonic.subu :return Aluop.subtraction;
-                case Mnemonic.beq  :return Aluop.addition;
-                case Mnemonic.bne  :return Aluop.addition;
-                case Mnemonic.bltz :return Aluop.addition;
-                case Mnemonic.bgez :return Aluop.addition;
-                case Mnemonic.j    :return Aluop.addition;
-                case Mnemonic.jr   :return Aluop.addition;
-                case Mnemonic.jal  :return Aluop.addition;
-                case Mnemonic.lw   :return Aluop.addition;
-                case Mnemonic.sw: return Aluop.addition  ; 
+                case Mnemonic.addi :return Aluop.add;
+                case Mnemonic.addu :return Aluop.add;
+                case Mnemonic.subu :return Aluop.sub;
+                case Mnemonic.beq  :return Aluop.add;
+                case Mnemonic.bne  :return Aluop.add;
+                case Mnemonic.j    :return Aluop.add;
+                case Mnemonic.jr   :return Aluop.add;
+                case Mnemonic.jal  :return Aluop.add;
+                case Mnemonic.lw   :return Aluop.add;
+                case Mnemonic.sw: return Aluop.add; 
                 default: return 0;
             };
         }
@@ -182,8 +180,6 @@ namespace ProjectCPUCL
                  case Mnemonic.subu : return "R";
                  case Mnemonic.beq  : return "I";
                  case Mnemonic.bne  : return "I";
-                 case Mnemonic.bltz : return "I";
-                 case Mnemonic.bgez : return "I";
                  case Mnemonic.j    : return "J";
                  case Mnemonic.jr   : return "R";
                  case Mnemonic.jal  : return "J";
@@ -197,15 +193,15 @@ namespace ProjectCPUCL
         {
             switch (inst.aluop)
             {
-                case Aluop.addition    : return inst.oper1 + inst.oper2;
-                case Aluop.subtraction : return   inst.oper1  -  inst.oper2;
-                case Aluop.and         : return   inst.oper1  &  inst.oper2;
-                case Aluop.or          : return   inst.oper1  |  inst.oper2;
-                case Aluop.xor         : return   inst.oper1  ^  inst.oper2;
-                case Aluop.nor         : return ~(inst.oper1 | inst.oper2);
-                case Aluop.slt         : return (inst.oper1 < inst.oper2) ? 1 : 0;
-                case Aluop.sll         : return inst.oper1 << inst.oper2;
-                case Aluop.srl         : return   (inst.oper1 / (int)Math.Pow(2, inst.oper2));
+                case Aluop.add         : return   inst.oper1 +  inst.oper2;
+                case Aluop.sub         : return   inst.oper1 -  inst.oper2;
+                case Aluop.and         : return   inst.oper1 &  inst.oper2;
+                case Aluop.or          : return   inst.oper1 |  inst.oper2;
+                case Aluop.xor         : return   inst.oper1 ^  inst.oper2;
+                case Aluop.nor         : return ~(inst.oper1 |  inst.oper2);
+                case Aluop.slt         : return  (inst.oper1 <  inst.oper2) ? 1 : 0;
+                case Aluop.sll         : return   inst.oper1 << inst.oper2;
+                case Aluop.srl         : return  (inst.oper1 / (int)Math.Pow(2, inst.oper2));
                 default:  throw new Exception($"Invalid aluop provided : {inst.aluop}");
             };
         }
@@ -230,8 +226,6 @@ namespace ProjectCPUCL
                 case Mnemonic.subu : return true;
                 case Mnemonic.beq  : return false;
                 case Mnemonic.bne  : return false;
-                case Mnemonic.bltz : return false;
-                case Mnemonic.bgez : return false;
                 case Mnemonic.j    : return false;
                 case Mnemonic.jr   : return false;
                 case Mnemonic.jal  : return true;
@@ -243,15 +237,11 @@ namespace ProjectCPUCL
         public static bool isbranch_taken(Instruction inst)
         {
             return (inst.mnem == Mnemonic.beq  && inst.oper1 == inst.oper2) || 
-                   (inst.mnem == Mnemonic.bgez && inst.oper1 >= inst.oper2) ||
-                   (inst.mnem == Mnemonic.bltz && inst.oper1 <= inst.oper2) || 
                    (inst.mnem == Mnemonic.bne  && inst.oper1 != inst.oper2) ;
         }
         public static bool isbranch(Mnemonic mnem)
         {
             return mnem == Mnemonic.beq  ||
-                   mnem == Mnemonic.bgez ||
-                   mnem == Mnemonic.bltz ||
                    mnem == Mnemonic.bne  ;
         }
         public static int get_oper1(Instruction inst)
@@ -454,22 +444,19 @@ namespace ProjectCPUCL
         }
         Instruction decodemc(string mc, int pc)
         {
-            if (mc == nop)
-            {
-                return new Instruction().Init();
-            }
             Instruction inst = new Instruction().Init();
             inst.mc = mc;
             inst.PC = pc;
-            inst.opcode = mc.Substring                    (mc.Length - (1 + 31), 6);
+            inst.opcode = mc.Substring       (mc.Length - (1 + 31), 6);
             inst.rsind = Convert.ToInt32     (mc.Substring(mc.Length - (1 + 25), 5), 2);
             inst.rtind = Convert.ToInt32     (mc.Substring(mc.Length - (1 + 20), 5), 2);
             inst.rdind = Convert.ToInt32     (mc.Substring(mc.Length - (1 + 15), 5), 2);
-            inst.shamt = mc.Substring                     (mc.Length - (1 + 10), 5 );
-            inst.funct = mc.Substring                     (mc.Length - (1 + 5) , 6 );
+            inst.shamt = mc.Substring        (mc.Length - (1 + 10), 5 );
+            inst.funct = mc.Substring        (mc.Length - (1 + 5) , 6 );
             inst.immeds = Convert.ToInt32(sx (mc.Substring(mc.Length - (1 + 15), 16)), 2);
             inst.immedz = Convert.ToInt32(zx (mc.Substring(mc.Length - (1 + 15), 16)), 2);
             inst.address = Convert.ToInt32(zx(mc.Substring(mc.Length - (1 + 25), 26)), 2);
+
             // mips integer instruction map for formats (R, I, J)
             inst.rs = regs[inst.rsind];
             inst.rt = regs[inst.rtind];
@@ -489,8 +476,11 @@ namespace ProjectCPUCL
                 throw e;
             }
             else
+            {
+                if (mc == "".PadLeft(32, '0'))
+                    inst.mnem = Mnemonic.nop;
                 inst.mnem = value;
-
+            }
             inst.aluop  = get_inst_aluop(inst.mnem);
             inst.format = get_format(inst.mnem);
             inst.oper1  = get_oper1(inst);
@@ -528,14 +518,6 @@ namespace ProjectCPUCL
             else if (decoded.mnem == Mnemonic.bne)
             {
                 pcsrc = (comp_oper1 != comp_oper2) ? PCsrc.pfc : PCsrc.nextpc;
-            }
-            else if (decoded.mnem == Mnemonic.bltz)
-            {
-                pcsrc = (comp_oper1 < comp_oper2) ? PCsrc.pfc : PCsrc.nextpc;
-            }
-            else if (decoded.mnem == Mnemonic.bgez)
-            {
-                pcsrc = (comp_oper1 >= comp_oper2) ? PCsrc.pfc : PCsrc.nextpc;
             }
             else
                 throw new Exception($"invalid branch instruction : {decoded.mnem}");
@@ -672,7 +654,7 @@ namespace ProjectCPUCL
             if (stage == Stage.decode)
             {
                 // detect if there is an exception in the decode operation in the decode stage
-                if ((!isvalid_opcode_funct(inst) || !isvalid_format(inst.format)) && inst.mc != nop)
+                if ((!isvalid_opcode_funct(inst) || !isvalid_format(inst.format)) && inst.mnem != Mnemonic.nop)
                 {
                     throw e;
                 }
@@ -790,10 +772,6 @@ namespace ProjectCPUCL
         }
         Instruction decodemc(string mc, int pc)
         {
-            if (mc == nop)
-            {
-                return new Instruction().Init();
-            }
             Instruction inst = new Instruction().Init();
             inst.mc = mc;
             inst.PC = pc;
@@ -825,7 +803,11 @@ namespace ProjectCPUCL
                 throw e;
             }
             else
+            {
+                if (mc == "".PadLeft(32, '0'))
+                    inst.mnem = Mnemonic.nop;
                 inst.mnem = value;
+            }
 
             inst.aluop = get_inst_aluop(inst.mnem);
             inst.format = get_format(inst.mnem);

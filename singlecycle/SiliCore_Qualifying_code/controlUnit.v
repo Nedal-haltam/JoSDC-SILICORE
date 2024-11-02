@@ -1,17 +1,17 @@
-module controlUnit(opCode, funct, rst,
+module controlUnit(opcode, funct, rst,
 				   RegDst, MemReadEn, MemtoReg,
 				   ALUOp, MemWriteEn, RegWriteEn, ALUSrc, hlt);
 				   
 		
 	// inputs 
-	input wire [5:0] opCode, funct; // correct inputs and sizes
+	input wire [5:0] opcode, funct; // correct inputs and sizes
 	input rst; // added reset input signal
 	
 	// outputs (signals)
 	output reg RegDst, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, hlt; // correct outputs
 	output reg [2:0] ALUOp;
 	
-	// parameters (opCodes/functs)
+	// parameters (opcodes/functs)
 `include "opcodes.v"	
 	
 	// unit logic - generate signals
@@ -30,7 +30,7 @@ module controlUnit(opCode, funct, rst,
 			MemWriteEn <= 1'b0; RegWriteEn <= 1'b0; ALUSrc <= 1'b0;
 			ALUOp <= 3'b0; hlt <= 1'b0;
 
-			case(opCode)
+			case(opcode)
 
 
 				hlt_inst: begin

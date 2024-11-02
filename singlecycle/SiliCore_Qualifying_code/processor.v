@@ -9,9 +9,9 @@ module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, c
 	output [5:0] PC;
 	output reg [31:0] cycles_consumed;
 	
-	wire [31:0] instruction, writeData, readData1, readData2, extImm, ALUin2, ALUResult, memoryReadData;
+	wire [31:0] instruction, wire_instruction, writeData, readData1, readData2, extImm, ALUin2, ALUResult, memoryReadData;
 	wire [15:0] imm;
-	wire [5:0] opCode, funct, nextPC, PCPlus1, adderResult;
+	wire [5:0] opcode, funct, nextPC, PCPlus1, adderResult;
 	wire [4:0] rs, rt, rd, WriteRegister;
 	wire [2:0] ALUOp;
 	wire RegDst, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, zero, PCsrc, hlt;
@@ -25,14 +25,14 @@ module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, c
 	output [31 : 0] regs5;	
 	
 	
-	assign opCode = instruction[31:26];
-	assign rd = instruction[15:11];
-	assign rs = instruction[25:21];
-	assign rt = instruction[20:16];
-	assign imm = instruction[15:0];
-	assign shamt = instruction[10:6];
-	assign funct = instruction[5:0];
-	assign address = instruction[25:0];
+	assign opcode  = (~rst) ? 0 : instruction[31:26];
+	assign rd      = (~rst) ? 0 : instruction[15:11];
+	assign rs      = (~rst) ? 0 : instruction[25:21];
+	assign rt      = (~rst) ? 0 : instruction[20:16];
+	assign imm     = (~rst) ? 0 : instruction[15:0];
+	assign shamt   = (~rst) ? 0 : instruction[10:6];
+	assign funct   = (~rst) ? 0 : instruction[5:0];
+	assign address = (~rst) ? 0 : instruction[25:0];
 
 
 or hlt_logic(clk, input_clk, hlt);
@@ -47,7 +47,7 @@ always@(posedge clk , negedge rst) begin
 
 end
 
-BranchController branchcontroller(.in1(zero), .in2(Branch), .PCsrc(PCsrc));
+BranchController branchcontroller(.opcode(opcode), .operand1(readData1), .operand2(ALUin2), .PCsrc(PCsrc), .rst(rst));
 
 mux2x1 #(6) PCMux(.in1(PCPlus1), .in2(adderResult), .s(PCsrc), .out(nextPC));
 programCounter pc(.clk(clk), .rst(rst), .PCin(nextPC), .PCout(PC));	
@@ -55,9 +55,11 @@ programCounter pc(.clk(clk), .rst(rst), .PCin(nextPC), .PCout(PC));
 adder PCAdder(.in1(PC), .in2(6'b1), .out(PCPlus1));	
 
 
-IM instructionMemory(.address(PC), .q(instruction));
+IM instructionMemory(.address(PC), .q(wire_instruction));
 
-controlUnit CU(.opCode(opCode), .funct(funct), .rst(rst),
+assign instruction = (~rst) ? 0 : wire_instruction;
+
+controlUnit CU(.opcode(opcode), .funct(funct), .rst(rst),
 				      .RegDst(RegDst), .MemReadEn(MemReadEn), .MemtoReg(MemtoReg),
 				      .ALUOp(ALUOp), .MemWriteEn(MemWriteEn), .RegWriteEn(RegWriteEn), .ALUSrc(ALUSrc), .hlt(hlt));
 	

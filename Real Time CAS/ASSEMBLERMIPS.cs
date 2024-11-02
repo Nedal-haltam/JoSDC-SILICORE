@@ -19,7 +19,7 @@ public static class ASSEMBLERMIPS
     // The instruction type is the main token in a given instruction and should be known the first token in an instruction (first word)
     // the opcodes is a dictionary the you give it a certain opcode (in words) and get beack the binaries (or machine code) corresponding to that opcode
     // take a look to know what to expect because the binary might be different depending on the opcode some of them only opcode or with func3 or even with func7
-    public static Dictionary<string, string> opcodes = new Dictionary<string, string>()//{ "inst"     , "mc" },
+    public static Dictionary<string, string> opcodes = new Dictionary<string, string>()//{ "inst"     , "opcode/funct" },
     {
         // R-format , opcode = 0 // 11 + 1
         { "nop"  , "000000" },
@@ -32,6 +32,7 @@ public static class ASSEMBLERMIPS
         { "xor"  , "100110" },
         { "nor"  , "100111" },
         { "slt"  , "101010" },
+        { "sgt"  , "101011" },
         { "sll"  , "000000" },
         { "srl"  , "000010" },
         { "jr"   , "001000" },
@@ -41,6 +42,7 @@ public static class ASSEMBLERMIPS
         { "andi" , "001100" },
         { "ori"  , "001101" },
         { "xori" , "001110" },
+        { "slti" , "101010" },
         { "lw"   , "100011" },
         { "sw"   , "101011" },
         { "beq"  , "000100" }, 
@@ -50,7 +52,7 @@ public static class ASSEMBLERMIPS
         { "j"    , "000010" }, 
         { "jal"  , "000011" },
 
-        { "hlt"  , "11111100000000000000000000000000" },
+        { "hlt"  , "111111" },
     };
     public static Dictionary<string, int> labels = new Dictionary<string, int>();
     // the invInst is a string that come up when an invalid instruction is entered from the user
@@ -78,6 +80,7 @@ public static class ASSEMBLERMIPS
             case "xor":
             case "nor":
             case "slt":
+            case "sgt":
             case "sll":
             case "srl":
             case "jr":
@@ -122,7 +125,6 @@ public static class ASSEMBLERMIPS
     static string getrtypeinst(List<string> inst)
     {
         string mc = "";
-        if (inst[0] == "nop") return mc.PadLeft(32, '0');
         if (inst[0] == "jr")
         {
             if (inst.Count != 2)
@@ -270,8 +272,8 @@ public static class ASSEMBLERMIPS
     // this function takes the instructio and it's type and based on it, it passes it to the suitable fucntion to generate the machine code
     static string GetMcOfInst(InstType type, List<string> inst)
     {
-        if (inst.Count > 0 && inst[0] == "hlt")
-            return opcodes[inst[0]];
+        if (inst.Count > 0 && (inst[0] == "hlt" || inst[0] == "nop"))
+            return opcodes[inst[0]].PadLeft(32, '0');
         // here we construct the binaries of a given instruction
         switch (type)
         {
