@@ -45,9 +45,7 @@ public static class ASSEMBLERMIPS
         { "sw"   , "101011" },
         { "beq"  , "000100" }, 
         { "bne"  , "000101" }, 
-        { "bltz" , "010000" }, 
-        { "bgez" , "010001" }, 
-            
+
         // J-format
         { "j"    , "000010" }, 
         { "jal"  , "000011" },
@@ -93,8 +91,6 @@ public static class ASSEMBLERMIPS
             case "sw":
             case "beq":
             case "bne":
-            case "bltz":
-            case "bgez":
                 return InstType.itype;
             case "j":
             case "jal":
@@ -186,7 +182,11 @@ public static class ASSEMBLERMIPS
     }
     static bool isbranch(string mnem)
     {
-        return mnem == "beq" || mnem == "bne" || mnem == "bltz" || mnem == "bgez";
+        return mnem == "beq" || mnem == "bne";
+    }
+    static bool PseudoBranch(string mnem)
+    {
+        return mnem == "bltz" || mnem == "bgez";
     }
     static bool islogicalimmed(string mnem)
     {

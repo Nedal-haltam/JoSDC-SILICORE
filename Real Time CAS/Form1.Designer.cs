@@ -141,7 +141,7 @@
             this.output.Location = new System.Drawing.Point(523, 34);
             this.output.Margin = new System.Windows.Forms.Padding(4);
             this.output.Name = "output";
-            this.output.Size = new System.Drawing.Size(545, 579);
+            this.output.Size = new System.Drawing.Size(567, 579);
             this.output.TabIndex = 8;
             this.output.Text = "";
             // 

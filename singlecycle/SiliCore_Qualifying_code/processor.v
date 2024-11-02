@@ -52,11 +52,12 @@ end
 	adder PCAdder(.in1(PC), .in2(6'b1), .out(PCPlus1));	
 	
 
-`ifdef sim
-	IM instructionMemory(.address(nextPC), .clock(clk), .q(instruction));
-`else
-	instructionMemory IM(.address(nextPC), .clock(clk), .q(instruction));
-`endif	
+IM instructionMemory(.address(PC), .q(instruction));
+// `ifdef sim
+// `else
+// 	instructionMemory IM(.address(nextPC), .clock(clk), .q(instruction));
+// `endif	
+
 	controlUnit CU(.opCode(opCode), .funct(funct), .rst(rst),
 				      .RegDst(RegDst), .Branch(Branch), .MemReadEn(MemReadEn), .MemtoReg(MemtoReg),
 				      .ALUOp(ALUOp), .MemWriteEn(MemWriteEn), .RegWriteEn(RegWriteEn), .ALUSrc(ALUSrc), .hlt(hlt));
@@ -79,9 +80,9 @@ end
 	adder branchAdder(.in1(PC), .in2(imm[5:0]), .out(adderResult));
 	
 `ifdef sim
-	DM dataMemory(.address(ALUResult[7:0]), .clock(~clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
+	DM dataMemory(.address(ALUResult[7:0]), .clock(clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
 `else
-	dataMemory DM(.address(ALUResult[7:0]), .clock(~clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
+	dataMemory DM(.address(ALUResult[7:0]), .clock(clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
 `endif	
 
 	mux2x1 #(32) WBMux(.in1(ALUResult), .in2(memoryReadData), .s(MemtoReg), .out(writeData));

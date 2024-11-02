@@ -142,7 +142,8 @@ namespace Real_Time_CAS_ASSEM
             int p = Width / 3;
             input.Size = new System.Drawing.Size(p, Height - 100);
             output.Location = new System.Drawing.Point(p + 50, output.Location.Y);
-            output.Size = new System.Drawing.Size((Width - p) - 300, Height - 100);
+            output.Size = new System.Drawing.Size((Width - p) - 200, Height - 100);
+            cmbcpulist.Location = new System.Drawing.Point(output.Location.X + output.Width + Padding.Size.Width, output.Location.Y);
             x = output.Location.X;
             lblnumofinsttxt.Location = new System.Drawing.Point(x, y);
             x += lblnumofinsttxt.Width + Padding.Size.Width;
@@ -155,7 +156,7 @@ namespace Real_Time_CAS_ASSEM
             lblcycles.Location = new System.Drawing.Point(x, y);
             x += lblcycles.Width + Padding.Size.Width;
             lblinfloop.Location = new System.Drawing.Point(x, y);
-            x += lblinfloop.Width + Padding.Size.Width;
+            x += lblinfloop.Width + Padding.Size.Width*2;
             btntbcopy.Location = new System.Drawing.Point(x-10, y-7);
         }
 

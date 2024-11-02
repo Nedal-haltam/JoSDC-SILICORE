@@ -34,9 +34,7 @@
  
  CPU5STAGE cpu(input_clk, hlt_c, rst, dataout);
  
- assign input_clk = SW[0]; // LE: 11,504
-// assign input_clk = ADC_CLK_10; // LE: 11,530
-// assign input_clk = MAX10_CLK1_50; // LE: 12,331
+ assign input_clk = SW[0];
  assign hlt_c     = SW[1];
  assign rst       = SW[2];
 

@@ -8,7 +8,7 @@ module DM(address, clock,  data,  rden,  wren,  q);
 
     reg [31 : 0] datamem [255 : 0];
 
-    always @(posedge clock) begin
+    always @(negedge clock) begin
         if (rden)
             q <= datamem[address];
         if (wren)
@@ -19,7 +19,7 @@ module DM(address, clock,  data,  rden,  wren,  q);
 `ifdef sim
 integer i;
 initial begin
-  #(`timetowait + 4);
+  #(`timetowait);
   // iterating through some of the addresses of the memory to check if the program loaded and stored the values properly
   $display("Reading Data Memory Content : ");
   for (i = 30; i >= 0; i = i - 1)
