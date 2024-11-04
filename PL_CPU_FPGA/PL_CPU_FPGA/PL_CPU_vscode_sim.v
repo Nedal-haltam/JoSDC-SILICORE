@@ -25,7 +25,6 @@
 `include "control_unit.v"
 `include "exception_detect_unit.v"
 `include "StallDetectionUnit.v"
-`include "Branch_flag_Gen.v"
 `include "Immed_Gen_unit.v"
 `include "Branch_or_Jump_TargGen.v"
 `include "CPU5STAGE.v"

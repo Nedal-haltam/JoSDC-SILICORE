@@ -1,9 +1,9 @@
 
-module Branch_flag_Gen(Rs1 , Rs2 , eq , neq , lt, gteq);
+module Branch_flag_Gen(Rs1 , Rs2 , eq , neq , lt, gte);
 parameter bit_width = 32;
 
 input [bit_width-1:0] Rs1 , Rs2;
-output eq, neq, lt, gteq;
+output eq, neq, lt, gte;
 
 
 assign eq = (Rs1 == Rs2) ? 1'b1 : 1'b0;
