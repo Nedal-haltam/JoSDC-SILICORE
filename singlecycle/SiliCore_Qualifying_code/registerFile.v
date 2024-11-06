@@ -1,12 +1,6 @@
-// register file contains 32 register
-
 module registerFile (clk, rst, we, 
 					 readRegister1, readRegister2, writeRegister,
 					 writeData, readData1, readData2, regs0, regs1, regs2, regs3, regs4, regs5);
-// module registerFile (clk, rst, we, 
-// 					 readRegister1, readRegister2, writeRegister,
-// 					 writeData, readData1, readData2);
-
 	// inputs
 	input wire clk, rst, we;
 	input wire [4:0] readRegister1, readRegister2, writeRegister;

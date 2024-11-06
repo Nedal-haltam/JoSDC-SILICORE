@@ -117,7 +117,8 @@ namespace Real_Time_CAS_ASSEM
 
         private void input_TextChanged(object sender, EventArgs e)
         {
-            lblinfloop.Visible = false;
+            lblinfloop.Visible = false;//  1011 0110 0111 0110
+                                       //  1011 0110 0111 0110
             List<string> mc = assemble(input.Lines);
             if (curr_cpu == CPU_type.SingleCycle)
             {

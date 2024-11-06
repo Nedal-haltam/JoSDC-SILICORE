@@ -9,7 +9,7 @@ module controlUnit(opcode, funct, rst,
 	
 	// outputs (signals)
 	output reg RegDst, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, hlt; // correct outputs
-	output reg [2:0] ALUOp;
+	output reg [3:0] ALUOp;
 	
 	// parameters (opcodes/functs)
 `include "opcodes.v"	
@@ -17,98 +17,128 @@ module controlUnit(opcode, funct, rst,
 	// unit logic - generate signals
 	always @(*) begin
 		
-		// Bug ID = 21, initialize control signals to zeros when reseting
-		if(~rst) begin // initializes all output signals to zero when the reset signal is set
-			// Bug ID = 6: non-blocking used to assign signal values
-			RegDst <= 1'b0;  MemReadEn <= 1'b0; MemtoReg <= 1'b0;
-			MemWriteEn <= 1'b0; RegWriteEn <= 1'b0; ALUSrc <= 1'b0;
-			ALUOp <= 3'b0; hlt <= 1'b0;
+		if(~rst) begin 
+			{RegDst, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, ALUOp, hlt} <= 0;
 		end
 		else begin
-			// initializes all output signals to zero
-			RegDst <= 1'b0;  MemReadEn <= 1'b0; MemtoReg <= 1'b0;
-			MemWriteEn <= 1'b0; RegWriteEn <= 1'b0; ALUSrc <= 1'b0;
-			ALUOp <= 3'b0; hlt <= 1'b0;
+			{RegDst, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, ALUOp, hlt} = 0;
 
 			case(opcode)
 
 
 				hlt_inst: begin
 					hlt <= 1'b1;
-
 				end
 					
-				_RType : begin
+				RType : begin
 					
-					RegDst <= 1'b1; // correct signal - destination register is rd
-					MemReadEn <= 1'b0; // correct signal - no memory read
-					MemtoReg <= 1'b0; // correct signal - will write back to rd from ALU
-					MemWriteEn <= 1'b0; // correct signal - no memory write
-					RegWriteEn <= 1'b1; // correct signal - will write back to rd
-					ALUSrc <= 1'b0; // correct signal - operand taken from register file
+					RegDst <= 1'b1; 
+					RegWriteEn <= 1'b1; 
 						
 					case (funct) 
 						
-						_add_ : begin
-							ALUOp <= 3'b000; // correct op - add = 0
+						jr : begin
+						end
+
+
+						add, addu : begin
+							ALUOp <= 4'd0; 
 						end
 							
-						_sub_ : begin
-							ALUOp <= 3'b001; // correct op - sub = 1
+						sub, subu : begin
+							ALUOp <= 4'd1; 
 						end
 							
-						_and_ : begin
-							ALUOp <= 3'b010; // correct op - and = 2
+						and_ : begin
+							ALUOp <= 4'd2; 
 						end
 							
-						_or_ : begin 
-							ALUOp <= 3'b011; // Bug ID = 22: correct op - or = 3
+						or_ : begin 
+							ALUOp <= 4'd3; 
 						end
-							
-						_slt_ : begin
-							ALUOp <= 3'b100; // correct op - compare = 4
+
+						xor_ : begin 
+							ALUOp <= 4'd4; 
+						end
+
+						nor_ : begin 
+							ALUOp <= 4'd5; 
+						end
+
+						slt : begin 
+							ALUOp <= 4'd6; 
+						end
+
+						sgt : begin 
+							ALUOp <= 4'd7; 
+						end
+
+						sll : begin 
+							ALUSrc <= 1'b1;
+							ALUOp <= 4'd8; 
+						end
+
+						srl : begin
+							ALUSrc <= 1'b1;
+							ALUOp <= 4'd9; 
+						end
+
+						jr : begin
+							ALUOp <= 4'd0;
 						end
 						
-						default: RegWriteEn <= 1'b0; // Bug ID = 7: ensures register file is not changed for invalid funct
-					
 					endcase
 					
 				end
+
+				j : begin
+				end
+
+				jal : begin
+					RegWriteEn <= 1'b1;
+					RegDst <= 1'b1;
+					ALUSrc <= 1'b1;
+				end
+
+
 					
-				_addi : begin
-					RegDst <= 1'b0; // correct signal - destinaiton is rt
-					MemReadEn <= 1'b0; // correct signal - no memory read
-					MemtoReg <= 1'b0; // correct signal - will write back to rt from ALU
-					ALUOp <= 3'b000; // correct op - add = 0
-					MemWriteEn <= 1'b0; // correct signal - no memory write
+				addi : begin
+					RegWriteEn <= 1'b1; // correct signal - will write back to rt
+					ALUSrc <= 1'b1; // correct signal - operand is the immediate	
+				end
+
+				andi : begin
+					ALUOp <= 4'd2;
+					RegWriteEn <= 1'b1; // correct signal - will write back to rt
+					ALUSrc <= 1'b1; // correct signal - operand is the immediate	
+				end
+
+				ori : begin
+					ALUOp <= 4'd3;
 					RegWriteEn <= 1'b1; // correct signal - will write back to rt
 					ALUSrc <= 1'b1; // correct signal - operand is the immediate	
 				end
 					
-				_lw : begin
-					RegDst <= 1'b0; // Bug ID = 1: was 1, changed to 0 - destination register is rt
+				xori : begin
+					ALUOp <= 4'd4;
+					RegWriteEn <= 1'b1; // correct signal - will write back to rt
+					ALUSrc <= 1'b1; // correct signal - operand is the immediate	
+				end
+
+				lw : begin
 					MemReadEn <= 1'b1; // Bug ID = 2: was 0, changed to 1 - will read from memory
-					ALUOp <= 3'b000; // correct op - add = 0
-					MemWriteEn <= 1'b0; // Bug ID = 3: was 1, changed to 0 - will not write to memory 
 					RegWriteEn <= 1'b1; // correct signal - will write back to rt
 					ALUSrc <= 1'b1; // correct signal - operand is the immediate
 					MemtoReg <= 1'b1; // Bug ID = 4: added signal - write back to register from data memory
 				end
 					
-				_sw : begin
-					MemReadEn <= 1'b0; // correct signal - will not read from memory
-					ALUOp <= 3'b000; // correct op - add = 0
+				sw : begin
 					MemWriteEn <= 1'b1; // correct signal - will write to data memory
-					RegWriteEn <= 1'b0; // correct signal - will not write back to register file
 					ALUSrc <= 1'b1; // correct signal - operand is immediate			
 				end
 					
-				_beq : begin
-					MemReadEn <= 1'b0; // correct signal - will not read from memory
-					ALUOp <= 3'b001; // correct signal - sub = 1
-					MemWriteEn <= 1'b0; // correct signal - will not write to memory
-					RegWriteEn <= 1'b0; // correct signal - will not write to register file
-					ALUSrc <= 1'b0; // Bug ID =  5: was 1, changed to 0 - operand is rt
+				beq : begin
+					ALUOp <= 4'd1; // correct signal - sub = 1
 				end
 				
 				default: ;

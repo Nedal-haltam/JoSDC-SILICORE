@@ -22,7 +22,8 @@ namespace ProjectCPUCL
     {
         public enum Mnemonic
         {
-            add, sub, and, andi, or, ori, xor, xori, nor, slt, slti, sgt, sll, srl, addi, addu, subu,
+            add, addu, subu, sub, and, or, nor, slt, sgt, xor,
+            addi, andi, ori, xori, slti, sll, srl,
             beq, bne,
             j, jr, jal,
             lw, sw, 
@@ -859,7 +860,7 @@ namespace ProjectCPUCL
             if (inst.mnem == Mnemonic.hlt)
                 hlt = true;
 
-            if (iswb(inst.mnem))
+            if (iswb(inst.mnem) && inst.rdind != 0)
                 regs[inst.rdind] = (inst.mnem == Mnemonic.lw) ? inst.memout : inst.aluout;
         }
         void ConsumeInst()

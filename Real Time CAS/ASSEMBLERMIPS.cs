@@ -21,8 +21,10 @@ public static class ASSEMBLERMIPS
     // take a look to know what to expect because the binary might be different depending on the opcode some of them only opcode or with func3 or even with func7
     public static Dictionary<string, string> opcodes = new Dictionary<string, string>()//{ "inst"     , "opcode/funct" },
     {
-        // R-format , opcode = 0 // 11 + 1
         { "nop"  , "000000" },
+        { "hlt"  , "111111" },
+
+        // R-format , opcode = 0 // 11 + 1
         { "add"  , "100000" },
         { "addu" , "100001" },
         { "sub"  , "100010" },
@@ -52,7 +54,6 @@ public static class ASSEMBLERMIPS
         { "j"    , "000010" }, 
         { "jal"  , "000011" },
 
-        { "hlt"  , "111111" },
     };
     public static Dictionary<string, int> labels = new Dictionary<string, int>();
     // the invInst is a string that come up when an invalid instruction is entered from the user
@@ -85,6 +86,7 @@ public static class ASSEMBLERMIPS
             case "srl":
             case "jr":
             case "nop":
+            case "hlt":
                 return InstType.rtype;
             case "addi":
             case "andi":
@@ -136,7 +138,8 @@ public static class ASSEMBLERMIPS
         }
         else
         {
-            if (inst.Count != 4) return invinst;
+            if (inst.Count != 4) 
+                return invinst;
             string rd = getregindex(inst[1]);
             string rs1 = getregindex(inst[2]);
             string funct = opcodes[inst[0]];
@@ -197,7 +200,8 @@ public static class ASSEMBLERMIPS
     }
     static string getitypeinst(List<string> inst)
     {
-        if (inst.Count != 4) return invinst;
+        if (inst.Count != 4) 
+            return invinst;
         string mc;
         string opcode = opcodes[inst[0]];
 
@@ -274,7 +278,7 @@ public static class ASSEMBLERMIPS
     static string GetMcOfInst(InstType type, List<string> inst)
     {
         if (inst.Count > 0 && (inst[0] == "hlt" || inst[0] == "nop"))
-            return opcodes[inst[0]].PadLeft(32, '0');
+            return opcodes[inst[0]].PadRight(32, '0');
         // here we construct the binaries of a given instruction
         switch (type)
         {

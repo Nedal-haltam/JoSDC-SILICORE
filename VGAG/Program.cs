@@ -460,7 +460,13 @@ unsafe void main()
     int bw = (OrigW) / rectsize;
     int bh = (OrigH) / rectsize;
 
-    Rectangle TextBoundary = new(0, 0, CHARW * text.Length, CHARH); // the TextBoundary specs are square wise, like the character map
+    Rectangle TextBoundary = new()
+    {
+        X = 0,
+        Y = 0,
+        Width = CHARW * 21,
+        Height = CHARH * 6
+    }; // the TextBoundary specs are square wise, like the character map
     boundary = new(x, y, bw, bh);
     List<List<Cell>> grid = InitGrid(boundary);
 
@@ -513,7 +519,7 @@ unsafe void main()
                 {
                     capital = !capital;
                 }
-                if (key == KeyboardKey.Enter)
+                if (key == KeyboardKey.Enter) // TODO: implement a real newline don't just fill it with spaces, you lazy
                 {
                     int count = 21 - (text.Length % 21);
                     for (int i = 0; i < count; i++) text += " ";
@@ -524,11 +530,6 @@ unsafe void main()
                     char car = (char)key;
                     text += (capital) ? car.ToString().ToUpper() : car.ToString().ToLower();
                 }
-                TextBoundary.X = 0;
-                TextBoundary.Y = 0;
-                TextBoundary.Width = CHARW * 21;
-                TextBoundary.Height = CHARH * 6;
-                _DrawText(TextBoundary, ref grid, text);
             }
         }
 
@@ -569,7 +570,8 @@ unsafe void main()
 
         BeginDrawing();
         ClearBackground(Color.DarkGray);
-
+        // TODO: it is every time updating the text and the grid even if it is not changed or updated from the user (waste if time)
+        // you can save the previous state of a flag to indicate whether you changed anything or not
         if (m == Mode.writing)
         {
             _DrawText(TextBoundary, ref grid, text);

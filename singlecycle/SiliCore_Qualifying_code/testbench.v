@@ -4,12 +4,10 @@
 `define timetowait 2 * (1000 + 1)
 
 `include "programCounter.v"
-`include "adder.v" 
 `include "IM.v" 
 `include "controlUnit.v" 
 `include "mux2x1.v" 
 `include "registerFile.v" 
-`include "SignExtender.v" 
 `include "ALU.v" 
 `include "BranchController.v" 
 `include "DM.v" 

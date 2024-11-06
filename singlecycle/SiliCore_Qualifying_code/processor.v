@@ -2,6 +2,8 @@
 // module processor(clk, rst, PC);
 
 module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, cycles_consumed, clk);
+
+	`include "opcodes.v"
 	//inputs
 	input input_clk, rst;
 	output wire clk;
@@ -9,11 +11,11 @@ module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, c
 	output [5:0] PC;
 	output reg [31:0] cycles_consumed;
 	
-	wire [31:0] instruction, wire_instruction, writeData, readData1, readData2, extImm, ALUin2, ALUResult, memoryReadData;
+	wire [31:0] instruction, wire_instruction, writeData, readData1, readData2, readData1_w, extImm, ALUin2, ALUResult, memoryReadData, immediate, shamt, address;
 	wire [15:0] imm;
 	wire [5:0] opcode, funct, nextPC, PCPlus1, adderResult;
 	wire [4:0] rs, rt, rd, WriteRegister;
-	wire [2:0] ALUOp;
+	wire [3:0] ALUOp;
 	wire RegDst, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, zero, PCsrc, hlt;
 
 	
@@ -26,13 +28,13 @@ module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, c
 	
 	
 	assign opcode  = (~rst) ? 0 : instruction[31:26];
-	assign rd      = (~rst) ? 0 : instruction[15:11];
+	assign rd      = (~rst) ? 0 : ((opcode == jal) ? 5'd31 : instruction[15:11]);
 	assign rs      = (~rst) ? 0 : instruction[25:21];
 	assign rt      = (~rst) ? 0 : instruction[20:16];
 	assign imm     = (~rst) ? 0 : instruction[15:0];
-	assign shamt   = (~rst) ? 0 : instruction[10:6];
+	assign shamt   = (~rst) ? 0 : {32'd0, instruction[10:6]};
 	assign funct   = (~rst) ? 0 : instruction[5:0];
-	assign address = (~rst) ? 0 : instruction[25:0];
+	assign address = (~rst) ? 0 : {32'd0, instruction[25:0]};
 
 
 or hlt_logic(clk, input_clk, hlt);
@@ -47,12 +49,14 @@ always@(posedge clk , negedge rst) begin
 
 end
 
-BranchController branchcontroller(.opcode(opcode), .operand1(readData1), .operand2(ALUin2), .PCsrc(PCsrc), .rst(rst));
+BranchController branchcontroller(.opcode(opcode), .funct(funct), .operand1(readData1), .operand2(ALUin2), .PCsrc(PCsrc), .rst(rst));
 
+assign PCPlus1 = PC + 6'd1;
+assign adderResult = (opcode == jal || opcode == j) ? address : (
+	(opcode == 0 && funct == jr) ? readData1 : ((opcode == j || opcode == jal) ? address : PC + imm[5:0])
+);
 mux2x1 #(6) PCMux(.in1(PCPlus1), .in2(adderResult), .s(PCsrc), .out(nextPC));
 programCounter pc(.clk(clk), .rst(rst), .PCin(nextPC), .PCout(PC));	
-
-adder PCAdder(.in1(PC), .in2(6'b1), .out(PCPlus1));	
 
 
 IM instructionMemory(.address(PC), .q(wire_instruction));
@@ -70,15 +74,20 @@ registerFile RF(.clk(clk), .rst(rst), .we(RegWriteEn),
 			    .writeData(writeData), .readData1(readData1), .readData2(readData2),.regs0(regs0), .regs1(regs1), 
 				.regs2(regs2), .regs3(regs3), .regs4(regs4), .regs5(regs5));
 
-SignExtender SignExtend(.in(imm), .out(extImm));
-	
-mux2x1 #(32) ALUMux(.in1(readData2), .in2(extImm), .s(ALUSrc), .out(ALUin2));
-	
-ALU alu(.operand1(readData1), .operand2(ALUin2), .opSel(ALUOp), .result(ALUResult), .zero(zero));
-	
 
-adder branchAdder(.in1(PC), .in2(imm[5:0]), .out(adderResult));
+assign extImm = (opcode == andi || opcode == ori || opcode == xori) ? {16'd0, imm} : {{16{imm[15]}}, imm};
+assign immediate = (opcode == 0 && (funct == sll || funct == srl)) ? shamt : (
+	(opcode == jal) ? 32'd1 : extImm
+);
+mux2x1 #(32) ALUMux(.in1(readData2), .in2(immediate), .s(ALUSrc), .out(ALUin2));
 	
+assign readData1_w = (opcode == 0 && (funct == sll || funct == srl)) ? readData2 : (
+	(opcode == jal) ? {32'd0, PC} : readData1
+);
+ALU alu(.operand1(readData1_w), .operand2(ALUin2), .opSel(ALUOp), .result(ALUResult), .zero(zero));
+
+
+
 `ifdef sim
 	DM dataMemory(.address(ALUResult[7:0]), .clock(clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
 `else
