@@ -9,6 +9,7 @@ using static Raylib_cs.Raylib;
 using Color = Raylib_cs.Color;
 using Rectangle = Raylib_cs.Rectangle;
 
+Mode m = Mode.drawing;
 Color BrushColor = Color.White;
 const int BS = 5; // small mode
 const int RS = 5; // big mode
@@ -42,42 +43,50 @@ List<List<Cell>> InitGrid(Rectangle boundary)
     }
     return grid;
 }
-void UpdateGrid(ref List<List<Cell>> grid, int delta)
+void UpdateGrid_drawing(ref List<List<Cell>> grid, int delta)
 {
+    if (m != Mode.drawing)
+    {
+        for (int i = 0; i < grid.Count; i++)
+        {
+            for (int j = 0; j < grid[0].Count; j++)
+            {
+                DrawRectangleRec(grid[i][j].rect, grid[i][j].color);
+            }
+        }
+        return;
+    }
     for (int i = 0; i < grid.Count; i++)
     {
         for (int j = 0; j < grid[0].Count; j++)
         {
-            Vector2 center = new(i, j);
-            if (CheckCollisionPointRec(GetMousePosition(), grid[i][j].rect))
+            Vector2 center = new(j, i);
+            bool mousebtnL = IsMouseButtonDown(MouseButton.Left);
+            bool mousebtnR = IsMouseButtonDown(MouseButton.Right);
+            Color c = (mousebtnL) ? BrushColor : Color.Black;
+            if ((mousebtnL || mousebtnR) && CheckCollisionPointRec(GetMousePosition(), grid[i][j].rect))
             {
-                bool mousebtnL = IsMouseButtonDown(MouseButton.Left);
-                bool mousebtnR = IsMouseButtonDown(MouseButton.Right);
-                Color c = (mousebtnL) ? BrushColor : Color.Black;
-                if (mousebtnL || mousebtnR)
+                Cell temp = grid[i][j];
+                temp.drawn = mousebtnL;
+                temp.color = c;
+                grid[i][j] = temp;
+                for (int dy = i - delta; dy < i + delta; dy++)
                 {
-                    Cell temp1 = grid[i][j];
-                    temp1.drawn = mousebtnL;
-                    temp1.color = c;
-                    for (int dy = i - delta; dy < i + delta; dy++)
+                    for (int dx = j - delta; dx < j + delta; dx++)
                     {
-                        for (int dx = j - delta; dx < j + delta; dx++)
+                        Vector2 currpoint = new(dx, dy);
+                        int indexy = limit((int)currpoint.Y, 0, grid.Count - 1);
+                        int indexx = limit((int)currpoint.X, 0, grid[0].Count - 1);
+                        if (mousebtnL && grid[indexy][indexx].drawn)
+                            continue;
+                        if (CheckCollisionPointCircle(currpoint, center, delta))
                         {
-                            int indexy = limit(dy, 0, grid.Count - 1);
-                            int indexx = limit(dx, 0, grid[0].Count - 1);
-                            if (mousebtnL && grid[indexy][indexx].drawn)
-                                continue;
-                            Vector2 currpoint = new(dy, dx);
-                            if (CheckCollisionPointCircle(currpoint, center, delta))
-                            {
-                                Cell temp2 = grid[indexy][indexx];
-                                temp2.drawn = mousebtnL;
-                                temp2.color = c;
-                                grid[indexy][indexx] = temp2;
-                            }
+                            Cell temp2 = grid[indexy][indexx];
+                            temp2.drawn = mousebtnL;
+                            temp2.color = c;
+                            grid[indexy][indexx] = temp2;
                         }
                     }
-                    grid[i][j] = temp1;
                 }
             }
             DrawRectangleRec(grid[i][j].rect, grid[i][j].color);
@@ -194,9 +203,8 @@ List<List<Color>> GetChar(int width, int height, char c)
 void _DrawText(Rectangle boundary, ref List<List<Cell>> grid, string text)
 {
     if (text.Length == 0) return;
-    float small_displayrectsize = (small) ? RS : 1;
-    List<List<Cell>> newgridcolor = [];
-    newgridcolor = InitGrid(boundary);
+    float small_displayrectsize = (small) ? RS : 1.0f;
+    //List<List<Cell>> newgridcolor = InitGrid(boundary);
 
     for (int c = 0; c < text.Length; c++)
     {
@@ -206,25 +214,14 @@ void _DrawText(Rectangle boundary, ref List<List<Cell>> grid, string text)
         {
             for (int j = 0; j < Char[0].Count; j++)
             {
-                int indexx = (c * Char[0].Count + j) % (int)boundary.Width;
-                int indexy = ((c / 21) * Char.Count + i) % (int)boundary.Height;
-                Cell temp = newgridcolor[indexy][indexx];
+                int indexy = ((c / 21) * Char.Count + i);
+                int indexx = (c * Char[0].Count + j);
+                int indexygrid = (indexy + (int)boundary.Y) % (int)boundary.Height;
+                int indexxgrid = (indexx + (int)boundary.X) % (int)boundary.Width;
+                Cell temp = grid[indexygrid][indexxgrid];
                 temp.color = Char[i][j];
-                newgridcolor[indexy][indexx] = temp;
+                grid[indexygrid][indexxgrid] = temp;
             }
-        }
-    }
-    newgridcolor = RescaleGrid(newgridcolor, small_displayrectsize);
-    for (int i = 0; i < newgridcolor.Count; i++)
-    {
-        for (int j = 0; j < newgridcolor[0].Count; j++)
-        {
-            int indexy = (int)(i + boundary.Y) % (int)boundary.Height;
-            int indexx = (int)(j + boundary.X) % (int)boundary.Width;
-
-            Cell temp = grid[indexy][indexx];
-            temp.color = newgridcolor[i][j].color;
-            grid[indexy][indexx] = temp;
         }
     }
 }
@@ -449,7 +446,7 @@ unsafe void main()
     int OrigW = 640 / commdiv; // for the screen to display on
     int OrigH = 480 / commdiv; // for the screen to display on
     string text = "";
-    Mode m = Mode.drawing;
+    
 
     SetConfigFlags(ConfigFlags.AlwaysRunWindow);
     InitWindow(w, h, "VGAG");
@@ -470,7 +467,7 @@ unsafe void main()
     boundary = new(x, y, bw, bh);
     List<List<Cell>> grid = InitGrid(boundary);
 
-
+    bool changed = false;
     while (!WindowShouldClose())
     {
         bool Ctrl = IsKeyDown(KeyboardKey.LeftControl) || IsKeyDown(KeyboardKey.RightControl);
@@ -494,8 +491,12 @@ unsafe void main()
                     text = text.Remove(0);
                     ResetGrid(boundary, ref grid);
                 }
-                else
+                else if (m == Mode.writing)
+                {
                     m = Mode.drawing;
+                    text = text.Remove(0);
+                    ResetGrid(boundary, ref grid);
+                }
             }
             if (IsKeyPressed(KeyboardKey.S))
             {
@@ -512,28 +513,31 @@ unsafe void main()
             {
                 if (key == KeyboardKey.Backspace && text.Length > 0)
                 {
+                    changed = true;
                     text = text[..^1];
                     grid = InitGrid(boundary);
                 }
                 else if (key == KeyboardKey.CapsLock)
                 {
+                    changed = true;
                     capital = !capital;
                 }
                 if (key == KeyboardKey.Enter) // TODO: implement a real newline don't just fill it with spaces, you lazy
                 {
+                    changed = true;
                     int count = 21 - (text.Length % 21);
                     for (int i = 0; i < count; i++) text += " ";
                 }
                 else if (IsValidKey(key))
                 {
-
+                    changed = true;
                     char car = (char)key;
                     text += (capital) ? car.ToString().ToUpper() : car.ToString().ToLower();
                 }
             }
         }
 
-        if (IsFileDropped())
+        if (IsFileDropped() && m == Mode.drawing)
         {
             FilePathList fpl = LoadDroppedFiles();
             if (fpl.Count > 0)
@@ -570,15 +574,15 @@ unsafe void main()
 
         BeginDrawing();
         ClearBackground(Color.DarkGray);
-        // TODO: it is every time updating the text and the grid even if it is not changed or updated from the user (waste if time)
-        // you can save the previous state of a flag to indicate whether you changed anything or not
-        if (m == Mode.writing)
+
+        if (m == Mode.writing && changed)
         {
             _DrawText(TextBoundary, ref grid, text);
         }
-        UpdateGrid(ref grid, brushsize);
+        UpdateGrid_drawing(ref grid, brushsize);
 
         EndDrawing();
+        changed = false;
     }
     CloseWindow();
     return;
