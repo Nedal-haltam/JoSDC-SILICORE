@@ -100,6 +100,12 @@ module controlUnit(opcode, funct, rst,
 					ALUSrc <= 1'b1;
 				end
 
+				slti : begin
+					RegWriteEn <= 1'b1;
+					RegDst <= 1'b0;
+					ALUSrc <= 1'b1;
+					ALUOp <= 4'd6;
+				end
 
 					
 				addi : begin

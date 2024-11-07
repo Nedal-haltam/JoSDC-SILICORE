@@ -35,7 +35,7 @@ module Immed_Gen_unit(Inst, opcode, Immed);
 	   		else if (opcode == j || opcode == jal) // zero extend
 				Immed <= {32'd0 , Inst[25:0]};
 			
-			else if (opcode == addi || opcode == lw || opcode == sw || opcode == beq || opcode == bne /*|| opcode == blt || opcode == bge*/)
+			else if (opcode == addi || opcode == lw || opcode == sw || opcode == beq || opcode == bne /*|| opcode == blt || opcode == bge*/ || opcode == slti)
 				Immed <= {{32{Inst[15]}} , Inst[15:0]};
 				
 				
