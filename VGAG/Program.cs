@@ -523,6 +523,7 @@ unsafe void main()
                     capital = !capital;
                 }
                 if (key == KeyboardKey.Enter) // TODO: implement a real newline don't just fill it with spaces, you lazy
+                                              //       and let the backspace delete the characters when holding it not just one by one
                 {
                     changed = true;
                     int count = 21 - (text.Length % 21);

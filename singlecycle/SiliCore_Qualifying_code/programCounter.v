@@ -2,10 +2,10 @@ module programCounter (clk, rst, PCin, PCout);
 	
 	//inputs
 	input clk, rst;
-	input [5:0] PCin;
+	input [31:0] PCin;
 	
 	//outputs 
-	output reg [5:0] PCout;
+	output reg [31:0] PCout;
 	
 	parameter initialaddr = -1;
 	//Counter logic

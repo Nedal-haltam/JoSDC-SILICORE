@@ -49,7 +49,9 @@ rst = 0;
 
 $display("Executing...");
 #(`timeunits + 1);
-#1 $display("Number of cycles consumed: %d", cycles_consumed + 1);
+
+// we add one to the consumed cycles because it will not count for the hlt instruction (the last instruction)
+$display("Number of cycles consumed: %d", cycles_consumed + 1); 
 
 $finish;
 

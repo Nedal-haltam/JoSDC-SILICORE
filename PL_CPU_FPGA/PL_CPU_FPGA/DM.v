@@ -5,7 +5,7 @@ input [bit_width - 1:0] addr , Data_In;
 input WR , clk;
 output [bit_width - 1:0] Data_Out;
 
-reg [bit_width - 1:0] data_mem [255 : 0];
+reg [bit_width - 1:0] data_mem [1023 : 0];
   
 always@ (posedge clk)  
   if (WR == 1'b1)

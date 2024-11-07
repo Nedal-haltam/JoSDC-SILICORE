@@ -21,7 +21,7 @@ output reg id_ex_cntrl_mux_sel; // to select whether to pass the control signal 
 
 always@(*) begin
 	 
-    if (id_ex_memrd && (if_id_opcode == beq || if_id_opcode == bne || if_id_opcode == blt || if_id_opcode == bge || if_id_opcode == jr) && 
+    if (id_ex_memrd && (if_id_opcode == beq || if_id_opcode == bne || /*if_id_opcode == blt || if_id_opcode == bge ||*/ if_id_opcode == jr) && 
 	     id_ex_rd != 0 && (if_id_rs1 == id_ex_rd || if_id_rs2 == id_ex_rd)) begin
 		
 		PC_Write <= 1'b0; // we hold the PC

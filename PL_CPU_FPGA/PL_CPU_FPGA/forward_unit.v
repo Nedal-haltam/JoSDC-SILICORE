@@ -53,7 +53,8 @@ output reg [1:0] comparator_mux_selA, comparator_mux_selB; // the selection line
 	
 	// for the second ALU Operand:
 	if (id_ex_opcode == addi || id_ex_opcode == andi  || id_ex_opcode == ori || 
-		 id_ex_opcode == xori || id_ex_opcode == lw || id_ex_opcode == sw || id_ex_opcode == sll || id_ex_opcode == srl)// oper1 = immed, if the inst is I-format or lw, sw or sll, srl
+		 id_ex_opcode == xori || id_ex_opcode == lw || id_ex_opcode == sw || 
+		 id_ex_opcode == sll || id_ex_opcode == srl || id_ex_opcode == slti)// oper1 = immed, if the inst is I-format or lw, sw or sll, srl
 		forwardB <= 3'b000;
 		
 	else if (id_ex_opcode == jal) // if jal -> operand2 = 1
@@ -114,7 +115,7 @@ output reg [1:0] comparator_mux_selA, comparator_mux_selB; // the selection line
 	else if (if_id_opcode == j || if_id_opcode == jal)
 		sel_target_address_adder_mux_InDecodeStage <= 3'b101;
 	
-	else // any instruction other than jr (e.g. branch or jal). the first Operand of the adder that will calculate the target address will be the PC not a register
+	else // any instruction other than jr (e.g. branch). the first Operand of the adder that will calculate the target address will be the PC not a register
 			sel_target_address_adder_mux_InDecodeStage <= 3'b100;
 		
 	end

@@ -16,8 +16,8 @@ assign PC_src = (exception_flag) ? 2'b01 :
 	(opcode == hlt_inst) ? 2'b11 : 
 (
 ((opcode == beq && A == B) || (opcode == bne && A != B) || 
-(opcode == blt && $signed(A) < $signed(B)) || 
-(opcode == bge && $signed(A) >= $signed(B)) || 
+/*(opcode == blt && $signed(A) < $signed(B)) ||*/
+/*(opcode == bge && $signed(A) >= $signed(B)) ||*/
 opcode == j || opcode == jal || opcode == jr) ? 2'b10 : 0
 )
 );

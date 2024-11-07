@@ -16,7 +16,7 @@
 module testbench;
 
 reg clk = 1, rst = 1;
-wire [5:0] PC;
+wire [31:0] PC;
 wire [31 : 0] cycles_consumed;
 wire [31 : 0] regs0;
 wire [31 : 0] regs1;

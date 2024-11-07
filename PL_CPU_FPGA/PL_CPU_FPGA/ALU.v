@@ -17,6 +17,7 @@ output reg CF;
   // 0110   -> shift left here we shift A, B times
   // 0111   -> shift right
   // 1000   -> if (A < B) then 1 else 0 (aka. slt)
+  // 1001   -> if (A > B) then 1 else 0 (aka. sgt)
   // this module takes the opcode and based on it. it decides what operation the ALU should do.
 
   always @(*) begin
@@ -52,6 +53,10 @@ case (ALUOP)
     4'b1000: begin
     CF = 0;
     res = ($signed(A) < $signed(B)) ? 32'd1 : 32'd0;
+    end
+    4'b1001: begin
+    CF = 0;
+    res = ($signed(A) > $signed(B)) ? 32'd1 : 32'd0;
     end
 endcase
     // the zero flag is high if and only if all bits are low so I did an or gate first (as a reduction operator) 

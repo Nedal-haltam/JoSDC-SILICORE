@@ -6,7 +6,7 @@ module DM(address, clock,  data,  rden,  wren,  q);
 
     output reg [31 : 0] q;
 
-    reg [31 : 0] datamem [255 : 0];
+    reg [31 : 0] datamem [1023 : 0];
 
     always @(negedge clock) begin
         if (rden)

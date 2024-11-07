@@ -8,12 +8,13 @@ module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, c
 	input input_clk, rst;
 	output wire clk;
 	//outputs
-	output [5:0] PC;
+	output [31:0] PC;
 	output reg [31:0] cycles_consumed;
 	
-	wire [31:0] instruction, wire_instruction, writeData, readData1, readData2, readData1_w, extImm, ALUin2, ALUResult, memoryReadData, immediate, shamt, address;
+	wire [31:0] instruction, wire_instruction, writeData, readData1, readData2, readData1_w, extImm, ALUin2;
+	wire [31:0] ALUResult, memoryReadData, immediate, shamt, address, nextPC, PCPlus1, adderResult;
 	wire [15:0] imm;
-	wire [5:0] opcode, funct, nextPC, PCPlus1, adderResult;
+	wire [5:0] opcode, funct;
 	wire [4:0] rs, rt, rd, WriteRegister;
 	wire [3:0] ALUOp;
 	wire RegDst, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, zero, PCsrc, hlt;
@@ -53,9 +54,9 @@ BranchController branchcontroller(.opcode(opcode), .funct(funct), .operand1(read
 
 assign PCPlus1 = PC + 6'd1;
 assign adderResult = (opcode == jal || opcode == j) ? address : (
-	(opcode == 0 && funct == jr) ? readData1 : ((opcode == j || opcode == jal) ? address : PC + imm[5:0])
+	(opcode == 0 && funct == jr) ? readData1 : ((opcode == j || opcode == jal) ? address : PC + imm[9:0])
 );
-mux2x1 #(6) PCMux(.in1(PCPlus1), .in2(adderResult), .s(PCsrc), .out(nextPC));
+mux2x1 #(32) PCMux(.in1(PCPlus1), .in2(adderResult), .s(PCsrc), .out(nextPC));
 programCounter pc(.clk(clk), .rst(rst), .PCin(nextPC), .PCout(PC));	
 
 
@@ -82,7 +83,7 @@ assign immediate = (opcode == 0 && (funct == sll || funct == srl)) ? shamt : (
 mux2x1 #(32) ALUMux(.in1(readData2), .in2(immediate), .s(ALUSrc), .out(ALUin2));
 	
 assign readData1_w = (opcode == 0 && (funct == sll || funct == srl)) ? readData2 : (
-	(opcode == jal) ? {32'd0, PC} : readData1
+	(opcode == jal) ? PC : readData1
 );
 ALU alu(.operand1(readData1_w), .operand2(ALUin2), .opSel(ALUOp), .result(ALUResult), .zero(zero));
 
