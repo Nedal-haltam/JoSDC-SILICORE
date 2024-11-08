@@ -16,6 +16,8 @@ namespace Real_Time_CAS_ASSEM
         List<string> curr_mc = new List<string>();
         List<List<string>> curr_insts = new List<List<string>>();
         CPU_type curr_cpu = CPU_type.SingleCycle;
+        System.Drawing.Point[] locations = new System.Drawing.Point[0];
+        Label[] errors = new Label[0];
         void copy_insts_to_tb()
         {
             string tb_tocopy = "";
@@ -37,9 +39,9 @@ namespace Real_Time_CAS_ASSEM
             (List<string> mc, List<List<string>> insts) = ASSEMBLERMIPS.TOP_MAIN();
             curr_mc = mc;
             curr_insts = insts;
-            lblinvinst.Visible = ASSEMBLERMIPS.lblinvinst.Visible;
-            lblinvlabel.Visible = ASSEMBLERMIPS.lblinvlabel.Visible;
-            lblmultlabels.Visible = ASSEMBLERMIPS.lblmultlabels.Visible;
+            lblErrInvinst.Visible = ASSEMBLERMIPS.lblinvinst.Visible;
+            lblErrInvlabel.Visible = ASSEMBLERMIPS.lblinvlabel.Visible;
+            lblErrMultlabels.Visible = ASSEMBLERMIPS.lblmultlabels.Visible;
             lblnumofinst.Text = ASSEMBLERMIPS.lblnumofinst.Text;
             return mc;
         }
@@ -104,7 +106,7 @@ namespace Real_Time_CAS_ASSEM
             }
             else if (c == -2)
             {
-                lblinfloop.Visible = true;
+                lblErrInfloop.Visible = true;
             }
             else
             {
@@ -117,7 +119,7 @@ namespace Real_Time_CAS_ASSEM
 
         private void input_TextChanged(object sender, EventArgs e)
         {
-            lblinfloop.Visible = false;//  1011 0110 0111 0110
+            lblErrInfloop.Visible = false;//  1011 0110 0111 0110
                                        //  1011 0110 0111 0110
             List<string> mc = assemble(input.Lines);
             if (curr_cpu == CPU_type.SingleCycle)
@@ -130,35 +132,55 @@ namespace Real_Time_CAS_ASSEM
                 (int c, CPU5STAGE cpu) = simulatePipeLined(mc);
                 update(mc, c, cpu.regs, cpu.DM);
             }
+            lblNoErr.Visible = !(lblErrInfloop.Visible || lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible);
+
+            int j = 0;
+            for (int i = 0; i < errors.Length; i++)
+            {
+                if (errors[i].Visible)
+                    errors[i].Location = locations[j++];
+            }
         }
-        
+
+
         private void layout_size()
         {
-            int w = 1000;
+            int w = 1100;
             int h = 600;
-            int x = 0;
-            int y = lblnumofinsttxt.Location.Y;
+            int padding = 20;
             Width = (Width < w) ? w : Width;
             Height = (Height < h) ? h : Height;
             int p = Width / 3;
             input.Size = new System.Drawing.Size(p, Height - 100);
+
             output.Location = new System.Drawing.Point(p + 50, output.Location.Y);
-            output.Size = new System.Drawing.Size((Width - p) - 200, Height - 100);
-            cmbcpulist.Location = new System.Drawing.Point(output.Location.X + output.Width + Padding.Size.Width, output.Location.Y);
-            x = output.Location.X;
-            lblnumofinsttxt.Location = new System.Drawing.Point(x, y);
-            x += lblnumofinsttxt.Width + Padding.Size.Width;
-            lblnumofinst.Location = new System.Drawing.Point(x, y);
-            x += lblnumofinst.Width + Padding.Size.Width;
-            lblinvinst.Location = new System.Drawing.Point(x , y);
-            x += lblinvinst.Width + Padding.Size.Width;
-            lblcyclestxt.Location = new System.Drawing.Point(x, y);
-            x += lblcyclestxt.Width + Padding.Size.Width;
-            lblcycles.Location = new System.Drawing.Point(x, y);
-            x += lblcycles.Width + Padding.Size.Width;
-            lblinfloop.Location = new System.Drawing.Point(x, y);
-            x += lblinfloop.Width + Padding.Size.Width*2;
-            btntbcopy.Location = new System.Drawing.Point(x-10, y-7);
+            output.Size = new System.Drawing.Size((Width - p) - 250, Height - 100);
+
+            lblnumofinsttxt.Location = new System.Drawing.Point(output.Location.X, output.Location.Y - lblnumofinsttxt.Size.Height);
+            lblnumofinst.Location = new System.Drawing.Point(lblnumofinsttxt.Location.X + lblnumofinsttxt.Size.Width, lblnumofinsttxt.Location.Y);
+
+            lblcyclestxt.Location = new System.Drawing.Point(lblnumofinst.Location.X + lblnumofinst.Size.Width + padding, output.Location.Y - lblnumofinsttxt.Size.Height);
+            lblcycles.Location = new System.Drawing.Point(lblcyclestxt.Location.X + lblcyclestxt.Size.Width, lblcyclestxt.Location.Y);
+
+
+            cmbcpulist.Location = new System.Drawing.Point(output.Location.X + output.Width, output.Location.Y);
+            btntbcopy.Location = new System.Drawing.Point(cmbcpulist.Location.X, btntbcopy.Location.Y);
+
+            lblErr.Location = new System.Drawing.Point(cmbcpulist.Location.X, lblErr.Location.Y);
+            lblNoErr.Location = new System.Drawing.Point(lblErr.Location.X + lblErr.Size.Width, lblErr.Location.Y);//lkdsjfkldslfsldj
+
+            
+            locations = new System.Drawing.Point[] { 
+                new System.Drawing.Point(lblErr.Location.X, lblErr.Location.Y + lblErr.Size.Height*1 + 10),
+                new System.Drawing.Point(lblErr.Location.X, lblErr.Location.Y + lblErr.Size.Height*2 + 10),
+                new System.Drawing.Point(lblErr.Location.X, lblErr.Location.Y + lblErr.Size.Height*3 + 10),
+                new System.Drawing.Point(lblErr.Location.X, lblErr.Location.Y + lblErr.Size.Height*4 + 10)
+            };
+
+
+
+
+
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -171,6 +193,12 @@ namespace Real_Time_CAS_ASSEM
             layout_size();
             cmbcpulist.SelectedIndex = 1;
             curr_cpu = (CPU_type)cmbcpulist.SelectedIndex;
+            errors = new Label[] {
+                lblErrInfloop,
+                lblErrInvinst,
+                lblErrInvlabel,
+                lblErrMultlabels,
+            };
         }
 
         private void btntbcopy_Click(object sender, EventArgs e)

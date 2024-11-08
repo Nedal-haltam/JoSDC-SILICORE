@@ -31,17 +31,19 @@
             this.components = new System.ComponentModel.Container();
             this.input = new System.Windows.Forms.RichTextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.lblinvinst = new System.Windows.Forms.Label();
-            this.lblmultlabels = new System.Windows.Forms.Label();
-            this.lblinvlabel = new System.Windows.Forms.Label();
+            this.lblErrInvinst = new System.Windows.Forms.Label();
+            this.lblErrMultlabels = new System.Windows.Forms.Label();
+            this.lblErrInvlabel = new System.Windows.Forms.Label();
             this.lblnumofinst = new System.Windows.Forms.Label();
             this.lblnumofinsttxt = new System.Windows.Forms.Label();
             this.output = new System.Windows.Forms.RichTextBox();
             this.lblcyclestxt = new System.Windows.Forms.Label();
             this.lblcycles = new System.Windows.Forms.Label();
-            this.lblinfloop = new System.Windows.Forms.Label();
+            this.lblErrInfloop = new System.Windows.Forms.Label();
             this.btntbcopy = new System.Windows.Forms.Button();
             this.cmbcpulist = new System.Windows.Forms.ComboBox();
+            this.lblErr = new System.Windows.Forms.Label();
+            this.lblNoErr = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // input
@@ -62,50 +64,50 @@
             this.timer1.Enabled = true;
             this.timer1.Interval = 1000;
             // 
-            // lblinvinst
+            // lblErrInvinst
             // 
-            this.lblinvinst.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lblErrInvinst.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblinvinst.AutoSize = true;
-            this.lblinvinst.ForeColor = System.Drawing.Color.Red;
-            this.lblinvinst.Location = new System.Drawing.Point(710, 14);
-            this.lblinvinst.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblinvinst.Name = "lblinvinst";
-            this.lblinvinst.Size = new System.Drawing.Size(164, 16);
-            this.lblinvinst.TabIndex = 13;
-            this.lblinvinst.Text = "Invalid Instruction detected";
-            this.lblinvinst.Visible = false;
+            this.lblErrInvinst.AutoSize = true;
+            this.lblErrInvinst.ForeColor = System.Drawing.Color.Red;
+            this.lblErrInvinst.Location = new System.Drawing.Point(1098, 122);
+            this.lblErrInvinst.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblErrInvinst.Name = "lblErrInvinst";
+            this.lblErrInvinst.Size = new System.Drawing.Size(164, 16);
+            this.lblErrInvinst.TabIndex = 13;
+            this.lblErrInvinst.Text = "Invalid Instruction detected";
+            this.lblErrInvinst.Visible = false;
             // 
-            // lblmultlabels
+            // lblErrMultlabels
             // 
-            this.lblmultlabels.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lblErrMultlabels.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblmultlabels.AutoSize = true;
-            this.lblmultlabels.ForeColor = System.Drawing.Color.Red;
-            this.lblmultlabels.Location = new System.Drawing.Point(73, 12);
-            this.lblmultlabels.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblmultlabels.Name = "lblmultlabels";
-            this.lblmultlabels.Size = new System.Drawing.Size(181, 16);
-            this.lblmultlabels.TabIndex = 12;
-            this.lblmultlabels.Text = "Redundent Label(s) detected";
-            this.lblmultlabels.Visible = false;
+            this.lblErrMultlabels.AutoSize = true;
+            this.lblErrMultlabels.ForeColor = System.Drawing.Color.Red;
+            this.lblErrMultlabels.Location = new System.Drawing.Point(1098, 204);
+            this.lblErrMultlabels.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblErrMultlabels.Name = "lblErrMultlabels";
+            this.lblErrMultlabels.Size = new System.Drawing.Size(181, 16);
+            this.lblErrMultlabels.TabIndex = 12;
+            this.lblErrMultlabels.Text = "Redundent Label(s) detected";
+            this.lblErrMultlabels.Visible = false;
             // 
-            // lblinvlabel
+            // lblErrInvlabel
             // 
-            this.lblinvlabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lblErrInvlabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblinvlabel.AutoSize = true;
-            this.lblinvlabel.ForeColor = System.Drawing.Color.Red;
-            this.lblinvlabel.Location = new System.Drawing.Point(303, 12);
-            this.lblinvlabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblinvlabel.Name = "lblinvlabel";
-            this.lblinvlabel.Size = new System.Drawing.Size(154, 16);
-            this.lblinvlabel.TabIndex = 11;
-            this.lblinvlabel.Text = "Invalid Label(s) detected";
-            this.lblinvlabel.Visible = false;
+            this.lblErrInvlabel.AutoSize = true;
+            this.lblErrInvlabel.ForeColor = System.Drawing.Color.Red;
+            this.lblErrInvlabel.Location = new System.Drawing.Point(1098, 178);
+            this.lblErrInvlabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblErrInvlabel.Name = "lblErrInvlabel";
+            this.lblErrInvlabel.Size = new System.Drawing.Size(154, 16);
+            this.lblErrInvlabel.TabIndex = 11;
+            this.lblErrInvlabel.Text = "Invalid Label(s) detected";
+            this.lblErrInvlabel.Visible = false;
             // 
             // lblnumofinst
             // 
@@ -151,7 +153,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblcyclestxt.AutoSize = true;
-            this.lblcyclestxt.Location = new System.Drawing.Point(882, 12);
+            this.lblcyclestxt.Location = new System.Drawing.Point(714, 12);
             this.lblcyclestxt.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblcyclestxt.Name = "lblcyclestxt";
             this.lblcyclestxt.Size = new System.Drawing.Size(186, 16);
@@ -164,31 +166,31 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblcycles.AutoSize = true;
-            this.lblcycles.Location = new System.Drawing.Point(1076, 14);
+            this.lblcycles.Location = new System.Drawing.Point(908, 14);
             this.lblcycles.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblcycles.Name = "lblcycles";
             this.lblcycles.Size = new System.Drawing.Size(14, 16);
             this.lblcycles.TabIndex = 15;
             this.lblcycles.Text = "0";
             // 
-            // lblinfloop
+            // lblErrInfloop
             // 
-            this.lblinfloop.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lblErrInfloop.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblinfloop.AutoSize = true;
-            this.lblinfloop.ForeColor = System.Drawing.Color.Red;
-            this.lblinfloop.Location = new System.Drawing.Point(1098, 14);
-            this.lblinfloop.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblinfloop.Name = "lblinfloop";
-            this.lblinfloop.Size = new System.Drawing.Size(130, 16);
-            this.lblinfloop.TabIndex = 16;
-            this.lblinfloop.Text = "infinite loop detected";
-            this.lblinfloop.Visible = false;
+            this.lblErrInfloop.AutoSize = true;
+            this.lblErrInfloop.ForeColor = System.Drawing.Color.Red;
+            this.lblErrInfloop.Location = new System.Drawing.Point(1098, 150);
+            this.lblErrInfloop.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblErrInfloop.Name = "lblErrInfloop";
+            this.lblErrInfloop.Size = new System.Drawing.Size(130, 16);
+            this.lblErrInfloop.TabIndex = 16;
+            this.lblErrInfloop.Text = "infinite loop detected";
+            this.lblErrInfloop.Visible = false;
             // 
             // btntbcopy
             // 
-            this.btntbcopy.Location = new System.Drawing.Point(1244, 5);
+            this.btntbcopy.Location = new System.Drawing.Point(1101, 6);
             this.btntbcopy.Name = "btntbcopy";
             this.btntbcopy.Size = new System.Drawing.Size(95, 29);
             this.btntbcopy.TabIndex = 17;
@@ -198,6 +200,7 @@
             // 
             // cmbcpulist
             // 
+            this.cmbcpulist.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbcpulist.FormattingEnabled = true;
             this.cmbcpulist.Items.AddRange(new object[] {
             "Pipe Lined",
@@ -210,20 +213,51 @@
             this.cmbcpulist.TabIndex = 18;
             this.cmbcpulist.SelectedIndexChanged += new System.EventHandler(this.cmbcpulist_SelectedIndexChanged);
             // 
+            // lblErr
+            // 
+            this.lblErr.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblErr.AutoSize = true;
+            this.lblErr.ForeColor = System.Drawing.Color.Red;
+            this.lblErr.Location = new System.Drawing.Point(1098, 94);
+            this.lblErr.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblErr.Name = "lblErr";
+            this.lblErr.Size = new System.Drawing.Size(46, 16);
+            this.lblErr.TabIndex = 19;
+            this.lblErr.Text = "Errors:";
+            // 
+            // lblNoErr
+            // 
+            this.lblNoErr.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblNoErr.AutoSize = true;
+            this.lblNoErr.ForeColor = System.Drawing.Color.Red;
+            this.lblNoErr.Location = new System.Drawing.Point(1152, 94);
+            this.lblNoErr.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblNoErr.Name = "lblNoErr";
+            this.lblNoErr.Size = new System.Drawing.Size(122, 16);
+            this.lblNoErr.TabIndex = 20;
+            this.lblNoErr.Text = "No Errors Detected";
+            this.lblNoErr.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1346, 664);
+            this.Controls.Add(this.lblNoErr);
+            this.Controls.Add(this.lblErr);
             this.Controls.Add(this.cmbcpulist);
             this.Controls.Add(this.btntbcopy);
-            this.Controls.Add(this.lblinfloop);
+            this.Controls.Add(this.lblErrInfloop);
             this.Controls.Add(this.lblcycles);
             this.Controls.Add(this.lblcyclestxt);
             this.Controls.Add(this.input);
-            this.Controls.Add(this.lblinvinst);
-            this.Controls.Add(this.lblmultlabels);
-            this.Controls.Add(this.lblinvlabel);
+            this.Controls.Add(this.lblErrInvinst);
+            this.Controls.Add(this.lblErrMultlabels);
+            this.Controls.Add(this.lblErrInvlabel);
             this.Controls.Add(this.lblnumofinst);
             this.Controls.Add(this.lblnumofinsttxt);
             this.Controls.Add(this.output);
@@ -240,17 +274,19 @@
 
         private System.Windows.Forms.RichTextBox input;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.Label lblinvinst;
-        private System.Windows.Forms.Label lblmultlabels;
-        private System.Windows.Forms.Label lblinvlabel;
+        private System.Windows.Forms.Label lblErrInvinst;
+        private System.Windows.Forms.Label lblErrMultlabels;
+        private System.Windows.Forms.Label lblErrInvlabel;
         private System.Windows.Forms.Label lblnumofinst;
         private System.Windows.Forms.Label lblnumofinsttxt;
         private System.Windows.Forms.RichTextBox output;
         private System.Windows.Forms.Label lblcyclestxt;
         private System.Windows.Forms.Label lblcycles;
-        private System.Windows.Forms.Label lblinfloop;
+        private System.Windows.Forms.Label lblErrInfloop;
         private System.Windows.Forms.Button btntbcopy;
         private System.Windows.Forms.ComboBox cmbcpulist;
+        private System.Windows.Forms.Label lblErr;
+        private System.Windows.Forms.Label lblNoErr;
     }
 }
 
