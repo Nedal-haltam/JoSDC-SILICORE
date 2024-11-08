@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Assembler
@@ -14,8 +15,8 @@ namespace Assembler
         private void Input_TextChanged(object sender, EventArgs e)
         {
             ASSEMBLERMIPS.input.Lines = input.Lines;
-            ASSEMBLERMIPS.TOP_MAIN();
-            output.Lines = ASSEMBLERMIPS.output.Lines;
+            (List<string> mc, List<List<string>> insts) = ASSEMBLERMIPS.TOP_MAIN();
+            output.Lines = mc.ToArray();
             lblinvinst.Visible = ASSEMBLERMIPS.lblinvinst.Visible;
             lblinvlabel.Visible = ASSEMBLERMIPS.lblinvlabel.Visible;
             lblmultlabels.Visible = ASSEMBLERMIPS.lblmultlabels.Visible;

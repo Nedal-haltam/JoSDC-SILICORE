@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Windows.Forms;
 
 public enum InstType
@@ -10,19 +11,20 @@ public enum InstType
 
 public static class ASSEMBLERMIPS
 {
-    public static Label lblinvlabel   = new Label();
+    public static Label lblinvlabel = new Label();
     public static Label lblmultlabels = new Label();
-    public static Label lblnumofinst  = new Label();
-    public static Label lblinvinst    = new Label();
-    public static RichTextBox input  = new RichTextBox();
-    public static RichTextBox output = new RichTextBox();
+    public static Label lblnumofinst = new Label();
+    public static Label lblinvinst = new Label();
+    public static RichTextBox input = new RichTextBox();
     // The instruction type is the main token in a given instruction and should be known the first token in an instruction (first word)
     // the opcodes is a dictionary the you give it a certain opcode (in words) and get beack the binaries (or machine code) corresponding to that opcode
     // take a look to know what to expect because the binary might be different depending on the opcode some of them only opcode or with func3 or even with func7
-    public static Dictionary<string, string> opcodes = new Dictionary<string, string>()//{ "inst"     , "mc" },
+    public static Dictionary<string, string> opcodes = new Dictionary<string, string>()//{ "inst"     , "opcode/funct" },
     {
-        // R-format , opcode = 0 // 11 + 1
         { "nop"  , "000000" },
+        { "hlt"  , "111111" },
+
+        // R-format , opcode = 0 // 11 + 1
         { "add"  , "100000" },
         { "addu" , "100001" },
         { "sub"  , "100010" },
@@ -32,6 +34,7 @@ public static class ASSEMBLERMIPS
         { "xor"  , "100110" },
         { "nor"  , "100111" },
         { "slt"  , "101010" },
+        { "sgt"  , "101011" },
         { "sll"  , "000000" },
         { "srl"  , "000010" },
         { "jr"   , "001000" },
@@ -41,19 +44,16 @@ public static class ASSEMBLERMIPS
         { "andi" , "001100" },
         { "ori"  , "001101" },
         { "xori" , "001110" },
+        { "slti" , "101010" },
         { "lw"   , "100011" },
         { "sw"   , "101011" },
         { "beq"  , "000100" },
-        { "bne"  , "000101" },
-        { "bltz" , "010000" },
-        { "bgez" , "010001" },
-            
+        { "bne"  , "000101" }, 
+
         // J-format
-        { "j"    , "000010" }, 
-        { "jal"  , "000011" }, 
+        { "j"    , "000010" },
+        { "jal"  , "000011" },
 
-
-        { "hlt"  , "11111100000000000000000000000000" }, 
     };
     public static Dictionary<string, int> labels = new Dictionary<string, int>();
     // the invInst is a string that come up when an invalid instruction is entered from the user
@@ -81,21 +81,22 @@ public static class ASSEMBLERMIPS
             case "xor":
             case "nor":
             case "slt":
+            case "sgt":
             case "sll":
             case "srl":
             case "jr":
             case "nop":
+            case "hlt":
                 return InstType.rtype;
             case "addi":
             case "andi":
             case "ori":
             case "xori":
+            case "slti":
             case "lw":
             case "sw":
             case "beq":
             case "bne":
-            case "bltz":
-            case "bgez":
                 return InstType.itype;
             case "j":
             case "jal":
@@ -127,7 +128,6 @@ public static class ASSEMBLERMIPS
     static string getrtypeinst(List<string> inst)
     {
         string mc = "";
-        if (inst[0] == "nop") return mc.PadLeft(32, '0');
         if (inst[0] == "jr")
         {
             if (inst.Count != 2)
@@ -138,7 +138,8 @@ public static class ASSEMBLERMIPS
         }
         else
         {
-            if (inst.Count != 4) return invinst;
+            if (inst.Count != 4)
+                return invinst;
             string rd = getregindex(inst[1]);
             string rs1 = getregindex(inst[2]);
             string funct = opcodes[inst[0]];
@@ -164,8 +165,8 @@ public static class ASSEMBLERMIPS
                 else
                     return invinst;
                 mc = "000000"
-                    + rs1
                     + "00000"
+                    + rs1
                     + rd
                     + shamt
                     + funct;
@@ -187,7 +188,11 @@ public static class ASSEMBLERMIPS
     }
     static bool isbranch(string mnem)
     {
-        return mnem == "beq" || mnem == "bne" || mnem == "bltz" || mnem == "bgez";
+        return mnem == "beq" || mnem == "bne";
+    }
+    static bool PseudoBranch(string mnem)
+    {
+        return mnem == "bltz" || mnem == "bgez";
     }
     static bool islogicalimmed(string mnem)
     {
@@ -195,7 +200,8 @@ public static class ASSEMBLERMIPS
     }
     static string getitypeinst(List<string> inst)
     {
-        if (inst.Count != 4) return invinst;
+        if (inst.Count != 4)
+            return invinst;
         string mc;
         string opcode = opcodes[inst[0]];
 
@@ -226,8 +232,17 @@ public static class ASSEMBLERMIPS
         }
         else
         {
+            // andi, ori, xori (they do zero extend)
             string immed = inst[3];
-            if (ushort.TryParse(immed, out ushort usb))
+            if ((immed.StartsWith("0x") || immed.StartsWith("0X")))
+            {
+                short temp;
+                try { temp = Convert.ToInt16(immed, 16); }
+                catch { return invinst; }
+
+                immed = Convert.ToString(temp, 2).PadLeft(16, '0');
+            }
+            else if (ushort.TryParse(immed, out ushort usb))
             {
                 immed = Convert.ToString(usb, 2);
                 immed = immed.PadLeft(16, '0');
@@ -252,8 +267,8 @@ public static class ASSEMBLERMIPS
 
         if (inst.Count != 2 || !labels.ContainsKey(inst[1]))
             return invinst;
-        int l = labels[inst[1]];
-        string immed = Convert.ToString(l, 2);
+        int lbl = labels[inst[1]];
+        string immed = Convert.ToString(lbl, 2);
         immed = immed.PadLeft(26, '0');
         mc = opcodes[inst[0]] + immed;
 
@@ -262,8 +277,8 @@ public static class ASSEMBLERMIPS
     // this function takes the instructio and it's type and based on it, it passes it to the suitable fucntion to generate the machine code
     static string GetMcOfInst(InstType type, List<string> inst)
     {
-        if (inst.Count > 0 && inst[0] == "hlt")
-            return opcodes[inst[0]];
+        if (inst.Count > 0 && (inst[0] == "hlt" || inst[0] == "nop"))
+            return opcodes[inst[0]].PadRight(32, '0');
         // here we construct the binaries of a given instruction
         switch (type)
         {
@@ -277,7 +292,6 @@ public static class ASSEMBLERMIPS
                 return invinst;
             default: return invinst;
         }
-
     }
     static int curr_inst_index;
     // this fucntion iterates through the whole list of instruction and returns a list of the machine code for each valid instruction
@@ -369,45 +383,12 @@ public static class ASSEMBLERMIPS
         // it removes any label from the list of instructions
         insts.RemoveAll(x => x.Any(y => y.Contains(':')));
     }
-    // here we write on the output the machine code and it's hex value for easy use ane readability
-    static private void format_bin(List<string> insts_list)
+
+    public static (List<string>, List<List<string>>) TOP_MAIN()
     {
-        for (int i = 0; i < insts_list.Count; i++)
-        {
-            string a = insts_list[i].Substring(0, 8) + " ";
-            string b = insts_list[i].Substring(8, 8) + " ";
-            string c = insts_list[i].Substring(16, 8) + " ";
-            string d = insts_list[i].Substring(24, 8) + " ";
-            insts_list[i] = a + b + c + d;
-        }
-    }
-    static private string get_inst_and_its_mc(List<List<string>> insts, List<string> mc)
-    {
-        string tocopy = "";
-        string currinst = "";
-        for (int i = 0; i < insts.Count; i++)
-        {
-            if (mc[i].Contains(invinst)) continue;
-            foreach (string s in insts[i])
-            {
-                currinst += s + " ";
-            }
-            string a = mc[i].Substring(0, 8) + " ";
-            a += mc[i].Substring(8, 8) + " ";
-            a += mc[i].Substring(16, 8) + " ";
-            a += mc[i].Substring(24, 8) + " ";
-            tocopy += $"{currinst,17}" + " / " + a + "\n";
-            currinst = "";
-        }
-        return tocopy;
-    }
-    public static void TOP_MAIN()
-    {
-        
         lblinvinst.Visible = false;
-        lblinvlabel.Visible   = false;
+        lblinvlabel.Visible = false;
         lblmultlabels.Visible = false;
-        lblnumofinst.Visible  = false;
         lblnumofinst.Text = "0";
 
         labels.Clear();
@@ -420,29 +401,19 @@ public static class ASSEMBLERMIPS
         if (insts.Count != 0)
         {
             List<string> mc = GetMachineCode(insts);
-            if (insts.Count != mc.Count) throw new Exception("Instruction Count doesn't match MC Count");
-
+            if (insts.Count != mc.Count)
+                throw new Exception("Instruction Count doesn't match MC Count");
 
             lblinvinst.Visible = mc.Any(x => x.Contains(invinst)) || lblinvlabel.Visible || lblmultlabels.Visible;
             if (lblinvinst.Visible)
-            {
-                output.Lines = new List<string>().ToArray();
-                return; 
-            }
-            lblnumofinst.Text = mc.Count.ToString();
-            format_bin(mc);
-            //string tb_tocopy = "";
-            //for (int i = 0; i < mc.Count; i++)
-            //{
-            //    tb_tocopy += $"addr_to_wr = {i}; Inst_to_wr = 32'h{mc[i].Substring(mc[i].Length - 8)}; #2; \n";
-            //}
-            output.Lines = mc.ToArray();
-            //Clipboard.SetText(tb_tocopy);
+                return (new List<string>(), new List<List<string>>());
+
+            return (mc, insts);
         }
         else
         {
             lblinvinst.Visible = lblinvlabel.Visible || lblmultlabels.Visible;
-            output.Lines = new List<string>().ToArray();
+            return (new List<string>(), new List<List<string>>());
         }
     }
 }

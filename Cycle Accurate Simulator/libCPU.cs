@@ -1,8 +1,16 @@
-﻿using static ProjectCPUCL.Macros;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using static ProjectCPUCL.Macros;
 using static ProjectCPUCL.MIPS;
 
 namespace ProjectCPUCL
 {
+    public enum CPU_type
+    {
+        PipeLined, SingleCycle
+    }
+
     public static class Macros
     {
         public static void cout(string str, params object[] args)
@@ -12,20 +20,22 @@ namespace ProjectCPUCL
     }
     public static class MIPS
     {
-        public static string nop = "00000000000000000000000000000000";
         public enum Mnemonic
         {
-            add, sub, and, andi, or, ori, xor, xori, nor, slt, sll, srl, addi, addu, subu,
-            beq, bne, bltz, bgez, j, jr, jal,
-            lw, sw, nop
+            add, addu, subu, sub, and, or, nor, slt, sgt, xor,
+            addi, andi, ori, xori, slti, sll, srl,
+            beq, bne,
+            j, jr, jal,
+            lw, sw,
+            nop, hlt
         }
         public enum Aluop
         {
-            addition, subtraction, and, or, xor, nor, sll, srl, slt, div
+            add, sub, and, or, xor, nor, sll, srl, slt, sgt, div
         }
         public struct Instruction
         {
-            public Instruction()
+            public Instruction Init()
             {
                 mc = "";
                 mc = mc.PadLeft(32, '0');
@@ -48,6 +58,7 @@ namespace ProjectCPUCL
                 oper2 = 0;
                 aluout = 0;
                 memout = 0;
+                return this;
             }
             public string mc;
             public string opcode;
@@ -77,8 +88,9 @@ namespace ProjectCPUCL
             fetch, decode, execute, memory, write_back
         }
 
-        public static readonly Dictionary<string, Mnemonic> mnemonicmap = new()
+        public static readonly Dictionary<string, Mnemonic> mnemonicmap = new Dictionary<string, Mnemonic>()
             {
+                // the nop is not mentioned here to not conflict with sll
                 // R-format depends on the funct field, if opcode = "000000" then it is R-format else (it is an I-format or J-format either way it depends on distinct opcodes)
                 // rd = rd, rs1 = rs, rs2 = rt
                 { "0100000" , Mnemonic.add  }, // R[rd] = R[rs] op R[rt] , 0x20
@@ -90,26 +102,30 @@ namespace ProjectCPUCL
                 { "0100110" , Mnemonic.xor  }, // R[rd] = R[rs] op R[rt] , 0x26
                 { "0100111" , Mnemonic.nor  }, // R[rd] = R[rs] op R[rt] , 0x27
                 { "0101010" , Mnemonic.slt  }, // R[rd] = R[rs] op R[rt] , 0x2a
-                { "0000000" , Mnemonic.sll  }, // R[rd] = R[rs] op shamt , 0x00
-                { "0000010" , Mnemonic.srl  }, // R[rd] = R[rs] op shamt , 0x02
+                { "0101011" , Mnemonic.sgt  }, // R[rd] = R[rs] op R[rt] , 0x2b
+                { "0000000" , Mnemonic.sll  }, // R[rd] = R[rt] op shamt , 0x00
+                { "0000010" , Mnemonic.srl  }, // R[rd] = R[rt] op shamt , 0x02
                 { "0001000" , Mnemonic.jr   }, // PC = R[rs] (here we jump to the instruciont in the IM addressed by R[rs]) , 0x08
 
                 // I-format depends on the opcode field
                 // rd = rt, rs1 = rs, rs2 = rt, immed = immed or addr
-                { "1001000" , Mnemonic.addi }, // R[rt] = R[rs] op sx(immed) , 0x48
-                { "1001100" , Mnemonic.andi }, // R[rt] = R[rs] op zx(immed) , 0x4c
-                { "1001101" , Mnemonic.ori  }, // R[rt] = R[rs] op zx(immed) , 0x4d
-                { "1001110" , Mnemonic.xori }, // R[rt] = R[rs] op zx(immed) , 0x4e
+                { "1001000" , Mnemonic.addi }, // R[rt] = R[rs] op sx(immed)   , 0x48
+                { "1001100" , Mnemonic.andi }, // R[rt] = R[rs] op zx(immed)   , 0x4c
+                { "1001101" , Mnemonic.ori  }, // R[rt] = R[rs] op zx(immed)   , 0x4d
+                { "1001110" , Mnemonic.xori }, // R[rt] = R[rs] op zx(immed)   , 0x4e
+                { "1101010" , Mnemonic.slti }, // R[rt] = R[rs] op sx(immed)   , 0x6a
                 { "1100011" , Mnemonic.lw   }, // R[rt] = Mem[R[rs]+sx(immed)] , 0x63
-                { "1101011" , Mnemonic.sw   }, // Mem[R[rs]+sx(immed)]=R[rt] , 0x6b
+                { "1101011" , Mnemonic.sw   }, // Mem[R[rs]+sx(immed)]=R[rt]   , 0x6b
                 // rs1 = rs, rs2 = rt
                 { "1000100" , Mnemonic.beq  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x44
                 { "1000101" , Mnemonic.bne  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x45
-                { "1010000" , Mnemonic.bltz }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x50
-                { "1010001" , Mnemonic.bgez }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x51
+
                 // J-format depends on opcode field
                 { "1000010" , Mnemonic.j    }, // PC = zx(addr) << 2  , note.1 , 0x42
                 { "1000011" , Mnemonic.jal  }, // R[31] = PC+1, PC = zx(addr) << 2  , note.1 , 0x43
+
+
+                { "1111111" , Mnemonic.hlt  },
             };
         // note.1 : apparently the shift left by 2 is optional because because the IM may be word addressable rather than byte addressable.
         // in other words if the IM was byte addressable each location holds one of four bytes of an instruction and when we do a branch for example the offset by it self
@@ -119,117 +135,129 @@ namespace ProjectCPUCL
         // location is alread four bytes and holding a whole instruction
         public static Aluop get_inst_aluop(Mnemonic mnem)
         {
-            return mnem switch
+            switch (mnem)
             {
-                Mnemonic.add  => Aluop.addition,
-                Mnemonic.sub  => Aluop.subtraction,
-                Mnemonic.and  => Aluop.and,
-                Mnemonic.andi => Aluop.and,
-                Mnemonic.or   => Aluop.or,
-                Mnemonic.ori  => Aluop.or,
-                Mnemonic.xor  => Aluop.xor,
-                Mnemonic.xori => Aluop.xor,
-                Mnemonic.nor  => Aluop.nor,
-                Mnemonic.slt  => Aluop.slt,
-                Mnemonic.sll  => Aluop.sll,
-                Mnemonic.srl  => Aluop.srl,
-                Mnemonic.addi => Aluop.addition,
-                Mnemonic.addu => Aluop.addition,
-                Mnemonic.subu => Aluop.subtraction,
-                Mnemonic.beq  => Aluop.addition,
-                Mnemonic.bne  => Aluop.addition,
-                Mnemonic.bltz => Aluop.addition,
-                Mnemonic.bgez => Aluop.addition,
-                Mnemonic.j    => Aluop.addition,
-                Mnemonic.jr   => Aluop.addition,
-                Mnemonic.jal  => Aluop.addition,
-                Mnemonic.lw   => Aluop.addition,
-                Mnemonic.sw   => Aluop.addition,
-                _ => 0,
+                case Mnemonic.add: return Aluop.add;
+                case Mnemonic.sub: return Aluop.sub;
+                case Mnemonic.and: return Aluop.and;
+                case Mnemonic.andi: return Aluop.and;
+                case Mnemonic.or: return Aluop.or;
+                case Mnemonic.ori: return Aluop.or;
+                case Mnemonic.xor: return Aluop.xor;
+                case Mnemonic.xori: return Aluop.xor;
+                case Mnemonic.nor: return Aluop.nor;
+                case Mnemonic.slt: return Aluop.slt;
+                case Mnemonic.slti: return Aluop.slt;
+                case Mnemonic.sgt: return Aluop.sgt;
+                case Mnemonic.sll: return Aluop.sll;
+                case Mnemonic.srl: return Aluop.srl;
+                case Mnemonic.addi: return Aluop.add;
+                case Mnemonic.addu: return Aluop.add;
+                case Mnemonic.subu: return Aluop.sub;
+                case Mnemonic.beq: return Aluop.add;
+                case Mnemonic.bne: return Aluop.add;
+                case Mnemonic.j: return Aluop.add;
+                case Mnemonic.jr: return Aluop.add;
+                case Mnemonic.jal: return Aluop.add;
+                case Mnemonic.lw: return Aluop.add;
+                case Mnemonic.sw: return Aluop.add;
+                default: return 0;
             };
         }
         public static string get_format(Mnemonic mnem)
         {
-            return mnem switch
+            switch (mnem)
             {
-                 Mnemonic.add  => "R",
-                 Mnemonic.sub  => "R",
-                 Mnemonic.and  => "R",
-                 Mnemonic.andi => "I",
-                 Mnemonic.or   => "R",
-                 Mnemonic.ori  => "I",
-                 Mnemonic.xor  => "R",
-                 Mnemonic.xori => "I",
-                 Mnemonic.nor  => "R",
-                 Mnemonic.slt  => "R",
-                 Mnemonic.sll  => "R",
-                 Mnemonic.srl  => "R",
-                 Mnemonic.addi => "I",
-                 Mnemonic.addu => "R",
-                 Mnemonic.subu => "R",
-                 Mnemonic.beq  => "I",
-                 Mnemonic.bne  => "I",
-                 Mnemonic.bltz => "I",
-                 Mnemonic.bgez => "I",
-                 Mnemonic.j    => "J",
-                 Mnemonic.jr   => "R",
-                 Mnemonic.jal  => "J",
-                 Mnemonic.lw   => "I",
-                 Mnemonic.sw   => "I",
-                 _             => "" ,
+                case Mnemonic.add: return "R";
+                case Mnemonic.sub: return "R";
+                case Mnemonic.and: return "R";
+                case Mnemonic.andi: return "I";
+                case Mnemonic.or: return "R";
+                case Mnemonic.ori: return "I";
+                case Mnemonic.xor: return "R";
+                case Mnemonic.xori: return "I";
+                case Mnemonic.nor: return "R";
+                case Mnemonic.slt: return "R";
+                case Mnemonic.sgt: return "R";
+                case Mnemonic.slti: return "I";
+                case Mnemonic.sll: return "R";
+                case Mnemonic.srl: return "R";
+                case Mnemonic.addi: return "I";
+                case Mnemonic.addu: return "R";
+                case Mnemonic.subu: return "R";
+                case Mnemonic.beq: return "I";
+                case Mnemonic.bne: return "I";
+                case Mnemonic.j: return "J";
+                case Mnemonic.jr: return "R";
+                case Mnemonic.jal: return "J";
+                case Mnemonic.lw: return "I";
+                case Mnemonic.sw: return "I";
+                case Mnemonic.hlt: return "I";
+                default: return "";
             };
         }
         public static int execute_inst(Instruction inst)
         {
-            return inst.aluop switch
+            switch (inst.aluop)
             {
-                Aluop.addition    =>   inst.oper1  +  inst.oper2,
-                Aluop.subtraction =>   inst.oper1  -  inst.oper2,
-                Aluop.and         =>   inst.oper1  &  inst.oper2,
-                Aluop.or          =>   inst.oper1  |  inst.oper2,
-                Aluop.xor         =>   inst.oper1  ^  inst.oper2,
-                Aluop.nor         => ~(inst.oper1  |  inst.oper2),
-                Aluop.slt         =>  (inst.oper1  <  inst.oper2) ? 1 : 0,
-                Aluop.sll         =>   inst.oper1 <<  inst.oper2,
-                Aluop.srl         =>   inst.oper1 >>> inst.oper2,
-                _ => throw new Exception($"Invalid aluop provided : {inst.aluop}"),
+                case Aluop.add: return inst.oper1 + inst.oper2;
+                case Aluop.sub: return inst.oper1 - inst.oper2;
+                case Aluop.and: return inst.oper1 & inst.oper2;
+                case Aluop.or: return inst.oper1 | inst.oper2;
+                case Aluop.xor: return inst.oper1 ^ inst.oper2;
+                case Aluop.nor: return ~(inst.oper1 | inst.oper2);
+                case Aluop.slt: return (inst.oper1 < inst.oper2) ? 1 : 0;
+                case Aluop.sgt: return (inst.oper1 > inst.oper2) ? 1 : 0;
+                case Aluop.sll: return inst.oper1 << inst.oper2;
+                case Aluop.srl:
+                    {
+                        if (inst.oper2 == 0)
+                            return inst.oper1;
+                        return Math.Abs(inst.oper1 >> inst.oper2);
+                    };
+                default: throw new Exception($"Invalid aluop provided : {inst.aluop}");
             };
         }
         public static bool iswb(Mnemonic mnem)
         {
-            return mnem switch
+            switch (mnem)
             {
-                Mnemonic.add  => true,
-                Mnemonic.sub  => true,
-                Mnemonic.and  => true,
-                Mnemonic.andi => true,
-                Mnemonic.or   => true,
-                Mnemonic.ori  => true,
-                Mnemonic.xor  => true,
-                Mnemonic.xori => true,
-                Mnemonic.nor  => true,
-                Mnemonic.slt  => true,
-                Mnemonic.sll  => true,
-                Mnemonic.srl  => true,
-                Mnemonic.addi => true,
-                Mnemonic.addu => true,
-                Mnemonic.subu => true,
-                Mnemonic.beq  => false,
-                Mnemonic.bne  => false,
-                Mnemonic.bltz => false,
-                Mnemonic.bgez => false,
-                Mnemonic.j    => false,
-                Mnemonic.jr   => false,
-                Mnemonic.jal  => true,
-                Mnemonic.lw   => true,
-                Mnemonic.sw   => false,
-                _ => false,
+                case Mnemonic.add: return true;
+                case Mnemonic.sub: return true;
+                case Mnemonic.and: return true;
+                case Mnemonic.andi: return true;
+                case Mnemonic.or: return true;
+                case Mnemonic.ori: return true;
+                case Mnemonic.xor: return true;
+                case Mnemonic.xori: return true;
+                case Mnemonic.nor: return true;
+                case Mnemonic.slt: return true;
+                case Mnemonic.sgt: return true;
+                case Mnemonic.slti: return true;
+                case Mnemonic.sll: return true;
+                case Mnemonic.srl: return true;
+                case Mnemonic.addi: return true;
+                case Mnemonic.addu: return true;
+                case Mnemonic.subu: return true;
+                case Mnemonic.beq: return false;
+                case Mnemonic.bne: return false;
+                case Mnemonic.j: return false;
+                case Mnemonic.jr: return false;
+                case Mnemonic.jal: return true;
+                case Mnemonic.lw: return true;
+                case Mnemonic.sw: return false;
+                default: return false;
             };
+        }
+        public static bool isbranch_taken(Instruction inst)
+        {
+            return (inst.mnem == Mnemonic.beq && inst.oper1 == inst.oper2) ||
+                   (inst.mnem == Mnemonic.bne && inst.oper1 != inst.oper2);
         }
         public static bool isbranch(Mnemonic mnem)
         {
-            return mnem == Mnemonic.beq || mnem == Mnemonic.bgez ||
-                mnem == Mnemonic.bltz || mnem == Mnemonic.bne;
+            return mnem == Mnemonic.beq ||
+                   mnem == Mnemonic.bne;
         }
         public static int get_oper1(Instruction inst)
         {
@@ -289,7 +317,6 @@ namespace ProjectCPUCL
             int i = 0;
             foreach (int n in regs)
             {
-                if (i == 11) break;
                 cout($"index = {i++,2} , signed = {n,10} , unsigned = {(uint)n,10}");
             }
         }
@@ -327,16 +354,15 @@ namespace ProjectCPUCL
     }
 
     public class CPU5STAGE
-    {   // TODO: -write the instruction beside the mc when pasting it (not necessary for the real time app)
-        //       -log the info of the run every time you run the cpu on the given instructions (necessary for the real time app) make a btn for that
-        //       -implement floating point (in terms of reg file and FP ALU) and do it in the FLBAL CPU
+    {   // TODO: -log the info of the run every time you run the cpu on the given instructions (necessary for the real time app) make a btn for that
+        //       -implement floating point (in terms of reg file and FP ALU)
         //       -modify the HANDLER address to a suitable location in the instruction memory
         int PC;
         bool hlt;
         public List<string> IM; // Instruction Mem
-        public static int HANDLER_ADDR;
-        public List<int> regs;
         public List<string> DM; // Data Mem
+        public List<int> regs;
+        static int HANDLER_ADDR;
 
         Instruction IFID;
         Instruction IDEX;
@@ -347,34 +373,35 @@ namespace ProjectCPUCL
         Instruction executed_in_EX_MIPS;
         Instruction decoded_in_ID_MIPS;
         string fetched_in_IF_MIPS;
-        
+
         int ID_HAZ;
         int EX_HAZ;
         int MEM_HAZ;
         enum PCsrc
         {
-            nextpc, pfc, exception
+            PCplus1, pfc, exception
         }
         PCsrc pcsrc;
         public CPU5STAGE(List<string>? insts = null)
         {
-            regs = [];
+            regs = new List<int>();
             for (int i = 0; i < 32; i++) regs.Add(0);
-            IM = (insts == null) ? [] : (List<string>)insts;
-            DM = [];
+            IM = insts ?? new List<string>();
+            //IM = (insts == null) ? new List<string>() : insts;
+            DM = new List<string>();
             for (int i = 0; i < 1024; i++) DM.Add("0");
             PC = -1;
             hlt = false;
-            IFID = new();
-            IDEX  = new();
-            EXMEM = new();
-            MEMWB = new();
-            memed_in_MEM_MIPS = new();
-            executed_in_EX_MIPS = new();
-            decoded_in_ID_MIPS  = new();
+            IFID = new Instruction().Init();
+            IDEX = new Instruction().Init();
+            EXMEM = new Instruction().Init();
+            MEMWB = new Instruction().Init();
+            memed_in_MEM_MIPS = new Instruction().Init();
+            executed_in_EX_MIPS = new Instruction().Init();
+            decoded_in_ID_MIPS = new Instruction().Init();
             fetched_in_IF_MIPS = "";
-            ID_HAZ  = 0;
-            EX_HAZ  = 0;
+            ID_HAZ = 0;
+            EX_HAZ = 0;
             MEM_HAZ = 0;
             HANDLER_ADDR = IM.Count - 1;
         }
@@ -382,7 +409,7 @@ namespace ProjectCPUCL
         {
             if (IDEX.rdind != 0 && iswb(IDEX.mnem) && IDEX.rdind == source_ind && n > 2 && IDEX.mnem == Mnemonic.lw)
             {
-                Exception e = new("stall")
+                Exception e = new Exception("stall")
                 {
                     Source = "jrBALstall"
                 };
@@ -407,7 +434,7 @@ namespace ProjectCPUCL
         }
         void update_PC(Instruction inst)
         {
-            if (pcsrc == PCsrc.nextpc)
+            if (pcsrc == PCsrc.PCplus1)
             {
                 PC += 1;
             }
@@ -430,49 +457,47 @@ namespace ProjectCPUCL
         }
         Instruction decodemc(string mc, int pc)
         {
-            if (mc == nop)
-            {
-                return new Instruction();
-            }
-            Instruction inst = new()
-            {
-                mc = mc,
-                PC = pc,
-                opcode = mc[^(1 + 31)..^26],
-                rsind = Convert.ToInt32(mc[^(1 + 25)..^21], 2),
-                rtind = Convert.ToInt32(mc[^(1 + 20)..^16], 2),
-                rdind = Convert.ToInt32(mc[^(1 + 15)..^11], 2),
-                shamt = mc[^(1 + 10)..^6],
-                funct = mc[^(1 + 5)..^0],
-                immeds = Convert.ToInt32(sx(mc[^(1 + 15)..^0]), 2),
-                immedz = Convert.ToInt32(zx(mc[^(1 + 15)..^0]), 2),
-                address = Convert.ToInt32(zx(mc[^(1 + 25)..^0]), 2)
-            };
+            Instruction inst = new Instruction().Init();
+            inst.mc = mc;
+            inst.PC = pc;
+            inst.opcode = mc.Substring(mc.Length - (1 + 31), 6);
+            inst.rsind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 25), 5), 2);
+            inst.rtind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 20), 5), 2);
+            inst.rdind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 15), 5), 2);
+            inst.shamt = mc.Substring(mc.Length - (1 + 10), 5);
+            inst.funct = mc.Substring(mc.Length - (1 + 5), 6);
+            inst.immeds = Convert.ToInt32(sx(mc.Substring(mc.Length - (1 + 15), 16)), 2);
+            inst.immedz = Convert.ToInt32(zx(mc.Substring(mc.Length - (1 + 15), 16)), 2);
+            inst.address = Convert.ToInt32(zx(mc.Substring(mc.Length - (1 + 25), 26)), 2);
+
             // mips integer instruction map for formats (R, I, J)
             inst.rs = regs[inst.rsind];
             inst.rt = regs[inst.rtind];
 
+
             string opcode;
-            if (inst.opcode == "000000") 
+            if (inst.opcode == "000000")
                 opcode = "0" + inst.funct;
             else
                 opcode = "1" + inst.opcode;
             if (!mnemonicmap.TryGetValue(opcode, out Mnemonic value))
             {
-                Exception e = new("Exception detected")
+                Exception e = new Exception("1")
                 {
                     Source = "exception",
-                    HResult = 1
                 };
                 throw e;
             }
             else
+            {
+                if (mc == "".PadLeft(32, '0'))
+                    inst.mnem = Mnemonic.nop;
                 inst.mnem = value;
-
-            inst.aluop  = get_inst_aluop(inst.mnem);
+            }
+            inst.aluop = get_inst_aluop(inst.mnem);
             inst.format = get_format(inst.mnem);
-            inst.oper1  = get_oper1(inst);
-            inst.oper2  = get_oper2(inst);
+            inst.oper1 = get_oper1(inst);
+            inst.oper2 = get_oper2(inst);
             if (inst.format == "I")
             {
                 inst.rdind = inst.rtind;
@@ -485,7 +510,7 @@ namespace ProjectCPUCL
         }
         void comparator(Instruction decoded)
         {
-            pcsrc = PCsrc.nextpc;
+            pcsrc = PCsrc.PCplus1;
             if (!isbranch(decoded.mnem))
             {
                 if (decoded.mnem == Mnemonic.j || decoded.mnem == Mnemonic.jal || decoded.mnem == Mnemonic.jr)
@@ -495,25 +520,17 @@ namespace ProjectCPUCL
             int comp_oper1 = decoded.oper1;
             int comp_oper2 = decoded.oper2;
 
-            
+
             comp_oper1 = forward(3, decoded.rsind, comp_oper1);
             comp_oper2 = forward(3, decoded.rtind, comp_oper2);
 
             if (decoded.mnem == Mnemonic.beq)
             {
-                pcsrc = (comp_oper1 == comp_oper2) ? PCsrc.pfc : PCsrc.nextpc;
+                pcsrc = (comp_oper1 == comp_oper2) ? PCsrc.pfc : PCsrc.PCplus1;
             }
             else if (decoded.mnem == Mnemonic.bne)
             {
-                pcsrc = (comp_oper1 != comp_oper2) ? PCsrc.pfc : PCsrc.nextpc;
-            }
-            else if (decoded.mnem == Mnemonic.bltz)
-            {
-                pcsrc = (comp_oper1 < comp_oper2) ? PCsrc.pfc : PCsrc.nextpc;
-            }
-            else if (decoded.mnem == Mnemonic.bgez)
-            {
-                pcsrc = (comp_oper1 >= comp_oper2) ? PCsrc.pfc : PCsrc.nextpc;
+                pcsrc = (comp_oper1 != comp_oper2) ? PCsrc.pfc : PCsrc.PCplus1;
             }
             else
                 throw new Exception($"invalid branch instruction : {decoded.mnem}");
@@ -543,8 +560,15 @@ namespace ProjectCPUCL
             }
             if (temp.format == "R")
             {
-                temp.oper1 = forward(2, temp.rsind, temp.oper1);
-                temp.oper2 = forward(2, temp.rtind, temp.oper2);
+                if (temp.mnem == Mnemonic.sll || temp.mnem == Mnemonic.srl)
+                {
+                    temp.oper1 = forward(2, temp.rtind, temp.oper1);
+                }
+                else
+                {
+                    temp.oper1 = forward(2, temp.rsind, temp.oper1);
+                    temp.oper2 = forward(2, temp.rtind, temp.oper2);
+                }
             }
             else if (temp.format == "I")
             {
@@ -593,6 +617,8 @@ namespace ProjectCPUCL
                 MEM_HAZ = 0;
                 return;
             }
+            if (inst.mnem == Mnemonic.hlt)
+                hlt = true;
             if (!iswb(inst.mnem) || inst.rdind == 0)
                 return;
             detect_exception(inst, Stage.write_back);
@@ -604,27 +630,28 @@ namespace ProjectCPUCL
             // TODO: should we update the ID_HAZ, EX_HAZ, MEM_HAZ
             PC = HANDLER_ADDR;
             IFID.mc = fetch();
-            IDEX = new();
-            if ((Stage)e.HResult == Stage.decode)
+            IDEX = new Instruction().Init();
+            Stage s = (Stage)Convert.ToInt32(e.Message);
+            if (s == Stage.decode)
             {
                 MEMWB = memed_in_MEM_MIPS;
                 EXMEM = executed_in_EX_MIPS;
             }
-            else if ((Stage)e.HResult == Stage.execute)
+            else if (s == Stage.execute)
             {
                 MEMWB = memed_in_MEM_MIPS;
-                EXMEM = new();
+                EXMEM = new Instruction().Init();
                 ID_HAZ = 0;
             }
-            else if ((Stage)e.HResult == Stage.memory || (Stage)e.HResult == Stage.write_back) // made them in a single if condition because they have the same effect in an exception case
+            else if (s == Stage.memory || s == Stage.write_back) // made them in a single if condition because they have the same effect in an exception case
             {
-                MEMWB = new();
-                EXMEM = new();
+                MEMWB = new Instruction().Init();
+                EXMEM = new Instruction().Init();
                 ID_HAZ = 0;
                 EX_HAZ = 0;
-                MEM_HAZ = ((Stage)e.HResult == Stage.write_back) ? 0 : MEM_HAZ;
+                MEM_HAZ = (s == Stage.write_back) ? 0 : MEM_HAZ;
             }
-            //else if ((Stage)e.HResult == Stage.write_back)
+            //else if (s == Stage.write_back)
             //{
             //    MEMWB = new();
             //    EXMEM = new();
@@ -632,22 +659,20 @@ namespace ProjectCPUCL
         }
         void detect_exception(Instruction inst, Stage stage)
         {
-            if (PC == IM.Count) hlt = true;
-            Exception e = new("Exception detected")
+            Exception e = new Exception(((int)stage).ToString())
             {
                 Source = "exception",
-                HResult = (int)stage
             };
             if (stage == Stage.decode)
             {
                 // detect if there is an exception in the decode operation in the decode stage
-                if (!isvalid_opcode_funct(inst) || !isvalid_format(inst.format))
+                if ((!isvalid_opcode_funct(inst) || !isvalid_format(inst.format)) && inst.mnem != Mnemonic.nop)
                 {
                     throw e;
                 }
                 if (isbranch(inst.mnem) || inst.mnem == Mnemonic.j || inst.mnem == Mnemonic.jal || inst.mnem == Mnemonic.jr)
                 {
-                    if (!is_in_range_inc(PC, 0, IM.Count - 1) && !hlt)
+                    if (!is_in_range_inc(PC, 0, IM.Count - 1) && !(PC == IM.Count))
                         throw e;
                 }
             }
@@ -684,6 +709,8 @@ namespace ProjectCPUCL
             try
             {
                 write_back(MEMWB);
+                if (hlt)
+                    return;
                 memed_in_MEM_MIPS = mem(EXMEM);
                 executed_in_EX_MIPS = execute(IDEX);
                 decoded_in_ID_MIPS = decode(IFID.mc);
@@ -701,24 +728,26 @@ namespace ProjectCPUCL
                     // this is effectively how you would insert a nop in the pipeline in the case of (jr or branch) after load
                     MEMWB = memed_in_MEM_MIPS;
                     EXMEM = executed_in_EX_MIPS;
-                    IDEX = new(); // the nop into the execution stage (aka. IDEX buffer)
+                    IDEX = new Instruction().Init(); // the nop into the execution stage (aka. IDEX buffer)
                     return; // and then return and not fetch a new instruction
                 }
             }
             // we update the buffers all together like this because we need to forward any value if there was a hazard
             MEMWB = memed_in_MEM_MIPS;
-            EXMEM   = executed_in_EX_MIPS;
-            IDEX    = decoded_in_ID_MIPS;
+            EXMEM = executed_in_EX_MIPS;
+            IDEX = decoded_in_ID_MIPS;
             IFID.mc = fetched_in_IF_MIPS;
         }
-        public int Run(int? n = null)
+        public int Run()
         {
             int i = 0;
             while (PC - 3 < IM.Count)
             {
                 i++;
                 ConsumeInst();
-                if (i == 1_000_000)
+                if (hlt)
+                    return i;
+                if (i == 200 * 1000)
                 {
                     return -2;
                 }
@@ -740,46 +769,62 @@ namespace ProjectCPUCL
         public List<int> regs;
         public List<string> IM; // Instruction Mem
         public int PC;
+        public bool hlt;
         public List<string> DM; // Data Mem
         public SingleCycle(List<string>? insts = null)
         {
-            regs = [];
+            regs = new List<int>();
             for (int i = 0; i < 32; i++) regs.Add(0);
-            IM = (insts == null) ? [] : (List<string>)insts;
-            DM = [];
+            IM = insts ?? new List<string>();
+            //IM = (insts == null) ? new List<string>() : insts;
+            DM = new List<string>();
             for (int i = 0; i < 1000; i++) DM.Add("0");
             PC = 0;
+            hlt = false;
         }
         Instruction decodemc(string mc, int pc)
         {
-            Instruction inst = new() 
-            {
-                mc      = mc,
-                PC      = pc,
-                opcode  = mc[^(1 + 31)..^26],
-                rsind   = Convert.ToInt32(mc[^(1 + 25)..^21], 2),
-                rtind   = Convert.ToInt32(mc[^(1 + 20)..^16], 2),
-                rdind   = Convert.ToInt32(mc[^(1 + 15)..^11], 2),
-                shamt   = mc[^(1 + 10)..^6],
-                funct   = mc[^(1 + 5)..^0],
-            };
-            inst.immeds = Convert.ToInt32(sx(mc[^(1 + 15)..^0]), 2);
-            inst.immedz = Convert.ToInt32(zx(mc[^(1 + 15)..^0]), 2);
-            inst.address = Convert.ToInt32(zx(mc[^(1 + 25)..^0]), 2);
+            Instruction inst = new Instruction().Init();
+            inst.mc = mc;
+            inst.PC = pc;
+            inst.opcode = mc.Substring(mc.Length - (1 + 31), 6);
+            inst.rsind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 25), 5), 2);
+            inst.rtind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 20), 5), 2);
+            inst.rdind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 15), 5), 2);
+            inst.shamt = mc.Substring(mc.Length - (1 + 10), 5);
+            inst.funct = mc.Substring(mc.Length - (1 + 5), 6);
+            inst.immeds = Convert.ToInt32(sx(mc.Substring(mc.Length - (1 + 15), 16)), 2);
+            inst.immedz = Convert.ToInt32(zx(mc.Substring(mc.Length - (1 + 15), 16)), 2);
+            inst.address = Convert.ToInt32(zx(mc.Substring(mc.Length - (1 + 25), 26)), 2);
             // mips integer instruction map for formats (R, I, J)
             inst.rs = regs[inst.rsind];
             inst.rt = regs[inst.rtind];
 
-            if (inst.opcode != "000000") inst.opcode = "0" + inst.opcode;
-            // it depends on one of them or may be both
+
+            string opcode;
             if (inst.opcode == "000000")
-                inst.mnem  = mnemonicmap[inst.funct];
-            else             
-                inst.mnem  = mnemonicmap[inst.opcode];
-            inst.aluop  = get_inst_aluop(inst.mnem);
+                opcode = "0" + inst.funct;
+            else
+                opcode = "1" + inst.opcode;
+            if (!mnemonicmap.TryGetValue(opcode, out Mnemonic value))
+            {
+                Exception e = new Exception("1")
+                {
+                    Source = "exception",
+                };
+                throw e;
+            }
+            else
+            {
+                if (mc == "".PadLeft(32, '0'))
+                    inst.mnem = Mnemonic.nop;
+                inst.mnem = value;
+            }
+
+            inst.aluop = get_inst_aluop(inst.mnem);
             inst.format = get_format(inst.mnem);
-            inst.oper1  = get_oper1(inst);
-            inst.oper2  = get_oper2(inst);
+            inst.oper1 = get_oper1(inst);
+            inst.oper2 = get_oper2(inst);
             if (inst.format == "I")
             {
                 inst.rdind = inst.rtind;
@@ -790,30 +835,30 @@ namespace ProjectCPUCL
             }
             return inst;
         }
+
         void mem(ref Instruction inst)
         {
             if (inst.mnem == Mnemonic.lw)
             {
                 string smemout = DM[inst.aluout];
                 smemout = DM[inst.aluout + 1] + smemout;
-                smemout = DM[inst.aluout+2] + smemout;
-                smemout = DM[inst.aluout+3] + smemout;
+                smemout = DM[inst.aluout + 2] + smemout;
+                smemout = DM[inst.aluout + 3] + smemout;
                 inst.memout = Convert.ToInt32(smemout, 2);
             }
             else if (inst.mnem == Mnemonic.sw)
             {
                 string memin = Convert.ToString(inst.rt, 2).PadLeft(32, '0');
-                DM[inst.aluout]     = memin[24..32];
-                DM[inst.aluout + 1] = memin[16..24];
-                DM[inst.aluout + 2] = memin[8 ..16];
-                DM[inst.aluout + 3] = memin[0 ..8];
+                DM[inst.aluout] = memin;
             }
         }
         void write_back(Instruction inst)
         {
-            if (!iswb(inst.mnem))
-                return;
-            regs[inst.rdind] = (inst.mnem == Mnemonic.lw) ? inst.memout : inst.aluout;
+            if (inst.mnem == Mnemonic.hlt)
+                hlt = true;
+
+            if (iswb(inst.mnem) && inst.rdind != 0)
+                regs[inst.rdind] = (inst.mnem == Mnemonic.lw) ? inst.memout : inst.aluout;
         }
         void ConsumeInst()
         {
@@ -827,40 +872,36 @@ namespace ProjectCPUCL
             mem(ref inst);
             // writing back
             write_back(inst);
-
+            if (hlt)
+                return;
             // updating the PC
             if (inst.format == "J")
             {
                 PC = inst.address;
             }
-            else if (isbranch(inst.mnem))
-            {
-                PC += inst.immeds;
-            }
             else if (inst.mnem == Mnemonic.jr)
             {
                 PC = inst.aluout;
             }
+            else if (isbranch(inst.mnem) && isbranch_taken(inst))
+            {
+                PC += inst.immeds;
+            }
             else
                 PC += 1;
         }
-        public int Run(int? n = null)
+        public int Run()
         {
             int i = 0;
-            if (n == null)
+            while (PC < IM.Count)
             {
-                while (PC < IM.Count)
+                i++;
+                ConsumeInst();
+                if (hlt)
+                    return i;
+                if (i == 200 * 1000)
                 {
-                    ConsumeInst();
-                    i++;
-                }
-            }
-            else
-            {
-                while (n-- > 0 && PC < IM.Count)
-                {
-                    ConsumeInst();
-                    i++;
+                    return -2;
                 }
             }
             return i;
