@@ -26,7 +26,9 @@ namespace Real_Time_CAS_ASSEM
                 string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
                 string inst = "";
                 curr_insts[i].ForEach(x => { inst += x + " "; });
-                tb_tocopy += $"InstMem[{i, 3}] <= 32'h{hex}; // {inst, -20} \n";
+                string temp = ($"InstMem[{i,3}] <= 32'h{hex}; // {inst,-20}").Trim() + '\n';
+                tb_tocopy += temp;
+                
             }
             if (tb_tocopy.Length > 0)
                 Clipboard.SetText(tb_tocopy);

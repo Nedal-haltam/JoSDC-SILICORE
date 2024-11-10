@@ -1,5 +1,5 @@
 `define sim
-`define timeunits (2 * 10000)
+`define MAX_CLOCKS (2 * 10000)
 `define reset 4
 
 `include "forward_unit.v"
@@ -21,7 +21,7 @@
 `include "IM.v"
 `include "DM.v"
 `include "PC_register.v"
-`include "comparator.v"
+`include "BranchResolver.v"
 `include "control_unit.v"
 `include "exception_detect_unit.v"
 `include "StallDetectionUnit.v"
@@ -48,7 +48,7 @@ rst <= 1; #(`reset)
 rst = 0;
 
 $display("Executing...");
-#(`timeunits + 1);
+#(`MAX_CLOCKS + 1);
 
 // we add one to the consumed cycles because it will not count for the hlt instruction (the last instruction)
 $display("Number of cycles consumed: %d", cycles_consumed + 1); 

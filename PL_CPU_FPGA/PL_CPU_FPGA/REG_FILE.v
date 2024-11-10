@@ -38,7 +38,7 @@ assign rd_data2 = reg_file[rd_reg2];
 
 `ifdef sim
 initial begin
-  #(`timeunits + `reset + 1);
+  #(`MAX_CLOCKS + `reset + 1);
   // iterating through the register file to check if the program changed the contents correctly
   $display("Reading Register File : ");
   for (integer i = 31; i >= 0; i = i - 1)

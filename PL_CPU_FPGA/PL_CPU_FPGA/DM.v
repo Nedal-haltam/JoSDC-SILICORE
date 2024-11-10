@@ -18,7 +18,7 @@ assign Data_Out = data_mem[addr];
 
 `ifdef sim
 initial begin
-  #(`timeunits + `reset);
+  #(`MAX_CLOCKS + `reset);
   // iterating through some of the addresses of the memory to check if the program loaded and stored the values properly
   $display("Reading Data Memory Content : ");
   for (integer i = 50; i >= 0; i = i - 1)

@@ -23,11 +23,11 @@ module ALU_OPER(opcode, ALU_OP);
 	always@(*) begin
 
 		case (opcode) 
-			add, addu, addi, lw, sw, beq, bne, /*blt, bge,*/ jal, jr, j: ALU_OP <= 4'b0000;
-			sub, subu: ALU_OP <= 4'b0001;
-			and_, andi:ALU_OP <= 4'b0010;
-			or_, ori:  ALU_OP <= 4'b0011;
-			xor_, xori:ALU_OP <= 4'b0100;
+			add, addu, addi, lw, sw, jal, jr, j: ALU_OP <= 4'b0000;
+			sub, subu:    ALU_OP <= 4'b0001;
+			and_, andi:   ALU_OP <= 4'b0010;
+			or_, ori:     ALU_OP <= 4'b0011;
+			xor_, xori:   ALU_OP <= 4'b0100;
 			nor_:		  ALU_OP <= 4'b0101;
 			sll:		  ALU_OP <= 4'b0110;
 			srl:		  ALU_OP <= 4'b0111;
