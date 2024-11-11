@@ -35,10 +35,10 @@ module ID_stage(pc, inst, opcode, id_haz, ex_haz, mem_haz, wr_reg_data, rs1_ind,
 	assign pfc = (opcode == beq || opcode == bne) ? pc + imm : imm;
 	
 	// comparator section
-	MUX_4x1 comp_mux_oper1(id_haz, ex_haz, mem_haz, rs1, comp_selA, comp_oper1);
-    MUX_4x1 comp_mux_oper2(id_haz, ex_haz, mem_haz, rs2, comp_selB, comp_oper2); 
+	// MUX_4x1 comp_mux_oper1(id_haz, ex_haz, mem_haz, rs1, comp_selA, comp_oper1);
+    // MUX_4x1 comp_mux_oper2(id_haz, ex_haz, mem_haz, rs2, comp_selB, comp_oper2); 
 	
-    BranchResolver BR(comp_oper1, comp_oper2, pc_src, exception_flag, opcode, Wrong_prediction, rst);
+    BranchResolver BR(pc_src, exception_flag, opcode, Wrong_prediction, rst);
 	
 	// control section
     control_unit cu(opcode, reg_write_wire, mem_read_wire, mem_write_wire);

@@ -11,7 +11,10 @@ assign Data_Out = InstMem[addr[9:0]];
  
 initial begin
 
-InstMem[  0] <= 32'hFC000000; // hlt
+InstMem[  0] <= 32'h2001000A; // addi x1 x0 10
+InstMem[  1] <= 32'h10000002; // beq x0 x0 l
+InstMem[  2] <= 32'h2002007B; // addi x2 x0 123
+InstMem[  3] <= 32'hFC000000; // hlt
 
 
 // TODO: for exception handling, we can do better things in terms of handling an exception 

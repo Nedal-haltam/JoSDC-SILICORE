@@ -1,12 +1,12 @@
 
 
-module EX_stage(pc, opcode, ex_haz, mem_haz, rs1, imm, rs1_ind, rs2_ind, alu_selA, alu_selB, store_rs2_forward, 
+module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1_ind, rs2_ind, alu_selA, alu_selB, store_rs2_forward, 
 			    reg_write, mem_read, mem_write, rs2_in, rs2_out, alu_out, Wrong_prediction);
 	
 	`include "opcodes.v"
 
 
-	input [31:0] pc, ex_haz, mem_haz, rs1, imm;
+	input [31:0] pc, EX_PFC, ex_haz, mem_haz, rs1, imm;
 	input [6:0] opcode;
 	input [4:0] rs1_ind, rs2_ind;
     input [1:0] alu_selA, store_rs2_forward;
@@ -15,7 +15,7 @@ module EX_stage(pc, opcode, ex_haz, mem_haz, rs1, imm, rs1_ind, rs2_ind, alu_sel
 	inout reg_write, mem_read, mem_write;
     input [31:0] rs2_in;
 	
-    output [31:0] alu_out, rs2_out; 
+    output [31:0] alu_out, rs2_out, EX_PFC_to_IF; 
 	output Wrong_prediction;
   
 	wire [31:0] oper1, oper2;
@@ -30,13 +30,13 @@ module EX_stage(pc, opcode, ex_haz, mem_haz, rs1, imm, rs1_ind, rs2_ind, alu_sel
 
     ALU_OPER alu_oper(opcode, alu_op);
 
-	
+	assign EX_PFC_to_IF = (opcode == jr) ? oper1 : EX_PFC;
 
     MUX_4x1 store_rs2_mux(rs2_in, ex_haz, mem_haz, 32'd0, store_rs2_forward, rs2_out);
 
 	// here we assume branch is alyaws taken so we check if our prediction is wrong or not.
 	// so the Wrong_prediction will be high if we are wrong
-	assign Wrong_prediction = ((opcode == beq && oper1 != oper2) || (opcode == bne && oper1 == oper2));
+	assign Wrong_prediction = ((opcode == beq && oper1 != oper2) || (opcode == bne && oper1 == oper2) || (opcode == jr));
 
 
 endmodule

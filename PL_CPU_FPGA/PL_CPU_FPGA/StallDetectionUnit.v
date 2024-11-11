@@ -33,7 +33,7 @@ always@(*) begin
 	else if (if_id_opcode == jr) begin
 
 		PC_Write <= 0;
-		if_id_Write <= 0;
+		if_id_Write <= 1'b1;
 		if_id_flush <= 1'b1;
 		id_ex_flush <= 0;
 
