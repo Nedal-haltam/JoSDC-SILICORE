@@ -1,5 +1,5 @@
 module IF_stage#(
-    parameter handler_addr = 32'h0000_00FE	
+    parameter handler_addr = 32'd1000
 )
 (ID_PFC, EX_PFC, pc_src, inst_mem_in, pc_write, clk, inst, rst);
 	

@@ -64,38 +64,11 @@ namespace Real_Time_CAS_ASSEM
             lblnumofinst.Text = ASSEMBLERMIPS.lblnumofinst.Text;
             return mc;
         }
-
-        (int, CPU5STAGE) simulatePipeLined(List<string> mc)
+        (int, MIPS.Exceptions, CPU) SimulateCPU(List<string> mc)
         {
-            if (mc.Count == 0)
-            {
-                output.Lines = new string[0];
-                return (0, new CPU5STAGE());
-            }
-            if (mc.Contains(ASSEMBLERMIPS.invinst))
-            {
-                output.Lines = new string[0];
-                return (-1, new CPU5STAGE());
-            }
-            CPU5STAGE cpu = new CPU5STAGE(mc);
-            int cycles = cpu.Run();
-            return (cycles, cpu);
-        }
-        (int, SingleCycle) simulateSingleCycle(List<string> mc)
-        {
-            if (mc.Count == 0)
-            {
-                output.Lines = new string[0];
-                return (0, new SingleCycle());
-            }
-            if (mc.Contains(ASSEMBLERMIPS.invinst))
-            {
-                output.Lines = new string[0];
-                return (-1, new SingleCycle());
-            }
-            SingleCycle cpu = new SingleCycle(mc);
-            int cycles = cpu.Run();
-            return (cycles, cpu);
+            CPU cpu = new CPU();
+            (int cycles, MIPS.Exceptions excep) = cpu.Run(mc, curr_cpu);
+            return (cycles, excep, cpu);
         }
 
         List<string> get_regs_DM(List<int> regs, List<string> DM)
@@ -117,48 +90,32 @@ namespace Real_Time_CAS_ASSEM
             }
             return toout;
         }
-        void update(List<string> mc, int c, List<int> regs, List<string> DM)
+        void update(List<string> mc, int cycles, MIPS.Exceptions excep, List<int> regs, List<string> DM)
         {
-            if (c == -1)
+            if (excep == MIPS.Exceptions.INVALID_INST)
             {
                 lblcycles.Text = "0";
             }
-            else if (c == -2)
+            else if (excep == MIPS.Exceptions.INF_LOOP)
             {
                 lblErrInfloop.Visible = true;
             }
-            else
+            else if (excep == MIPS.Exceptions.NONE && cycles != 0)
             {
-                lblcycles.Text = c.ToString();
-                lblnumofinst.Text = mc.Count.ToString();
+                lblcycles.Text = cycles.ToString();
                 List<string> toout = get_regs_DM(regs, DM);
                 output.Lines = toout.ToArray();
             }
+            else
+            {
+                lblcycles.Text = "0";
+                List<string> toout = get_regs_DM(new List<int>(), new List<string>());
+                output.Lines = toout.ToArray();
+            }
+
         }
 
-        private void input_TextChanged(object sender, EventArgs e)
-        {
-            lblErrInfloop.Visible = false;
-            List<string> mc = assemble(input.Lines);
-            if (curr_cpu == CPU_type.SingleCycle)
-            {
-                (int c , SingleCycle cpu) = simulateSingleCycle(mc);
-                update(mc, c, cpu.regs, cpu.DM);
-            }
-            else if (curr_cpu == CPU_type.PipeLined)
-            {
-                (int c, CPU5STAGE cpu) = simulatePipeLined(mc);
-                update(mc, c, cpu.regs, cpu.DM);
-            }
-            lblNoErr.Visible = !(lblErrInfloop.Visible || lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible);
 
-            int j = 0;
-            for (int i = 0; i < errors.Length; i++)
-            {
-                if (errors[i].Visible)
-                    errors[i].Location = locations[j++];
-            }
-        }
 
 
         private void layout_size()
@@ -184,8 +141,10 @@ namespace Real_Time_CAS_ASSEM
             cmbcpulist.Location = new System.Drawing.Point(output.Location.X + output.Width, output.Location.Y);
             btntbcopy.Location = new System.Drawing.Point(cmbcpulist.Location.X, btntbcopy.Location.Y);
             btncascopy.Location = new System.Drawing.Point(btntbcopy.Location.X - btntbcopy.Size.Width, btncascopy.Location.Y);
+            
             lblErr.Location = new System.Drawing.Point(cmbcpulist.Location.X, lblErr.Location.Y);
             lblNoErr.Location = new System.Drawing.Point(lblErr.Location.X + lblErr.Size.Width, lblErr.Location.Y);
+            lblexception.Location = new System.Drawing.Point(lblErr.Location.X, lblErr.Location.Y - lblexception.Size.Height - padding);
 
             
             locations = new System.Drawing.Point[] { 
@@ -241,6 +200,27 @@ namespace Real_Time_CAS_ASSEM
                 Clipboard.SetText(to_copy.ToString());
             else
                 Clipboard.SetText(" ");
+        }
+
+        private void input_TextChanged(object sender, EventArgs e)
+        {
+            lblErrInfloop.Visible = false;
+            List<string> mc = assemble(input.Lines);
+
+
+            (int cycles, MIPS.Exceptions excep, CPU cpu) = SimulateCPU(mc);
+            lblexception.Visible = excep != MIPS.Exceptions.NONE;
+
+            update(mc, cycles, excep, cpu.regs, cpu.DM);
+
+            lblNoErr.Visible = !(lblErrInfloop.Visible || lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible);
+
+            int j = 0;
+            for (int i = 0; i < errors.Length; i++)
+            {
+                if (errors[i].Visible)
+                    errors[i].Location = locations[j++];
+            }
         }
     }
 }

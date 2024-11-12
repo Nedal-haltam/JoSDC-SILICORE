@@ -6,7 +6,7 @@ input input_clk, rst;
 output [31:0] PC;
 output reg [31:0] cycles_consumed;
 
-parameter handler_addr = 32'h0000_00FE;
+parameter handler_addr = 32'd1000;
 
 
 wire IF_FLUSH;

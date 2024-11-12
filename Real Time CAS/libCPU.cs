@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
+using System.Diagnostics;
 using System.Net;
 using static ProjectCPUCL.Macros;
 using static ProjectCPUCL.MIPS;
@@ -18,8 +20,39 @@ namespace ProjectCPUCL
             Console.WriteLine(str, args);
         }
     }
+    public class CPU
+    {
+        public List<string> DM; // Data Mem
+        public List<int> regs;
+
+        public (int, Exceptions) Run(List<string> mc, CPU_type cpu_type)
+        {
+            if (cpu_type == CPU_type.SingleCycle)
+            {
+                SingleCycle sc = new SingleCycle(mc);
+                (int cycles, Exceptions excep) = sc.Run();
+                regs = sc.regs;
+                DM = sc.DM;
+
+                return (cycles, excep);
+            }
+            else if (cpu_type == CPU_type.PipeLined)
+            {
+                CPU5STAGE pl = new CPU5STAGE(mc);
+                (int cycles, Exceptions excep) = pl.Run();
+                regs = pl.regs;
+                DM = pl.DM;
+                return (cycles, excep);
+            }
+            else
+                return (0, Exceptions.EXCEPTION);
+        }
+    }
+
     public static class MIPS
     {
+
+        public const int HANDLER_ADDR = 1000;
         public enum Mnemonic
         {
             add, addu, subu, sub, and, or, nor, slt, sgt, xor,
@@ -86,6 +119,10 @@ namespace ProjectCPUCL
         public enum Stage
         {
             fetch, decode, execute, memory, write_back
+        }
+        public enum Exceptions
+        {
+            NONE, INF_LOOP, INVALID_INST, EXCEPTION
         }
 
         public static readonly Dictionary<string, Mnemonic> mnemonicmap = new Dictionary<string, Mnemonic>()
@@ -316,7 +353,6 @@ namespace ProjectCPUCL
             int i = 0;
             foreach (int n in regs)
             {
-                if (i == 11) break;
                 cout($"index = {i++,2} , signed = {n,10} , unsigned = {(uint)n,10}");
             }
         }
@@ -353,16 +389,13 @@ namespace ProjectCPUCL
 
     }
 
-    public class CPU5STAGE
+    public class CPU5STAGE : CPU
     {   // TODO: -log the info of the run every time you run the cpu on the given instructions (necessary for the real time app) make a btn for that
         //       -implement floating point (in terms of reg file and FP ALU)
         //       -modify the HANDLER address to a suitable location in the instruction memory
         int PC;
         bool hlt;
-        public List<string> IM; // Instruction Mem
-        public List<string> DM; // Data Mem
-        public List<int> regs;
-        static int HANDLER_ADDR;
+        public List<string> IM; // Instruction Mem        
 
         Instruction IFID;
         Instruction IDEX;
@@ -386,8 +419,13 @@ namespace ProjectCPUCL
         {
             regs = new List<int>();
             for (int i = 0; i < 32; i++) regs.Add(0);
-            IM = insts ?? new List<string>();
-            //IM = (insts == null) ? new List<string>() : insts;
+            IM = new List<string>();
+            if (insts != null) IM.AddRange(insts);
+            int curr_count = (insts == null) ? 0 : insts.Count;
+            for (int i = 0; i < 1024 - curr_count; i++) IM.Add("0".PadLeft(32, '0'));
+            IM[HANDLER_ADDR] = "00100000000111111111111111111111"; // addi x31 x0 -1
+            IM[HANDLER_ADDR + 1] = "11111100000000000000000000000000"; // hlt
+
             DM = new List<string>();
             for (int i = 0; i < 1024; i++) DM.Add("0");
             PC = -1;
@@ -403,7 +441,6 @@ namespace ProjectCPUCL
             ID_HAZ  = 0;
             EX_HAZ  = 0;
             MEM_HAZ = 0;
-            HANDLER_ADDR = IM.Count - 1;
         }
         int forward(int n, int source_ind, int source_reg)
         {
@@ -434,7 +471,11 @@ namespace ProjectCPUCL
         }
         void update_PC(Instruction inst)
         {
-            if (pcsrc == PCsrc.PCplus1)
+            if (inst.mnem == Mnemonic.hlt)
+            {
+                return;
+            }
+            else if (pcsrc == PCsrc.PCplus1)
             {
                 PC += 1;
             }
@@ -721,7 +762,7 @@ namespace ProjectCPUCL
                 if (e.Source == "exception")
                 {
                     handle_exception(e);
-                    return;
+                    throw e;
                 }
                 else if (e.Source == "jrBALstall")
                 {
@@ -738,21 +779,28 @@ namespace ProjectCPUCL
             IDEX    = decoded_in_ID_MIPS;
             IFID.mc = fetched_in_IF_MIPS;
         }
-        public int Run()
+        public (int, Exceptions) Run()
         {
             int i = 0;
-            while (PC - 3 < IM.Count)
+            while (PC < IM.Count)
             {
                 i++;
-                ConsumeInst();
+                try
+                {
+                    ConsumeInst();
+                }
+                catch (Exception e)
+                {
+                    return (0, Exceptions.EXCEPTION);
+                }
                 if (hlt)
-                    return i;
+                    return (i, Exceptions.NONE);
                 if (i == 200 * 1000)
                 {
-                    return -2;
+                    return (0, Exceptions.INF_LOOP);
                 }
             }
-        return i;
+        return (i, Exceptions.NONE);
         }
         public void print_regs()
         {
@@ -764,21 +812,23 @@ namespace ProjectCPUCL
         }
     }
 
-    public class SingleCycle
+    public class SingleCycle : CPU
     {
-        public List<int> regs;
         public List<string> IM; // Instruction Mem
         public int PC;
         public bool hlt;
-        public List<string> DM; // Data Mem
         public SingleCycle(List<string> insts = null)
         {
             regs = new List<int>();
             for (int i = 0; i < 32; i++) regs.Add(0);
-            IM = insts ?? new List<string>();
-            //IM = (insts == null) ? new List<string>() : insts;
+            IM = new List<string>();
+            if (insts != null) IM.AddRange(insts);
+            int curr_count = (insts == null) ? 0 : insts.Count;
+            for (int i = 0; i < 1024 - curr_count; i++) IM.Add("0".PadLeft(32, '0'));
+            IM[HANDLER_ADDR] = "00100000000111111111111111111111"; // addi x31 x0 -1
+            IM[HANDLER_ADDR + 1] = "11111100000000000000000000000000"; // hlt
             DM = new List<string>();
-            for (int i = 0; i < 1000; i++) DM.Add("0");
+            for (int i = 0; i < 1024; i++) DM.Add("".PadLeft(32, '0'));
             PC = 0;
             hlt = false;
         }
@@ -849,8 +899,15 @@ namespace ProjectCPUCL
             else if (inst.mnem == Mnemonic.sw)
             {
                 string memin = Convert.ToString(inst.rt, 2).PadLeft(32, '0');
-                if (inst.aluout >= 0)
-                    DM[inst.aluout] = memin;
+                if (!is_in_range_inc(inst.aluout, 0, DM.Count - 1))
+                {
+                    Exception e = new Exception($"Memory address {inst.aluout} is an invalid memory address")
+                    {
+                        Source = "SingleCycle::DataMemory"
+                    };
+                    throw e;
+                }
+                DM[inst.aluout] = memin;
             }
         }
         void write_back(Instruction inst)
@@ -863,16 +920,26 @@ namespace ProjectCPUCL
         }
         void ConsumeInst()
         {
-            // fetching
-            string mc = IM[PC];
-            // decoding
-            Instruction inst = decodemc(mc, PC);
-            // executing
-            inst.aluout = execute_inst(inst);
-            // mem MIPS
-            mem(ref inst);
-            // writing back
-            write_back(inst);
+            Instruction inst;
+            try
+            {
+                // fetching
+                string mc = IM[PC];
+                // decoding
+                inst = decodemc(mc, PC);
+                // executing
+                inst.aluout = execute_inst(inst);
+                // mem MIPS
+                mem(ref inst);
+                // writing back
+                write_back(inst);
+            }
+            catch (Exception e)
+            {
+                PC = HANDLER_ADDR;
+                throw e;
+            }
+
             if (hlt)
                 return;
             // updating the PC
@@ -891,21 +958,28 @@ namespace ProjectCPUCL
             else
                 PC += 1;
         }
-        public int Run()
+        public (int, Exceptions) Run()
         {
             int i = 0;
             while (PC < IM.Count)
             {
                 i++;
-                ConsumeInst();
+                try
+                {
+                    ConsumeInst();
+                }
+                catch (Exception e)
+                {
+                    return (0, Exceptions.EXCEPTION);
+                }
                 if (hlt)
-                    return i;
+                    return (i, Exceptions.NONE);
                 if (i == 200 * 1000)
                 {
-                    return -2;
+                    return (0, Exceptions.INF_LOOP);
                 }
             }
-            return i;
+            return (i, Exceptions.NONE);
         }
         public void print_regs()
         {

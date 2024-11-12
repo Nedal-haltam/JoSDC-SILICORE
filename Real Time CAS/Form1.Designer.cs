@@ -45,6 +45,7 @@
             this.lblErr = new System.Windows.Forms.Label();
             this.lblNoErr = new System.Windows.Forms.Label();
             this.btncascopy = new System.Windows.Forms.Button();
+            this.lblexception = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // input
@@ -72,7 +73,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblErrInvinst.AutoSize = true;
             this.lblErrInvinst.ForeColor = System.Drawing.Color.Red;
-            this.lblErrInvinst.Location = new System.Drawing.Point(1098, 122);
+            this.lblErrInvinst.Location = new System.Drawing.Point(1098, 171);
             this.lblErrInvinst.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblErrInvinst.Name = "lblErrInvinst";
             this.lblErrInvinst.Size = new System.Drawing.Size(164, 16);
@@ -87,7 +88,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblErrMultlabels.AutoSize = true;
             this.lblErrMultlabels.ForeColor = System.Drawing.Color.Red;
-            this.lblErrMultlabels.Location = new System.Drawing.Point(1098, 204);
+            this.lblErrMultlabels.Location = new System.Drawing.Point(1098, 253);
             this.lblErrMultlabels.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblErrMultlabels.Name = "lblErrMultlabels";
             this.lblErrMultlabels.Size = new System.Drawing.Size(181, 16);
@@ -102,7 +103,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblErrInvlabel.AutoSize = true;
             this.lblErrInvlabel.ForeColor = System.Drawing.Color.Red;
-            this.lblErrInvlabel.Location = new System.Drawing.Point(1098, 178);
+            this.lblErrInvlabel.Location = new System.Drawing.Point(1098, 227);
             this.lblErrInvlabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblErrInvlabel.Name = "lblErrInvlabel";
             this.lblErrInvlabel.Size = new System.Drawing.Size(154, 16);
@@ -181,7 +182,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblErrInfloop.AutoSize = true;
             this.lblErrInfloop.ForeColor = System.Drawing.Color.Red;
-            this.lblErrInfloop.Location = new System.Drawing.Point(1098, 150);
+            this.lblErrInfloop.Location = new System.Drawing.Point(1098, 199);
             this.lblErrInfloop.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblErrInfloop.Name = "lblErrInfloop";
             this.lblErrInfloop.Size = new System.Drawing.Size(130, 16);
@@ -221,7 +222,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblErr.AutoSize = true;
             this.lblErr.ForeColor = System.Drawing.Color.Red;
-            this.lblErr.Location = new System.Drawing.Point(1098, 94);
+            this.lblErr.Location = new System.Drawing.Point(1098, 143);
             this.lblErr.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblErr.Name = "lblErr";
             this.lblErr.Size = new System.Drawing.Size(46, 16);
@@ -235,7 +236,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblNoErr.AutoSize = true;
             this.lblNoErr.ForeColor = System.Drawing.Color.Red;
-            this.lblNoErr.Location = new System.Drawing.Point(1152, 94);
+            this.lblNoErr.Location = new System.Drawing.Point(1152, 143);
             this.lblNoErr.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblNoErr.Name = "lblNoErr";
             this.lblNoErr.Size = new System.Drawing.Size(122, 16);
@@ -253,11 +254,26 @@
             this.btncascopy.UseVisualStyleBackColor = true;
             this.btncascopy.Click += new System.EventHandler(this.btncascopy_Click);
             // 
+            // lblexception
+            // 
+            this.lblexception.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblexception.AutoSize = true;
+            this.lblexception.ForeColor = System.Drawing.Color.Red;
+            this.lblexception.Location = new System.Drawing.Point(1098, 100);
+            this.lblexception.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblexception.Name = "lblexception";
+            this.lblexception.Size = new System.Drawing.Size(127, 16);
+            this.lblexception.TabIndex = 22;
+            this.lblexception.Text = "Exception Detected!";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1346, 664);
+            this.Controls.Add(this.lblexception);
             this.Controls.Add(this.btncascopy);
             this.Controls.Add(this.lblNoErr);
             this.Controls.Add(this.lblErr);
@@ -300,6 +316,7 @@
         private System.Windows.Forms.Label lblErr;
         private System.Windows.Forms.Label lblNoErr;
         private System.Windows.Forms.Button btncascopy;
+        private System.Windows.Forms.Label lblexception;
     }
 }
 
