@@ -1,5 +1,5 @@
 Analysis & Synthesis report for PLCPU
-Tue Nov 12 06:09:13 2024
+Tue Nov 12 18:15:42 2024
 Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
 
 
@@ -79,7 +79,7 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                        ;
 +------------------------------------+------------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Tue Nov 12 06:09:12 2024          ;
+; Analysis & Synthesis Status        ; Successful - Tue Nov 12 18:15:41 2024          ;
 ; Quartus Prime Version              ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
 ; Revision Name                      ; PLCPU                                          ;
 ; Top-level Entity Name              ; PLCPU                                          ;
@@ -497,7 +497,7 @@ Note: All latches listed above may not be present at the end of synthesis due to
 +----------------+----------------------------------+-----------------+
 ; Parameter Name ; Value                            ; Type            ;
 +----------------+----------------------------------+-----------------+
-; handler_addr   ; 00000000000000000000000011111110 ; Unsigned Binary ;
+; handler_addr   ; 00000000000000000000001111101000 ; Unsigned Binary ;
 +----------------+----------------------------------+-----------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
@@ -578,7 +578,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 +----------------+----------------------------------+--------------------------+
 ; Parameter Name ; Value                            ; Type                     ;
 +----------------+----------------------------------+--------------------------+
-; handler_addr   ; 00000000000000000000000011111110 ; Unsigned Binary          ;
+; handler_addr   ; 00000000000000000000001111101000 ; Unsigned Binary          ;
 +----------------+----------------------------------+--------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
@@ -1082,16 +1082,18 @@ Note: In order to hide this table in the UI and the text report file, please set
 
 +--------------------------------------------------------------------------------+
 ; Port Connectivity Checks: "CPU5STAGE:cpu|IF_stage:if_stage|MUX_8x1:pc_src_mux" ;
-+------------+-------+----------+------------------------------------------------+
-; Port       ; Type  ; Severity ; Details                                        ;
-+------------+-------+----------+------------------------------------------------+
-; inb[7..1]  ; Input ; Info     ; Stuck at VCC                                   ;
-; inb[31..8] ; Input ; Info     ; Stuck at GND                                   ;
-; inb[0]     ; Input ; Info     ; Stuck at GND                                   ;
-; inf        ; Input ; Info     ; Stuck at GND                                   ;
-; ing        ; Input ; Info     ; Stuck at GND                                   ;
-; inh        ; Input ; Info     ; Stuck at GND                                   ;
-+------------+-------+----------+------------------------------------------------+
++-------------+-------+----------+-----------------------------------------------+
+; Port        ; Type  ; Severity ; Details                                       ;
++-------------+-------+----------+-----------------------------------------------+
+; inb[9..5]   ; Input ; Info     ; Stuck at VCC                                  ;
+; inb[31..10] ; Input ; Info     ; Stuck at GND                                  ;
+; inb[2..0]   ; Input ; Info     ; Stuck at GND                                  ;
+; inb[4]      ; Input ; Info     ; Stuck at GND                                  ;
+; inb[3]      ; Input ; Info     ; Stuck at VCC                                  ;
+; inf         ; Input ; Info     ; Stuck at GND                                  ;
+; ing         ; Input ; Info     ; Stuck at GND                                  ;
+; inh         ; Input ; Info     ; Stuck at GND                                  ;
++-------------+-------+----------+-----------------------------------------------+
 
 
 +----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -1149,7 +1151,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
-    Info: Processing started: Tue Nov 12 06:08:17 2024
+    Info: Processing started: Tue Nov 12 18:14:45 2024
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off PLCPU -c PLCPU
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 6 of the 6 processors detected
@@ -1311,7 +1313,7 @@ Info (12128): Elaborating entity "WB_stage" for hierarchy "CPU5STAGE:cpu|WB_stag
 Info (12128): Elaborating entity "bcd7seg" for hierarchy "bcd7seg:b" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/PLCPU.v Line: 42
 Info (276014): Found 2 instances of uninferred RAM logic
     Info (276007): RAM logic "CPU5STAGE:cpu|IF_stage:if_stage|IM:inst_mem|InstMem" is uninferred due to asynchronous read logic File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/IM.v Line: 7
-    Info (276007): RAM logic "CPU5STAGE:cpu|MEM_stage:mem_stage|DM:data_mem|data_mem" is uninferred due to asynchronous read logic File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/DM.v Line: 8
+    Info (276007): RAM logic "CPU5STAGE:cpu|MEM_stage:mem_stage|DM:data_mem|data_mem" is uninferred due to asynchronous read logic File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/DM.v Line: 9
 Warning (127007): Memory Initialization File or Hexadecimal (Intel-Format) File "D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/db/PLCPU.ram0_IM_936.hdl.mif" contains "don't care" values -- overwriting them with 0s
 Warning (12241): 1 hierarchies have connectivity warnings - see the Connectivity Checks report folder
 Warning (13012): Latch CPU5STAGE:cpu|EX_stage:ex_stage|ALU:alu|res[0] has unsafe behavior File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ALU.v Line: 25
@@ -1478,10 +1480,10 @@ Info (21057): Implemented 59825 device resources after synthesis - the final res
     Info (21059): Implemented 72 output pins
     Info (21061): Implemented 59738 logic cells
 Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 190 warnings
-    Info: Peak virtual memory: 5038 megabytes
-    Info: Processing ended: Tue Nov 12 06:09:13 2024
-    Info: Elapsed time: 00:00:56
-    Info: Total CPU time (on all processors): 00:01:00
+    Info: Peak virtual memory: 5027 megabytes
+    Info: Processing ended: Tue Nov 12 18:15:42 2024
+    Info: Elapsed time: 00:00:57
+    Info: Total CPU time (on all processors): 00:00:54
 
 
 +------------------------------------------+

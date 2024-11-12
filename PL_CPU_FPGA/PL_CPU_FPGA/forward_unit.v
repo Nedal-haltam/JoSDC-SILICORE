@@ -1,8 +1,8 @@
 
 module forward_unit(if_id_opcode, if_id_rs1, if_id_rs2, id_ex_opcode, id_ex_rs1, id_ex_rs2, id_ex_rd, 
 					id_ex_wr, ex_mem_rd, ex_mem_wr , mem_wb_rd, mem_wb_wr, 
-					sel_target_address_adder_mux_InDecodeStage, 
-					comparator_mux_selA, comparator_mux_selB, 
+					/*sel_target_address_adder_mux_InDecodeStage, 
+					comparator_mux_selA, comparator_mux_selB, */
 					forwardA, forwardB, store_rs2_forward
 					);
 parameter bit_width = 32;
@@ -90,76 +90,76 @@ output reg [1:0] comparator_mux_selA, comparator_mux_selB; // the selection line
 	
 	
 	
-	always@(*) begin
+	// always@(*) begin
 	
-	//-----------------------------------------------------------------------------------------
-	// in this section of the module we forward the wanted register to compute the address that we want to 
-	// jump to for the jr instruction. we will forward it from the alu out or MEM stage or from the wb_mux in the write back stage
+	// //-----------------------------------------------------------------------------------------
+	// // in this section of the module we forward the wanted register to compute the address that we want to 
+	// // jump to for the jr instruction. we will forward it from the alu out or MEM stage or from the wb_mux in the write back stage
 	 
-	if (if_id_opcode == jr) begin // if the instruction is a jr in the decode stage then we will select where to forward from
+	// if (if_id_opcode == jr) begin // if the instruction is a jr in the decode stage then we will select where to forward from
 	
-		if (id_ex_wr && id_ex_rd != 5'd0 && if_id_rs1 == id_ex_rd) // from the ALU out
-			sel_target_address_adder_mux_InDecodeStage <= 3'b000;
+	// 	if (id_ex_wr && id_ex_rd != 5'd0 && if_id_rs1 == id_ex_rd) // from the ALU out
+	// 		sel_target_address_adder_mux_InDecodeStage <= 3'b000;
 			
-		else if (ex_mem_wr && ex_mem_rd != 5'd0 && if_id_rs1 == ex_mem_rd) // from the MEM stage
-			sel_target_address_adder_mux_InDecodeStage <= 3'b001;
+	// 	else if (ex_mem_wr && ex_mem_rd != 5'd0 && if_id_rs1 == ex_mem_rd) // from the MEM stage
+	// 		sel_target_address_adder_mux_InDecodeStage <= 3'b001;
 			
-		else if (mem_wb_wr && mem_wb_rd != 5'd0 && if_id_rs1 == mem_wb_rd) // from the wb_mux
-			sel_target_address_adder_mux_InDecodeStage <= 3'b010;
+	// 	else if (mem_wb_wr && mem_wb_rd != 5'd0 && if_id_rs1 == mem_wb_rd) // from the wb_mux
+	// 		sel_target_address_adder_mux_InDecodeStage <= 3'b010;
 			
-		else 
-			sel_target_address_adder_mux_InDecodeStage <= 3'b011; // or from the register file it self if there is no dependencies
+	// 	else 
+	// 		sel_target_address_adder_mux_InDecodeStage <= 3'b011; // or from the register file it self if there is no dependencies
 			
-	end 
+	// end 
 	
-	else if (if_id_opcode == j || if_id_opcode == jal)
-		sel_target_address_adder_mux_InDecodeStage <= 3'b101;
+	// else if (if_id_opcode == j || if_id_opcode == jal)
+	// 	sel_target_address_adder_mux_InDecodeStage <= 3'b101;
 	
-	else // any instruction other than jr (e.g. branch). the first Operand of the adder that will calculate the target address will be the PC not a register
-			sel_target_address_adder_mux_InDecodeStage <= 3'b100;
+	// else // any instruction other than jr (e.g. branch). the first Operand of the adder that will calculate the target address will be the PC not a register
+	// 		sel_target_address_adder_mux_InDecodeStage <= 3'b100;
 		
-	end
+	// end
 	
 	
 	
 	
-	always@(*) begin
+	// always@(*) begin
 	
-	//-----------------------------------------------------------------------------------------
-	// 									BRANCH FORWARDING COMPARATOR
-	// in this section of the module we decide whether we forward to the operands of the comparator
-	// the places are : alu out , MEM stage , wb_mux
-	// any branch instruction can use this section to decide whether to branch or not
+	// //-----------------------------------------------------------------------------------------
+	// // 									BRANCH FORWARDING COMPARATOR
+	// // in this section of the module we decide whether we forward to the operands of the comparator
+	// // the places are : alu out , MEM stage , wb_mux
+	// // any branch instruction can use this section to decide whether to branch or not
 	
-	// for Operand1 of the comparator
-	if (id_ex_wr && id_ex_rd != 5'd0 && if_id_rs1 == id_ex_rd) // ID haz
-		comparator_mux_selA <= 2'b00;
+	// // for Operand1 of the comparator
+	// if (id_ex_wr && id_ex_rd != 5'd0 && if_id_rs1 == id_ex_rd) // ID haz
+	// 	comparator_mux_selA <= 2'b00;
 		
-	else if (ex_mem_wr && ex_mem_rd != 5'd0 && if_id_rs1 == ex_mem_rd) // EX haz
-		comparator_mux_selA <= 2'b01;
+	// else if (ex_mem_wr && ex_mem_rd != 5'd0 && if_id_rs1 == ex_mem_rd) // EX haz
+	// 	comparator_mux_selA <= 2'b01;
 		
-	else if (mem_wb_wr && mem_wb_rd != 5'd0 && if_id_rs1 == mem_wb_rd) // MEM haz
-		comparator_mux_selA <= 2'b10;
+	// else if (mem_wb_wr && mem_wb_rd != 5'd0 && if_id_rs1 == mem_wb_rd) // MEM haz
+	// 	comparator_mux_selA <= 2'b10;
 		
-	else
-		comparator_mux_selA <= 2'b11;
+	// else
+	// 	comparator_mux_selA <= 2'b11;
 	
 	
 	
-	// for Operand2 of the comparator
-	if (id_ex_wr && id_ex_rd != 5'd0 && if_id_rs2 == id_ex_rd) // ID haz
-		comparator_mux_selB <= 2'b00;
+	// // for Operand2 of the comparator
+	// if (id_ex_wr && id_ex_rd != 5'd0 && if_id_rs2 == id_ex_rd) // ID haz
+	// 	comparator_mux_selB <= 2'b00;
 		
-	else if (ex_mem_wr && ex_mem_rd != 5'd0 && if_id_rs2 == ex_mem_rd) // EX haz
-		comparator_mux_selB <= 2'b01;
+	// else if (ex_mem_wr && ex_mem_rd != 5'd0 && if_id_rs2 == ex_mem_rd) // EX haz
+	// 	comparator_mux_selB <= 2'b01;
 		
-	else if (mem_wb_wr && mem_wb_rd != 5'd0 && if_id_rs2 == mem_wb_rd) // MEM haz
-		comparator_mux_selB <= 2'b10;
+	// else if (mem_wb_wr && mem_wb_rd != 5'd0 && if_id_rs2 == mem_wb_rd) // MEM haz
+	// 	comparator_mux_selB <= 2'b10;
 		
-	else
-		comparator_mux_selB <= 2'b11;
+	// else
+	// 	comparator_mux_selB <= 2'b11;
 	
-	end
+	// end
 	
 	
 	

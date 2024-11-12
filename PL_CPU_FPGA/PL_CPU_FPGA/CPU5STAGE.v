@@ -39,8 +39,8 @@ exception_detect_unit EDU(ID_PC, ID_opcode, exception_flag, id_flush, EX_FLUSH, 
 forward_unit fu(ID_opcode, ID_rs1_ind, ID_rs2_ind, EX_opcode, EX_rs1_ind, EX_rs2_ind, EX_rd_ind, 
 		EX_regwrite, MEM_rd_ind, MEM_regwrite, WB_rd_ind, WB_regwrite, 
 		// output to the forwarded muxes
-		target_addr_adder_mux_sel,
-		comp_selA, comp_selB,
+		/*target_addr_adder_mux_sel,
+		comp_selA, comp_selB,*/
 		alu_selA, alu_selB, store_rs2_forward);
 		
 
@@ -56,8 +56,8 @@ IF_stage #(.handler_addr(handler_addr))if_stage(ID_PFC, EX_PFC_to_IF, pc_src, IF
 IF_ID_buffer if_id_buffer(IF_pc, IF_INST, IF_FLUSH, if_id_write, clk, ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_PC, ID_INST, rst); 
 
 
-ID_stage id_stage(ID_PC, ID_INST, ID_opcode, alu_out, forwarded_data, wdata_to_reg_file, wdata_to_reg_file, ID_rs1_ind, ID_rs2_ind,
-	EX_rd_ind, WB_rd_ind, comp_selA, comp_selB, target_addr_adder_mux_sel, 
+ID_stage id_stage(ID_PC, ID_INST, ID_opcode, EX_memread, alu_out, forwarded_data, wdata_to_reg_file, wdata_to_reg_file, ID_rs1_ind, ID_rs2_ind,
+	EX_rd_ind, WB_rd_ind, /*comp_selA, comp_selB, target_addr_adder_mux_sel,*/ 
 	id_flush, ID_FLUSH_buf, Wrong_prediction, exception_flag, clk, ID_PFC, ID_rs1, ID_rs2, pc_src,
 	pc_write, if_id_write, IF_FLUSH, ID_Immed, WB_regwrite, ID_regwrite, ID_memread, ID_memwrite, rst);
 
@@ -76,7 +76,7 @@ ID_EX_buffer id_ex_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 			EX_INST, EX_Immed, EX_rs1,
 			EX_rs2, EX_regwrite, EX_memread, EX_memwrite, EX_PFC, rst);
 
-EX_stage ex_stage(EX_PC, EX_PFC, EX_PFC_to_IF, EX_opcode, forwarded_data, wdata_to_reg_file, EX_rs1, EX_Immed, EX_rs1_ind, EX_rs2_ind, 
+EX_stage ex_stage(EX_PC, EX_PFC, EX_PFC_to_IF, EX_opcode, /*forwarded_data*/MEM_ALU_OUT, wdata_to_reg_file, EX_rs1, EX_Immed, EX_rs1_ind, EX_rs2_ind, 
 	alu_selA, alu_selB, store_rs2_forward, EX_regwrite, EX_memread, EX_memwrite, EX_rs2, rs2_out, alu_out, Wrong_prediction);
 
 
@@ -90,7 +90,7 @@ EX_MEM_buffer ex_mem_buffer(alu_out, rs2_out, EX_rs1_ind, EX_rs2_ind, EX_rd_ind,
 			 MEM_ALU_OUT, MEM_rs2, MEM_rs1_ind, MEM_rs2_ind,
 			 MEM_rd_ind, MEM_PC, MEM_INST, MEM_opcode, MEM_memread, MEM_memwrite, MEM_regwrite, rst);					 
 
-MEM_stage mem_stage(MEM_ALU_OUT, MEM_rs2, MEM_memwrite, MEM_memread, MEM_regwrite, MEM_Data_mem_out, forwarded_data, clk);
+MEM_stage mem_stage(MEM_ALU_OUT, MEM_rs2, MEM_memwrite, MEM_memread, MEM_regwrite, MEM_Data_mem_out, /*forwarded_data,*/ clk);
 
 
 

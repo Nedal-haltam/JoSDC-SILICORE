@@ -1,6 +1,6 @@
 
-module ID_stage(pc, inst, opcode, id_haz, ex_haz, mem_haz, wr_reg_data, rs1_ind, rs2_ind,id_ex_rd_ind, wr_reg_from_wb, comp_selA, comp_selB, 
-				    target_addr_adder_mux_sel, id_flush,id_flush_mux_sel, Wrong_prediction, exception_flag, clk, pfc, rs1, rs2, pc_src, 
+module ID_stage(pc, inst, opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_data, rs1_ind, rs2_ind,id_ex_rd_ind, wr_reg_from_wb, /*comp_selA, comp_selB, 
+				    target_addr_adder_mux_sel,*/ id_flush,id_flush_mux_sel, Wrong_prediction, exception_flag, clk, pfc, rs1, rs2, pc_src, 
 					 pc_write, if_id_write, if_id_flush, imm,reg_write_from_wb, reg_write, mem_read, mem_write, rst);
 	
 	`include "opcodes.v"
@@ -10,9 +10,9 @@ module ID_stage(pc, inst, opcode, id_haz, ex_haz, mem_haz, wr_reg_data, rs1_ind,
 	input [31:0] pc, inst, id_haz, ex_haz, mem_haz, wr_reg_data;
 	input [6:0] opcode;
 	input [4:0] rs1_ind, rs2_ind,id_ex_rd_ind, wr_reg_from_wb;
-	input [1:0] comp_selA, comp_selB;
-	input [2:0] target_addr_adder_mux_sel;
-	input id_flush, Wrong_prediction, exception_flag, clk, reg_write_from_wb;
+	// input [1:0] comp_selA, comp_selB;
+	// input [2:0] target_addr_adder_mux_sel;
+	input id_flush, Wrong_prediction, exception_flag, clk, reg_write_from_wb, EX_memread;
 	
 	output [31:0] pfc, rs1, rs2;
 	wire [28:0] paddedbits;
@@ -42,7 +42,7 @@ module ID_stage(pc, inst, opcode, id_haz, ex_haz, mem_haz, wr_reg_data, rs1_ind,
 	
 	// control section
     control_unit cu(opcode, reg_write_wire, mem_read_wire, mem_write_wire);
-	StallDetectionUnit SDU(Wrong_prediction, opcode, rs1_ind, rs2_ind, id_ex_rd_ind, pc_write, if_id_write, if_id_flush, id_ex_stall);
+	StallDetectionUnit SDU(Wrong_prediction, opcode, EX_memread, rs1_ind, rs2_ind, id_ex_rd_ind, pc_write, if_id_write, if_id_flush, id_ex_stall);
 	
 	// control unit mux
 	or flush(id_flush_mux_sel, id_flush, id_ex_stall);
