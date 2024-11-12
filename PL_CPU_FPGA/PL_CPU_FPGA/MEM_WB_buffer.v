@@ -35,6 +35,7 @@ module MEM_WB_buffer(MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, MEM_rs1_ind, MEM_rs
 			WB_regwrite <= MEM_regwrite;
 			WB_PC <= MEM_PC;
 			WB_INST <= MEM_INST;
+			hlt <= (MEM_opcode == hlt_inst) ? 1'b1 : 1'b0;
 		end 
 		else 
         {WB_ALU_OUT, WB_PC, WB_INST, WB_rs2, WB_Data_mem_out, WB_rs1_ind, WB_rs2_ind, WB_rd_ind, WB_opcode, WB_memread, WB_memwrite, WB_regwrite, hlt} <= 0;
@@ -44,7 +45,4 @@ module MEM_WB_buffer(MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, MEM_rs1_ind, MEM_rs
 
 	end
 
-	always@(negedge clk)
-			hlt <= (MEM_opcode == hlt_inst) ? 1'b1 : 1'b0;
-	
 endmodule
