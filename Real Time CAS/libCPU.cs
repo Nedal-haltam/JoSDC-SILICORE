@@ -849,7 +849,8 @@ namespace ProjectCPUCL
             else if (inst.mnem == Mnemonic.sw)
             {
                 string memin = Convert.ToString(inst.rt, 2).PadLeft(32, '0');
-                DM[inst.aluout] = memin;
+                if (inst.aluout >= 0)
+                    DM[inst.aluout] = memin;
             }
         }
         void write_back(Instruction inst)

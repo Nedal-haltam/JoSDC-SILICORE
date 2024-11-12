@@ -44,6 +44,7 @@
             this.cmbcpulist = new System.Windows.Forms.ComboBox();
             this.lblErr = new System.Windows.Forms.Label();
             this.lblNoErr = new System.Windows.Forms.Label();
+            this.btncascopy = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // input
@@ -242,11 +243,22 @@
             this.lblNoErr.Text = "No Errors Detected";
             this.lblNoErr.Visible = false;
             // 
+            // btncascopy
+            // 
+            this.btncascopy.Location = new System.Drawing.Point(1000, 6);
+            this.btncascopy.Name = "btncascopy";
+            this.btncascopy.Size = new System.Drawing.Size(95, 29);
+            this.btncascopy.TabIndex = 21;
+            this.btncascopy.Text = "CAS copy";
+            this.btncascopy.UseVisualStyleBackColor = true;
+            this.btncascopy.Click += new System.EventHandler(this.btncascopy_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1346, 664);
+            this.Controls.Add(this.btncascopy);
             this.Controls.Add(this.lblNoErr);
             this.Controls.Add(this.lblErr);
             this.Controls.Add(this.cmbcpulist);
@@ -287,6 +299,7 @@
         private System.Windows.Forms.ComboBox cmbcpulist;
         private System.Windows.Forms.Label lblErr;
         private System.Windows.Forms.Label lblNoErr;
+        private System.Windows.Forms.Button btncascopy;
     }
 }
 

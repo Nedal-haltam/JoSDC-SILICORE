@@ -32,18 +32,20 @@
             this.input = new System.Windows.Forms.RichTextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.output = new System.Windows.Forms.RichTextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblnumofinsttxt = new System.Windows.Forms.Label();
             this.lblnumofinst = new System.Windows.Forms.Label();
-            this.lblinvlabel = new System.Windows.Forms.Label();
-            this.lblmultlabels = new System.Windows.Forms.Label();
-            this.lblinvinst = new System.Windows.Forms.Label();
+            this.lblErrInvlabel = new System.Windows.Forms.Label();
+            this.lblErrMultlabels = new System.Windows.Forms.Label();
+            this.lblNoErr = new System.Windows.Forms.Label();
+            this.lblErr = new System.Windows.Forms.Label();
+            this.lblErrInvinst = new System.Windows.Forms.Label();
+            this.btncopymc = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // input
             // 
-            this.input.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.input.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.input.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.input.Location = new System.Drawing.Point(16, 59);
             this.input.Margin = new System.Windows.Forms.Padding(4);
@@ -61,96 +63,141 @@
             // output
             // 
             this.output.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.output.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.output.Location = new System.Drawing.Point(509, 59);
             this.output.Margin = new System.Windows.Forms.Padding(4);
             this.output.Name = "output";
-            this.output.Size = new System.Drawing.Size(700, 616);
+            this.output.Size = new System.Drawing.Size(527, 616);
             this.output.TabIndex = 1;
             this.output.Text = "";
             // 
-            // label1
+            // lblnumofinsttxt
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lblnumofinsttxt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(505, 37);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(147, 16);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Number of Instructions : ";
+            this.lblnumofinsttxt.AutoSize = true;
+            this.lblnumofinsttxt.Location = new System.Drawing.Point(506, 39);
+            this.lblnumofinsttxt.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblnumofinsttxt.Name = "lblnumofinsttxt";
+            this.lblnumofinsttxt.Size = new System.Drawing.Size(147, 16);
+            this.lblnumofinsttxt.TabIndex = 2;
+            this.lblnumofinsttxt.Text = "Number of Instructions : ";
             // 
             // lblnumofinst
             // 
             this.lblnumofinst.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblnumofinst.AutoSize = true;
-            this.lblnumofinst.Location = new System.Drawing.Point(698, 37);
+            this.lblnumofinst.Location = new System.Drawing.Point(699, 39);
             this.lblnumofinst.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblnumofinst.Name = "lblnumofinst";
             this.lblnumofinst.Size = new System.Drawing.Size(14, 16);
             this.lblnumofinst.TabIndex = 3;
             this.lblnumofinst.Text = "0";
             // 
-            // lblinvlabel
+            // lblErrInvlabel
             // 
-            this.lblinvlabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lblErrInvlabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblinvlabel.AutoSize = true;
-            this.lblinvlabel.ForeColor = System.Drawing.Color.Red;
-            this.lblinvlabel.Location = new System.Drawing.Point(289, 37);
-            this.lblinvlabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblinvlabel.Name = "lblinvlabel";
-            this.lblinvlabel.Size = new System.Drawing.Size(154, 16);
-            this.lblinvlabel.TabIndex = 4;
-            this.lblinvlabel.Text = "Invalid Label(s) detected";
-            this.lblinvlabel.Visible = false;
+            this.lblErrInvlabel.AutoSize = true;
+            this.lblErrInvlabel.ForeColor = System.Drawing.Color.Red;
+            this.lblErrInvlabel.Location = new System.Drawing.Point(1049, 114);
+            this.lblErrInvlabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblErrInvlabel.Name = "lblErrInvlabel";
+            this.lblErrInvlabel.Size = new System.Drawing.Size(154, 16);
+            this.lblErrInvlabel.TabIndex = 4;
+            this.lblErrInvlabel.Text = "Invalid Label(s) detected";
+            this.lblErrInvlabel.Visible = false;
             // 
-            // lblmultlabels
+            // lblErrMultlabels
             // 
-            this.lblmultlabels.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lblErrMultlabels.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblmultlabels.AutoSize = true;
-            this.lblmultlabels.ForeColor = System.Drawing.Color.Red;
-            this.lblmultlabels.Location = new System.Drawing.Point(59, 37);
-            this.lblmultlabels.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblmultlabels.Name = "lblmultlabels";
-            this.lblmultlabels.Size = new System.Drawing.Size(181, 16);
-            this.lblmultlabels.TabIndex = 5;
-            this.lblmultlabels.Text = "Redundent Label(s) detected";
-            this.lblmultlabels.Visible = false;
+            this.lblErrMultlabels.AutoSize = true;
+            this.lblErrMultlabels.ForeColor = System.Drawing.Color.Red;
+            this.lblErrMultlabels.Location = new System.Drawing.Point(1049, 143);
+            this.lblErrMultlabels.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblErrMultlabels.Name = "lblErrMultlabels";
+            this.lblErrMultlabels.Size = new System.Drawing.Size(181, 16);
+            this.lblErrMultlabels.TabIndex = 5;
+            this.lblErrMultlabels.Text = "Redundent Label(s) detected";
+            this.lblErrMultlabels.Visible = false;
             // 
-            // lblinvinst
+            // lblNoErr
             // 
-            this.lblinvinst.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lblNoErr.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblinvinst.AutoSize = true;
-            this.lblinvinst.ForeColor = System.Drawing.Color.Red;
-            this.lblinvinst.Location = new System.Drawing.Point(725, 37);
-            this.lblinvinst.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblinvinst.Name = "lblinvinst";
-            this.lblinvinst.Size = new System.Drawing.Size(164, 16);
-            this.lblinvinst.TabIndex = 6;
-            this.lblinvinst.Text = "Invalid Instruction detected";
-            this.lblinvinst.Visible = false;
+            this.lblNoErr.AutoSize = true;
+            this.lblNoErr.ForeColor = System.Drawing.Color.Red;
+            this.lblNoErr.Location = new System.Drawing.Point(1103, 59);
+            this.lblNoErr.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblNoErr.Name = "lblNoErr";
+            this.lblNoErr.Size = new System.Drawing.Size(122, 16);
+            this.lblNoErr.TabIndex = 26;
+            this.lblNoErr.Text = "No Errors Detected";
+            this.lblNoErr.Visible = false;
+            // 
+            // lblErr
+            // 
+            this.lblErr.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblErr.AutoSize = true;
+            this.lblErr.ForeColor = System.Drawing.Color.Red;
+            this.lblErr.Location = new System.Drawing.Point(1049, 59);
+            this.lblErr.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblErr.Name = "lblErr";
+            this.lblErr.Size = new System.Drawing.Size(46, 16);
+            this.lblErr.TabIndex = 25;
+            this.lblErr.Text = "Errors:";
+            // 
+            // lblErrInvinst
+            // 
+            this.lblErrInvinst.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblErrInvinst.AutoSize = true;
+            this.lblErrInvinst.ForeColor = System.Drawing.Color.Red;
+            this.lblErrInvinst.Location = new System.Drawing.Point(1049, 87);
+            this.lblErrInvinst.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblErrInvinst.Name = "lblErrInvinst";
+            this.lblErrInvinst.Size = new System.Drawing.Size(164, 16);
+            this.lblErrInvinst.TabIndex = 23;
+            this.lblErrInvinst.Text = "Invalid Instruction detected";
+            this.lblErrInvinst.Visible = false;
+            // 
+            // btncopymc
+            // 
+            this.btncopymc.Location = new System.Drawing.Point(892, 29);
+            this.btncopymc.Name = "btncopymc";
+            this.btncopymc.Size = new System.Drawing.Size(144, 23);
+            this.btncopymc.TabIndex = 27;
+            this.btncopymc.Text = "Copy Macine Code";
+            this.btncopymc.UseVisualStyleBackColor = true;
+            this.btncopymc.Click += new System.EventHandler(this.btncopymc_Click);
             // 
             // Assembler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1226, 691);
-            this.Controls.Add(this.lblinvinst);
-            this.Controls.Add(this.lblmultlabels);
-            this.Controls.Add(this.lblinvlabel);
+            this.ClientSize = new System.Drawing.Size(1373, 691);
+            this.Controls.Add(this.btncopymc);
+            this.Controls.Add(this.lblNoErr);
+            this.Controls.Add(this.lblErr);
+            this.Controls.Add(this.lblErrInvinst);
+            this.Controls.Add(this.lblErrMultlabels);
+            this.Controls.Add(this.lblErrInvlabel);
             this.Controls.Add(this.lblnumofinst);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblnumofinsttxt);
             this.Controls.Add(this.output);
             this.Controls.Add(this.input);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Assembler";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Assembler_Load);
+            this.Resize += new System.EventHandler(this.Assembler_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -161,11 +208,14 @@
         private System.Windows.Forms.RichTextBox input;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.RichTextBox output;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblnumofinsttxt;
         private System.Windows.Forms.Label lblnumofinst;
-        private System.Windows.Forms.Label lblinvlabel;
-        private System.Windows.Forms.Label lblmultlabels;
-        private System.Windows.Forms.Label lblinvinst;
+        private System.Windows.Forms.Label lblErrMultlabels;
+        private System.Windows.Forms.Label lblNoErr;
+        private System.Windows.Forms.Label lblErr;
+        private System.Windows.Forms.Label lblErrInvinst;
+        private System.Windows.Forms.Label lblErrInvlabel;
+        private System.Windows.Forms.Button btncopymc;
     }
 }
 

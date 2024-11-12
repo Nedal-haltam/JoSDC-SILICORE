@@ -1,7 +1,9 @@
 ﻿using ProjectCPUCL;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using System.Text;
 using System.Windows.Forms;
 
 
@@ -18,22 +20,37 @@ namespace Real_Time_CAS_ASSEM
         CPU_type curr_cpu = CPU_type.SingleCycle;
         System.Drawing.Point[] locations = new System.Drawing.Point[0];
         Label[] errors = new Label[0];
-        void copy_insts_to_tb()
+        enum CopyType
         {
-            string tb_tocopy = "";
-            for (int i = 0; i < curr_mc.Count; i++)
+            CAS, TB_copy
+        }
+
+        StringBuilder get_insts_string(CopyType copyType)
+        {
+            StringBuilder to_copy = new StringBuilder();
+            if (copyType == CopyType.TB_copy)
             {
-                string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
-                string inst = "";
-                curr_insts[i].ForEach(x => { inst += x + " "; });
-                string temp = ($"InstMem[{i,3}] <= 32'h{hex}; // {inst,-20}").Trim() + '\n';
-                tb_tocopy += temp;
-                
+                for (int i = 0; i < curr_mc.Count; i++)
+                {
+                    string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
+                    string inst = "";
+                    curr_insts[i].ForEach(x => { inst += x + " "; });
+                    string temp = ($"InstMem[{i,3}] <= 32'h{hex}; // {inst,-20}").Trim() + '\n';
+                    to_copy.Append(temp);
+                }
             }
-            if (tb_tocopy.Length > 0)
-                Clipboard.SetText(tb_tocopy);
-            else
-                Clipboard.SetText(" ");
+            else if (copyType == CopyType.CAS)
+            {
+                for (int i = 0; i < curr_mc.Count; i++)
+                {
+                    string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
+                    string inst = "";
+                    curr_insts[i].ForEach(x => { inst += x + " "; });
+                    string temp = ($"\"{curr_mc[i]}\", // {inst,-20}").Trim() + '\n';
+                    to_copy.Append(temp);
+                }
+            }
+            return to_copy;
         }
         List<string> assemble(string[] input)
         {
@@ -167,9 +184,9 @@ namespace Real_Time_CAS_ASSEM
 
             cmbcpulist.Location = new System.Drawing.Point(output.Location.X + output.Width, output.Location.Y);
             btntbcopy.Location = new System.Drawing.Point(cmbcpulist.Location.X, btntbcopy.Location.Y);
-
+            btncascopy.Location = new System.Drawing.Point(btntbcopy.Location.X - btntbcopy.Size.Width, btncascopy.Location.Y);
             lblErr.Location = new System.Drawing.Point(cmbcpulist.Location.X, lblErr.Location.Y);
-            lblNoErr.Location = new System.Drawing.Point(lblErr.Location.X + lblErr.Size.Width, lblErr.Location.Y);//lkdsjfkldslfsldj
+            lblNoErr.Location = new System.Drawing.Point(lblErr.Location.X + lblErr.Size.Width, lblErr.Location.Y);
 
             
             locations = new System.Drawing.Point[] { 
@@ -205,13 +222,26 @@ namespace Real_Time_CAS_ASSEM
 
         private void btntbcopy_Click(object sender, EventArgs e)
         {
-            copy_insts_to_tb();
+            StringBuilder to_copy = get_insts_string(CopyType.TB_copy);
+            if (to_copy.Length > 0)
+                Clipboard.SetText(to_copy.ToString());
+            else
+                Clipboard.SetText(" ");
         }
 
         private void cmbcpulist_SelectedIndexChanged(object sender, EventArgs e)
         {
             curr_cpu = (CPU_type)cmbcpulist.SelectedIndex;
             input_TextChanged(input, e);
+        }
+
+        private void btncascopy_Click(object sender, EventArgs e)
+        {
+            StringBuilder to_copy = get_insts_string(CopyType.CAS);
+            if (to_copy.Length > 0)
+                Clipboard.SetText(to_copy.ToString());
+            else
+                Clipboard.SetText(" ");
         }
     }
 }

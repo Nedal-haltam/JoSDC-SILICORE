@@ -382,7 +382,7 @@ namespace ProjectCPUCL
             PCplus1, pfc, exception
         }
         PCsrc pcsrc;
-        public CPU5STAGE(List<string>? insts = null)
+        public CPU5STAGE(List<string> insts = null)
         {
             regs = new List<int>();
             for (int i = 0; i < 32; i++) regs.Add(0);
@@ -771,7 +771,7 @@ namespace ProjectCPUCL
         public int PC;
         public bool hlt;
         public List<string> DM; // Data Mem
-        public SingleCycle(List<string>? insts = null)
+        public SingleCycle(List<string> insts = null)
         {
             regs = new List<int>();
             for (int i = 0; i < 32; i++) regs.Add(0);
