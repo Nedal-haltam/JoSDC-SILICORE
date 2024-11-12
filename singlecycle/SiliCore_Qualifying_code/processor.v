@@ -39,7 +39,7 @@ module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, c
 
 
 or hlt_logic(clk, input_clk, hlt);
-
+ 
 	
 always@(posedge clk , negedge rst) begin
 

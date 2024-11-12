@@ -31,6 +31,6 @@ always @ (*) begin
 end
 	
 	
-assign zero = (result == 32'b0);   // Updated to match result's width 
+assign zero = (result == 32'b0);
 
 endmodule

@@ -322,7 +322,7 @@ namespace ProjectCPUCL
         }
         public static void print_DM(List<string> DM)
         {
-            cout("Data Memory Conten : ");
+            cout("Data Memory Content : ");
             int i = 0;
             foreach (string mem in DM)
             {
