@@ -31,7 +31,6 @@ namespace Assembler
             lblNoErr.Visible = !(lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible);
 
 
-
             int j = 0;
             for (int i = 0; i < errors.Length; i++)
             {
@@ -68,6 +67,13 @@ namespace Assembler
                 new System.Drawing.Point(lblErr.Location.X, lblErr.Location.Y + lblErr.Size.Height*3 + 10),
                 new System.Drawing.Point(lblErr.Location.X, lblErr.Location.Y + lblErr.Size.Height*4 + 10)
             };
+
+            int j = 0;
+            for (int i = 0; i < errors.Length; i++)
+            {
+                if (errors[i].Visible)
+                    errors[i].Location = locations[j++];
+            }
         }
 
 
@@ -94,7 +100,7 @@ namespace Assembler
                 string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
                 string inst = "";
                 curr_insts[i].ForEach(x => { inst += x + " "; });
-                string temp = ($"Bin: {curr_mc[i]}, Hex: {hex}; // {inst,-20}").Trim() + '\n';
+                string temp = ($"Bin: \"{curr_mc[i]}\", Hex: 0x{hex}; // {inst,-20}").Trim() + '\n';
                 tb_tocopy += temp;
 
             }
@@ -102,6 +108,11 @@ namespace Assembler
                 Clipboard.SetText(tb_tocopy);
             else
                 Clipboard.SetText(" ");
+
+            /*
+            Bin: "00100000000000010000000000000001", Hex: 0x20010001; // addi x1 x0 1
+
+             */
         }
     }
 }

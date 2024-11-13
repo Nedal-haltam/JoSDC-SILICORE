@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Authentication;
 using System.Windows.Forms;
 
@@ -111,7 +112,7 @@ public static class ASSEMBLERMIPS
     {
         if (!reg.StartsWith("x"))
             return invinst;
-        string index = reg.Substring(1);
+        string index = reg.Substring(1); // x21
 
 
 
@@ -128,7 +129,7 @@ public static class ASSEMBLERMIPS
     static string getrtypeinst(List<string> inst)
     {
         string mc = "";
-        if (inst[0] == "jr")
+        if (inst[0] == "jr") // jr x12
         {
             if (inst.Count != 2)
                 return invinst;
@@ -147,10 +148,10 @@ public static class ASSEMBLERMIPS
             if (rd == invinst || rs1 == invinst)
                 return invinst;
 
-            if (inst[0] == "sll" || inst[0] == "srl")
+            if (inst[0] == "sll" || inst[0] == "srl") // sll x1, x2, 2
             {
                 string shamt = inst[3];
-                if (byte.TryParse(shamt, out byte usb))
+                if (byte.TryParse(shamt, out byte usb)) 
                 {
                     shamt = Convert.ToString(usb, 2);
                     if (shamt.Length > 5) shamt = shamt.Substring(shamt.Length - 5, 5);
@@ -250,7 +251,7 @@ public static class ASSEMBLERMIPS
             else if (short.TryParse(immed, out short sb))
             {
                 immed = Convert.ToString(sb, 2);
-                immed = immed.PadLeft(16, immed[0]);
+                immed = immed.PadLeft(16, immed[0]); // 1010101000
             }
             else
                 return invinst;
@@ -298,15 +299,17 @@ public static class ASSEMBLERMIPS
     // and keep track of it's index for substituting the values of the labels
     static List<string> GetMachineCode(List<List<string>> insts)
     {
-        List<string> mc = new List<string>();
+        List<string> mcs = new List<string>();
         curr_inst_index = 0;
         foreach (List<string> inst in insts)
         {
-            mc.Add(GetMcOfInst(GetInstType(inst[0]), inst));
+            InstType type = GetInstType(inst[0]); // addi x1, x0, 123
+            string curr_mc = GetMcOfInst(type, inst);
+            mcs.Add(curr_mc);
             curr_inst_index++;
         }
 
-        return mc;
+        return mcs;
     }
     // assmebling the program starts form here 
     // it tokenizes each non empty instruction and returns a list of parsable instruction each one of them is a list of tokens
@@ -315,21 +318,22 @@ public static class ASSEMBLERMIPS
         List<List<string>> insts = new List<List<string>>();
         foreach (string line in thecode)
         {
+            // curr_inst is a list of tokens (strings)
             List<string> curr_inst = new List<string>();
             int i = 0;
         contin:
-            string token = "";
-            while (i < line.Length && line[i] != ' ' && line[i] != ',')
+            string token = ""; // addi     x1, x0, 123   
+            while (i < line.Length && line[i] != ' ' && line[i] != ',') // we consume letters
                 token += line[i++];
 
 
             if (!EmptyLine(token))
             {
-                if (token.Length > 1 && token[0] == '/' && token[1] == '/')
+                if (token.Length > 1 && token[0] == '/' && token[1] == '/') // check if more than one letter and if its a comment
                     continue;
                 curr_inst.Add(token.ToLower());
             }
-            while (i < line.Length && (line[i] == ' ' || line[i] == ',')) i++;
+            while (i < line.Length && (line[i] == ' ' || line[i] == ',')) i++; // consume all unwanted delimiters
 
             if (i < line.Length) goto contin;
 
@@ -343,42 +347,40 @@ public static class ASSEMBLERMIPS
     // it checks if a given label is valid or not
     static string Is_valid_label(List<string> label)
     {
+        // valid label (sdf:)
         if (label.Count == 1 && label[0].Count(x => x == ':') == 1)
             return label[0].Remove(label[0].IndexOf(':'));
 
+        // valid label (sdf :)
         else if (label.Count == 2 && !label[0].Contains(":") && label[1] == ":")
             return label[0];
 
+        // it is invalid
         return invlbl;
     }
     // this funciton saves each label and it's value (address) so it can be used when computing the offset address in the jump and branch instructions
     static private void subtitute_labels(List<List<string>> insts)
     {
         int index = 0;
-        bool entered = false;
         for (int i = 0; i < insts.Count; i++)
         {
             if (insts[i].Any(str => str.Contains(":")))
             {
-                entered = true;
                 string label = Is_valid_label(insts[i]);
-                lblinvlabel.Visible = label == invlbl;
+                lblinvlabel.Visible |= label == invlbl;
                 if (label != invlbl)
                 {
                     if (labels.ContainsKey(label))
-                        lblmultlabels.Visible = true;
+                        lblmultlabels.Visible |= true;
                     else
                     {
                         labels.Add(label, index);
-                        lblmultlabels.Visible = false;
                     }
                 }
             }
-            else
+            else // if the current insts is not a label so it is an instruction
                 index++;
         }
-
-        if (!entered) lblinvlabel.Visible = false;
 
         // it removes any label from the list of instructions
         insts.RemoveAll(x => x.Any(y => y.Contains(':')));
@@ -390,13 +392,14 @@ public static class ASSEMBLERMIPS
         lblinvlabel.Visible = false;
         lblmultlabels.Visible = false;
         lblnumofinst.Text = "0";
-
         labels.Clear();
+        
         List<string> thecode = input.Lines.ToList();
         List<List<string>> insts = new List<List<string>>();
 
         thecode.RemoveAll(x => (string.Empty == x || string.IsNullOrEmpty(x) || string.IsNullOrWhiteSpace(x)));
-        insts = Tokenize(thecode);
+
+        insts = Tokenize(thecode); // addi x1, x9, 213
         // here we have a list of instructions that we can genrate machine code for
         if (insts.Count != 0)
         {
@@ -404,7 +407,7 @@ public static class ASSEMBLERMIPS
             if (insts.Count != mc.Count)
                 throw new Exception("Instruction Count doesn't match MC Count");
 
-            lblinvinst.Visible = mc.Any(x => x.Contains(invinst)) || lblinvlabel.Visible || lblmultlabels.Visible;
+            lblinvinst.Visible |= mc.Any(x => x.Contains(invinst)) || lblinvlabel.Visible || lblmultlabels.Visible;
             if (lblinvinst.Visible)
                 return (new List<string>(), new List<List<string>>());
 
@@ -412,7 +415,7 @@ public static class ASSEMBLERMIPS
         }
         else
         {
-            lblinvinst.Visible = lblinvlabel.Visible || lblmultlabels.Visible;
+            lblinvinst.Visible |= lblinvlabel.Visible || lblmultlabels.Visible;
             return (new List<string>(), new List<List<string>>());
         }
     }

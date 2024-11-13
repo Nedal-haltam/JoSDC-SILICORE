@@ -50,7 +50,7 @@
             this.input.Location = new System.Drawing.Point(16, 59);
             this.input.Margin = new System.Windows.Forms.Padding(4);
             this.input.Name = "input";
-            this.input.Size = new System.Drawing.Size(457, 616);
+            this.input.Size = new System.Drawing.Size(457, 604);
             this.input.TabIndex = 0;
             this.input.Text = "";
             this.input.TextChanged += new System.EventHandler(this.Input_TextChanged);
@@ -68,7 +68,7 @@
             this.output.Location = new System.Drawing.Point(509, 59);
             this.output.Margin = new System.Windows.Forms.Padding(4);
             this.output.Name = "output";
-            this.output.Size = new System.Drawing.Size(527, 616);
+            this.output.Size = new System.Drawing.Size(527, 604);
             this.output.TabIndex = 1;
             this.output.Text = "";
             // 
@@ -77,7 +77,7 @@
             this.lblnumofinsttxt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblnumofinsttxt.AutoSize = true;
-            this.lblnumofinsttxt.Location = new System.Drawing.Point(506, 39);
+            this.lblnumofinsttxt.Location = new System.Drawing.Point(510, 39);
             this.lblnumofinsttxt.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblnumofinsttxt.Name = "lblnumofinsttxt";
             this.lblnumofinsttxt.Size = new System.Drawing.Size(147, 16);
@@ -89,7 +89,7 @@
             this.lblnumofinst.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblnumofinst.AutoSize = true;
-            this.lblnumofinst.Location = new System.Drawing.Point(699, 39);
+            this.lblnumofinst.Location = new System.Drawing.Point(703, 39);
             this.lblnumofinst.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblnumofinst.Name = "lblnumofinst";
             this.lblnumofinst.Size = new System.Drawing.Size(14, 16);
@@ -98,11 +98,12 @@
             // 
             // lblErrInvlabel
             // 
-            this.lblErrInvlabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lblErrInvlabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblErrInvlabel.AutoSize = true;
             this.lblErrInvlabel.ForeColor = System.Drawing.Color.Red;
-            this.lblErrInvlabel.Location = new System.Drawing.Point(1049, 114);
+            this.lblErrInvlabel.Location = new System.Drawing.Point(1052, 114);
             this.lblErrInvlabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblErrInvlabel.Name = "lblErrInvlabel";
             this.lblErrInvlabel.Size = new System.Drawing.Size(154, 16);
@@ -112,11 +113,12 @@
             // 
             // lblErrMultlabels
             // 
-            this.lblErrMultlabels.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.lblErrMultlabels.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblErrMultlabels.AutoSize = true;
             this.lblErrMultlabels.ForeColor = System.Drawing.Color.Red;
-            this.lblErrMultlabels.Location = new System.Drawing.Point(1049, 143);
+            this.lblErrMultlabels.Location = new System.Drawing.Point(1052, 143);
             this.lblErrMultlabels.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblErrMultlabels.Name = "lblErrMultlabels";
             this.lblErrMultlabels.Size = new System.Drawing.Size(181, 16);
@@ -182,7 +184,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1373, 691);
+            this.ClientSize = new System.Drawing.Size(1377, 679);
             this.Controls.Add(this.btncopymc);
             this.Controls.Add(this.lblNoErr);
             this.Controls.Add(this.lblErr);

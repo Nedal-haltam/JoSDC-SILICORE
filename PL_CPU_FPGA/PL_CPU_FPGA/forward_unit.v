@@ -25,8 +25,8 @@ input id_ex_wr, ex_mem_wr, mem_wb_wr;
 output reg [1:0] forwardA; // the selection lines for the ALU oprands mux
 output reg [2:0] forwardB; // the selection lines for the ALU oprands mux
 output reg [1:0] store_rs2_forward; // the selection lines for the register that is going to be stored in the data memory
-output reg [2:0] sel_target_address_adder_mux_InDecodeStage; // the selection lines for the register required in calculating the target address
-output reg [1:0] comparator_mux_selA, comparator_mux_selB; // the selection lines for the comparator operands of the branch
+// output reg [2:0] sel_target_address_adder_mux_InDecodeStage; // the selection lines for the register required in calculating the target address
+// output reg [1:0] comparator_mux_selA, comparator_mux_selB; // the selection lines for the comparator operands of the branch
 	
 	
 	always@(*) begin
