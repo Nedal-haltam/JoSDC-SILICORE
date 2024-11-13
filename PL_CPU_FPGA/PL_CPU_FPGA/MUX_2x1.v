@@ -6,6 +6,9 @@ input sel;
 output reg [31:0] out;
 
 always@ (*)
-    out = (!sel) ? ina : inb;
+    case(sel)
+        1'b0: out <= ina;
+        1'b1: out <= inb;
+    endcase
 
 endmodule

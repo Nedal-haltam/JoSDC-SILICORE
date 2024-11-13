@@ -11,21 +11,21 @@ always@ (*) begin
 
 case (sel)
 
-    3'b000: out = ina;
+    3'b000: out <= ina;
 
-    3'b001: out = inb;
+    3'b001: out <= inb;
     
-    3'b010: out = inc;
+    3'b010: out <= inc;
     
-    3'b011: out = ind;
+    3'b011: out <= ind;
     
-    3'b100: out = ine;
+    3'b100: out <= ine;
 
-    3'b101: out = inf;
+    3'b101: out <= inf;
     
-    3'b110: out = ing;
+    3'b110: out <= ing;
     
-    3'b111: out = inh;
+    3'b111: out <= inh;
     
 endcase
 end 

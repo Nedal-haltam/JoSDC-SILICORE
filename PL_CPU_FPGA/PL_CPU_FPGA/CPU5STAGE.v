@@ -36,12 +36,8 @@ nor hlt_logic(clk, input_clk, hlt);
 
 exception_detect_unit EDU(ID_PC, ID_opcode, exception_flag, id_flush, EX_FLUSH, MEM_FLUSH, clk, rst);
 
-forward_unit fu(ID_opcode, ID_rs1_ind, ID_rs2_ind, EX_opcode, EX_rs1_ind, EX_rs2_ind, EX_rd_ind, 
-		EX_regwrite, MEM_rd_ind, MEM_regwrite, WB_rd_ind, WB_regwrite, 
-		// output to the forwarded muxes
-		/*target_addr_adder_mux_sel,
-		comp_selA, comp_selB,*/
-		alu_selA, alu_selB, store_rs2_forward);
+forward_unit fu(EX_opcode, EX_rs1_ind, EX_rs2_ind, MEM_rd_ind, MEM_regwrite, WB_rd_ind, WB_regwrite,
+		 	    alu_selA, alu_selB, store_rs2_forward);
 		
 
 

@@ -9,13 +9,13 @@ always@ (*) begin
 
 case (sel)
 
-    2'b00: out = ina;
+    2'b00: out <= ina;
 
-    2'b01: out = inb;
+    2'b01: out <= inb;
     
-    2'b10: out = inc;
+    2'b10: out <= inc;
     
-    2'b11: out = ind;
+    2'b11: out <= ind;
     
 endcase
 end
