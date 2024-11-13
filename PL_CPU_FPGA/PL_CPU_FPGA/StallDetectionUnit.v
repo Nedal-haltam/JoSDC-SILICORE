@@ -21,7 +21,7 @@ output reg id_ex_flush; // to select whether to pass the control signal or pass 
 
 always@(*) begin
 
-	if (Wrong_prediction) begin
+	if (Wrong_prediction) begin // wrong prediction
 
 		PC_Write <= 1'b1;
 		if_id_Write <= 1'b1;
@@ -30,17 +30,16 @@ always@(*) begin
 
 	end
 
-	if (EX_memread && (if_id_rs1 == id_ex_rd || if_id_rs2 == id_ex_rd)) begin
+	if (EX_memread && id_ex_rd != 0 && (if_id_rs1 == id_ex_rd || if_id_rs2 == id_ex_rd)) begin // load use
 
 		PC_Write <= 0;
 		if_id_Write <= 0;
 		if_id_flush <= 0;
 		id_ex_flush <= 1'b1;
-
 		
 	end
 
-	else if (if_id_opcode == jr) begin
+	else if (if_id_opcode == jr) begin // jr in decode
 
 		PC_Write <= 0;
 		if_id_Write <= 1'b1;
@@ -49,7 +48,7 @@ always@(*) begin
 
 	end
 
-    else if (if_id_opcode == beq || if_id_opcode == bne) begin
+    else if (if_id_opcode == beq || if_id_opcode == bne) begin // static prediction (for now)
 		
 		PC_Write <= 1'b1;
 		if_id_Write <= 1'b1;

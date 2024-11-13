@@ -4,6 +4,8 @@ using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using static ProjectCPUCL.Macros;
 using static ProjectCPUCL.MIPS;
 
@@ -54,6 +56,12 @@ namespace ProjectCPUCL
     {
 
         public const int HANDLER_ADDR = 1000;
+        public const string EXCEPTION = "EXCEPTION";
+        public const string INVALID_OPCODED = "INVALID_OPCODED";
+        public const string BUBBLE = "BUBBLE";
+        public const string WRONG_PRED = "WRONG_PRED";
+        public const string LOAD_USE = "LOAD_USE";
+        public const string JR_INDECODE = "JR_INDECODE";
         public enum Mnemonic
         {
             add, addu, subu, sub, and, or, nor, slt, sgt, xor,
@@ -404,6 +412,8 @@ namespace ProjectCPUCL
         //       -modify the HANDLER address to a suitable location in the instruction memory
         int PC;
         bool hlt;
+        bool WrongPrediction;
+        int targetaddress;
         public List<string> IM; // Instruction Mem        
 
         Instruction IFID;
@@ -416,12 +426,11 @@ namespace ProjectCPUCL
         Instruction decoded_in_ID_MIPS;
         string fetched_in_IF_MIPS;
         
-        int ID_HAZ;
         int EX_HAZ;
         int MEM_HAZ;
         enum PCsrc
         {
-            PCplus1, pfc, exception
+            PCplus1, pfc, exception, none
         }
         PCsrc pcsrc;
         public CPU5STAGE(List<string> insts = null)
@@ -437,8 +446,12 @@ namespace ProjectCPUCL
 
             DM = new List<string>();
             for (int i = 0; i < 1024; i++) DM.Add("0");
+
             PC = -1;
             hlt = false;
+            WrongPrediction = false;
+            targetaddress = 0;
+
             IFID = new Instruction() .Init();
             IDEX  = new Instruction().Init();
             EXMEM = new Instruction().Init();
@@ -447,40 +460,26 @@ namespace ProjectCPUCL
             executed_in_EX_MIPS = new Instruction().Init();
             decoded_in_ID_MIPS  = new Instruction().Init();
             fetched_in_IF_MIPS = "";
-            ID_HAZ  = 0;
             EX_HAZ  = 0;
             MEM_HAZ = 0;
         }
-        int forward(int n, int source_ind, int source_reg)
+        int forward(int source_ind, int source_reg)
         {
-            if (IDEX.rdind != 0 && iswb(IDEX.mnem) && IDEX.rdind == source_ind && n > 2 && IDEX.mnem == Mnemonic.lw)
-            {
-                Exception e = new Exception("stall")
-                {
-                    Source = "jrBALstall"
-                };
-                throw e;
-            }
-            // ID haz
-            if (IDEX.rdind != 0 && iswb(IDEX.mnem) && IDEX.rdind == source_ind && n > 2)
-            {
-                return ID_HAZ;
-            }
             // EX haz
-            else if (EXMEM.rdind != 0 && iswb(EXMEM.mnem) && EXMEM.rdind == source_ind && n > 1)
+            if (EXMEM.rdind != 0 && iswb(EXMEM.mnem) && EXMEM.rdind == source_ind)
             {
                 return EX_HAZ;
             }
             // MEM haz
-            else if (MEMWB.rdind != 0 && iswb(MEMWB.mnem) && MEMWB.rdind == source_ind && n > 0)
+            else if (MEMWB.rdind != 0 && iswb(MEMWB.mnem) && MEMWB.rdind == source_ind)
             {
                 return MEM_HAZ;
             }
             return source_reg;
         }
-        void update_PC(Instruction inst)
+        void update_PC()
         {
-            if (inst.mnem == Mnemonic.hlt)
+            if (pcsrc == PCsrc.none)
             {
                 return;
             }
@@ -490,19 +489,7 @@ namespace ProjectCPUCL
             }
             else if (pcsrc == PCsrc.pfc)
             {
-                if (isbranch(inst.mnem))
-                {
-                    PC = (inst.PC + inst.immeds);
-                }
-                else if (inst.mnem == Mnemonic.j || inst.mnem == Mnemonic.jal)
-                {
-                    PC = inst.address;
-                }
-                else if (inst.mnem == Mnemonic.jr)
-                {
-                    inst.rs = forward(3, inst.rsind, inst.rs);
-                    PC = inst.rs;
-                }
+                PC = targetaddress;
             }
         }
         Instruction decodemc(string mc, int pc)
@@ -532,9 +519,9 @@ namespace ProjectCPUCL
                 opcode = "1" + inst.opcode;
             if (!mnemonicmap.TryGetValue(opcode, out Mnemonic value))
             {
-                Exception e = new Exception("1")
+                Exception e = new Exception(EXCEPTION)
                 {
-                    Source = "exception",
+                    Source = INVALID_OPCODED,
                 };
                 throw e;
             }
@@ -558,32 +545,56 @@ namespace ProjectCPUCL
             }
             return inst;
         }
-        void comparator(Instruction decoded)
+        void BranchResolver(Instruction decoded)
         {
-            pcsrc = PCsrc.PCplus1;
-            if (!isbranch(decoded.mnem))
+            if (WrongPrediction)
             {
-                if (decoded.mnem == Mnemonic.j || decoded.mnem == Mnemonic.jal || decoded.mnem == Mnemonic.jr)
-                    pcsrc = PCsrc.pfc;
-                return;
+                WrongPrediction = false;
+                throw new Exception(BUBBLE) { Source = WRONG_PRED };
             }
-            int comp_oper1 = decoded.oper1;
-            int comp_oper2 = decoded.oper2;
-
-            
-            comp_oper1 = forward(3, decoded.rsind, comp_oper1);
-            comp_oper2 = forward(3, decoded.rtind, comp_oper2);
-
-            if (decoded.mnem == Mnemonic.beq)
+            else if (decoded.mnem == Mnemonic.jr)
             {
-                pcsrc = (comp_oper1 == comp_oper2) ? PCsrc.pfc : PCsrc.PCplus1;
+                throw new Exception(BUBBLE) { Source = JR_INDECODE };
             }
-            else if (decoded.mnem == Mnemonic.bne)
+            else if (executed_in_EX_MIPS.mnem == Mnemonic.lw && executed_in_EX_MIPS.rdind != 0)
             {
-                pcsrc = (comp_oper1 != comp_oper2) ? PCsrc.pfc : PCsrc.PCplus1;
+                int rdind = executed_in_EX_MIPS.rdind;
+                if (decoded.format == "R")
+                {
+                    if (decoded.rsind == rdind  || decoded.rtind == rdind)
+                    {
+                        throw new Exception(BUBBLE) { Source = LOAD_USE };
+                    }
+                }
+                else if (decoded.format == "I")
+                {
+                    if (decoded.rsind == rdind)
+                    {
+                        throw new Exception(BUBBLE) { Source = LOAD_USE };
+                    }
+                }
+            }
+            else if (decoded.mnem == Mnemonic.hlt)
+            {
+                pcsrc = PCsrc.none;
             }
             else
-                throw new Exception($"invalid branch instruction : {decoded.mnem}");
+            {
+                if (decoded.mnem == Mnemonic.beq || decoded.mnem == Mnemonic.bne)
+                {
+                    pcsrc = PCsrc.pfc;
+                    targetaddress = decoded.PC + decoded.immeds;
+                }
+                else if (decoded.mnem == Mnemonic.j || decoded.mnem == Mnemonic.jal)
+                {
+                    pcsrc = PCsrc.pfc;
+                    targetaddress = decoded.address;
+                }
+                else
+                    pcsrc = PCsrc.PCplus1;
+            }
+
+            WrongPrediction = false;
         }
         string fetch()
         {
@@ -595,8 +606,16 @@ namespace ProjectCPUCL
         Instruction decode(string fetched)
         {
             Instruction decoded = decodemc(fetched, PC);
-            comparator(decoded);
-            update_PC(decoded);
+            try
+            {
+                BranchResolver(decoded);
+            }
+            catch (Exception e)
+            {
+                decoded_in_ID_MIPS = decoded;
+                throw e;
+            }
+            update_PC();
             detect_exception(decoded, Stage.decode);
             return decoded;
         }
@@ -605,34 +624,37 @@ namespace ProjectCPUCL
             Instruction temp = decoded;
             if (decoded.mnem == Mnemonic.nop)
             {
-                ID_HAZ = 0;
                 return temp;
             }
             if (temp.format == "R")
             {
                 if (temp.mnem == Mnemonic.sll || temp.mnem == Mnemonic.srl)
                 {
-                    temp.oper1 = forward(2, temp.rtind, temp.oper1);
+                    temp.oper1 = forward(temp.rtind, temp.oper1);
                 }
                 else
                 {
-                    temp.oper1 = forward(2, temp.rsind, temp.oper1);
-                    temp.oper2 = forward(2, temp.rtind, temp.oper2);
+                    temp.oper1 = forward(temp.rsind, temp.oper1);
+                    temp.oper2 = forward(temp.rtind, temp.oper2);
                 }
             }
             else if (temp.format == "I")
             {
-                temp.oper1 = forward(2, temp.rsind, temp.oper1);
+                temp.oper1 = forward(temp.rsind, temp.oper1);
+                if (isbranch(temp.mnem))
+                    temp.oper2 = forward(temp.rtind, temp.oper2);
                 // we will update the second operand if the instruction uses them 
                 // (i.e. when it's an I-format and sw)
                 if (temp.mnem == Mnemonic.sw)
                 {
-                    temp.rt = forward(2, temp.rtind, temp.rt);
+                    temp.rt = forward(temp.rtind, temp.rt);
                 }
             }
             detect_exception(decoded, Stage.execute);
             temp.aluout = execute_inst(temp);
-            ID_HAZ = temp.aluout;
+            WrongPrediction = (temp.mnem == Mnemonic.beq && temp.oper1 != temp.oper2) ||
+                              (temp.mnem == Mnemonic.bne && temp.oper1 == temp.oper2) ||
+                              (temp.mnem == Mnemonic.jr);
             return temp;
         }
         Instruction mem(Instruction inst)
@@ -653,10 +675,7 @@ namespace ProjectCPUCL
                 DM[temp.aluout] = Convert.ToString(temp.rt, 2).PadLeft(32, '0');
             }
             
-            if (temp.mnem == Mnemonic.lw)
-                EX_HAZ = temp.memout;
-            else
-                EX_HAZ = temp.aluout;
+            EX_HAZ = temp.aluout;
 
             return temp;
         }
@@ -691,13 +710,11 @@ namespace ProjectCPUCL
             {
                 MEMWB = memed_in_MEM_MIPS;
                 EXMEM = new Instruction().Init();
-                ID_HAZ = 0;
             }
             else if (s == Stage.memory || s == Stage.write_back) // made them in a single if condition because they have the same effect in an exception case
             {
                 MEMWB = new Instruction().Init();
                 EXMEM = new Instruction().Init();
-                ID_HAZ = 0;
                 EX_HAZ = 0;
                 MEM_HAZ = (s == Stage.write_back) ? 0 : MEM_HAZ;
             }
@@ -709,21 +726,23 @@ namespace ProjectCPUCL
         }
         void detect_exception(Instruction inst, Stage stage)
         {
-            Exception e = new Exception(((int)stage).ToString())
-            {
-                Source = "exception",
-            };
+            Exception e = new Exception(EXCEPTION);
+
             if (stage == Stage.decode)
             {
                 // detect if there is an exception in the decode operation in the decode stage
                 if ((!isvalid_opcode_funct(inst) || !isvalid_format(inst.format)) && inst.mnem != Mnemonic.nop)
                 {
+
                     throw e;
                 }
                 if (isbranch(inst.mnem) || inst.mnem == Mnemonic.j || inst.mnem == Mnemonic.jal || inst.mnem == Mnemonic.jr)
                 {
                     if (!is_in_range_inc(PC, 0, IM.Count - 1) && !(PC == IM.Count))
+                    {
+
                         throw e;
+                    }
                 }
             }
             else if (stage == Stage.execute)
@@ -731,6 +750,7 @@ namespace ProjectCPUCL
                 // detect if there is an exception in the execution of the instruction in the execute stage (/0)
                 if (inst.oper2 == 0 && inst.aluop == Aluop.div)
                 {
+
                     throw e;
                 }
             }
@@ -739,6 +759,7 @@ namespace ProjectCPUCL
                 // detect if there is an exception in the memory operation in the mem stage (invalid address)
                 if ((inst.mnem == Mnemonic.lw || inst.mnem == Mnemonic.sw) && !is_in_range_inc(inst.aluout, 0, DM.Count - 1))
                 {
+
                     throw e;
                 }
             }
@@ -747,12 +768,45 @@ namespace ProjectCPUCL
                 // detect if there is an exception in the write back to the reg file in the wb stage (invalid reg or control signals)
                 if (!isvalid_reg_ind(inst))
                 {
+
                     throw e;
                 }
             }
 
             return;
         }
+
+        void InsertBubble(string source)
+        {
+            if (source == WRONG_PRED)
+            {
+                pcsrc = PCsrc.PCplus1;
+                if (isbranch(executed_in_EX_MIPS.mnem))
+                    PC = executed_in_EX_MIPS.PC + 1;
+                else if (executed_in_EX_MIPS.mnem == Mnemonic.jr)
+                    PC = executed_in_EX_MIPS.oper1;
+                fetched_in_IF_MIPS = fetch();
+
+                IFID.mc = fetched_in_IF_MIPS;
+                IDEX = new Instruction().Init();
+                EXMEM = executed_in_EX_MIPS;
+                MEMWB = memed_in_MEM_MIPS;
+            }
+            else if (source == LOAD_USE)
+            {
+                IDEX = new Instruction().Init();
+                EXMEM = executed_in_EX_MIPS;
+                MEMWB = memed_in_MEM_MIPS;
+            }
+            else if (source == JR_INDECODE)
+            {
+                IFID.mc = "".PadLeft(32, '0');
+                IDEX = decoded_in_ID_MIPS;
+                EXMEM = executed_in_EX_MIPS;
+                MEMWB = memed_in_MEM_MIPS;
+            }
+        }
+
         void ConsumeInst()
         {
             // here is the bulk of going through a complete cycle in the whole pipelined CPU
@@ -768,21 +822,17 @@ namespace ProjectCPUCL
             }
             catch (Exception e)
             {
-                if (e.Source == "exception")
+                if (e.Message == BUBBLE)
+                {
+                    InsertBubble(e.Source);
+                    return; // and then return and not fetch a new instruction
+                }
+                else if (e.Message == EXCEPTION)
                 {
                     handle_exception(e);
                     throw e;
                 }
-                else if (e.Source == "jrBALstall")
-                {
-                    // this is effectively how you would insert a nop in the pipeline in the case of (jr or branch) after load
-                    MEMWB = memed_in_MEM_MIPS;
-                    EXMEM = executed_in_EX_MIPS;
-                    IDEX = new Instruction().Init(); // the nop into the execution stage (aka. IDEX buffer)
-                    return; // and then return and not fetch a new instruction
-                }
             }
-            // we update the buffers all together like this because we need to forward any value if there was a hazard
             MEMWB = memed_in_MEM_MIPS;
             EXMEM   = executed_in_EX_MIPS;
             IDEX    = decoded_in_ID_MIPS;
@@ -826,6 +876,8 @@ namespace ProjectCPUCL
         public List<string> IM; // Instruction Mem
         public int PC;
         public bool hlt;
+        
+
         public SingleCycle(List<string> insts = null)
         {
             regs = new List<int>();

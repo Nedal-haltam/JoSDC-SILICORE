@@ -16,7 +16,7 @@ assign PC_src = (exception_flag) ? 3'b001 :
 		(
 			(opcode == hlt_inst) ? 3'b011 : 
 				(
-					((opcode == beq) || (opcode == bne) || opcode == j || opcode == jal || opcode == jr) ? 3'b010 : 0
+					((opcode == beq) || (opcode == bne) || opcode == j || opcode == jal) ? 3'b010 : 0
 				)
 
 		)
