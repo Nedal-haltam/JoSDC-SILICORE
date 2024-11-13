@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Net;
+using System.Text;
 using static ProjectCPUCL.Macros;
 using static ProjectCPUCL.MIPS;
 
@@ -347,25 +348,33 @@ namespace ProjectCPUCL
         {
             return num.PadLeft(32, '0');
         }
-        public static void print_regs(List<int> regs)
+        public static StringBuilder print_regs(List<int> regs)
         {
             cout("Register file content : ");
             int i = 0;
+            StringBuilder sb = new StringBuilder();
             foreach (int n in regs)
             {
-                cout($"index = {i++,2} , signed = {n,10} , unsigned = {(uint)n,10}");
+                string temp = $"index = {i++,2} , signed = {n,10} , unsigned = {(uint)n,10}";
+                sb.Append(temp + '\n');
+                cout(temp);
             }
+            return sb;
         }
-        public static void print_DM(List<string> DM)
+        public static StringBuilder print_DM(List<string> DM)
         {
             cout("Data Memory Conten : ");
             int i = 0;
+            StringBuilder sb = new StringBuilder();
             foreach (string mem in DM)
             {
                 if (i == 20) break;
                 int n = Convert.ToInt32(DM[i], 2);
-                cout($"index = {i++,2} , signed = {n,10} , unsigned = {(uint)n,10}");
+                string temp = $"index = {i++,2} , signed = {n,10} , unsigned = {(uint)n,10}";
+                sb.Append(temp + '\n');
+                cout(temp);
             }
+            return sb;
         }
         public static bool isvalid_format(string format)
         {

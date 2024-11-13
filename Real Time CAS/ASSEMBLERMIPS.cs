@@ -408,6 +408,7 @@ public static class ASSEMBLERMIPS
             if (lblinvinst.Visible)
                 return (new List<string>(), new List<List<string>>());
 
+            lblnumofinst.Text = mc.Count.ToString();
             return (mc, insts);
         }
         else

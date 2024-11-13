@@ -66,28 +66,35 @@ namespace Real_Time_CAS_ASSEM
         }
         (int, MIPS.Exceptions, CPU) SimulateCPU(List<string> mc)
         {
+            if (mc.Count == 0)
+            {
+                return (0, MIPS.Exceptions.NONE, new CPU());
+            }
             CPU cpu = new CPU();
             (int cycles, MIPS.Exceptions excep) = cpu.Run(mc, curr_cpu);
             return (cycles, excep, cpu);
         }
 
-        List<string> get_regs_DM(List<int> regs, List<string> DM)
+        StringBuilder get_regs_DM(List<int> regs, List<string> DM)
         {
-            List<string> toout = new List<string>();
-            int i = 0;
-            toout.Add("Reg file : ");
-            foreach (int reg in regs)
-            {
-                toout.Add($"index = {i++,2}" + $"{((i <= 10) ? " " : "")}" + $" , signed = {reg,10} , unsigned = {(uint)reg,10}");
-            }
-            toout.Add("Data Memory : ");
-            i = 0;
-            foreach (string loc in DM)
-            {
-                int mem = Convert.ToInt32(loc, 2);
-                toout.Add($"index = {i++,2}" + $"{((i <= 10) ? " " : "")}" + $" , signed = {mem,10} , unsigned = {(uint)mem,10}");
-                if (i == 50) break;
-            }
+            //List<string> toout = new List<string>();
+            StringBuilder toout = new StringBuilder();
+            //int i = 0;
+            toout.Append("Reg file : \n");
+            toout.Append(MIPS.print_regs(regs));
+            //foreach (int reg in regs)
+            //{
+            //    toout.Add($"index = {i++,2}" + $"{((i <= 10) ? " " : "")}" + $" , signed = {reg,10} , unsigned = {(uint)reg,10}");
+            //}
+            toout.Append("Data Memory : \n");
+            //i = 0;
+            //foreach (string loc in DM)
+            //{
+            //    int mem = Convert.ToInt32(loc, 2);
+            //    toout.Add($"index = {i++,2}" + $"{((i <= 10) ? " " : "")}" + $" , signed = {mem,10} , unsigned = {(uint)mem,10}");
+            //    if (i == 50) break;
+            //}
+            toout.Append(MIPS.print_DM(DM));
             return toout;
         }
         void update(List<string> mc, int cycles, MIPS.Exceptions excep, List<int> regs, List<string> DM)
@@ -103,14 +110,18 @@ namespace Real_Time_CAS_ASSEM
             else if (excep == MIPS.Exceptions.NONE && cycles != 0)
             {
                 lblcycles.Text = cycles.ToString();
-                List<string> toout = get_regs_DM(regs, DM);
-                output.Lines = toout.ToArray();
+                StringBuilder  toout = get_regs_DM(regs, DM);
+                output.Lines = toout.ToString().Split('\n');
             }
             else
             {
                 lblcycles.Text = "0";
-                List<string> toout = get_regs_DM(new List<int>(), new List<string>());
-                output.Lines = toout.ToArray();
+                StringBuilder toout = new StringBuilder();
+                toout.Append("Reg file : \n");
+                for (int i = 0; i < 32; i++) toout.Append($"index = {i,2} , signed = {0,10} , unsigned = {(uint)0,10}\n");
+                toout.Append("Data Memory : \n");
+                for (int i = 0; i < 20; i++) toout.Append($"index = {i,2} , signed = {0,10} , unsigned = {(uint)0,10}\n");
+                output.Lines = toout.ToString().Split('\n');
             }
 
         }
@@ -209,12 +220,13 @@ namespace Real_Time_CAS_ASSEM
 
 
             (int cycles, MIPS.Exceptions excep, CPU cpu) = SimulateCPU(mc);
+
             lblexception.Visible = excep != MIPS.Exceptions.NONE;
 
             update(mc, cycles, excep, cpu.regs, cpu.DM);
 
             lblNoErr.Visible = !(lblErrInfloop.Visible || lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible);
-
+            
             int j = 0;
             for (int i = 0; i < errors.Length; i++)
             {

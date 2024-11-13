@@ -52,11 +52,12 @@ namespace main
 "11111100000000000000000000000000", // hlt
 
                 ];
-            CPU5STAGE cpu = new(insts);
-            int cycles = cpu.Run();
+            CPU cpu = new();
+            (int cycles, MIPS.Exceptions excep) = cpu.Run(insts, CPU_type.PipeLined);
+            //(int cycles, MIPS.Exceptions excep) = cpu.Run();
             cout($"Number of cycles consumed is : {cycles}");
-            cpu.print_regs();
-            cpu.print_DM();
+            MIPS.print_regs(cpu.regs);
+            MIPS.print_DM(cpu.DM);
         }
     }
 }
