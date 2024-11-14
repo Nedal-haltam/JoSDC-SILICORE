@@ -19,7 +19,7 @@ public static class ASSEMBLERMIPS
     // The instruction type is the main token in a given instruction and should be known the first token in an instruction (first word)
     // the opcodes is a dictionary the you give it a certain opcode (in words) and get beack the binaries (or machine code) corresponding to that opcode
     // take a look to know what to expect because the binary might be different depending on the opcode some of them only opcode or with func3 or even with func7
-    public static Dictionary<string, string> opcodes = new Dictionary<string, string>()//{ "inst"     , "opcode/funct" },
+    static Dictionary<string, string> opcodes = new Dictionary<string, string>()//{ "inst"     , "opcode/funct" },
     {
         { "nop"  , "000000" },
         { "hlt"  , "111111" },
