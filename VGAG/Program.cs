@@ -12,9 +12,13 @@ using Rectangle = Raylib_cs.Rectangle;
 Mode m = Mode.drawing;
 Color BrushColor = Color.White;
 const int BS = 5; // small mode
-const int RS = 5; // big mode
+const int RS = 10; // big mode
 const int CHARW = 6;
 const int CHARH = 8;
+const char SPECIAL_CHAR = '`';
+int DelayBackSpace = 0;
+int CursorDelay = 0;
+bool displaycursor = true;
 Rectangle boundary;
 bool small = false;
 int rectsize = (small) ? 1 : RS;
@@ -30,7 +34,7 @@ List<List<Cell>> InitGrid(Rectangle boundary)
 {
     Color BackColor = Color.Black;
     List<List<Cell>> grid = [];
-    int gap = (small) ? 0 : 0;
+    int gap = (small) ? 0 : 1;
     for (int i = 0; i < boundary.Height; i++)
     {
         List<Cell> rects = [];
@@ -193,6 +197,10 @@ List<List<Color>> GetChar(int width, int height, char c)
     {
         filename = "space";
     }
+    else if (c == '|')
+    {
+        filename = "cursor";
+    }
     else
     {
         filename = (char.IsAsciiLetterLower(c)) ? $"{c}" : $"cap{c}";
@@ -200,29 +208,35 @@ List<List<Color>> GetChar(int width, int height, char c)
     string char_path = $".\\characters\\CharacterMap12\\{filename}.mif";
     return MIF2Grid(char_path);
 }
-void _DrawText(Rectangle boundary, ref List<List<Cell>> grid, string text)
+
+void AddCharToGrid(ref List<List<Cell>> grid, List<List<Color>> Char, Rectangle TextBoundary, int index)
 {
+    for (int i = 0; i < Char.Count; i++)
+    {
+        for (int j = 0; j < Char[0].Count; j++)
+        {
+            int indexy = ((index / (int)(TextBoundary.Width / CHARW)) * Char.Count + i);
+            int indexx = (index * Char[0].Count + j);
+            int indexygrid = (indexy + (int)TextBoundary.Y) % (int)TextBoundary.Height;
+            int indexxgrid = (indexx + (int)TextBoundary.X) % (int)TextBoundary.Width;
+            Cell temp = grid[indexygrid][indexxgrid];
+            temp.color = Char[i][j];
+            grid[indexygrid][indexxgrid] = temp;
+        }
+    }
+}
+
+
+void _DrawText(Rectangle TextBoundary, ref List<List<Cell>> grid, string text)
+{
+    
     if (text.Length == 0) return;
     float small_displayrectsize = (small) ? RS : 1.0f;
-    //List<List<Cell>> newgridcolor = InitGrid(boundary);
-
-    for (int c = 0; c < text.Length; c++)
+    List<List<Color>> Char;
+    for (int i = 0; i < text.Length; i++)
     {
-        List<List<Color>> Char = GetChar(CHARW, CHARH, text[c]);
-
-        for (int i = 0; i < Char.Count; i++)
-        {
-            for (int j = 0; j < Char[0].Count; j++)
-            {
-                int indexy = ((c / 21) * Char.Count + i);
-                int indexx = (c * Char[0].Count + j);
-                int indexygrid = (indexy + (int)boundary.Y) % (int)boundary.Height;
-                int indexxgrid = (indexx + (int)boundary.X) % (int)boundary.Width;
-                Cell temp = grid[indexygrid][indexxgrid];
-                temp.color = Char[i][j];
-                grid[indexygrid][indexxgrid] = temp;
-            }
-        }
+        Char = GetChar(CHARW, CHARH, (text[i] == SPECIAL_CHAR) ? ' ' : text[i]);
+        AddCharToGrid(ref grid, Char, TextBoundary,  i);
     }
 }
 List<List<Color>> GetGridColor(ref List<List<Cell>> grid)
@@ -368,9 +382,9 @@ List<List<List<Color>>> ParseMap(string path, int Wper, int Hper, int N)
     }
     return ret;
 }
-void ParseChars(string path, int Wper, int Hper, int N)
+void ParseChars(string source_path, int Wper, int Hper, int N)
 {
-    List<List<List<Color>>> CharMap = ParseMap(path, Wper, Hper, N);
+    List<List<List<Color>>> CharMap = ParseMap(source_path, Wper, Hper, N);
     char c = 'a';
     for (int i = 0; i < 26; i++)
     {
@@ -383,9 +397,9 @@ void ParseChars(string path, int Wper, int Hper, int N)
         c++;
     }
 }
-void ParseNumsAndSpecial(string path, int Wper, int Hper, int N)
+void ParseNumsAndSpecial(string source_path, int Wper, int Hper, int N)
 {
-    List<List<List<Color>>> NumMap = ParseMap(path, Wper, Hper, N);
+    List<List<List<Color>>> NumMap = ParseMap(source_path, Wper, Hper, N);
 
     for (int i = 0; i < 10; i++)
     {
@@ -397,13 +411,16 @@ void ParseNumsAndSpecial(string path, int Wper, int Hper, int N)
     List<List<Color>> temp = NumMap[10];
     VGAG(ref temp, $".\\characters\\CharacterMap12\\equal.mif", 12);
     VGAG(ref temp, $".\\characters\\CharacterMap24\\equal.mif", 24);
+
+    temp = NumMap[11];
+    VGAG(ref temp, $".\\characters\\CharacterMap12\\cursor.mif", 12);
+    VGAG(ref temp, $".\\characters\\CharacterMap24\\cursor.mif", 24);
 }
-void ParseNumsAndSpecialInOneMIF(string path, int Wper, int Hper, int N)
+void ParseNumsAndSpecialInOneMIF(string source_path, string dest_path, int Wper, int Hper, int N)
 {
-    string destpath = "D:\\quartus\\Quartus_Projects\\DE2115_DE10LITE_VGA\\CharMem.mif"; // CharMem.mif
-    List<List<List<Color>>> NumMap = ParseMap(path, Wper, Hper, N);
+    List<List<List<Color>>> NumMap = ParseMap(source_path, Wper, Hper, N);
     List<List<Color>> destmap = [];
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < NumMap.Count; i++)
     {
         List<List<Color>> Num = NumMap[i];
         for (int j = 0; j < Num.Count; j++)
@@ -416,7 +433,7 @@ void ParseNumsAndSpecialInOneMIF(string path, int Wper, int Hper, int N)
             destmap.Add(temp);
         }
     }
-    VGAG(ref destmap, destpath, 24);
+    VGAG(ref destmap, dest_path, 24);
 }
 List<List<T>> RescaleGrid<T>(List<List<T>> grid, float factor)
 {
@@ -433,12 +450,36 @@ List<List<T>> RescaleGrid<T>(List<List<T>> grid, float factor)
     return ret;
 }
 
+
+
+void FillGrid(ref List<List<Cell>> grid, Color c)
+{
+    for (int i = 0; i < grid.Count; i++)
+    {
+        for (int j = 0; j < grid[0].Count; j++)
+        {
+            Cell temp = grid[i][j];
+            temp.color = c;
+            grid[i][j] = temp;
+        }
+    }
+}
+
+
 // TODO: -better UI (or usage (e.g. colors)), so we can draw beautiful things
 unsafe void main()
 {
-    //ParseChars("", CHARW, CHARH, 26 * 2); // AlphabetMap.mif
-    //ParseNumsAndSpecial("", CHARW, CHARH, 11); // NumbersAndSpecial.mif
-    //ParseNumsAndSpecialInOneMIF("D:\\JoSDC Comp Folder\\OUR's\\VGAG\\bin\\Debug\\net8.0\\characters\\NumbersAndSpecial.mif", CHARW, CHARH, 11); // NumbersAndSpecial.mif
+    // you should specify the differenct used paths here.
+
+    //string AlphabetMap = "D:\\GitHub Repos\\JoSDC-SSOOO-CPU\\VGAG\\bin\\Debug\\net8.0\\characters\\AlphabetMap.mif";
+    //ParseChars(AlphabetMap, CHARW, CHARH, 26 * 2); // AlphabetMap.mif
+
+    //string NumbersAndSpecial = "D:\\GitHub Repos\\JoSDC-SSOOO-CPU\\VGAG\\bin\\Debug\\net8.0\\characters\\NumbersAndSpecial.mif"; // NumbersAndSpecial.mif
+    //ParseNumsAndSpecial(NumbersAndSpecial, CHARW, CHARH, 12); // NumbersAndSpecial.mif
+
+    //string CharMem = "D:\\GitHub Repos\\JoSDC-SSOOO-CPU\\VGAG\\bin\\Debug\\net8.0\\characters\\CharMem.mif"; // CharMem.mif;
+    //ParseNumsAndSpecialInOneMIF(NumbersAndSpecial, CharMem, CHARW, CHARH, 12);
+
 
     int w = 800; // for the application
     int h = 600; // for the application
@@ -450,7 +491,7 @@ unsafe void main()
 
     SetConfigFlags(ConfigFlags.AlwaysRunWindow);
     InitWindow(w, h, "VGAG");
-    SetTargetFPS(0); // maximum FPS
+    SetTargetFPS(60); // maximum FPS
 
     int x = (w / 2 - (OrigW) / 2);
     int y = (h / 2 - (OrigH) / 2);
@@ -461,27 +502,42 @@ unsafe void main()
     {
         X = 0,
         Y = 0,
-        Width = CHARW * 21,
-        Height = CHARH * 6
+        Width  = CHARW * (bw / CHARW),
+        Height = CHARH * (bh / CHARH)
     }; // the TextBoundary specs are square wise, like the character map
     boundary = new(x, y, bw, bh);
     List<List<Cell>> grid = InitGrid(boundary);
 
     bool changed = false;
+
     while (!WindowShouldClose())
     {
         bool Ctrl = IsKeyDown(KeyboardKey.LeftControl) || IsKeyDown(KeyboardKey.RightControl);
         string FPS = GetFPS().ToString();
         DrawText($"FPS: {FPS}\nText Shown: {text}", 0, 0, 20, Color.White);
+
+        if (CursorDelay++ % 30 == 0)
+        {
+            displaycursor = !displaycursor;
+            changed = true;
+        }
+        if (IsKeyDown(KeyboardKey.Backspace))
+        {
+            DelayBackSpace++;
+        }
+        else
+            DelayBackSpace = 0;
+
         if (Ctrl)
         {
             if (IsKeyPressed(KeyboardKey.D) && m != Mode.writing) // Delete
             {
-                ResetGrid(boundary, ref grid);
+                FillGrid(ref grid, Color.Black);
             }
             else if (IsKeyPressed(KeyboardKey.F)) // Flip
             {
                 FlipMode(ref grid);
+                changed = true;
             }
             else if (IsKeyPressed(KeyboardKey.M))
             {
@@ -489,13 +545,13 @@ unsafe void main()
                 {
                     m = Mode.writing;
                     text = text.Remove(0);
-                    ResetGrid(boundary, ref grid);
+                    FillGrid(ref grid, Color.Black);
                 }
                 else if (m == Mode.writing)
                 {
                     m = Mode.drawing;
                     text = text.Remove(0);
-                    ResetGrid(boundary, ref grid);
+                    FillGrid(ref grid, Color.Black);
                 }
             }
             if (IsKeyPressed(KeyboardKey.S))
@@ -506,28 +562,36 @@ unsafe void main()
                 VGAG(ref gridc, path, 12);
             }
         }
-        else
+        else                                                                                                       
         {
             KeyboardKey key = (KeyboardKey)GetKeyPressed();
             if (m == Mode.writing)
             {
-                if (key == KeyboardKey.Backspace && text.Length > 0)
+                bool ContinueBackSpace = (DelayBackSpace >= 30 && DelayBackSpace % 9 == 0);
+                if (text.Length > 0 && (key == KeyboardKey.Backspace || ContinueBackSpace))
                 {
                     changed = true;
-                    text = text[..^1];
-                    grid = InitGrid(boundary);
+                    int i = text.Length - 1;
+                    int isspecialchar = (text[i] == SPECIAL_CHAR) ? 1 : 0;
+                    
+                    while (i >= 0 && text[i] == SPECIAL_CHAR) i--;
+                    i += isspecialchar;
+
+                    text = text[..^(text.Length - i)];
+                    FillGrid(ref grid, Color.Black);
+                    DelayBackSpace = ContinueBackSpace ? 30 : DelayBackSpace;
                 }
                 else if (key == KeyboardKey.CapsLock)
                 {
                     changed = true;
                     capital = !capital;
                 }
-                if (key == KeyboardKey.Enter) // TODO: implement a real newline don't just fill it with spaces, you lazy
-                                              //       and let the backspace delete the characters when holding it not just one by one
+                else if (key == KeyboardKey.Enter)
                 {
                     changed = true;
-                    int count = 21 - (text.Length % 21);
-                    for (int i = 0; i < count; i++) text += " ";
+                    int numberofchars = (int)(TextBoundary.Width / CHARW);
+                    int count = numberofchars - (text.Length % numberofchars);
+                    for (int i = 0; i < count; i++) text += SPECIAL_CHAR;
                 }
                 else if (IsValidKey(key))
                 {
@@ -576,9 +640,22 @@ unsafe void main()
         BeginDrawing();
         ClearBackground(Color.DarkGray);
 
-        if (m == Mode.writing && changed)
+        if (m == Mode.writing)
         {
-            _DrawText(TextBoundary, ref grid, text);
+            if (changed)
+            {
+                _DrawText(TextBoundary, ref grid, text);
+            }
+            if (displaycursor)
+            {
+                List<List<Color>> Char = GetChar(CHARW, CHARH, '|');
+                AddCharToGrid(ref grid, Char, TextBoundary, text.Length);
+            }
+            else
+            {
+                List<List<Color>> Char = GetChar(CHARW, CHARH, ' ');
+                AddCharToGrid(ref grid, Char, TextBoundary, text.Length);
+            }
         }
         UpdateGrid_drawing(ref grid, brushsize);
 
