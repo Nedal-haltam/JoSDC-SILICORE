@@ -12,7 +12,7 @@ using Rectangle = Raylib_cs.Rectangle;
 Mode m = Mode.drawing;
 Color BrushColor = Color.White;
 const int BS = 5; // small mode
-const int RS = 10; // big mode
+const int RS = 5; // big mode
 const int CHARW = 6;
 const int CHARH = 8;
 const char SPECIAL_CHAR = '`';
@@ -233,6 +233,7 @@ void _DrawText(Rectangle TextBoundary, ref List<List<Cell>> grid, string text)
     if (text.Length == 0) return;
     float small_displayrectsize = (small) ? RS : 1.0f;
     List<List<Color>> Char;
+    
     for (int i = 0; i < text.Length; i++)
     {
         Char = GetChar(CHARW, CHARH, (text[i] == SPECIAL_CHAR) ? ' ' : text[i]);
@@ -507,7 +508,7 @@ unsafe void main()
     }; // the TextBoundary specs are square wise, like the character map
     boundary = new(x, y, bw, bh);
     List<List<Cell>> grid = InitGrid(boundary);
-
+    List<int> newlines = new List<int>();
     bool changed = false;
 
     while (!WindowShouldClose())
@@ -567,33 +568,42 @@ unsafe void main()
             KeyboardKey key = (KeyboardKey)GetKeyPressed();
             if (m == Mode.writing)
             {
+                // minus one to account for the cursor
+                int MaxChars = (int)(TextBoundary.Width * TextBoundary.Height * (1.0f / (CHARW * CHARH))) - 1;
+                if (key == KeyboardKey.CapsLock)
+                {
+                    changed = true;
+                    capital = !capital;
+                }
+
                 bool ContinueBackSpace = (DelayBackSpace >= 30 && DelayBackSpace % 9 == 0);
                 if (text.Length > 0 && (key == KeyboardKey.Backspace || ContinueBackSpace))
                 {
                     changed = true;
                     int i = text.Length - 1;
-                    int isspecialchar = (text[i] == SPECIAL_CHAR) ? 1 : 0;
-                    
-                    while (i >= 0 && text[i] == SPECIAL_CHAR) i--;
-                    i += isspecialchar;
+                    if (text[i] == SPECIAL_CHAR)
+                    {
+                        i -= newlines[^1];
+                        newlines = newlines[..^1];
+                        i++;
+                    }
 
                     text = text[..^(text.Length - i)];
                     FillGrid(ref grid, Color.Black);
-                    DelayBackSpace = ContinueBackSpace ? 30 : DelayBackSpace;
-                }
-                else if (key == KeyboardKey.CapsLock)
-                {
-                    changed = true;
-                    capital = !capital;
+                    displaycursor = true;
                 }
                 else if (key == KeyboardKey.Enter)
                 {
                     changed = true;
                     int numberofchars = (int)(TextBoundary.Width / CHARW);
                     int count = numberofchars - (text.Length % numberofchars);
-                    for (int i = 0; i < count; i++) text += SPECIAL_CHAR;
+                    if (text.Length + count < MaxChars)
+                    {
+                        for (int i = 0; i < count; i++) text += SPECIAL_CHAR;
+                        newlines.Add(count);
+                    }
                 }
-                else if (IsValidKey(key))
+                else if (text.Length < MaxChars && IsValidKey(key))
                 {
                     changed = true;
                     char car = (char)key;
