@@ -95,24 +95,21 @@ namespace Real_Time_CAS_ASSEM
         {
             //List<string> toout = new List<string>();
             StringBuilder toout = new StringBuilder();
-            toout.Append("Reg file : \n");
             toout.Append(get_regs(regs));
-            toout.Append("Data Memory : \n");
-
             toout.Append(get_DM(DM));
             return toout;
         }
-        void update(List<string> mc, int cycles, MIPS.Exceptions excep, List<int> regs, List<string> DM)
+        void update(List<string> mc, int cycles, Exceptions excep, List<int> regs, List<string> DM)
         {
-            if (excep == MIPS.Exceptions.INVALID_INST)
+            if (excep == Exceptions.INVALID_INST)
             {
                 lblcycles.Text = "0";
             }
-            else if (excep == MIPS.Exceptions.INF_LOOP)
-            {
+            else if (excep == Exceptions.INF_LOOP)
+            {   
                 lblErrInfloop.Visible = true;
             }
-            else if (excep == MIPS.Exceptions.NONE && cycles != 0)
+            else if (excep == Exceptions.NONE && cycles != 0)
             {
                 lblcycles.Text = cycles.ToString();
                 StringBuilder  toout = get_regs_DM(regs, DM);
@@ -125,7 +122,7 @@ namespace Real_Time_CAS_ASSEM
                 toout.Append("Reg file : \n");
                 for (int i = 0; i < 32; i++) toout.Append($"index = {i,2} , signed = {0,10} , unsigned = {(uint)0,10}\n");
                 toout.Append("Data Memory : \n");
-                for (int i = 0; i < 20; i++) toout.Append($"index = {i,2} , signed = {0,10} , unsigned = {(uint)0,10}\n");
+                for (int i = 0; i < 20; i++) toout.Append($"Mem[{i,2}] = {0,10}\n");
                 output.Lines = toout.ToString().Split('\n');
             }
 
@@ -224,9 +221,9 @@ namespace Real_Time_CAS_ASSEM
             List<string> mc = assemble(input.Lines);
 
 
-            (int cycles, MIPS.Exceptions excep, CPU cpu) = SimulateCPU(mc);
+            (int cycles, Exceptions excep, CPU cpu) = SimulateCPU(mc);
 
-            lblexception.Visible = excep != MIPS.Exceptions.NONE;
+            lblexception.Visible = excep != Exceptions.NONE;
 
             update(mc, cycles, excep, cpu.regs, cpu.DM);
 

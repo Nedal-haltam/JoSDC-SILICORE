@@ -107,6 +107,20 @@ namespace ProjectCPUCL
             return (IM, DM, regs);
         }
 
+        public struct CPU
+        {
+            public List<string> DM;
+            public List<int> regs;
+
+            public CPU Init()
+            {
+                DM = new List<string>();
+                regs = new List<int>();
+                return this;
+            }
+
+        }
+
         public enum Stage
         {
             fetch, decode, execute, memory, write_back

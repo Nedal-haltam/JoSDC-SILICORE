@@ -43,7 +43,7 @@ namespace main
                 {
                     cpu_type = CPU_type.SingleCycle;
                 }
-                else if (cputype == "pipelined")
+                else if (cputype == "pipeline")
                 {
                     cpu_type = CPU_type.PipeLined;
                 }

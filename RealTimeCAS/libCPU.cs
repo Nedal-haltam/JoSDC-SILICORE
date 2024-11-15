@@ -257,7 +257,7 @@ namespace ProjectCPUCL
                             return inst.oper1;
                         return Math.Abs(inst.oper1 >> inst.oper2);
                     };
-                default: throw new Exception($"Invalid aluop provided : {inst.aluop}");
+                default: return 0;
             };
         }
         public static bool iswb(Mnemonic mnem)
@@ -705,9 +705,9 @@ namespace ProjectCPUCL
             regs[inst.rdind] = (inst.mnem == Mnemonic.lw) ? inst.memout : inst.aluout;
             MEM_HAZ = (inst.mnem == Mnemonic.lw) ? inst.memout : inst.aluout;
         }
-        void handle_exception(Exception e)
+        int handle_exception(Exception e) // TODO: handle the exception here
         {
-            // TODO: should we update the ID_HAZ, EX_HAZ, MEM_HAZ
+            // TODO: should we update the EX_HAZ, MEM_HAZ
             PC = HANDLER_ADDR;
             IFID.mc = fetch();
             IDEX = new Instruction().Init();
@@ -734,6 +734,7 @@ namespace ProjectCPUCL
             //    MEMWB = new();
             //    EXMEM = new();
             //}
+            return 0;
         }
         void detect_exception(Instruction inst, Stage stage)
         {
@@ -840,7 +841,11 @@ namespace ProjectCPUCL
                 }
                 else if (e.Message == EXCEPTION)
                 {
-                    handle_exception(e);
+                    int remain_cycles = handle_exception(e);
+                    while (remain_cycles-- > 0)
+                    {
+                        ConsumeInst();
+                    }
                     throw e;
                 }
             }
@@ -1001,6 +1006,8 @@ namespace ProjectCPUCL
             catch (Exception e)
             {
                 PC = HANDLER_ADDR;
+                ConsumeInst();
+                ConsumeInst();
                 throw e;
             }
 
@@ -1022,6 +1029,7 @@ namespace ProjectCPUCL
             else
                 PC += 1;
         }
+
         public (int, Exceptions) Run()
         {
             int i = 0;
@@ -1034,7 +1042,8 @@ namespace ProjectCPUCL
                 }
                 catch (Exception e)
                 {
-                    return (0, Exceptions.EXCEPTION);
+                    i--;
+                    return (i + 2, Exceptions.EXCEPTION);
                 }
                 if (hlt)
                     return (i, Exceptions.NONE);
