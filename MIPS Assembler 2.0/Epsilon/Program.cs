@@ -12,14 +12,12 @@ namespace Epsilon
             Minus, LessThan, GreaterThan, And, Or, Xor, Nor, Sll, Srl, Equal, SemiColon, NewLine,
             Reg, Mem, Ident, Hlt, For, Iff, Elif, Else, IntLit
         }
-
         struct Token
         {
             public TokenType Type;
             public string Value;
             public int Line;
         }
-
         class Tokenizer
         {
             struct Temp { public bool hasvalue; public char value; }
@@ -255,6 +253,21 @@ namespace Epsilon
 
         }
 
+        class Parser
+        {
+            public void Parse()
+            {
+
+            }
+        }
+        class Generator
+        {
+            public void Generate()
+            {
+
+            }
+        }
+
         static void Main()
         {
             string thecode = "reg\t\nnedal = 123; /* \n\nsdfdsfd\n\\t \t// \t sldkfjds \n  */ // comment \n mem hallah = 34;";
@@ -264,9 +277,15 @@ namespace Epsilon
             Console.WriteLine("end");
 
             List<Token> tokenized = t.Tokinze();
-            Console.WriteLine("after:");
+            Console.WriteLine("Tokinzed:");
             tokenized.ForEach(x => Console.WriteLine(x.Value));
-            Console.WriteLine("end");
+            Console.WriteLine("endTokenized");
+
+            Parser parser = new();
+            parser.Parse();
+
+            Generator generator = new();
+            generator.Generate();
         }
     }
 }
