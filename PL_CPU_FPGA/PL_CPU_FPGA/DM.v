@@ -24,9 +24,9 @@ always@ (posedge clk)
 initial begin
   #(`MAX_CLOCKS + `reset);
   // iterating through some of the addresses of the memory to check if the program loaded and stored the values properly
-  $display("Reading Data Memory Content : ");
-  for (integer i = 50; i >= 0; i = i - 1)
-    $display("addr = %d , Mem[addr] = %d",i,$signed(data_mem[i]));
+  $display("Data Memory Content : ");
+  for (integer i = 0; i <= 19; i = i + 1)
+    $display("Mem[%d] = %d",i[4:0],$signed(data_mem[i]));
 
 end 
 `endif

@@ -58,8 +58,8 @@ module registerFile (clk, rst, we,
 integer i;
 initial begin
   #(`timetowait);
-  $display("Reading Register File : ");
-  for (i = 31; i >= 0; i = i - 1)
+  $display("Register file content : ");
+  for (i = 0; i <= 31; i = i + 1)
     $display("index = %d , reg_out : signed = %d , unsigned = %d",i, $signed(registers[i]), $unsigned(registers[i]));
 
 end 

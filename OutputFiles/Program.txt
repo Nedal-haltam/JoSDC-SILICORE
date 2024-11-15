@@ -1,0 +1,57 @@
+// UTB
+// -18826 = 1011 0110 0111 0110
+//  46710 = 1011 0110 0111 0110
+addi x1, x0, 100
+sw x1, x0, 1
+addi x0, x1, 123
+addi x2, x0, -2
+sw x2, x2, 2 
+ 
+add x3, x1, x2
+sw x3, x3, -96
+add x0, x1, x2
+sub x4, x3, x2
+sub x4, x4, x2
+sw x4, x0, 3
+
+subu x5, x3, x2
+addu x6, x1, x2
+sub x6, x6, x2
+
+// these are zero extended immediates
+ori x7, x0, -18826
+sw x7, x0, 4
+
+
+and x8, x7, x3
+andi x9, x8, 32
+xor x10, x8, x9
+xori x11, x10, -1
+ori x12, x11, 66
+xori x13, x11, 66
+sll x14, x10, 1 
+srl x15, x14, 2
+slt x16 , x1, x2 
+slt x17 , x2, x1
+slt x18 , x8, x9
+slt x19 , x9, x8
+nor x20, x18, x18
+nor x21, x19, x19
+
+addi x22, x0, 22
+lw x22, x0, 4
+addi x23, x22, 0
+
+bne x23, x22, L1
+addi x23, x23, -10
+L1:
+jal func
+addi x25, x24, 1
+j end 
+func: 
+addi x24, x0, 24
+jr x31
+end:
+
+hlt
+

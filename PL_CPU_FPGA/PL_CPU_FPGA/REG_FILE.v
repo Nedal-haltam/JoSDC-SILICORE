@@ -40,8 +40,8 @@ assign rd_data2 = reg_file[rd_reg2];
 initial begin
   #(`MAX_CLOCKS + `reset + 1);
   // iterating through the register file to check if the program changed the contents correctly
-  $display("Reading Register File : ");
-  for (integer i = 31; i >= 0; i = i - 1)
+  $display("Register file content : ");
+  for (integer i = 0; i <= 31; i = i + 1)
     $display("index = %d , reg_out : signed = %d , unsigned = %d",i, $signed(reg_file[i]), $unsigned(reg_file[i]));
 end 
 `endif

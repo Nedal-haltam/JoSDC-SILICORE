@@ -1,55 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Diagnostics;
-using System.Net;
+﻿using System.Collections.Generic;
+using System;
 using System.Text;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using static ProjectCPUCL.Macros;
 using static ProjectCPUCL.MIPS;
+using System.Reflection;
 
 namespace ProjectCPUCL
 {
     public enum CPU_type
     {
         PipeLined, SingleCycle
-    }
-
-    public static class Macros
-    {
-        public static void cout(string str, params object[] args)
-        {
-            Console.WriteLine(str, args);
-        }
-    }
-    public class CPU
-    {
-        public List<string> DM; // Data Mem
-        public List<int> regs;
-
-        public (int, Exceptions) Run(List<string> mc, CPU_type cpu_type)
-        {
-            if (cpu_type == CPU_type.SingleCycle)
-            {
-                SingleCycle sc = new SingleCycle(mc);
-                (int cycles, Exceptions excep) = sc.Run();
-                regs = sc.regs;
-                DM = sc.DM;
-
-                return (cycles, excep);
-            }
-            else if (cpu_type == CPU_type.PipeLined)
-            {
-                CPU5STAGE pl = new CPU5STAGE(mc);
-                (int cycles, Exceptions excep) = pl.Run();
-                regs = pl.regs;
-                DM = pl.DM;
-                return (cycles, excep);
-            }
-            else
-                return (0, Exceptions.EXCEPTION);
-        }
     }
 
     public static class MIPS
@@ -123,6 +82,43 @@ namespace ProjectCPUCL
             public string format;
             public int aluout;
             public int memout;
+        }
+
+
+        public static (List<string>, List<string>, List<int>) InitMipsCPU(List<string> insts)
+        {
+            List<int> regs = new List<int>();
+            for (int i = 0; i < 32; i++) regs.Add(0);
+            List<string> IM = new List<string>();
+            int curr_count = 0;
+            if (insts != null)
+            {
+                IM.AddRange(insts);
+                curr_count = insts.Count;
+            }
+            string nop = "0".PadLeft(32, '0');
+            for (int i = 0; i < 1024 - curr_count; i++) IM.Add(nop);
+            IM[HANDLER_ADDR - 1] = "11111100000000000000000000000000"; // hlt
+            IM[HANDLER_ADDR] = "00100000000111111111111111111111"; // addi x31 x0 -1
+            IM[HANDLER_ADDR + 1] = "11111100000000000000000000000000"; // hlt
+            List<string> DM = new List<string>();
+            for (int i = 0; i < 1024; i++) DM.Add("0");
+
+            return (IM, DM, regs);
+        }
+
+        public struct CPU
+        {
+            public List<string> DM;
+            public List<int> regs;
+
+            public CPU Init()
+            {
+                DM = new List<string>();
+                regs = new List<int>();
+                return this;
+            }
+
         }
 
         public enum Stage
@@ -357,34 +353,56 @@ namespace ProjectCPUCL
         {
             return num.PadLeft(32, '0');
         }
-        public static StringBuilder print_regs(List<int> regs)
+        public static void print_regs(List<int> regs)
         {
-            cout("Register file content : ");
+            Console.Write("Register file content : \n");
             int i = 0;
-            StringBuilder sb = new StringBuilder();
             foreach (int n in regs)
             {
-                string temp = $"index = {i++,2} , signed = {n,10} , unsigned = {(uint)n,10}";
-                sb.Append(temp + '\n');
-                cout(temp);
+                string temp = $"index = {i++,10} , reg_out : signed = {n,10} , unsigned = {(uint)n,10}\n";
+                Console.Write(temp);
             }
-            return sb;
         }
-        public static StringBuilder print_DM(List<string> DM)
+        public static void print_DM(List<string> DM)
         {
-            cout("Data Memory Conten : ");
+            Console.Write("Data Memory Content : \n");
             int i = 0;
-            StringBuilder sb = new StringBuilder();
             foreach (string mem in DM)
             {
                 if (i == 20) break;
                 int n = Convert.ToInt32(DM[i], 2);
-                string temp = $"index = {i++,2} , signed = {n,10} , unsigned = {(uint)n,10}";
-                sb.Append(temp + '\n');
-                cout(temp);
+                string temp = $"Mem[{i++,2}] = {n,10}\n";
+                Console.Write(temp);
+            }
+        }
+
+        public static StringBuilder get_regs(List<int> regs)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Register file content : \n");
+            int i = 0;
+            foreach (int n in regs)
+            {
+                string temp = $"index = {i++,10} , reg_out : signed = {n,10} , unsigned = {(uint)n,10}\n";
+                sb.Append(temp);
             }
             return sb;
         }
+        public static StringBuilder get_DM(List<string> DM)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Data Memory Content : \n");
+            int i = 0;
+            foreach (string mem in DM)
+            {
+                if (i == 20) break;
+                int n = Convert.ToInt32(DM[i], 2);
+                string temp = $"Mem[{i++,2}] = {n,10}\n";
+                sb.Append(temp);
+            }
+            return sb;
+        }
+
         public static bool isvalid_format(string format)
         {
             return format == "R" || format == "I" || format == "J";
@@ -407,7 +425,7 @@ namespace ProjectCPUCL
 
     }
 
-    public class CPU5STAGE : CPU
+    public class CPU5STAGE
     {   // TODO: -log the info of the run every time you run the cpu on the given instructions (necessary for the real time app) make a btn for that
         //       -implement floating point (in terms of reg file and FP ALU)
         //       -modify the HANDLER address to a suitable location in the instruction memory
@@ -415,7 +433,9 @@ namespace ProjectCPUCL
         bool hlt;
         bool WrongPrediction;
         int targetaddress;
-        public List<string> IM; // Instruction Mem        
+        public List<string> DM; // Data Mem
+        public List<int> regs;
+        public List<string> IM; // Instruction Mem
 
         Instruction IFID;
         Instruction IDEX;
@@ -434,19 +454,9 @@ namespace ProjectCPUCL
             PCplus1, pfc, exception, none
         }
         PCsrc pcsrc;
-        public CPU5STAGE(List<string> insts = null)
+        public CPU5STAGE(List<string> insts)
         {
-            regs = new List<int>();
-            for (int i = 0; i < 32; i++) regs.Add(0);
-            IM = new List<string>();
-            if (insts != null) IM.AddRange(insts);
-            int curr_count = (insts == null) ? 0 : insts.Count;
-            for (int i = 0; i < 1024 - curr_count; i++) IM.Add("0".PadLeft(32, '0'));
-            IM[HANDLER_ADDR] = "00100000000111111111111111111111"; // addi x31 x0 -1
-            IM[HANDLER_ADDR + 1] = "11111100000000000000000000000000"; // hlt
-
-            DM = new List<string>();
-            for (int i = 0; i < 1024; i++) DM.Add("0");
+            (IM, DM, regs) = InitMipsCPU(insts);
 
             PC = -1;
             hlt = false;
@@ -871,26 +881,18 @@ namespace ProjectCPUCL
             MIPS.print_DM(DM);
         }
     }
-
-    public class SingleCycle : CPU
+    public class SingleCycle
     {
-        public List<string> IM; // Instruction Mem
         public int PC;
         public bool hlt;
+        public List<string> DM; // Data Mem
+        public List<int> regs;
+        public List<string> IM; // Instruction Mem
 
-
-        public SingleCycle(List<string> insts = null)
+        public SingleCycle(List<string> insts)
         {
-            regs = new List<int>();
-            for (int i = 0; i < 32; i++) regs.Add(0);
-            IM = new List<string>();
-            if (insts != null) IM.AddRange(insts);
-            int curr_count = (insts == null) ? 0 : insts.Count;
-            for (int i = 0; i < 1024 - curr_count; i++) IM.Add("0".PadLeft(32, '0'));
-            IM[HANDLER_ADDR] = "00100000000111111111111111111111"; // addi x31 x0 -1
-            IM[HANDLER_ADDR + 1] = "11111100000000000000000000000000"; // hlt
-            DM = new List<string>();
-            for (int i = 0; i < 1024; i++) DM.Add("".PadLeft(32, '0'));
+            (IM, DM, regs) = InitMipsCPU(insts);
+
             PC = 0;
             hlt = false;
         }

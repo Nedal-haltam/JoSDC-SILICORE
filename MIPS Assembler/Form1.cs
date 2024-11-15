@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 namespace Assembler
@@ -16,9 +19,10 @@ namespace Assembler
         List<string> curr_mc = new List<string>();
         List<List<string>> curr_insts = new List<List<string>>();
         // this is the entry point of the entire process because we want to process the input only if the input is changed
-        private void Input_TextChanged(object sender, EventArgs e)
+
+        void assemble(string[] input)
         {
-            ASSEMBLERMIPS.input.Lines = input.Lines;
+            ASSEMBLERMIPS.input.Lines = input;
             (List<string> mc, List<List<string>> insts) = ASSEMBLERMIPS.TOP_MAIN();
             curr_mc = mc;
             curr_insts = insts;
@@ -29,7 +33,11 @@ namespace Assembler
             lblnumofinst.Text = ASSEMBLERMIPS.lblnumofinst.Text;
 
             lblNoErr.Visible = !(lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible);
+        }
 
+        private void Input_TextChanged(object sender, EventArgs e)
+        {
+            assemble(input.Lines);
 
             int j = 0;
             for (int i = 0; i < errors.Length; i++)
@@ -76,9 +84,56 @@ namespace Assembler
             }
         }
 
+        private T popF<T>(ref List<T> vals)
+        {
+            T val = vals.First();
+            vals.RemoveAt(0);
+            return val;
+        }
+
+
+        void HandleCommand(List<string> args)
+        {
+            popF(ref args);
+            if (args.Count < 3)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine("Missing source or output file paths");
+                Console.ResetColor();
+            }
+            string arg = popF(ref args);
+            string source_filepath = popF(ref args);
+            string output_filepath = popF(ref args);
+            if (arg == "gen")
+            {
+                assemble(File.ReadAllLines(source_filepath));
+
+                List<string> ToFile = new List<string>();
+                if (!lblNoErr.Visible)
+                {
+                    ToFile.Add("No mc to generate because of an invalid program");
+                }
+                else
+                {
+                    for (int i = 0; i < curr_mc.Count; i++)
+                    {
+                        string inst = "";
+                        curr_insts[i].ForEach(x => { inst += x + " "; });
+                        string temp = ($"{curr_mc[i]},  // {inst,-20}").Trim();
+                        ToFile.Add(temp);
+                    }
+                }
+                File.WriteAllLines(output_filepath, ToFile);
+                Close(); // for now we will close and not parse any other commands
+            }
+        }
 
         private void Assembler_Load(object sender, EventArgs e)
         {
+            List<string> args = Environment.GetCommandLineArgs().ToList();
+            if (args.Count > 1)
+                HandleCommand(args);
+
             layout_size();
             errors = new Label[] {
                 lblErrInvinst,

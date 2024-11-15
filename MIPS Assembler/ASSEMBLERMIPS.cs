@@ -399,7 +399,7 @@ public static class ASSEMBLERMIPS
 
         thecode.RemoveAll(x => (string.Empty == x || string.IsNullOrEmpty(x) || string.IsNullOrWhiteSpace(x)));
 
-        insts = Tokenize(thecode); // addi x1, x9, 213
+        insts = Tokenize(thecode); // example: addi x1, x9, 213
         // here we have a list of instructions that we can genrate machine code for
         if (insts.Count != 0)
         {

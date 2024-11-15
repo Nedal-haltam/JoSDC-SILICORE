@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using static ProjectCPUCL.MIPS;
 
 
 namespace Real_Time_CAS_ASSEM
@@ -64,37 +66,40 @@ namespace Real_Time_CAS_ASSEM
             lblnumofinst.Text = ASSEMBLERMIPS.lblnumofinst.Text;
             return mc;
         }
-        (int, MIPS.Exceptions, CPU) SimulateCPU(List<string> mc)
+        (int, Exceptions, CPU) SimulateCPU(List<string> mc)
         {
-            if (mc.Count == 0)
+            CPU cpu = new CPU().Init();
+            if (curr_cpu == CPU_type.SingleCycle)
             {
-                return (0, MIPS.Exceptions.NONE, new CPU());
+                SingleCycle sc = new SingleCycle(mc);
+                (int cycles, Exceptions excep) = sc.Run();
+                cpu.regs = sc.regs;
+                cpu.DM = sc.DM;
+                return (cycles, excep, cpu);
             }
-            CPU cpu = new CPU();
-            (int cycles, MIPS.Exceptions excep) = cpu.Run(mc, curr_cpu);
-            return (cycles, excep, cpu);
+            else if (curr_cpu == CPU_type.PipeLined)
+            {
+                CPU5STAGE pl = new CPU5STAGE(mc);
+                (int cycles, Exceptions excep) = pl.Run();
+                cpu.regs = pl.regs;
+                cpu.DM = pl.DM;
+                return (cycles, excep, cpu);
+            }
+            else
+                return (0, Exceptions.EXCEPTION, new CPU());
+
+
         }
 
         StringBuilder get_regs_DM(List<int> regs, List<string> DM)
         {
             //List<string> toout = new List<string>();
             StringBuilder toout = new StringBuilder();
-            //int i = 0;
             toout.Append("Reg file : \n");
-            toout.Append(MIPS.print_regs(regs));
-            //foreach (int reg in regs)
-            //{
-            //    toout.Add($"index = {i++,2}" + $"{((i <= 10) ? " " : "")}" + $" , signed = {reg,10} , unsigned = {(uint)reg,10}");
-            //}
+            toout.Append(get_regs(regs));
             toout.Append("Data Memory : \n");
-            //i = 0;
-            //foreach (string loc in DM)
-            //{
-            //    int mem = Convert.ToInt32(loc, 2);
-            //    toout.Add($"index = {i++,2}" + $"{((i <= 10) ? " " : "")}" + $" , signed = {mem,10} , unsigned = {(uint)mem,10}");
-            //    if (i == 50) break;
-            //}
-            toout.Append(MIPS.print_DM(DM));
+
+            toout.Append(get_DM(DM));
             return toout;
         }
         void update(List<string> mc, int cycles, MIPS.Exceptions excep, List<int> regs, List<string> DM)

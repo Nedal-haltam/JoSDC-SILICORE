@@ -243,7 +243,10 @@ namespace Epsilon
                     }
                     else
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.Error.WriteLine($"Invalid token: {peek().value}");
+                        Environment.Exit(1);
+                        Console.ResetColor();
                     }
                     buffer.Clear();
                 }
@@ -270,13 +273,16 @@ namespace Epsilon
 
         static void Main()
         {
-            string thecode = "reg\t\nnedal = 123; /* \n\nsdfdsfd\n\\t \t// \t sldkfjds \n  */ // comment \n mem hallah = 34;";
+            string thecode = " / reg\t\nnedal = 123; /* \n\nsdfdsfd\n\\t \t// \t sldkfjds \n  */ // comment \n mem hallah = 34;";
             Tokenizer t = new(thecode);
+            List<Token> tokenized = t.Tokinze();
+
+
+
             Console.WriteLine("before:");
             Console.WriteLine(thecode);
             Console.WriteLine("end");
 
-            List<Token> tokenized = t.Tokinze();
             Console.WriteLine("Tokinzed:");
             tokenized.ForEach(x => Console.WriteLine(x.Value));
             Console.WriteLine("endTokenized");
