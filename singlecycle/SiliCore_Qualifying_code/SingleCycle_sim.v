@@ -1,7 +1,11 @@
 
 
-`define sim
-`define timetowait 2 * (1000 + 1)
+
+
+`define vscode
+
+`define MAX_CLOCKS 2 * (1000)
+`define reset 4
 
 `include "programCounter.v"
 `include "IM.v" 
@@ -32,12 +36,13 @@ processor cpu(clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, cycles_con
 always #1 clk <= ~clk;
 initial begin
 
-$dumpfile("testoutdump.vcd");
+// $display("vcd path = %s", `OUT);
+$dumpfile(`VCD_OUT);
 $dumpvars;
 
-rst = 0; #4 rst = 1;
+rst = 0; #(`reset) rst = 1;
 
-#(`timetowait);
+#(`MAX_CLOCKS + 1);
 
 $display("Number of cycles consumed: %d", cycles_consumed);
 $finish;

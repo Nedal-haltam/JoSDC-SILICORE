@@ -1,4 +1,7 @@
-`define sim
+
+
+
+`define vscode
 `define MAX_CLOCKS (2 * 10000)
 `define reset 4
 
@@ -40,19 +43,16 @@ CPU5STAGE cpu(PC, input_clk, rst, cycles_consumed);
 
 always #1 input_clk <= ~input_clk;
 initial begin
-$dumpfile("testoutdump.vcd");
+$dumpfile(`VCD_OUT);
 $dumpvars;
 input_clk <= 0;
 
-rst <= 1; #(`reset)
-rst = 0;
+rst <= 1; #(`reset) rst = 0;
 
-$display("Executing...");
 #(`MAX_CLOCKS + 1);
 
 // we add one to the consumed cycles because it will not count for the hlt instruction (the last instruction)
 $display("Number of cycles consumed: %d", cycles_consumed + 1); 
-
 $finish;
 
 end

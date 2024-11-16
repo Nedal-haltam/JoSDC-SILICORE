@@ -54,10 +54,10 @@ module registerFile (clk, rst, we,
 	
 	
 	
-`ifdef sim
+`ifdef vscode
 integer i;
 initial begin
-  #(`timetowait);
+  #(`MAX_CLOCKS + `reset);
   $display("Register file content : ");
   for (i = 0; i <= 31; i = i + 1)
     $display("index = %d , reg_out : signed = %d , unsigned = %d",i, $signed(registers[i]), $unsigned(registers[i]));

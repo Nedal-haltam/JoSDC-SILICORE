@@ -89,11 +89,7 @@ ALU alu(.operand1(readData1_w), .operand2(ALUin2), .opSel(ALUOp), .result(ALURes
 
 
 
-`ifdef sim
-	DM dataMemory(.address(ALUResult[7:0]), .clock(clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
-`else
-	dataMemory DM(.address(ALUResult[7:0]), .clock(clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
-`endif	
+DM dataMemory(.address(ALUResult[7:0]), .clock(clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
 
 mux2x1 #(32) WBMux(.in1(ALUResult), .in2(memoryReadData), .s(MemtoReg), .out(writeData));
 

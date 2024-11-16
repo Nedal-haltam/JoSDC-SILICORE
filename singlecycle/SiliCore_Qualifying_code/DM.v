@@ -1,3 +1,4 @@
+`ifdef vscode
 module DM(address, clock,  data,  rden,  wren,  q);
 
     input clock, rden, wren;
@@ -16,10 +17,10 @@ module DM(address, clock,  data,  rden,  wren,  q);
     end
 
 
-`ifdef sim
+`ifdef vscode
 integer i;
 initial begin
-  #(`timetowait);
+  #(`MAX_CLOCKS + `reset);
   // iterating through some of the addresses of the memory to check if the program loaded and stored the values properly
   $display("Data Memory Content : ");
   for (i = 0; i <= 19; i = i + 1)
@@ -29,3 +30,4 @@ end
 
 
 endmodule
+`endif

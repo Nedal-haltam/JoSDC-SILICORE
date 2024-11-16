@@ -1,3 +1,4 @@
+`ifdef vscode
 module DM(addr , Data_In , Data_Out , WR , clk);
 
 parameter bit_width = 32;
@@ -15,12 +16,11 @@ always@ (posedge clk)
 
 always@ (posedge clk) 
   Data_Out <= data_mem[addr];
-// assign Data_Out = data_mem[addr];
 
 
 
 
-`ifdef sim
+`ifdef vscode
 initial begin
   #(`MAX_CLOCKS + `reset);
   // iterating through some of the addresses of the memory to check if the program loaded and stored the values properly
@@ -32,3 +32,4 @@ end
 `endif
       
 endmodule
+`endif

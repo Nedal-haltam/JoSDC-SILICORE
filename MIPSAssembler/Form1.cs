@@ -104,27 +104,38 @@ namespace Assembler
         void HandleCommand(List<string> args)
         {
             popF(ref args);
-            if (args.Count != 3)
+            if (args.Count != 4)
             {
                 assert("Missing arguments");
             }
             string arg = popF(ref args).ToLower();
             string source_filepath = popF(ref args);
-            string output_filepath = popF(ref args);
+            string MC_filepath = popF(ref args);
+            string IM_INIT_filepath = popF(ref args);
             if (arg == "gen")
             {
                 assemble(File.ReadAllLines(source_filepath));
 
-                List<string> ToFile = new List<string>();
+                List<string> mc = new List<string>();
                 if (!lblNoErr.Visible)
                 {
-                    ToFile.Add("No mc to generate because of an invalid program");
+                    mc.Add("No mc to generate because the program is invalid");
                 }
                 else
                 {
-                    curr_mc.ForEach(x => ToFile.Add(x));
+                    curr_mc.ForEach(x => mc.Add(x));
                 }
-                File.WriteAllLines(output_filepath, ToFile);
+                File.WriteAllLines(MC_filepath, mc);
+                List<string> IM_INIT = new List<string>();
+                for (int i = 0; i < curr_mc.Count; i++)
+                {
+                    string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
+                    string inst = "";
+                    curr_insts[i].ForEach(x => { inst += x + " "; });
+                    string temp = ($"InstMem[{i,2}] <= 32'h{hex};// {inst,-20}").Trim();
+                    IM_INIT.Add(temp);
+                }
+                File.WriteAllLines(IM_INIT_filepath, IM_INIT);
                 Close(); // for now we will close and not parse any other commands
             }
             else
@@ -162,7 +173,6 @@ namespace Assembler
                 curr_insts[i].ForEach(x => { inst += x + " "; });
                 string temp = ($"Bin: \"{curr_mc[i]}\", Hex: 0x{hex}; // {inst,-20}").Trim() + '\n';
                 tb_tocopy += temp;
-
             }
             if (tb_tocopy.Length > 0)
                 Clipboard.SetText(tb_tocopy);
