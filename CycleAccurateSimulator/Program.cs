@@ -77,7 +77,7 @@ namespace main
                 sb.Append(get_regs(cpu.regs).ToString());
                 sb.Append(get_DM(cpu.DM).ToString());
                 //sb.Append($"Exception Type : {excep.ToString()}");
-                sb.Append($"Number of cycles consumed : {cycles,10}");
+                sb.Append($"Number of cycles consumed : {cycles,10}\n");
             }
             else if (cpu_type == CPU_type.PipeLined)
             {
@@ -86,7 +86,7 @@ namespace main
                 sb.Append(get_regs(cpu.regs).ToString());
                 sb.Append(get_DM(cpu.DM).ToString());
                 //sb.Append($"Exception Type : {excep.ToString()}");
-                sb.Append($"Number of cycles consumed : {cycles,10}");
+                sb.Append($"Number of cycles consumed : {cycles,10}\n");
             }
             File.WriteAllText(output_filepath, sb.ToString());
         }

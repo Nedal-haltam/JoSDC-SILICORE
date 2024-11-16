@@ -22,10 +22,10 @@ Run_BenchMark_SW()
     ASSEMBLER="../MIPSAssembler/bin/Debug/Assembler.exe"
     ASSEMBLER_ARGS="gen $ASSEMBLER_IN $ASSEMBLER_OUT_TO_CAS $ASSEMBLER_OUT_TO_HW"
     # run the the assembler
-    echo "[INFO]: Assembling "$ProgName"..."
+    printf "[INFO]: Assembling "$ProgName"...\n"
     $ASSEMBLER $ASSEMBLER_ARGS
 
-    echo "[INFO]: "$ProgName" Assembled Successfully"
+    printf "[INFO]: "$ProgName" Assembled Successfully\n"
 
     # define the I/O
     CAS_IN=$ASSEMBLER_OUT_TO_CAS
@@ -36,27 +36,40 @@ Run_BenchMark_SW()
     
     CAS_ARGS="sim singlecycle $CAS_IN $CAS_SC_OUT"
     # run the CAS on the single cycle
-    echo "[INFO]: Simulating "$ProgName" on the Single Cycle"
+    printf "[INFO]: Simulating "$ProgName" on the Single Cycle\n"
     $CAS $CAS_ARGS
 
-    echo "[INFO]: "$ProgName" simulated successfully on the Single Cycle"
+    printf "[INFO]: "$ProgName" simulated successfully on the Single Cycle\n"
 
     CAS_ARGS="sim pipeline $CAS_IN $CAS_PL_OUT"
     # run the CAS on the PipeLine
-    echo "[INFO]: Simulating "$ProgName" on the PipeLine"
+    printf "[INFO]: Simulating "$ProgName" on the PipeLine\n"
     $CAS $CAS_ARGS
 
-    echo "[INFO]: "$ProgName" simulated successfully on the PipeLine"
+    printf "[INFO]: "$ProgName" simulated successfully on the PipeLine\n"
 
 
-    echo "[INFO]: Comparing Software Outputs"
     
+    STATS=$ProgFolder"stats.txt"
+    printf "Software Stats: \n" > $STATS
+
+    printf "\tSingleCycle: \n" >> $STATS
+    printf "\t\t" >> $STATS
+    sed -n '$p'  "$CAS_SC_OUT" >> $STATS
+    printf "\tPipLined: \n" >> $STATS
+    printf "\t\t" >> $STATS
+    sed -n '$p'  "$CAS_PL_OUT" >> $STATS
+
+    sed -i '$d' "$CAS_SC_OUT"
+    sed -i '$d' "$CAS_PL_OUT"
+
+    printf "[INFO]: Comparing Software Outputs\n"
 
     if diff "$CAS_SC_OUT" "$CAS_PL_OUT" > /dev/null; then
-        echo "[INFO]: Files are identical."
+        printf "[INFO]: Files are identical.\n"
     else
-        echo "Files are different. Detailed differences:"
-        diff -a --color=always "$CAS_SC_OUT" "$CAS_PL_OUT" # Unified diff format
+        printf "[INFO]: Files are different. Detailed differences:\n"
+        diff -a --color=always "$CAS_SC_OUT" "$CAS_PL_OUT"
     fi
 }
 
@@ -80,6 +93,37 @@ RunBenchMark_HW()
     VERILOG_PL_OUT=$ProgFolder""$VERILOG_EXT_PL_OUT
     iverilog -I $BASE_PATH -I$ProgFolder -o $VERILOG_PL -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" $BASE_PATH"PL_CPU_sim.v"
     vvp $VERILOG_PL > $VERILOG_PL_OUT
+
+
+
+
+    sed -i '1d' "$VERILOG_SC_OUT"
+    sed -i '1d' "$VERILOG_PL_OUT"
+    sed -i '$d' "$VERILOG_SC_OUT"
+    sed -i '$d' "$VERILOG_PL_OUT"
+
+
+    STATS=$ProgFolder"stats.txt"
+    printf "\n\nHardWare Stats: \n" >> $STATS
+
+    printf "\tSingleCycle: \n" >> $STATS
+    printf "\t\t" >> $STATS
+    sed -n '$p' "$VERILOG_SC_OUT" >> $STATS
+    printf "\tPipLined: \n" >> $STATS
+    printf "\t\t" >> $STATS
+    sed -n '$p'  "$VERILOG_PL_OUT" >> $STATS
+    
+    sed -i '$d' "$VERILOG_SC_OUT"
+    sed -i '$d' "$VERILOG_PL_OUT"
+
+    printf "[INFO]: Comparing HardWare Outputs\n"
+
+    if diff "$VERILOG_SC_OUT" "$VERILOG_PL_OUT" > /dev/null; then
+        printf "[INFO]: Files are identical.\n"
+    else
+        printf "[INFO]: Files are different. Detailed differences:\n"
+        diff -a --color=always "$VERILOG_SC_OUT" "$VERILOG_PL_OUT"
+    fi
 }
 
 
@@ -87,14 +131,12 @@ RunBenchMark_HW()
 
 
 Run_BenchMark_SW "Program"
-# # TODO: compare SC with PL (hardware wise)
 RunBenchMark_HW "Program"
 # TODO: compare HW / SW
 
 read -p "Press Enter to exit"
 # if [ $? -eq 0 ]; then
-#     echo "Script executed successfully!"
+#     printf "Script executed successfully!\n"
 # else
-#     echo "An error occurred."
+#     printf "An error occurred."
 # fi
-# read -p "Press Enter to close the window..."
