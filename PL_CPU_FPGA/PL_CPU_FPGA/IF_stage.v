@@ -19,7 +19,7 @@ PC_register pc_reg(pc_reg_in, inst_mem_in, pc_write, clk, rst);
 
 IM inst_mem(inst_mem_in , inst);
 
-Branch_or_Jump_TargGen new_PC(inst_mem_in , 32'd1 , pc_next);
+Branch_or_Jump_TargGen new_PC(inst_mem_in , 32'b1 , pc_next);
   
     	
 	

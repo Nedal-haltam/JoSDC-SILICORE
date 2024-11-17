@@ -6,8 +6,8 @@ input [bit_width-1:0] wr_data;
 input [4:0] rd_reg1, rd_reg2, wr_reg;
 input reg_wr, clk, rst;
 
-output [bit_width-1:0] rd_data1;
-output [bit_width-1:0] rd_data2;
+output reg [bit_width-1:0] rd_data1;
+output reg [bit_width-1:0] rd_data2;
 
 reg [bit_width-1:0] reg_file [31:0];
 
@@ -20,20 +20,37 @@ always@ (posedge clk , posedge rst) begin
     
 if (rst) begin
   for (i = 0; i < 32; i = i + 1)
-    reg_file[i] = 0;
-
+    reg_file[i] <= 0;
 end
+
 else begin
-  if(wr_reg != 0 && reg_wr == 1'b1)
+  if(wr_reg && reg_wr)
 	reg_file[wr_reg] <= wr_data;
 	
-	reg_file[0] <= 32'd0;
+	reg_file[0] <= 0;
 end
 
 end
 
-assign rd_data1 = reg_file[rd_reg1];
-assign rd_data2 = reg_file[rd_reg2];
+always@(posedge clk) begin
+
+if (wr_reg == rd_reg1 && wr_reg)
+  rd_data1 <= wr_data;
+else
+  rd_data1 <= reg_file[rd_reg1];
+
+end
+always@(posedge clk) begin
+
+if (wr_reg == rd_reg2 && wr_reg)
+  rd_data2 <= wr_data;
+else
+  rd_data2 <= reg_file[rd_reg2];
+
+end
+
+// assign rd_data1 = reg_file[rd_reg1];
+// assign rd_data2 = reg_file[rd_reg2];
 
 
 `ifdef vscode

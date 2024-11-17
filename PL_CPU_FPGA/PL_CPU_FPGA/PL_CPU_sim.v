@@ -5,7 +5,10 @@
 `define MAX_CLOCKS (2 * 10000)
 `define reset 4
 
-`include "forward_unit.v"
+// `include "forward_unit.v"
+`include "forwardA.v"
+`include "forwardB.v"
+`include "forwardC.v"
 `include "IF_stage.v"
 `include "ID_stage.v"
 `include "EX_stage.v"
@@ -15,7 +18,6 @@
 `include "ID_EX_buffer.v"
 `include "EX_MEM_buffer.v"
 `include "MEM_WB_buffer.v"
-`include "MUX_2x1.v"
 `include "MUX_4x1.v"
 `include "MUX_8x1.v"
 `include "ALU_OPER.v"

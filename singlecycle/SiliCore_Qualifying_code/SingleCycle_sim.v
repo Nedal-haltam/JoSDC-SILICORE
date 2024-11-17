@@ -3,10 +3,11 @@
 
 
 `define vscode
-
+`timescale 1ns / 1ps
 `define MAX_CLOCKS 2 * (1000)
 `define reset 4
 
+`ifdef vscode
 `include "programCounter.v"
 `include "IM.v" 
 `include "controlUnit.v" 
@@ -16,8 +17,10 @@
 `include "BranchController.v" 
 `include "DM.v" 
 `include "processor.v"
+`endif
 
-module testbench;
+
+module SingleCycle_sim;
 
 reg clk = 1, rst = 1;
 wire [31:0] PC;
@@ -37,7 +40,7 @@ always #1 clk <= ~clk;
 initial begin
 
 // $display("vcd path = %s", `OUT);
-$dumpfile(`VCD_OUT);
+//$dumpfile(`VCD_OUT);
 $dumpvars;
 
 rst = 0; #(`reset) rst = 1;

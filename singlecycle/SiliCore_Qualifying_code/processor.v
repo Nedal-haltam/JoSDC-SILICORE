@@ -60,7 +60,7 @@ mux2x1 #(32) PCMux(.in1(PCPlus1), .in2(adderResult), .s(PCsrc), .out(nextPC));
 programCounter pc(.clk(clk), .rst(rst), .PCin(nextPC), .PCout(PC));	
 
 
-IM instructionMemory(.address(PC), .q(wire_instruction));
+IM InstMem(.address(PC), .q(wire_instruction));
 
 assign instruction = (~rst) ? 0 : wire_instruction;
 
@@ -89,7 +89,7 @@ ALU alu(.operand1(readData1_w), .operand2(ALUin2), .opSel(ALUOp), .result(ALURes
 
 
 
-DM dataMemory(.address(ALUResult[7:0]), .clock(clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
+DM dataMem(.address(ALUResult[7:0]), .clock(clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
 
 mux2x1 #(32) WBMux(.in1(ALUResult), .in2(memoryReadData), .s(MemtoReg), .out(writeData));
 

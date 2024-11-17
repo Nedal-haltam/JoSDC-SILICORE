@@ -960,9 +960,6 @@ namespace ProjectCPUCL
             if (inst.mnem == Mnemonic.lw)
             {
                 string smemout = DM[inst.aluout];
-                smemout = DM[inst.aluout + 1] + smemout;
-                smemout = DM[inst.aluout + 2] + smemout;
-                smemout = DM[inst.aluout + 3] + smemout;
                 inst.memout = Convert.ToInt32(smemout, 2);
             }
             else if (inst.mnem == Mnemonic.sw)
@@ -983,6 +980,10 @@ namespace ProjectCPUCL
         {
             if (inst.mnem == Mnemonic.hlt)
                 hlt = true;
+            if (inst.mnem == Mnemonic.lw)
+            {
+
+            }
 
             if (iswb(inst.mnem) && inst.rdind != 0)
                 regs[inst.rdind] = (inst.mnem == Mnemonic.lw) ? inst.memout : inst.aluout;

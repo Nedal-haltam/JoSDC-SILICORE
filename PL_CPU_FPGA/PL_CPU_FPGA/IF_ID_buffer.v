@@ -13,7 +13,7 @@ module IF_ID_buffer(IF_PC, IF_INST, IF_FLUSH, if_id_Write, clk,
 `include "opcodes.v"
 
 
-always @ (negedge clk, posedge rst) begin
+always @ (posedge clk, posedge rst) begin
 	if (rst) begin
 		ID_opcode     <= 0;
 		ID_rs1_ind   <= 0;

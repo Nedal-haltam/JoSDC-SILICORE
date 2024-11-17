@@ -1,7 +1,7 @@
 
 module ID_stage(pc, inst, opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_data, rs1_ind, rs2_ind,id_ex_rd_ind, wr_reg_from_wb,
-			    id_flush,id_flush_mux_sel, Wrong_prediction, exception_flag, clk, pfc, rs1, rs2, pc_src, 
-				pc_write, if_id_write, if_id_flush, imm,reg_write_from_wb, reg_write, mem_read, mem_write, rst);
+			    id_flush,id_flush_mux_sel, Wrong_prediction, exception_flag, clk, pfc, predicted, rs1, rs2, pc_src, 
+				pc_write, if_id_write, if_id_flush, imm,reg_write_from_wb, reg_write, mem_read, mem_write, rst, is_oper2_immed, ID_is_beq, ID_is_bne);
 	
 	`include "opcodes.v"
 
@@ -14,7 +14,7 @@ module ID_stage(pc, inst, opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_da
 	
 	output [31:0] pfc, rs1, rs2;
 	output [2:0] pc_src;
-	output pc_write, if_id_write, reg_write, mem_read, mem_write, if_id_flush;
+	output pc_write, if_id_write, reg_write, mem_read, mem_write, if_id_flush, predicted, is_oper2_immed, ID_is_beq, ID_is_bne;
 	
 	wire [31:0] mux_out, comp_oper1, comp_oper2;
 	wire reg_write_wire, mem_read_wire, mem_write_wire, id_ex_stall;
@@ -27,20 +27,12 @@ module ID_stage(pc, inst, opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_da
 	Immed_Gen_unit immed_gen(inst, opcode, imm);
 	
 	assign pfc = (opcode == beq || opcode == bne) ? pc + imm : imm;
-	/*
-	always@(opcode , pc, imm) begin
-		if (opcode == beq || opcode == bne)
-			pfc <= pc + imm;
-		else
-			pfc <= imm;
-	end
-	*/
+
 	
-	
-    BranchResolver BR(pc_src, exception_flag, opcode, Wrong_prediction, rst);
+    BranchResolver BR(pc_src, exception_flag, opcode, predicted, Wrong_prediction, rst);
 	
 	// control section
-    control_unit cu(opcode, reg_write_wire, mem_read_wire, mem_write_wire);
+    control_unit cu(opcode, reg_write_wire, mem_read_wire, mem_write_wire, is_oper2_immed, ID_is_beq, ID_is_bne);
 	StallDetectionUnit SDU(Wrong_prediction, opcode, EX_memread, rs1_ind, rs2_ind, id_ex_rd_ind, pc_write, if_id_write, if_id_flush, id_ex_stall);
 	
 	// control unit mux

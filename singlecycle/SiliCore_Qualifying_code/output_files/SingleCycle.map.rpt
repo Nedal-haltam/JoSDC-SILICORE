@@ -1,5 +1,5 @@
-Analysis & Synthesis report for SingleCycle
-Fri Oct 25 22:53:35 2024
+Analysis & Elaboration report for SingleCycle
+Sun Nov 17 11:28:24 2024
 Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
 
 
@@ -7,37 +7,29 @@ Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
 ; Table of Contents ;
 ---------------------
   1. Legal Notice
-  2. Analysis & Synthesis Summary
-  3. Analysis & Synthesis Settings
-  4. Parallel Compilation
-  5. Analysis & Synthesis Source Files Read
-  6. Analysis & Synthesis Resource Usage Summary
-  7. Analysis & Synthesis Resource Utilization by Entity
-  8. Analysis & Synthesis RAM Summary
-  9. Analysis & Synthesis IP Cores Summary
- 10. Registers Removed During Synthesis
- 11. General Register Statistics
- 12. Inverted Register Statistics
- 13. Multiplexer Restructuring Statistics (Restructuring Performed)
- 14. Source assignments for processor:cpu|instructionMemory:IM|altsyncram:altsyncram_component|altsyncram_38e1:auto_generated
- 15. Source assignments for processor:cpu|dataMemory:DM|altsyncram:altsyncram_component|altsyncram_8km1:auto_generated
- 16. Parameter Settings for User Entity Instance: processor:cpu|adder:PCAdder
- 17. Parameter Settings for User Entity Instance: processor:cpu|instructionMemory:IM|altsyncram:altsyncram_component
- 18. Parameter Settings for User Entity Instance: processor:cpu|controlUnit:CU
- 19. Parameter Settings for User Entity Instance: processor:cpu|mux2x1:RFMux
- 20. Parameter Settings for User Entity Instance: processor:cpu|mux2x1:ALUMux
- 21. Parameter Settings for User Entity Instance: processor:cpu|ALU:alu
- 22. Parameter Settings for User Entity Instance: processor:cpu|adder:branchAdder
- 23. Parameter Settings for User Entity Instance: processor:cpu|dataMemory:DM|altsyncram:altsyncram_component
- 24. Parameter Settings for User Entity Instance: processor:cpu|mux2x1:WBMux
- 25. Parameter Settings for User Entity Instance: processor:cpu|mux2x1:PCMux
- 26. altsyncram Parameter Settings by Entity Instance
- 27. Port Connectivity Checks: "processor:cpu|adder:PCAdder"
- 28. Port Connectivity Checks: "processor:cpu"
- 29. Post-Synthesis Netlist Statistics for Top Partition
- 30. Elapsed Time Per Partition
- 31. Analysis & Synthesis Messages
- 32. Analysis & Synthesis Suppressed Messages
+  2. Analysis & Elaboration Summary
+  3. Parallel Compilation
+  4. Analysis & Elaboration IP Cores Summary
+  5. Source assignments for processor:cpu|instructionMemory:InstMem|altsyncram:altsyncram_component|altsyncram_38e1:auto_generated
+  6. Source assignments for processor:cpu|dataMemory:dataMem|altsyncram:altsyncram_component|altsyncram_8km1:auto_generated
+  7. Parameter Settings for User Entity Instance: processor:cpu
+  8. Parameter Settings for User Entity Instance: processor:cpu|BranchController:branchcontroller
+  9. Parameter Settings for User Entity Instance: processor:cpu|mux2x1:PCMux
+ 10. Parameter Settings for User Entity Instance: processor:cpu|programCounter:pc
+ 11. Parameter Settings for User Entity Instance: processor:cpu|instructionMemory:InstMem|altsyncram:altsyncram_component
+ 12. Parameter Settings for User Entity Instance: processor:cpu|controlUnit:CU
+ 13. Parameter Settings for User Entity Instance: processor:cpu|mux2x1:RFMux
+ 14. Parameter Settings for User Entity Instance: processor:cpu|mux2x1:ALUMux
+ 15. Parameter Settings for User Entity Instance: processor:cpu|ALU:alu
+ 16. Parameter Settings for User Entity Instance: processor:cpu|dataMemory:dataMem|altsyncram:altsyncram_component
+ 17. Parameter Settings for User Entity Instance: processor:cpu|mux2x1:WBMux
+ 18. altsyncram Parameter Settings by Entity Instance
+ 19. Analysis & Elaboration Settings
+ 20. Port Connectivity Checks: "processor:cpu|ALU:alu"
+ 21. Port Connectivity Checks: "processor:cpu|instructionMemory:InstMem"
+ 22. Port Connectivity Checks: "processor:cpu"
+ 23. Analysis & Elaboration Messages
+ 24. Analysis & Elaboration Suppressed Messages
 
 
 
@@ -62,34 +54,407 @@ https://fpgasoftware.intel.com/eula.
 
 
 +-------------------------------------------------------------------------------------+
-; Analysis & Synthesis Summary                                                        ;
+; Analysis & Elaboration Summary                                                      ;
 +------------------------------------+------------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Fri Oct 25 22:53:35 2024          ;
+; Analysis & Elaboration Status      ; Successful - Sun Nov 17 11:28:24 2024          ;
 ; Quartus Prime Version              ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
 ; Revision Name                      ; SingleCycle                                    ;
-; Top-level Entity Name              ; top_cpu                                        ;
+; Top-level Entity Name              ; SingleCycle_sim                                ;
 ; Family                             ; MAX 10                                         ;
-; Total logic elements               ; 2,650                                          ;
-;     Total combinational functions  ; 1,690                                          ;
-;     Dedicated logic registers      ; 1,027                                          ;
-; Total registers                    ; 1027                                           ;
-; Total pins                         ; 66                                             ;
-; Total virtual pins                 ; 0                                              ;
-; Total memory bits                  ; 10,240                                         ;
-; Embedded Multiplier 9-bit elements ; 0                                              ;
-; Total PLLs                         ; 0                                              ;
-; UFM blocks                         ; 0                                              ;
-; ADC blocks                         ; 0                                              ;
+; Total logic elements               ; N/A until Partition Merge                      ;
+;     Total combinational functions  ; N/A until Partition Merge                      ;
+;     Dedicated logic registers      ; N/A until Partition Merge                      ;
+; Total registers                    ; N/A until Partition Merge                      ;
+; Total pins                         ; N/A until Partition Merge                      ;
+; Total virtual pins                 ; N/A until Partition Merge                      ;
+; Total memory bits                  ; N/A until Partition Merge                      ;
+; Embedded Multiplier 9-bit elements ; N/A until Partition Merge                      ;
+; Total PLLs                         ; N/A until Partition Merge                      ;
+; UFM blocks                         ; N/A until Partition Merge                      ;
+; ADC blocks                         ; N/A until Partition Merge                      ;
 +------------------------------------+------------------------------------------------+
+
+
++------------------------------------------+
+; Parallel Compilation                     ;
++----------------------------+-------------+
+; Processors                 ; Number      ;
++----------------------------+-------------+
+; Number detected on machine ; 12          ;
+; Maximum allowed            ; 6           ;
+;                            ;             ;
+; Average used               ; 1.00        ;
+; Maximum used               ; 1           ;
+;                            ;             ;
+; Usage by Processor         ; % Time Used ;
+;     Processor 1            ; 100.0%      ;
++----------------------------+-------------+
+
+
++------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Elaboration IP Cores Summary                                                                                                        ;
++--------+--------------+---------+--------------+--------------+----------------------------------------------------------+---------------------+
+; Vendor ; IP Core Name ; Version ; Release Date ; License Type ; Entity Instance                                          ; IP Include File     ;
++--------+--------------+---------+--------------+--------------+----------------------------------------------------------+---------------------+
+; Altera ; ROM: 1-PORT  ; 20.1    ; N/A          ; N/A          ; |SingleCycle_sim|processor:cpu|instructionMemory:InstMem ; instructionMemory.v ;
+; Altera ; RAM: 1-PORT  ; 20.1    ; N/A          ; N/A          ; |SingleCycle_sim|processor:cpu|dataMemory:dataMem        ; dataMemory.v        ;
++--------+--------------+---------+--------------+--------------+----------------------------------------------------------+---------------------+
+
+
++-------------------------------------------------------------------------------------------------------------------------------+
+; Source assignments for processor:cpu|instructionMemory:InstMem|altsyncram:altsyncram_component|altsyncram_38e1:auto_generated ;
++---------------------------------+--------------------+------+-----------------------------------------------------------------+
+; Assignment                      ; Value              ; From ; To                                                              ;
++---------------------------------+--------------------+------+-----------------------------------------------------------------+
+; OPTIMIZE_POWER_DURING_SYNTHESIS ; NORMAL_COMPILATION ; -    ; -                                                               ;
++---------------------------------+--------------------+------+-----------------------------------------------------------------+
+
+
++------------------------------------------------------------------------------------------------------------------------+
+; Source assignments for processor:cpu|dataMemory:dataMem|altsyncram:altsyncram_component|altsyncram_8km1:auto_generated ;
++---------------------------------+--------------------+------+----------------------------------------------------------+
+; Assignment                      ; Value              ; From ; To                                                       ;
++---------------------------------+--------------------+------+----------------------------------------------------------+
+; OPTIMIZE_POWER_DURING_SYNTHESIS ; NORMAL_COMPILATION ; -    ; -                                                        ;
++---------------------------------+--------------------+------+----------------------------------------------------------+
+
+
++------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: processor:cpu ;
++----------------+--------+----------------------------------+
+; Parameter Name ; Value  ; Type                             ;
++----------------+--------+----------------------------------+
+; RType          ; 000000 ; Unsigned Binary                  ;
+; hlt_inst       ; 111111 ; Unsigned Binary                  ;
+; add            ; 100000 ; Unsigned Binary                  ;
+; addu           ; 100001 ; Unsigned Binary                  ;
+; sub            ; 100010 ; Unsigned Binary                  ;
+; subu           ; 100011 ; Unsigned Binary                  ;
+; and_           ; 100100 ; Unsigned Binary                  ;
+; or_            ; 100101 ; Unsigned Binary                  ;
+; xor_           ; 100110 ; Unsigned Binary                  ;
+; nor_           ; 100111 ; Unsigned Binary                  ;
+; slt            ; 101010 ; Unsigned Binary                  ;
+; sgt            ; 101011 ; Unsigned Binary                  ;
+; sll            ; 000000 ; Unsigned Binary                  ;
+; srl            ; 000010 ; Unsigned Binary                  ;
+; jr             ; 001000 ; Unsigned Binary                  ;
+; addi           ; 001000 ; Unsigned Binary                  ;
+; andi           ; 001100 ; Unsigned Binary                  ;
+; ori            ; 001101 ; Unsigned Binary                  ;
+; xori           ; 001110 ; Unsigned Binary                  ;
+; slti           ; 101010 ; Unsigned Binary                  ;
+; lw             ; 100011 ; Unsigned Binary                  ;
+; sw             ; 101011 ; Unsigned Binary                  ;
+; beq            ; 000100 ; Unsigned Binary                  ;
+; bne            ; 000101 ; Unsigned Binary                  ;
+; j              ; 000010 ; Unsigned Binary                  ;
+; jal            ; 000011 ; Unsigned Binary                  ;
++----------------+--------+----------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: processor:cpu|BranchController:branchcontroller ;
++----------------+--------+--------------------------------------------------------------------+
+; Parameter Name ; Value  ; Type                                                               ;
++----------------+--------+--------------------------------------------------------------------+
+; RType          ; 000000 ; Unsigned Binary                                                    ;
+; hlt_inst       ; 111111 ; Unsigned Binary                                                    ;
+; add            ; 100000 ; Unsigned Binary                                                    ;
+; addu           ; 100001 ; Unsigned Binary                                                    ;
+; sub            ; 100010 ; Unsigned Binary                                                    ;
+; subu           ; 100011 ; Unsigned Binary                                                    ;
+; and_           ; 100100 ; Unsigned Binary                                                    ;
+; or_            ; 100101 ; Unsigned Binary                                                    ;
+; xor_           ; 100110 ; Unsigned Binary                                                    ;
+; nor_           ; 100111 ; Unsigned Binary                                                    ;
+; slt            ; 101010 ; Unsigned Binary                                                    ;
+; sgt            ; 101011 ; Unsigned Binary                                                    ;
+; sll            ; 000000 ; Unsigned Binary                                                    ;
+; srl            ; 000010 ; Unsigned Binary                                                    ;
+; jr             ; 001000 ; Unsigned Binary                                                    ;
+; addi           ; 001000 ; Unsigned Binary                                                    ;
+; andi           ; 001100 ; Unsigned Binary                                                    ;
+; ori            ; 001101 ; Unsigned Binary                                                    ;
+; xori           ; 001110 ; Unsigned Binary                                                    ;
+; slti           ; 101010 ; Unsigned Binary                                                    ;
+; lw             ; 100011 ; Unsigned Binary                                                    ;
+; sw             ; 101011 ; Unsigned Binary                                                    ;
+; beq            ; 000100 ; Unsigned Binary                                                    ;
+; bne            ; 000101 ; Unsigned Binary                                                    ;
+; j              ; 000010 ; Unsigned Binary                                                    ;
+; jal            ; 000011 ; Unsigned Binary                                                    ;
++----------------+--------+--------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: processor:cpu|mux2x1:PCMux ;
++----------------+-------+------------------------------------------------+
+; Parameter Name ; Value ; Type                                           ;
++----------------+-------+------------------------------------------------+
+; size           ; 32    ; Signed Integer                                 ;
++----------------+-------+------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: processor:cpu|programCounter:pc ;
++----------------+-------+-----------------------------------------------------+
+; Parameter Name ; Value ; Type                                                ;
++----------------+-------+-----------------------------------------------------+
+; initialaddr    ; -1    ; Signed Integer                                      ;
++----------------+-------+-----------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: processor:cpu|instructionMemory:InstMem|altsyncram:altsyncram_component ;
++------------------------------------+-----------------------------------------+---------------------------------------+
+; Parameter Name                     ; Value                                   ; Type                                  ;
++------------------------------------+-----------------------------------------+---------------------------------------+
+; BYTE_SIZE_BLOCK                    ; 8                                       ; Untyped                               ;
+; AUTO_CARRY_CHAINS                  ; ON                                      ; AUTO_CARRY                            ;
+; IGNORE_CARRY_BUFFERS               ; OFF                                     ; IGNORE_CARRY                          ;
+; AUTO_CASCADE_CHAINS                ; ON                                      ; AUTO_CASCADE                          ;
+; IGNORE_CASCADE_BUFFERS             ; OFF                                     ; IGNORE_CASCADE                        ;
+; WIDTH_BYTEENA                      ; 1                                       ; Untyped                               ;
+; OPERATION_MODE                     ; ROM                                     ; Untyped                               ;
+; WIDTH_A                            ; 32                                      ; Signed Integer                        ;
+; WIDTHAD_A                          ; 6                                       ; Signed Integer                        ;
+; NUMWORDS_A                         ; 64                                      ; Signed Integer                        ;
+; OUTDATA_REG_A                      ; UNREGISTERED                            ; Untyped                               ;
+; ADDRESS_ACLR_A                     ; NONE                                    ; Untyped                               ;
+; OUTDATA_ACLR_A                     ; NONE                                    ; Untyped                               ;
+; WRCONTROL_ACLR_A                   ; NONE                                    ; Untyped                               ;
+; INDATA_ACLR_A                      ; NONE                                    ; Untyped                               ;
+; BYTEENA_ACLR_A                     ; NONE                                    ; Untyped                               ;
+; WIDTH_B                            ; 1                                       ; Untyped                               ;
+; WIDTHAD_B                          ; 1                                       ; Untyped                               ;
+; NUMWORDS_B                         ; 1                                       ; Untyped                               ;
+; INDATA_REG_B                       ; CLOCK1                                  ; Untyped                               ;
+; WRCONTROL_WRADDRESS_REG_B          ; CLOCK1                                  ; Untyped                               ;
+; RDCONTROL_REG_B                    ; CLOCK1                                  ; Untyped                               ;
+; ADDRESS_REG_B                      ; CLOCK1                                  ; Untyped                               ;
+; OUTDATA_REG_B                      ; UNREGISTERED                            ; Untyped                               ;
+; BYTEENA_REG_B                      ; CLOCK1                                  ; Untyped                               ;
+; INDATA_ACLR_B                      ; NONE                                    ; Untyped                               ;
+; WRCONTROL_ACLR_B                   ; NONE                                    ; Untyped                               ;
+; ADDRESS_ACLR_B                     ; NONE                                    ; Untyped                               ;
+; OUTDATA_ACLR_B                     ; NONE                                    ; Untyped                               ;
+; RDCONTROL_ACLR_B                   ; NONE                                    ; Untyped                               ;
+; BYTEENA_ACLR_B                     ; NONE                                    ; Untyped                               ;
+; WIDTH_BYTEENA_A                    ; 1                                       ; Signed Integer                        ;
+; WIDTH_BYTEENA_B                    ; 1                                       ; Untyped                               ;
+; RAM_BLOCK_TYPE                     ; M9K                                     ; Untyped                               ;
+; BYTE_SIZE                          ; 8                                       ; Untyped                               ;
+; READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                               ; Untyped                               ;
+; READ_DURING_WRITE_MODE_PORT_A      ; NEW_DATA_NO_NBE_READ                    ; Untyped                               ;
+; READ_DURING_WRITE_MODE_PORT_B      ; NEW_DATA_NO_NBE_READ                    ; Untyped                               ;
+; INIT_FILE                          ; instructionMemoryInitializationFile.mif ; Untyped                               ;
+; INIT_FILE_LAYOUT                   ; PORT_A                                  ; Untyped                               ;
+; MAXIMUM_DEPTH                      ; 0                                       ; Untyped                               ;
+; CLOCK_ENABLE_INPUT_A               ; BYPASS                                  ; Untyped                               ;
+; CLOCK_ENABLE_INPUT_B               ; NORMAL                                  ; Untyped                               ;
+; CLOCK_ENABLE_OUTPUT_A              ; BYPASS                                  ; Untyped                               ;
+; CLOCK_ENABLE_OUTPUT_B              ; NORMAL                                  ; Untyped                               ;
+; CLOCK_ENABLE_CORE_A                ; USE_INPUT_CLKEN                         ; Untyped                               ;
+; CLOCK_ENABLE_CORE_B                ; USE_INPUT_CLKEN                         ; Untyped                               ;
+; ENABLE_ECC                         ; FALSE                                   ; Untyped                               ;
+; ECC_PIPELINE_STAGE_ENABLED         ; FALSE                                   ; Untyped                               ;
+; WIDTH_ECCSTATUS                    ; 3                                       ; Untyped                               ;
+; DEVICE_FAMILY                      ; MAX 10                                  ; Untyped                               ;
+; CBXI_PARAMETER                     ; altsyncram_38e1                         ; Untyped                               ;
++------------------------------------+-----------------------------------------+---------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: processor:cpu|controlUnit:CU ;
++----------------+--------+-------------------------------------------------+
+; Parameter Name ; Value  ; Type                                            ;
++----------------+--------+-------------------------------------------------+
+; RType          ; 000000 ; Unsigned Binary                                 ;
+; hlt_inst       ; 111111 ; Unsigned Binary                                 ;
+; add            ; 100000 ; Unsigned Binary                                 ;
+; addu           ; 100001 ; Unsigned Binary                                 ;
+; sub            ; 100010 ; Unsigned Binary                                 ;
+; subu           ; 100011 ; Unsigned Binary                                 ;
+; and_           ; 100100 ; Unsigned Binary                                 ;
+; or_            ; 100101 ; Unsigned Binary                                 ;
+; xor_           ; 100110 ; Unsigned Binary                                 ;
+; nor_           ; 100111 ; Unsigned Binary                                 ;
+; slt            ; 101010 ; Unsigned Binary                                 ;
+; sgt            ; 101011 ; Unsigned Binary                                 ;
+; sll            ; 000000 ; Unsigned Binary                                 ;
+; srl            ; 000010 ; Unsigned Binary                                 ;
+; jr             ; 001000 ; Unsigned Binary                                 ;
+; addi           ; 001000 ; Unsigned Binary                                 ;
+; andi           ; 001100 ; Unsigned Binary                                 ;
+; ori            ; 001101 ; Unsigned Binary                                 ;
+; xori           ; 001110 ; Unsigned Binary                                 ;
+; slti           ; 101010 ; Unsigned Binary                                 ;
+; lw             ; 100011 ; Unsigned Binary                                 ;
+; sw             ; 101011 ; Unsigned Binary                                 ;
+; beq            ; 000100 ; Unsigned Binary                                 ;
+; bne            ; 000101 ; Unsigned Binary                                 ;
+; j              ; 000010 ; Unsigned Binary                                 ;
+; jal            ; 000011 ; Unsigned Binary                                 ;
++----------------+--------+-------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: processor:cpu|mux2x1:RFMux ;
++----------------+-------+------------------------------------------------+
+; Parameter Name ; Value ; Type                                           ;
++----------------+-------+------------------------------------------------+
+; size           ; 5     ; Signed Integer                                 ;
++----------------+-------+------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: processor:cpu|mux2x1:ALUMux ;
++----------------+-------+-------------------------------------------------+
+; Parameter Name ; Value ; Type                                            ;
++----------------+-------+-------------------------------------------------+
+; size           ; 32    ; Signed Integer                                  ;
++----------------+-------+-------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: processor:cpu|ALU:alu ;
++----------------+-------+-------------------------------------------+
+; Parameter Name ; Value ; Type                                      ;
++----------------+-------+-------------------------------------------+
+; data_width     ; 32    ; Signed Integer                            ;
+; sel_width      ; 4     ; Signed Integer                            ;
+; ADD            ; 0000  ; Unsigned Binary                           ;
+; SUB            ; 0001  ; Unsigned Binary                           ;
+; AND            ; 0010  ; Unsigned Binary                           ;
+; OR             ; 0011  ; Unsigned Binary                           ;
+; XOR            ; 0100  ; Unsigned Binary                           ;
+; NOR            ; 0101  ; Unsigned Binary                           ;
+; SLT            ; 0110  ; Unsigned Binary                           ;
+; SGT            ; 0111  ; Unsigned Binary                           ;
+; SLL            ; 1000  ; Unsigned Binary                           ;
+; SRL            ; 1001  ; Unsigned Binary                           ;
++----------------+-------+-------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: processor:cpu|dataMemory:dataMem|altsyncram:altsyncram_component ;
++------------------------------------+----------------------------------+---------------------------------------+
+; Parameter Name                     ; Value                            ; Type                                  ;
++------------------------------------+----------------------------------+---------------------------------------+
+; BYTE_SIZE_BLOCK                    ; 8                                ; Untyped                               ;
+; AUTO_CARRY_CHAINS                  ; ON                               ; AUTO_CARRY                            ;
+; IGNORE_CARRY_BUFFERS               ; OFF                              ; IGNORE_CARRY                          ;
+; AUTO_CASCADE_CHAINS                ; ON                               ; AUTO_CASCADE                          ;
+; IGNORE_CASCADE_BUFFERS             ; OFF                              ; IGNORE_CASCADE                        ;
+; WIDTH_BYTEENA                      ; 1                                ; Untyped                               ;
+; OPERATION_MODE                     ; SINGLE_PORT                      ; Untyped                               ;
+; WIDTH_A                            ; 32                               ; Signed Integer                        ;
+; WIDTHAD_A                          ; 8                                ; Signed Integer                        ;
+; NUMWORDS_A                         ; 256                              ; Signed Integer                        ;
+; OUTDATA_REG_A                      ; UNREGISTERED                     ; Untyped                               ;
+; ADDRESS_ACLR_A                     ; NONE                             ; Untyped                               ;
+; OUTDATA_ACLR_A                     ; NONE                             ; Untyped                               ;
+; WRCONTROL_ACLR_A                   ; NONE                             ; Untyped                               ;
+; INDATA_ACLR_A                      ; NONE                             ; Untyped                               ;
+; BYTEENA_ACLR_A                     ; NONE                             ; Untyped                               ;
+; WIDTH_B                            ; 1                                ; Untyped                               ;
+; WIDTHAD_B                          ; 1                                ; Untyped                               ;
+; NUMWORDS_B                         ; 1                                ; Untyped                               ;
+; INDATA_REG_B                       ; CLOCK1                           ; Untyped                               ;
+; WRCONTROL_WRADDRESS_REG_B          ; CLOCK1                           ; Untyped                               ;
+; RDCONTROL_REG_B                    ; CLOCK1                           ; Untyped                               ;
+; ADDRESS_REG_B                      ; CLOCK1                           ; Untyped                               ;
+; OUTDATA_REG_B                      ; UNREGISTERED                     ; Untyped                               ;
+; BYTEENA_REG_B                      ; CLOCK1                           ; Untyped                               ;
+; INDATA_ACLR_B                      ; NONE                             ; Untyped                               ;
+; WRCONTROL_ACLR_B                   ; NONE                             ; Untyped                               ;
+; ADDRESS_ACLR_B                     ; NONE                             ; Untyped                               ;
+; OUTDATA_ACLR_B                     ; NONE                             ; Untyped                               ;
+; RDCONTROL_ACLR_B                   ; NONE                             ; Untyped                               ;
+; BYTEENA_ACLR_B                     ; NONE                             ; Untyped                               ;
+; WIDTH_BYTEENA_A                    ; 1                                ; Signed Integer                        ;
+; WIDTH_BYTEENA_B                    ; 1                                ; Untyped                               ;
+; RAM_BLOCK_TYPE                     ; M9K                              ; Untyped                               ;
+; BYTE_SIZE                          ; 8                                ; Untyped                               ;
+; READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                        ; Untyped                               ;
+; READ_DURING_WRITE_MODE_PORT_A      ; NEW_DATA_WITH_NBE_READ           ; Untyped                               ;
+; READ_DURING_WRITE_MODE_PORT_B      ; NEW_DATA_NO_NBE_READ             ; Untyped                               ;
+; INIT_FILE                          ; dataMemoryInitializationFile.mif ; Untyped                               ;
+; INIT_FILE_LAYOUT                   ; PORT_A                           ; Untyped                               ;
+; MAXIMUM_DEPTH                      ; 0                                ; Untyped                               ;
+; CLOCK_ENABLE_INPUT_A               ; BYPASS                           ; Untyped                               ;
+; CLOCK_ENABLE_INPUT_B               ; NORMAL                           ; Untyped                               ;
+; CLOCK_ENABLE_OUTPUT_A              ; BYPASS                           ; Untyped                               ;
+; CLOCK_ENABLE_OUTPUT_B              ; NORMAL                           ; Untyped                               ;
+; CLOCK_ENABLE_CORE_A                ; USE_INPUT_CLKEN                  ; Untyped                               ;
+; CLOCK_ENABLE_CORE_B                ; USE_INPUT_CLKEN                  ; Untyped                               ;
+; ENABLE_ECC                         ; FALSE                            ; Untyped                               ;
+; ECC_PIPELINE_STAGE_ENABLED         ; FALSE                            ; Untyped                               ;
+; WIDTH_ECCSTATUS                    ; 3                                ; Untyped                               ;
+; DEVICE_FAMILY                      ; MAX 10                           ; Untyped                               ;
+; CBXI_PARAMETER                     ; altsyncram_8km1                  ; Untyped                               ;
++------------------------------------+----------------------------------+---------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: processor:cpu|mux2x1:WBMux ;
++----------------+-------+------------------------------------------------+
+; Parameter Name ; Value ; Type                                           ;
++----------------+-------+------------------------------------------------+
+; size           ; 32    ; Signed Integer                                 ;
++----------------+-------+------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------------------------------------------------------------+
+; altsyncram Parameter Settings by Entity Instance                                                                    ;
++-------------------------------------------+-------------------------------------------------------------------------+
+; Name                                      ; Value                                                                   ;
++-------------------------------------------+-------------------------------------------------------------------------+
+; Number of entity instances                ; 2                                                                       ;
+; Entity Instance                           ; processor:cpu|instructionMemory:InstMem|altsyncram:altsyncram_component ;
+;     -- OPERATION_MODE                     ; ROM                                                                     ;
+;     -- WIDTH_A                            ; 32                                                                      ;
+;     -- NUMWORDS_A                         ; 64                                                                      ;
+;     -- OUTDATA_REG_A                      ; UNREGISTERED                                                            ;
+;     -- WIDTH_B                            ; 1                                                                       ;
+;     -- NUMWORDS_B                         ; 1                                                                       ;
+;     -- ADDRESS_REG_B                      ; CLOCK1                                                                  ;
+;     -- OUTDATA_REG_B                      ; UNREGISTERED                                                            ;
+;     -- RAM_BLOCK_TYPE                     ; M9K                                                                     ;
+;     -- READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                                                               ;
+; Entity Instance                           ; processor:cpu|dataMemory:dataMem|altsyncram:altsyncram_component        ;
+;     -- OPERATION_MODE                     ; SINGLE_PORT                                                             ;
+;     -- WIDTH_A                            ; 32                                                                      ;
+;     -- NUMWORDS_A                         ; 256                                                                     ;
+;     -- OUTDATA_REG_A                      ; UNREGISTERED                                                            ;
+;     -- WIDTH_B                            ; 1                                                                       ;
+;     -- NUMWORDS_B                         ; 1                                                                       ;
+;     -- ADDRESS_REG_B                      ; CLOCK1                                                                  ;
+;     -- OUTDATA_REG_B                      ; UNREGISTERED                                                            ;
+;     -- RAM_BLOCK_TYPE                     ; M9K                                                                     ;
+;     -- READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                                                               ;
++-------------------------------------------+-------------------------------------------------------------------------+
 
 
 +------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis Settings                                                                              ;
+; Analysis & Elaboration Settings                                                                            ;
 +------------------------------------------------------------------+--------------------+--------------------+
 ; Option                                                           ; Setting            ; Default Value      ;
 +------------------------------------------------------------------+--------------------+--------------------+
 ; Device                                                           ; 10M50DAF484C7G     ;                    ;
-; Top-level entity name                                            ; top_cpu            ; SingleCycle        ;
+; Top-level entity name                                            ; SingleCycle_sim    ; SingleCycle        ;
 ; Family name                                                      ; MAX 10             ; Cyclone V          ;
 ; Maximum processors allowed for parallel compilation              ; All                ;                    ;
 ; Use smart compilation                                            ; Off                ; Off                ;
@@ -170,610 +535,106 @@ https://fpgasoftware.intel.com/eula.
 +------------------------------------------------------------------+--------------------+--------------------+
 
 
-+------------------------------------------+
-; Parallel Compilation                     ;
-+----------------------------+-------------+
-; Processors                 ; Number      ;
-+----------------------------+-------------+
-; Number detected on machine ; 12          ;
-; Maximum allowed            ; 6           ;
-;                            ;             ;
-; Average used               ; 1.01        ;
-; Maximum used               ; 6           ;
-;                            ;             ;
-; Usage by Processor         ; % Time Used ;
-;     Processor 1            ; 100.0%      ;
-;     Processor 2            ;   0.2%      ;
-;     Processor 3            ;   0.2%      ;
-;     Processor 4            ;   0.2%      ;
-;     Processor 5            ;   0.1%      ;
-;     Processor 6            ;   0.1%      ;
-+----------------------------+-------------+
-
-
-+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis Source Files Read                                                                                                                                                                                                                                                 ;
-+-----------------------------------------+-----------------+----------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------+
-; File Name with User-Entered Path        ; Used in Netlist ; File Type                        ; File Name with Absolute Path                                                                                                                                                  ; Library ;
-+-----------------------------------------+-----------------+----------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------+
-; processor.v                             ; yes             ; User Verilog HDL File            ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v                             ;         ;
-; registerFile.v                          ; yes             ; User Verilog HDL File            ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/registerFile.v                          ;         ;
-; controlUnit.v                           ; yes             ; User Verilog HDL File            ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/controlUnit.v                           ;         ;
-; ALU.v                                   ; yes             ; User Verilog HDL File            ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/ALU.v                                   ;         ;
-; signextender.v                          ; yes             ; User Verilog HDL File            ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/signextender.v                          ;         ;
-; programCounter.v                        ; yes             ; User Verilog HDL File            ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/programCounter.v                        ;         ;
-; mux2x1.v                                ; yes             ; User Verilog HDL File            ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/mux2x1.v                                ;         ;
-; adder.v                                 ; yes             ; User Verilog HDL File            ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/adder.v                                 ;         ;
-; ANDGate.v                               ; yes             ; User Verilog HDL File            ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/ANDGate.v                               ;         ;
-; instructionMemoryInitializationFile.mif ; yes             ; User Memory Initialization File  ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/instructionMemoryInitializationFile.mif ;         ;
-; dataMemoryInitializationFile.mif        ; yes             ; User Memory Initialization File  ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/dataMemoryInitializationFile.mif        ;         ;
-; instructionMemory.v                     ; yes             ; User Wizard-Generated File       ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/instructionMemory.v                     ;         ;
-; dataMemory.v                            ; yes             ; User Wizard-Generated File       ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/dataMemory.v                            ;         ;
-; top_cpu.v                               ; yes             ; User Verilog HDL File            ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v                               ;         ;
-; bcd7seg.v                               ; yes             ; User Verilog HDL File            ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/bcd7seg.v                               ;         ;
-; altsyncram.tdf                          ; yes             ; Megafunction                     ; d:/quartus/devices_support/quartus/libraries/megafunctions/altsyncram.tdf                                                                                                     ;         ;
-; stratix_ram_block.inc                   ; yes             ; Megafunction                     ; d:/quartus/devices_support/quartus/libraries/megafunctions/stratix_ram_block.inc                                                                                              ;         ;
-; lpm_mux.inc                             ; yes             ; Megafunction                     ; d:/quartus/devices_support/quartus/libraries/megafunctions/lpm_mux.inc                                                                                                        ;         ;
-; lpm_decode.inc                          ; yes             ; Megafunction                     ; d:/quartus/devices_support/quartus/libraries/megafunctions/lpm_decode.inc                                                                                                     ;         ;
-; aglobal231.inc                          ; yes             ; Megafunction                     ; d:/quartus/devices_support/quartus/libraries/megafunctions/aglobal231.inc                                                                                                     ;         ;
-; a_rdenreg.inc                           ; yes             ; Megafunction                     ; d:/quartus/devices_support/quartus/libraries/megafunctions/a_rdenreg.inc                                                                                                      ;         ;
-; altrom.inc                              ; yes             ; Megafunction                     ; d:/quartus/devices_support/quartus/libraries/megafunctions/altrom.inc                                                                                                         ;         ;
-; altram.inc                              ; yes             ; Megafunction                     ; d:/quartus/devices_support/quartus/libraries/megafunctions/altram.inc                                                                                                         ;         ;
-; altdpram.inc                            ; yes             ; Megafunction                     ; d:/quartus/devices_support/quartus/libraries/megafunctions/altdpram.inc                                                                                                       ;         ;
-; db/altsyncram_38e1.tdf                  ; yes             ; Auto-Generated Megafunction      ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/db/altsyncram_38e1.tdf                  ;         ;
-; db/altsyncram_8km1.tdf                  ; yes             ; Auto-Generated Megafunction      ; D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/db/altsyncram_8km1.tdf                  ;         ;
-+-----------------------------------------+-----------------+----------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------+
-
-
-+-----------------------------------------------------------------------+
-; Analysis & Synthesis Resource Usage Summary                           ;
-+---------------------------------------------+-------------------------+
-; Resource                                    ; Usage                   ;
-+---------------------------------------------+-------------------------+
-; Estimated Total logic elements              ; 2,650                   ;
-;                                             ;                         ;
-; Total combinational functions               ; 1690                    ;
-; Logic element usage by number of LUT inputs ;                         ;
-;     -- 4 input functions                    ; 1491                    ;
-;     -- 3 input functions                    ; 149                     ;
-;     -- <=2 input functions                  ; 50                      ;
-;                                             ;                         ;
-; Logic elements by mode                      ;                         ;
-;     -- normal mode                          ; 1596                    ;
-;     -- arithmetic mode                      ; 94                      ;
-;                                             ;                         ;
-; Total registers                             ; 1027                    ;
-;     -- Dedicated logic registers            ; 1027                    ;
-;     -- I/O registers                        ; 0                       ;
-;                                             ;                         ;
-; I/O pins                                    ; 66                      ;
-; Total memory bits                           ; 10240                   ;
-;                                             ;                         ;
-; Embedded Multiplier 9-bit elements          ; 0                       ;
-;                                             ;                         ;
-; Maximum fan-out node                        ; processor:cpu|hlt_logic ;
-; Maximum fan-out                             ; 1068                    ;
-; Total fan-out                               ; 11299                   ;
-; Average fan-out                             ; 3.88                    ;
-+---------------------------------------------+-------------------------+
-
-
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                                                                                                                                                               ;
-+----------------------------------------------+---------------------+---------------------------+-------------+------------+--------------+---------+-----------+------+--------------+------------+------------------------------------------------------------------------------------------------------------+-------------------+--------------+
-; Compilation Hierarchy Node                   ; Combinational ALUTs ; Dedicated Logic Registers ; Memory Bits ; UFM Blocks ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; ADC blocks ; Full Hierarchy Name                                                                                        ; Entity Name       ; Library Name ;
-+----------------------------------------------+---------------------+---------------------------+-------------+------------+--------------+---------+-----------+------+--------------+------------+------------------------------------------------------------------------------------------------------------+-------------------+--------------+
-; |top_cpu                                     ; 1690 (24)           ; 1027 (24)                 ; 10240       ; 0          ; 0            ; 0       ; 0         ; 66   ; 0            ; 0          ; |top_cpu                                                                                                   ; top_cpu           ; work         ;
-;    |bcd7seg:comb_138|                        ; 7 (7)               ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|bcd7seg:comb_138                                                                                  ; bcd7seg           ; work         ;
-;    |bcd7seg:comb_139|                        ; 7 (7)               ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|bcd7seg:comb_139                                                                                  ; bcd7seg           ; work         ;
-;    |bcd7seg:comb_140|                        ; 7 (7)               ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|bcd7seg:comb_140                                                                                  ; bcd7seg           ; work         ;
-;    |bcd7seg:comb_141|                        ; 7 (7)               ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|bcd7seg:comb_141                                                                                  ; bcd7seg           ; work         ;
-;    |bcd7seg:comb_142|                        ; 7 (7)               ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|bcd7seg:comb_142                                                                                  ; bcd7seg           ; work         ;
-;    |bcd7seg:pccounter|                       ; 7 (7)               ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|bcd7seg:pccounter                                                                                 ; bcd7seg           ; work         ;
-;    |processor:cpu|                           ; 1624 (6)            ; 1003 (5)                  ; 10240       ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu                                                                                     ; processor         ; work         ;
-;       |ALU:alu|                              ; 166 (166)           ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|ALU:alu                                                                             ; ALU               ; work         ;
-;       |ANDGate:branchAnd|                    ; 14 (14)             ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|ANDGate:branchAnd                                                                   ; ANDGate           ; work         ;
-;       |adder:branchAdder|                    ; 15 (15)             ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|adder:branchAdder                                                                   ; adder             ; work         ;
-;       |controlUnit:CU|                       ; 20 (20)             ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|controlUnit:CU                                                                      ; controlUnit       ; work         ;
-;       |dataMemory:DM|                        ; 0 (0)               ; 0 (0)                     ; 8192        ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|dataMemory:DM                                                                       ; dataMemory        ; work         ;
-;          |altsyncram:altsyncram_component|   ; 0 (0)               ; 0 (0)                     ; 8192        ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|dataMemory:DM|altsyncram:altsyncram_component                                       ; altsyncram        ; work         ;
-;             |altsyncram_8km1:auto_generated| ; 0 (0)               ; 0 (0)                     ; 8192        ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|dataMemory:DM|altsyncram:altsyncram_component|altsyncram_8km1:auto_generated        ; altsyncram_8km1   ; work         ;
-;       |instructionMemory:IM|                 ; 0 (0)               ; 0 (0)                     ; 2048        ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|instructionMemory:IM                                                                ; instructionMemory ; work         ;
-;          |altsyncram:altsyncram_component|   ; 0 (0)               ; 0 (0)                     ; 2048        ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|instructionMemory:IM|altsyncram:altsyncram_component                                ; altsyncram        ; work         ;
-;             |altsyncram_38e1:auto_generated| ; 0 (0)               ; 0 (0)                     ; 2048        ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|instructionMemory:IM|altsyncram:altsyncram_component|altsyncram_38e1:auto_generated ; altsyncram_38e1   ; work         ;
-;       |mux2x1:ALUMux|                        ; 32 (32)             ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|mux2x1:ALUMux                                                                       ; mux2x1            ; work         ;
-;       |mux2x1:RFMux|                         ; 4 (4)               ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|mux2x1:RFMux                                                                        ; mux2x1            ; work         ;
-;       |mux2x1:WBMux|                         ; 32 (32)             ; 0 (0)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|mux2x1:WBMux                                                                        ; mux2x1            ; work         ;
-;       |programCounter:pc|                    ; 6 (6)               ; 6 (6)                     ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|programCounter:pc                                                                   ; programCounter    ; work         ;
-;       |registerFile:RF|                      ; 1329 (1329)         ; 992 (992)                 ; 0           ; 0          ; 0            ; 0       ; 0         ; 0    ; 0            ; 0          ; |top_cpu|processor:cpu|registerFile:RF                                                                     ; registerFile      ; work         ;
-+----------------------------------------------+---------------------+---------------------------+-------------+------------+--------------+---------+-----------+------+--------------+------------+------------------------------------------------------------------------------------------------------------+-------------------+--------------+
-Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
-
-
-+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis RAM Summary                                                                                                                                                                                                               ;
-+--------------------------------------------------------------------------------------------------------------+------+-------------+--------------+--------------+--------------+--------------+------+-----------------------------------------+
-; Name                                                                                                         ; Type ; Mode        ; Port A Depth ; Port A Width ; Port B Depth ; Port B Width ; Size ; MIF                                     ;
-+--------------------------------------------------------------------------------------------------------------+------+-------------+--------------+--------------+--------------+--------------+------+-----------------------------------------+
-; processor:cpu|dataMemory:DM|altsyncram:altsyncram_component|altsyncram_8km1:auto_generated|ALTSYNCRAM        ; M9K  ; Single Port ; 256          ; 32           ; --           ; --           ; 8192 ; dataMemoryInitializationFile.mif        ;
-; processor:cpu|instructionMemory:IM|altsyncram:altsyncram_component|altsyncram_38e1:auto_generated|ALTSYNCRAM ; M9K  ; ROM         ; 64           ; 32           ; --           ; --           ; 2048 ; instructionMemoryInitializationFile.mif ;
-+--------------------------------------------------------------------------------------------------------------+------+-------------+--------------+--------------+--------------+--------------+------+-----------------------------------------+
-
-
-+-----------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis IP Cores Summary                                                                                             ;
-+--------+--------------+---------+--------------+--------------+---------------------------------------------+---------------------+
-; Vendor ; IP Core Name ; Version ; Release Date ; License Type ; Entity Instance                             ; IP Include File     ;
-+--------+--------------+---------+--------------+--------------+---------------------------------------------+---------------------+
-; Altera ; RAM: 1-PORT  ; 20.1    ; N/A          ; N/A          ; |top_cpu|processor:cpu|dataMemory:DM        ; dataMemory.v        ;
-; Altera ; ROM: 1-PORT  ; 20.1    ; N/A          ; N/A          ; |top_cpu|processor:cpu|instructionMemory:IM ; instructionMemory.v ;
-+--------+--------------+---------+--------------+--------------+---------------------------------------------+---------------------+
-
-
-+-----------------------------------------------------------------------------------------+
-; Registers Removed During Synthesis                                                      ;
-+------------------------------------------------+----------------------------------------+
-; Register name                                  ; Reason for Removal                     ;
-+------------------------------------------------+----------------------------------------+
-; processor:cpu|registerFile:RF|registers[0][31] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][30] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][29] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][28] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][27] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][26] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][25] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][24] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][23] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][22] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][21] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][20] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][19] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][18] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][17] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][16] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][15] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][14] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][13] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][12] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][11] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][10] ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][9]  ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][8]  ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][7]  ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][6]  ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][5]  ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][4]  ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][3]  ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][2]  ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][1]  ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|registerFile:RF|registers[0][0]  ; Stuck at GND due to stuck port data_in ;
-; processor:cpu|cycles_consumed[5..31]           ; Lost fanout                            ;
-; Total Number of Removed Registers = 59         ;                                        ;
-+------------------------------------------------+----------------------------------------+
-
-
-+------------------------------------------------------+
-; General Register Statistics                          ;
-+----------------------------------------------+-------+
-; Statistic                                    ; Value ;
-+----------------------------------------------+-------+
-; Total registers                              ; 1027  ;
-; Number of registers using Synchronous Clear  ; 0     ;
-; Number of registers using Synchronous Load   ; 0     ;
-; Number of registers using Asynchronous Clear ; 1027  ;
-; Number of registers using Asynchronous Load  ; 0     ;
-; Number of registers using Clock Enable       ; 992   ;
-; Number of registers using Preset             ; 0     ;
-+----------------------------------------------+-------+
-
-
-+----------------------------------------------------+
-; Inverted Register Statistics                       ;
-+------------------------------------------+---------+
-; Inverted Register                        ; Fan out ;
-+------------------------------------------+---------+
-; processor:cpu|programCounter:pc|PCout[0] ; 8       ;
-; processor:cpu|programCounter:pc|PCout[1] ; 8       ;
-; processor:cpu|programCounter:pc|PCout[2] ; 8       ;
-; processor:cpu|programCounter:pc|PCout[3] ; 8       ;
-; processor:cpu|programCounter:pc|PCout[4] ; 1       ;
-; processor:cpu|programCounter:pc|PCout[5] ; 1       ;
-; Total number of inverted registers = 6   ;         ;
-+------------------------------------------+---------+
-
-
-+----------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                                 ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+--------------------------------------------------+
-; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                       ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+--------------------------------------------------+
-; 3:1                ; 2 bits    ; 4 LEs         ; 2 LEs                ; 2 LEs                  ; No         ; |top_cpu|processor:cpu|controlUnit:CU|ALUOp[2]   ;
-; 8:1                ; 31 bits   ; 155 LEs       ; 62 LEs               ; 93 LEs                 ; No         ; |top_cpu|processor:cpu|ALU:alu|Mux29             ;
-; 32:1               ; 32 bits   ; 672 LEs       ; 640 LEs              ; 32 LEs                 ; No         ; |top_cpu|processor:cpu|registerFile:RF|Mux30     ;
-; 32:1               ; 32 bits   ; 672 LEs       ; 640 LEs              ; 32 LEs                 ; No         ; |top_cpu|processor:cpu|registerFile:RF|Mux48     ;
-; 65:1               ; 2 bits    ; 86 LEs        ; 20 LEs               ; 66 LEs                 ; No         ; |top_cpu|processor:cpu|controlUnit:CU|RegWriteEn ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+--------------------------------------------------+
-
-
-+--------------------------------------------------------------------------------------------------------------------------+
-; Source assignments for processor:cpu|instructionMemory:IM|altsyncram:altsyncram_component|altsyncram_38e1:auto_generated ;
-+---------------------------------+--------------------+------+------------------------------------------------------------+
-; Assignment                      ; Value              ; From ; To                                                         ;
-+---------------------------------+--------------------+------+------------------------------------------------------------+
-; OPTIMIZE_POWER_DURING_SYNTHESIS ; NORMAL_COMPILATION ; -    ; -                                                          ;
-+---------------------------------+--------------------+------+------------------------------------------------------------+
-
-
-+-------------------------------------------------------------------------------------------------------------------+
-; Source assignments for processor:cpu|dataMemory:DM|altsyncram:altsyncram_component|altsyncram_8km1:auto_generated ;
-+---------------------------------+--------------------+------+-----------------------------------------------------+
-; Assignment                      ; Value              ; From ; To                                                  ;
-+---------------------------------+--------------------+------+-----------------------------------------------------+
-; OPTIMIZE_POWER_DURING_SYNTHESIS ; NORMAL_COMPILATION ; -    ; -                                                   ;
-+---------------------------------+--------------------+------+-----------------------------------------------------+
-
-
-+--------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: processor:cpu|adder:PCAdder ;
-+----------------+-------+-------------------------------------------------+
-; Parameter Name ; Value ; Type                                            ;
-+----------------+-------+-------------------------------------------------+
-; size           ; 6     ; Signed Integer                                  ;
-+----------------+-------+-------------------------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+-----------------------------------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: processor:cpu|instructionMemory:IM|altsyncram:altsyncram_component ;
-+------------------------------------+-----------------------------------------+----------------------------------+
-; Parameter Name                     ; Value                                   ; Type                             ;
-+------------------------------------+-----------------------------------------+----------------------------------+
-; BYTE_SIZE_BLOCK                    ; 8                                       ; Untyped                          ;
-; AUTO_CARRY_CHAINS                  ; ON                                      ; AUTO_CARRY                       ;
-; IGNORE_CARRY_BUFFERS               ; OFF                                     ; IGNORE_CARRY                     ;
-; AUTO_CASCADE_CHAINS                ; ON                                      ; AUTO_CASCADE                     ;
-; IGNORE_CASCADE_BUFFERS             ; OFF                                     ; IGNORE_CASCADE                   ;
-; WIDTH_BYTEENA                      ; 1                                       ; Untyped                          ;
-; OPERATION_MODE                     ; ROM                                     ; Untyped                          ;
-; WIDTH_A                            ; 32                                      ; Signed Integer                   ;
-; WIDTHAD_A                          ; 6                                       ; Signed Integer                   ;
-; NUMWORDS_A                         ; 64                                      ; Signed Integer                   ;
-; OUTDATA_REG_A                      ; UNREGISTERED                            ; Untyped                          ;
-; ADDRESS_ACLR_A                     ; NONE                                    ; Untyped                          ;
-; OUTDATA_ACLR_A                     ; NONE                                    ; Untyped                          ;
-; WRCONTROL_ACLR_A                   ; NONE                                    ; Untyped                          ;
-; INDATA_ACLR_A                      ; NONE                                    ; Untyped                          ;
-; BYTEENA_ACLR_A                     ; NONE                                    ; Untyped                          ;
-; WIDTH_B                            ; 1                                       ; Untyped                          ;
-; WIDTHAD_B                          ; 1                                       ; Untyped                          ;
-; NUMWORDS_B                         ; 1                                       ; Untyped                          ;
-; INDATA_REG_B                       ; CLOCK1                                  ; Untyped                          ;
-; WRCONTROL_WRADDRESS_REG_B          ; CLOCK1                                  ; Untyped                          ;
-; RDCONTROL_REG_B                    ; CLOCK1                                  ; Untyped                          ;
-; ADDRESS_REG_B                      ; CLOCK1                                  ; Untyped                          ;
-; OUTDATA_REG_B                      ; UNREGISTERED                            ; Untyped                          ;
-; BYTEENA_REG_B                      ; CLOCK1                                  ; Untyped                          ;
-; INDATA_ACLR_B                      ; NONE                                    ; Untyped                          ;
-; WRCONTROL_ACLR_B                   ; NONE                                    ; Untyped                          ;
-; ADDRESS_ACLR_B                     ; NONE                                    ; Untyped                          ;
-; OUTDATA_ACLR_B                     ; NONE                                    ; Untyped                          ;
-; RDCONTROL_ACLR_B                   ; NONE                                    ; Untyped                          ;
-; BYTEENA_ACLR_B                     ; NONE                                    ; Untyped                          ;
-; WIDTH_BYTEENA_A                    ; 1                                       ; Signed Integer                   ;
-; WIDTH_BYTEENA_B                    ; 1                                       ; Untyped                          ;
-; RAM_BLOCK_TYPE                     ; M9K                                     ; Untyped                          ;
-; BYTE_SIZE                          ; 8                                       ; Untyped                          ;
-; READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                               ; Untyped                          ;
-; READ_DURING_WRITE_MODE_PORT_A      ; NEW_DATA_NO_NBE_READ                    ; Untyped                          ;
-; READ_DURING_WRITE_MODE_PORT_B      ; NEW_DATA_NO_NBE_READ                    ; Untyped                          ;
-; INIT_FILE                          ; instructionMemoryInitializationFile.mif ; Untyped                          ;
-; INIT_FILE_LAYOUT                   ; PORT_A                                  ; Untyped                          ;
-; MAXIMUM_DEPTH                      ; 0                                       ; Untyped                          ;
-; CLOCK_ENABLE_INPUT_A               ; BYPASS                                  ; Untyped                          ;
-; CLOCK_ENABLE_INPUT_B               ; NORMAL                                  ; Untyped                          ;
-; CLOCK_ENABLE_OUTPUT_A              ; BYPASS                                  ; Untyped                          ;
-; CLOCK_ENABLE_OUTPUT_B              ; NORMAL                                  ; Untyped                          ;
-; CLOCK_ENABLE_CORE_A                ; USE_INPUT_CLKEN                         ; Untyped                          ;
-; CLOCK_ENABLE_CORE_B                ; USE_INPUT_CLKEN                         ; Untyped                          ;
-; ENABLE_ECC                         ; FALSE                                   ; Untyped                          ;
-; ECC_PIPELINE_STAGE_ENABLED         ; FALSE                                   ; Untyped                          ;
-; WIDTH_ECCSTATUS                    ; 3                                       ; Untyped                          ;
-; DEVICE_FAMILY                      ; MAX 10                                  ; Untyped                          ;
-; CBXI_PARAMETER                     ; altsyncram_38e1                         ; Untyped                          ;
-+------------------------------------+-----------------------------------------+----------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+---------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: processor:cpu|controlUnit:CU ;
-+----------------+--------+-------------------------------------------------+
-; Parameter Name ; Value  ; Type                                            ;
-+----------------+--------+-------------------------------------------------+
-; _RType         ; 000000 ; Unsigned Binary                                 ;
-; _addi          ; 001000 ; Unsigned Binary                                 ;
-; _lw            ; 100011 ; Unsigned Binary                                 ;
-; _sw            ; 101011 ; Unsigned Binary                                 ;
-; _beq           ; 000100 ; Unsigned Binary                                 ;
-; _add_          ; 100000 ; Unsigned Binary                                 ;
-; _sub_          ; 100010 ; Unsigned Binary                                 ;
-; _and_          ; 100100 ; Unsigned Binary                                 ;
-; _or_           ; 100101 ; Unsigned Binary                                 ;
-; _slt_          ; 101010 ; Unsigned Binary                                 ;
-; hlt_inst       ; 111111 ; Unsigned Binary                                 ;
-+----------------+--------+-------------------------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+-------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: processor:cpu|mux2x1:RFMux ;
-+----------------+-------+------------------------------------------------+
-; Parameter Name ; Value ; Type                                           ;
-+----------------+-------+------------------------------------------------+
-; size           ; 5     ; Signed Integer                                 ;
-+----------------+-------+------------------------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+--------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: processor:cpu|mux2x1:ALUMux ;
-+----------------+-------+-------------------------------------------------+
-; Parameter Name ; Value ; Type                                            ;
-+----------------+-------+-------------------------------------------------+
-; size           ; 32    ; Signed Integer                                  ;
-+----------------+-------+-------------------------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+--------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: processor:cpu|ALU:alu ;
-+----------------+-------+-------------------------------------------+
-; Parameter Name ; Value ; Type                                      ;
-+----------------+-------+-------------------------------------------+
-; data_width     ; 32    ; Signed Integer                            ;
-; sel_width      ; 3     ; Signed Integer                            ;
-; _ADD           ; 000   ; Unsigned Binary                           ;
-; _SUB           ; 001   ; Unsigned Binary                           ;
-; _AND           ; 010   ; Unsigned Binary                           ;
-; _OR            ; 011   ; Unsigned Binary                           ;
-; _SLT           ; 100   ; Unsigned Binary                           ;
-+----------------+-------+-------------------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: processor:cpu|adder:branchAdder ;
-+----------------+-------+-----------------------------------------------------+
-; Parameter Name ; Value ; Type                                                ;
-+----------------+-------+-----------------------------------------------------+
-; size           ; 6     ; Signed Integer                                      ;
-+----------------+-------+-----------------------------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+----------------------------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: processor:cpu|dataMemory:DM|altsyncram:altsyncram_component ;
-+------------------------------------+----------------------------------+----------------------------------+
-; Parameter Name                     ; Value                            ; Type                             ;
-+------------------------------------+----------------------------------+----------------------------------+
-; BYTE_SIZE_BLOCK                    ; 8                                ; Untyped                          ;
-; AUTO_CARRY_CHAINS                  ; ON                               ; AUTO_CARRY                       ;
-; IGNORE_CARRY_BUFFERS               ; OFF                              ; IGNORE_CARRY                     ;
-; AUTO_CASCADE_CHAINS                ; ON                               ; AUTO_CASCADE                     ;
-; IGNORE_CASCADE_BUFFERS             ; OFF                              ; IGNORE_CASCADE                   ;
-; WIDTH_BYTEENA                      ; 1                                ; Untyped                          ;
-; OPERATION_MODE                     ; SINGLE_PORT                      ; Untyped                          ;
-; WIDTH_A                            ; 32                               ; Signed Integer                   ;
-; WIDTHAD_A                          ; 8                                ; Signed Integer                   ;
-; NUMWORDS_A                         ; 256                              ; Signed Integer                   ;
-; OUTDATA_REG_A                      ; UNREGISTERED                     ; Untyped                          ;
-; ADDRESS_ACLR_A                     ; NONE                             ; Untyped                          ;
-; OUTDATA_ACLR_A                     ; NONE                             ; Untyped                          ;
-; WRCONTROL_ACLR_A                   ; NONE                             ; Untyped                          ;
-; INDATA_ACLR_A                      ; NONE                             ; Untyped                          ;
-; BYTEENA_ACLR_A                     ; NONE                             ; Untyped                          ;
-; WIDTH_B                            ; 1                                ; Untyped                          ;
-; WIDTHAD_B                          ; 1                                ; Untyped                          ;
-; NUMWORDS_B                         ; 1                                ; Untyped                          ;
-; INDATA_REG_B                       ; CLOCK1                           ; Untyped                          ;
-; WRCONTROL_WRADDRESS_REG_B          ; CLOCK1                           ; Untyped                          ;
-; RDCONTROL_REG_B                    ; CLOCK1                           ; Untyped                          ;
-; ADDRESS_REG_B                      ; CLOCK1                           ; Untyped                          ;
-; OUTDATA_REG_B                      ; UNREGISTERED                     ; Untyped                          ;
-; BYTEENA_REG_B                      ; CLOCK1                           ; Untyped                          ;
-; INDATA_ACLR_B                      ; NONE                             ; Untyped                          ;
-; WRCONTROL_ACLR_B                   ; NONE                             ; Untyped                          ;
-; ADDRESS_ACLR_B                     ; NONE                             ; Untyped                          ;
-; OUTDATA_ACLR_B                     ; NONE                             ; Untyped                          ;
-; RDCONTROL_ACLR_B                   ; NONE                             ; Untyped                          ;
-; BYTEENA_ACLR_B                     ; NONE                             ; Untyped                          ;
-; WIDTH_BYTEENA_A                    ; 1                                ; Signed Integer                   ;
-; WIDTH_BYTEENA_B                    ; 1                                ; Untyped                          ;
-; RAM_BLOCK_TYPE                     ; M9K                              ; Untyped                          ;
-; BYTE_SIZE                          ; 8                                ; Untyped                          ;
-; READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                        ; Untyped                          ;
-; READ_DURING_WRITE_MODE_PORT_A      ; NEW_DATA_WITH_NBE_READ           ; Untyped                          ;
-; READ_DURING_WRITE_MODE_PORT_B      ; NEW_DATA_NO_NBE_READ             ; Untyped                          ;
-; INIT_FILE                          ; dataMemoryInitializationFile.mif ; Untyped                          ;
-; INIT_FILE_LAYOUT                   ; PORT_A                           ; Untyped                          ;
-; MAXIMUM_DEPTH                      ; 0                                ; Untyped                          ;
-; CLOCK_ENABLE_INPUT_A               ; BYPASS                           ; Untyped                          ;
-; CLOCK_ENABLE_INPUT_B               ; NORMAL                           ; Untyped                          ;
-; CLOCK_ENABLE_OUTPUT_A              ; BYPASS                           ; Untyped                          ;
-; CLOCK_ENABLE_OUTPUT_B              ; NORMAL                           ; Untyped                          ;
-; CLOCK_ENABLE_CORE_A                ; USE_INPUT_CLKEN                  ; Untyped                          ;
-; CLOCK_ENABLE_CORE_B                ; USE_INPUT_CLKEN                  ; Untyped                          ;
-; ENABLE_ECC                         ; FALSE                            ; Untyped                          ;
-; ECC_PIPELINE_STAGE_ENABLED         ; FALSE                            ; Untyped                          ;
-; WIDTH_ECCSTATUS                    ; 3                                ; Untyped                          ;
-; DEVICE_FAMILY                      ; MAX 10                           ; Untyped                          ;
-; CBXI_PARAMETER                     ; altsyncram_8km1                  ; Untyped                          ;
-+------------------------------------+----------------------------------+----------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+-------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: processor:cpu|mux2x1:WBMux ;
-+----------------+-------+------------------------------------------------+
-; Parameter Name ; Value ; Type                                           ;
-+----------------+-------+------------------------------------------------+
-; size           ; 32    ; Signed Integer                                 ;
-+----------------+-------+------------------------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+-------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: processor:cpu|mux2x1:PCMux ;
-+----------------+-------+------------------------------------------------+
-; Parameter Name ; Value ; Type                                           ;
-+----------------+-------+------------------------------------------------+
-; size           ; 6     ; Signed Integer                                 ;
-+----------------+-------+------------------------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
 +----------------------------------------------------------------------------------------------------------------+
-; altsyncram Parameter Settings by Entity Instance                                                               ;
-+-------------------------------------------+--------------------------------------------------------------------+
-; Name                                      ; Value                                                              ;
-+-------------------------------------------+--------------------------------------------------------------------+
-; Number of entity instances                ; 2                                                                  ;
-; Entity Instance                           ; processor:cpu|instructionMemory:IM|altsyncram:altsyncram_component ;
-;     -- OPERATION_MODE                     ; ROM                                                                ;
-;     -- WIDTH_A                            ; 32                                                                 ;
-;     -- NUMWORDS_A                         ; 64                                                                 ;
-;     -- OUTDATA_REG_A                      ; UNREGISTERED                                                       ;
-;     -- WIDTH_B                            ; 1                                                                  ;
-;     -- NUMWORDS_B                         ; 1                                                                  ;
-;     -- ADDRESS_REG_B                      ; CLOCK1                                                             ;
-;     -- OUTDATA_REG_B                      ; UNREGISTERED                                                       ;
-;     -- RAM_BLOCK_TYPE                     ; M9K                                                                ;
-;     -- READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                                                          ;
-; Entity Instance                           ; processor:cpu|dataMemory:DM|altsyncram:altsyncram_component        ;
-;     -- OPERATION_MODE                     ; SINGLE_PORT                                                        ;
-;     -- WIDTH_A                            ; 32                                                                 ;
-;     -- NUMWORDS_A                         ; 256                                                                ;
-;     -- OUTDATA_REG_A                      ; UNREGISTERED                                                       ;
-;     -- WIDTH_B                            ; 1                                                                  ;
-;     -- NUMWORDS_B                         ; 1                                                                  ;
-;     -- ADDRESS_REG_B                      ; CLOCK1                                                             ;
-;     -- OUTDATA_REG_B                      ; UNREGISTERED                                                       ;
-;     -- RAM_BLOCK_TYPE                     ; M9K                                                                ;
-;     -- READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                                                          ;
-+-------------------------------------------+--------------------------------------------------------------------+
+; Port Connectivity Checks: "processor:cpu|ALU:alu"                                                              ;
++------+--------+----------+-------------------------------------------------------------------------------------+
+; Port ; Type   ; Severity ; Details                                                                             ;
++------+--------+----------+-------------------------------------------------------------------------------------+
+; zero ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++------+--------+----------+-------------------------------------------------------------------------------------+
 
 
-+---------------------------------------------------------+
-; Port Connectivity Checks: "processor:cpu|adder:PCAdder" ;
-+-----------+-------+----------+--------------------------+
-; Port      ; Type  ; Severity ; Details                  ;
-+-----------+-------+----------+--------------------------+
-; in2[5..1] ; Input ; Info     ; Stuck at GND             ;
-; in2[0]    ; Input ; Info     ; Stuck at VCC             ;
-+-----------+-------+----------+--------------------------+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "processor:cpu|instructionMemory:InstMem"                                                                                                                                             ;
++---------+-------+----------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port    ; Type  ; Severity ; Details                                                                                                                                                                            ;
++---------+-------+----------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; address ; Input ; Warning  ; Input port expression (32 bits) is wider than the input port (6 bits) it drives.  The 26 most-significant bit(s) in the expression will be dangling if they have no other fanouts. ;
+; clock   ; Input ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND.                                       ;
++---------+-------+----------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-+----------------------------------------------------------------------------------------------------------------------------------+
-; Port Connectivity Checks: "processor:cpu"                                                                                        ;
-+------------------------+--------+----------+-------------------------------------------------------------------------------------+
-; Port                   ; Type   ; Severity ; Details                                                                             ;
-+------------------------+--------+----------+-------------------------------------------------------------------------------------+
-; PC[5..4]               ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
-; regs0[31..4]           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
-; regs1[31..4]           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
-; regs2[31..4]           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
-; regs3[31..4]           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
-; regs4[31..4]           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
-; regs5                  ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
-; cycles_consumed[31..5] ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
-+------------------------+--------+----------+-------------------------------------------------------------------------------------+
++---------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "processor:cpu"                                                                                 ;
++-----------------+--------+----------+-------------------------------------------------------------------------------------+
+; Port            ; Type   ; Severity ; Details                                                                             ;
++-----------------+--------+----------+-------------------------------------------------------------------------------------+
+; rst             ; Input  ; Info     ; Stuck at VCC                                                                        ;
+; PC              ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; regs0           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; regs1           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; regs2           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; regs3           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; regs4           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; regs5           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; cycles_consumed ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; clk             ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++-----------------+--------+----------+-------------------------------------------------------------------------------------+
 
 
-+-----------------------------------------------------+
-; Post-Synthesis Netlist Statistics for Top Partition ;
-+-----------------------+-----------------------------+
-; Type                  ; Count                       ;
-+-----------------------+-----------------------------+
-; boundary_port         ; 66                          ;
-; cycloneiii_ff         ; 1027                        ;
-;     CLR               ; 35                          ;
-;     ENA CLR           ; 992                         ;
-; cycloneiii_lcell_comb ; 1697                        ;
-;     arith             ; 94                          ;
-;         2 data inputs ; 25                          ;
-;         3 data inputs ; 69                          ;
-;     normal            ; 1603                        ;
-;         0 data inputs ; 1                           ;
-;         1 data inputs ; 15                          ;
-;         2 data inputs ; 16                          ;
-;         3 data inputs ; 80                          ;
-;         4 data inputs ; 1491                        ;
-; cycloneiii_ram_block  ; 64                          ;
-;                       ;                             ;
-; Max LUT depth         ; 19.40                       ;
-; Average LUT depth     ; 14.76                       ;
-+-----------------------+-----------------------------+
-
-
-+-------------------------------+
-; Elapsed Time Per Partition    ;
-+----------------+--------------+
-; Partition Name ; Elapsed Time ;
-+----------------+--------------+
-; Top            ; 00:00:03     ;
-+----------------+--------------+
-
-
-+-------------------------------+
-; Analysis & Synthesis Messages ;
-+-------------------------------+
++---------------------------------+
+; Analysis & Elaboration Messages ;
++---------------------------------+
 Info: *******************************************************************
-Info: Running Quartus Prime Analysis & Synthesis
+Info: Running Quartus Prime Analysis & Elaboration
     Info: Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
-    Info: Processing started: Fri Oct 25 22:53:22 2024
-Info: Command: quartus_map --read_settings_files=on --write_settings_files=off SingleCycle -c SingleCycle
+    Info: Processing started: Sun Nov 17 11:28:15 2024
+Info: Command: quartus_map --read_settings_files=on --write_settings_files=off SingleCycle -c SingleCycle --analysis_and_elaboration
 Info (20030): Parallel compilation is enabled and will use 6 of the 6 processors detected
-Info (12021): Found 0 design units, including 0 entities, in source file testbench.v
-Info (12021): Found 1 design units, including 1 entities, in source file processor.v
-    Info (12023): Found entity 1: processor File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 4
+Info (12021): Found 0 design units, including 0 entities, in source file processor.v
 Info (12021): Found 1 design units, including 1 entities, in source file registerfile.v
-    Info (12023): Found entity 1: registerFile File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/registerFile.v Line: 3
+    Info (12023): Found entity 1: registerFile File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/registerFile.v Line: 1
 Info (12021): Found 1 design units, including 1 entities, in source file controlunit.v
-    Info (12023): Found entity 1: controlUnit File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/controlUnit.v Line: 1
+    Info (12023): Found entity 1: controlUnit File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/controlUnit.v Line: 1
 Info (12021): Found 1 design units, including 1 entities, in source file alu.v
-    Info (12023): Found entity 1: ALU File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/ALU.v Line: 1
+    Info (12023): Found entity 1: ALU File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/ALU.v Line: 1
 Info (12021): Found 1 design units, including 1 entities, in source file signextender.v
-    Info (12023): Found entity 1: SignExtender File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/signextender.v Line: 4
+    Info (12023): Found entity 1: SignExtender File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/signextender.v Line: 4
 Info (12021): Found 1 design units, including 1 entities, in source file programcounter.v
-    Info (12023): Found entity 1: programCounter File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/programCounter.v Line: 1
+    Info (12023): Found entity 1: programCounter File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/programCounter.v Line: 1
 Info (12021): Found 1 design units, including 1 entities, in source file mux2x1.v
-    Info (12023): Found entity 1: mux2x1 File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/mux2x1.v Line: 1
-Info (12021): Found 1 design units, including 1 entities, in source file adder.v
-    Info (12023): Found entity 1: adder File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/adder.v Line: 3
-Info (12021): Found 1 design units, including 1 entities, in source file andgate.v
-    Info (12023): Found entity 1: ANDGate File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/ANDGate.v Line: 1
+    Info (12023): Found entity 1: mux2x1 File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/mux2x1.v Line: 1
+Warning (12019): Can't analyze file -- file adder.v is missing
+Warning (12019): Can't analyze file -- file ANDGate.v is missing
 Info (12021): Found 1 design units, including 1 entities, in source file instructionmemory.v
-    Info (12023): Found entity 1: instructionMemory File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/instructionMemory.v Line: 40
+    Info (12023): Found entity 1: instructionMemory File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/instructionMemory.v Line: 40
 Info (12021): Found 1 design units, including 1 entities, in source file datamemory.v
-    Info (12023): Found entity 1: dataMemory File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/dataMemory.v Line: 40
+    Info (12023): Found entity 1: dataMemory File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/dataMemory.v Line: 40
 Info (12021): Found 1 design units, including 1 entities, in source file top_cpu.v
-    Info (12023): Found entity 1: top_cpu File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 6
+    Info (12023): Found entity 1: top_cpu File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/top_cpu.v Line: 6
 Info (12021): Found 1 design units, including 1 entities, in source file bcd7seg.v
-    Info (12023): Found entity 1: bcd7seg File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/bcd7seg.v Line: 1
-Critical Warning (10846): Verilog HDL Instantiation warning at top_cpu.v(66): instance has no name File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 66
-Critical Warning (10846): Verilog HDL Instantiation warning at top_cpu.v(67): instance has no name File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 67
-Critical Warning (10846): Verilog HDL Instantiation warning at top_cpu.v(68): instance has no name File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 68
-Critical Warning (10846): Verilog HDL Instantiation warning at top_cpu.v(69): instance has no name File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 69
-Critical Warning (10846): Verilog HDL Instantiation warning at top_cpu.v(70): instance has no name File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 70
-Info (12127): Elaborating entity "top_cpu" for the top level hierarchy
-Warning (10230): Verilog HDL assignment warning at top_cpu.v(44): truncated value with size 32 to match size of target (24) File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 44
-Warning (10034): Output port "LEDR[4..3]" at top_cpu.v(9) has no driver File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 9
-Info (12128): Elaborating entity "processor" for hierarchy "processor:cpu" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 52
-Info (12128): Elaborating entity "programCounter" for hierarchy "processor:cpu|programCounter:pc" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 53
-Info (12128): Elaborating entity "adder" for hierarchy "processor:cpu|adder:PCAdder" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 55
-Info (12128): Elaborating entity "instructionMemory" for hierarchy "processor:cpu|instructionMemory:IM" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 62
-Info (12128): Elaborating entity "altsyncram" for hierarchy "processor:cpu|instructionMemory:IM|altsyncram:altsyncram_component" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/instructionMemory.v Line: 82
-Info (12130): Elaborated megafunction instantiation "processor:cpu|instructionMemory:IM|altsyncram:altsyncram_component" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/instructionMemory.v Line: 82
-Info (12133): Instantiated megafunction "processor:cpu|instructionMemory:IM|altsyncram:altsyncram_component" with the following parameter: File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/instructionMemory.v Line: 82
+    Info (12023): Found entity 1: bcd7seg File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/bcd7seg.v Line: 1
+Info (12021): Found 2 design units, including 2 entities, in source file singlecycle_sim.v
+    Info (12023): Found entity 1: processor File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 6
+    Info (12023): Found entity 2: SingleCycle_sim File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 120
+Warning (10236): Verilog HDL Implicit Net warning at SingleCycle_sim.v(133): created implicit net for "clkout" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 133
+Critical Warning (10846): Verilog HDL Instantiation warning at top_cpu.v(66): instance has no name File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/top_cpu.v Line: 66
+Critical Warning (10846): Verilog HDL Instantiation warning at top_cpu.v(67): instance has no name File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/top_cpu.v Line: 67
+Critical Warning (10846): Verilog HDL Instantiation warning at top_cpu.v(68): instance has no name File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/top_cpu.v Line: 68
+Critical Warning (10846): Verilog HDL Instantiation warning at top_cpu.v(69): instance has no name File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/top_cpu.v Line: 69
+Critical Warning (10846): Verilog HDL Instantiation warning at top_cpu.v(70): instance has no name File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/top_cpu.v Line: 70
+Info (12127): Elaborating entity "SingleCycle_sim" for the top level hierarchy
+Warning (10755): Verilog HDL warning at SingleCycle_sim.v(136): assignments to clk create a combinational loop File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 136
+Info (10648): Verilog HDL Display System Task info at SingleCycle_sim.v(147): Number of cycles consumed:           0 File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 147
+Warning (10175): Verilog HDL warning at SingleCycle_sim.v(148): ignoring unsupported system task File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 148
+Info (12128): Elaborating entity "processor" for hierarchy "processor:cpu" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 133
+Warning (10230): Verilog HDL assignment warning at SingleCycle_sim.v(33): truncated value with size 32 to match size of target (6) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 33
+Warning (10230): Verilog HDL assignment warning at SingleCycle_sim.v(34): truncated value with size 32 to match size of target (5) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 34
+Warning (10230): Verilog HDL assignment warning at SingleCycle_sim.v(35): truncated value with size 32 to match size of target (5) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 35
+Warning (10230): Verilog HDL assignment warning at SingleCycle_sim.v(36): truncated value with size 32 to match size of target (5) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 36
+Warning (10230): Verilog HDL assignment warning at SingleCycle_sim.v(37): truncated value with size 32 to match size of target (16) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 37
+Warning (10230): Verilog HDL assignment warning at SingleCycle_sim.v(38): truncated value with size 37 to match size of target (32) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 38
+Warning (10230): Verilog HDL assignment warning at SingleCycle_sim.v(39): truncated value with size 32 to match size of target (6) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 39
+Warning (10230): Verilog HDL assignment warning at SingleCycle_sim.v(40): truncated value with size 58 to match size of target (32) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 40
+Warning (12125): Using design file branchcontroller.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: BranchController File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/branchcontroller.v Line: 1
+Info (12128): Elaborating entity "BranchController" for hierarchy "processor:cpu|BranchController:branchcontroller" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 55
+Info (12128): Elaborating entity "mux2x1" for hierarchy "processor:cpu|mux2x1:PCMux" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 61
+Info (12128): Elaborating entity "programCounter" for hierarchy "processor:cpu|programCounter:pc" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 62
+Info (12128): Elaborating entity "instructionMemory" for hierarchy "processor:cpu|instructionMemory:InstMem" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 65
+Info (12128): Elaborating entity "altsyncram" for hierarchy "processor:cpu|instructionMemory:InstMem|altsyncram:altsyncram_component" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/instructionMemory.v Line: 82
+Info (12130): Elaborated megafunction instantiation "processor:cpu|instructionMemory:InstMem|altsyncram:altsyncram_component" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/instructionMemory.v Line: 82
+Info (12133): Instantiated megafunction "processor:cpu|instructionMemory:InstMem|altsyncram:altsyncram_component" with the following parameter: File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/instructionMemory.v Line: 82
     Info (12134): Parameter "address_aclr_a" = "NONE"
     Info (12134): Parameter "clock_enable_input_a" = "BYPASS"
     Info (12134): Parameter "clock_enable_output_a" = "BYPASS"
@@ -790,19 +651,18 @@ Info (12133): Instantiated megafunction "processor:cpu|instructionMemory:IM|alts
     Info (12134): Parameter "width_a" = "32"
     Info (12134): Parameter "width_byteena_a" = "1"
 Info (12021): Found 1 design units, including 1 entities, in source file db/altsyncram_38e1.tdf
-    Info (12023): Found entity 1: altsyncram_38e1 File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/db/altsyncram_38e1.tdf Line: 28
-Info (12128): Elaborating entity "altsyncram_38e1" for hierarchy "processor:cpu|instructionMemory:IM|altsyncram:altsyncram_component|altsyncram_38e1:auto_generated" File: d:/quartus/devices_support/quartus/libraries/megafunctions/altsyncram.tdf Line: 792
-Info (12128): Elaborating entity "controlUnit" for hierarchy "processor:cpu|controlUnit:CU" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 66
-Info (12128): Elaborating entity "mux2x1" for hierarchy "processor:cpu|mux2x1:RFMux" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 68
-Info (12128): Elaborating entity "registerFile" for hierarchy "processor:cpu|registerFile:RF" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 73
-Info (12128): Elaborating entity "SignExtender" for hierarchy "processor:cpu|SignExtender:SignExtend" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 78
-Info (12128): Elaborating entity "mux2x1" for hierarchy "processor:cpu|mux2x1:ALUMux" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 80
-Info (12128): Elaborating entity "ALU" for hierarchy "processor:cpu|ALU:alu" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 82
-Info (12128): Elaborating entity "ANDGate" for hierarchy "processor:cpu|ANDGate:branchAnd" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 84
-Info (12128): Elaborating entity "dataMemory" for hierarchy "processor:cpu|dataMemory:DM" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 91
-Info (12128): Elaborating entity "altsyncram" for hierarchy "processor:cpu|dataMemory:DM|altsyncram:altsyncram_component" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/dataMemory.v Line: 89
-Info (12130): Elaborated megafunction instantiation "processor:cpu|dataMemory:DM|altsyncram:altsyncram_component" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/dataMemory.v Line: 89
-Info (12133): Instantiated megafunction "processor:cpu|dataMemory:DM|altsyncram:altsyncram_component" with the following parameter: File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/dataMemory.v Line: 89
+    Info (12023): Found entity 1: altsyncram_38e1 File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/db/altsyncram_38e1.tdf Line: 28
+Info (12128): Elaborating entity "altsyncram_38e1" for hierarchy "processor:cpu|instructionMemory:InstMem|altsyncram:altsyncram_component|altsyncram_38e1:auto_generated" File: d:/quartus/devices_support/quartus/libraries/megafunctions/altsyncram.tdf Line: 792
+Info (12128): Elaborating entity "controlUnit" for hierarchy "processor:cpu|controlUnit:CU" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 71
+Warning (10272): Verilog HDL Case Statement warning at controlUnit.v(86): case item expression covers a value already covered by a previous case item File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/controlUnit.v Line: 86
+Warning (10270): Verilog HDL Case Statement warning at controlUnit.v(38): incomplete case statement has no default case item File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/controlUnit.v Line: 38
+Info (12128): Elaborating entity "mux2x1" for hierarchy "processor:cpu|mux2x1:RFMux" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 73
+Info (12128): Elaborating entity "registerFile" for hierarchy "processor:cpu|registerFile:RF" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 78
+Info (12128): Elaborating entity "ALU" for hierarchy "processor:cpu|ALU:alu" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 90
+Info (12128): Elaborating entity "dataMemory" for hierarchy "processor:cpu|dataMemory:dataMem" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v Line: 94
+Info (12128): Elaborating entity "altsyncram" for hierarchy "processor:cpu|dataMemory:dataMem|altsyncram:altsyncram_component" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/dataMemory.v Line: 89
+Info (12130): Elaborated megafunction instantiation "processor:cpu|dataMemory:dataMem|altsyncram:altsyncram_component" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/dataMemory.v Line: 89
+Info (12133): Instantiated megafunction "processor:cpu|dataMemory:dataMem|altsyncram:altsyncram_component" with the following parameter: File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/dataMemory.v Line: 89
     Info (12134): Parameter "clock_enable_input_a" = "BYPASS"
     Info (12134): Parameter "clock_enable_output_a" = "BYPASS"
     Info (12134): Parameter "init_file" = "dataMemoryInitializationFile.mif"
@@ -820,48 +680,20 @@ Info (12133): Instantiated megafunction "processor:cpu|dataMemory:DM|altsyncram:
     Info (12134): Parameter "width_a" = "32"
     Info (12134): Parameter "width_byteena_a" = "1"
 Info (12021): Found 1 design units, including 1 entities, in source file db/altsyncram_8km1.tdf
-    Info (12023): Found entity 1: altsyncram_8km1 File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/db/altsyncram_8km1.tdf Line: 28
-Info (12128): Elaborating entity "altsyncram_8km1" for hierarchy "processor:cpu|dataMemory:DM|altsyncram:altsyncram_component|altsyncram_8km1:auto_generated" File: d:/quartus/devices_support/quartus/libraries/megafunctions/altsyncram.tdf Line: 792
-Info (12128): Elaborating entity "mux2x1" for hierarchy "processor:cpu|mux2x1:PCMux" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/processor.v Line: 96
-Info (12128): Elaborating entity "bcd7seg" for hierarchy "bcd7seg:comb_138" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 66
-Info (13000): Registers with preset signals will power-up high File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/programCounter.v Line: 16
-Info (13003): DEV_CLRn pin will set, and not reset, register with preset signal due to NOT Gate Push-Back
-Warning (13024): Output pins are stuck at VCC or GND
-    Warning (13410): Pin "LEDR[3]" is stuck at GND File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 9
-    Warning (13410): Pin "LEDR[4]" is stuck at GND File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 9
-Info (286030): Timing-Driven Synthesis is running
-Info (17049): 27 registers lost all their fanouts during netlist optimizations.
-Info (144001): Generated suppressed messages file D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/output_files/SingleCycle.map.smsg
-Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
-    Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
-Warning (21074): Design contains 12 input pin(s) that do not drive logic
-    Warning (15610): No output dependent on input pin "KEY[1]" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 8
-    Warning (15610): No output dependent on input pin "KEY[2]" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 8
-    Warning (15610): No output dependent on input pin "KEY[3]" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 8
-    Warning (15610): No output dependent on input pin "SW[0]" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 19
-    Warning (15610): No output dependent on input pin "SW[1]" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 19
-    Warning (15610): No output dependent on input pin "SW[2]" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 19
-    Warning (15610): No output dependent on input pin "SW[3]" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 19
-    Warning (15610): No output dependent on input pin "SW[4]" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 19
-    Warning (15610): No output dependent on input pin "SW[5]" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 19
-    Warning (15610): No output dependent on input pin "SW[6]" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 19
-    Warning (15610): No output dependent on input pin "SW[7]" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 19
-    Warning (15610): No output dependent on input pin "SW[8]" File: D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/top_cpu.v Line: 19
-Info (21057): Implemented 2812 device resources after synthesis - the final resource count might be different
-    Info (21058): Implemented 14 input pins
-    Info (21059): Implemented 52 output pins
-    Info (21061): Implemented 2682 logic cells
-    Info (21064): Implemented 64 RAM segments
-Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 23 warnings
-    Info: Peak virtual memory: 4825 megabytes
-    Info: Processing ended: Fri Oct 25 22:53:35 2024
-    Info: Elapsed time: 00:00:13
-    Info: Total CPU time (on all processors): 00:00:19
+    Info (12023): Found entity 1: altsyncram_8km1 File: D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/db/altsyncram_8km1.tdf Line: 28
+Info (12128): Elaborating entity "altsyncram_8km1" for hierarchy "processor:cpu|dataMemory:dataMem|altsyncram:altsyncram_component|altsyncram_8km1:auto_generated" File: d:/quartus/devices_support/quartus/libraries/megafunctions/altsyncram.tdf Line: 792
+Warning (12241): 1 hierarchies have connectivity warnings - see the Connectivity Checks report folder
+Info (144001): Generated suppressed messages file D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/output_files/SingleCycle.map.smsg
+Info: Quartus Prime Analysis & Elaboration was successful. 0 errors, 22 warnings
+    Info: Peak virtual memory: 4743 megabytes
+    Info: Processing ended: Sun Nov 17 11:28:24 2024
+    Info: Elapsed time: 00:00:09
+    Info: Total CPU time (on all processors): 00:00:14
 
 
-+------------------------------------------+
-; Analysis & Synthesis Suppressed Messages ;
-+------------------------------------------+
-The suppressed messages can be found in D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/output_files/SingleCycle.map.smsg.
++--------------------------------------------+
+; Analysis & Elaboration Suppressed Messages ;
++--------------------------------------------+
+The suppressed messages can be found in D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/output_files/SingleCycle.map.smsg.
 
 

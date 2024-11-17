@@ -77,7 +77,7 @@ RunBenchMark_HW()
 {
     ProgName=$1
     ProgFolder="./$ProgName/"
-
+    printf "[INFO]: simulating on single cycle hardware\n"
     BASE_PATH="../singlecycle/SiliCore_Qualifying_code/"
     VERILOG_EXT_SC="VERILOG_SC.vvp"
     VERILOG_EXT_SC_OUT="VERILOG_SC_OUT.txt"
@@ -86,6 +86,7 @@ RunBenchMark_HW()
     iverilog -I$BASE_PATH -I$ProgFolder -o $VERILOG_SC -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" $BASE_PATH"SingleCycle_sim.v"
     vvp $VERILOG_SC > $VERILOG_SC_OUT
 
+    printf "[INFO]: simulating on pipeline hardware\n"
     BASE_PATH="../PL_CPU_FPGA/PL_CPU_FPGA/"
     VERILOG_EXT_PL="VERILOG_PL.vvp"
     VERILOG_EXT_PL_OUT="VERILOG_PL_OUT.txt"
@@ -130,8 +131,8 @@ RunBenchMark_HW()
 
 
 
-Run_BenchMark_SW "Program"
-RunBenchMark_HW "Program"
+Run_BenchMark_SW "code"
+RunBenchMark_HW "code"
 # TODO: compare HW / SW
 
 read -p "Press Enter to exit"
