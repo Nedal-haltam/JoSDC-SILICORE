@@ -14,35 +14,30 @@
 #set_time_format -unit ns -decimal_places 10
 
 
- create_clock -name {input_clk} -period 15.9 -waveform { 0.000 9.76 } [get_ports {input_clk}]
+ create_clock -name {input_clk} -period 20.000 -waveform { 0.000 10.000 } [get_ports {input_clk}]
 
- 
-# create_clock -name {input_clk} -period 16.676 -waveform { 0.000 9.846 } [get_ports {input_clk}]
-# and this leads to a max clock of 62.62
-# setup slack : +0.418
-# hold  slack : +0.4..
- 
- 
-# create_clock -name {input_clk} -period 15.5 -waveform { 0.000 9.5 } [get_ports {input_clk}]
-# and this leads to a max clock of 63.78
-# setup slack : -0.110
-# hold  slack : +0.408
+# create_clock -name {input_clk} -period 15.8 -waveform { 0.000 9.9 } [get_ports {input_clk}]
+# and this leads to a max clock of 64.23
+# setup slack : +0.145
+# hold  slack : +0.407
 
 
-# create_clock -name {input_clk} -period 16.130 -waveform { 0.000 9.5 } [get_ports {input_clk}]
-# and this leads to a max clock of 62.64
-# setup slack : +0.098
+# create_clock -name {input_clk} -period 15.9 -waveform { 0.000 9.76 } [get_ports {input_clk}]
+# and this leads to a max clock of 64.42
+# setup slack : +0.231
+# hold  slack : +0.407
+
+
+# create_clock -name {input_clk} -period 15.5 -waveform { 0.000 10.111 } [get_ports {input_clk}]
+# and this leads to a max clock of 64.57
+# setup slack : +0.008
 # hold  slack : +0.409
 
 
-# create_clock -name {input_clk} -period 16.000 -waveform { 0.000 9.63 } [get_ports {input_clk}]
-# and this leads to a max clock of 64.15
-# setup slack : +0.248
-# hold  slack : +0.408
-
-
-
-
+# create_clock -name {input_clk} -period 15.6 -waveform { 0.000 10.111 } [get_ports {input_clk}]
+# and this leads to a max clock of 65.33
+# setup slack : +0.191
+# hold  slack : +0.407
 
 
 
