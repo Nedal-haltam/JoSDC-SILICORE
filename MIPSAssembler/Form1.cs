@@ -141,6 +141,11 @@ namespace Assembler
             Environment.Exit(1);
         }
 
+        string get_entry_IM_INIT(string mc, string inst, int i)
+        {
+            string hex = Convert.ToInt32(mc, 2).ToString("X").PadLeft(8, '0');
+            return ($"InstMem[{i,2}] <= 32'h{hex};// {inst,-20}").Trim();
+        }
 
         void HandleCommand(List<string> args)
         {
@@ -160,24 +165,40 @@ namespace Assembler
                 assemble(text_dir.ToArray());
 
                 List<string> mc = new List<string>();
-                if (!lblNoErr.Visible)
+                List<string> hlt_seq = new List<string>() {
+                    "11111100000000000000000000000000", // hlt
+                    "00100000000111111111111111111111", // addi x31 x0 -1
+                    "11111100000000000000000000000000", // hlt
+                };
+                List<List<string>> hlt_seq_insts = new List<List<string>>()
                 {
-                    mc.Add("No mc to generate because the program is invalid");
-                }
-                else
+                    new List<string>(){ "hlt" },
+                    new List<string>(){ "addi", "x31", "x0", "-1" },
+                    new List<string>(){ "hlt" },
+                };
+                curr_insts.AddRange(hlt_seq_insts);
+                if (lblNoErr.Visible)
                 {
                     curr_mc.ForEach(x => mc.Add(x));
+                    hlt_seq.ForEach(x => mc.Add(x));
                 }
                 File.WriteAllLines(MC_filepath, mc);
                 List<string> IM_INIT = new List<string>();
-                for (int i = 0; i < curr_mc.Count; i++)
+                for (int i = 0; i < mc.Count; i++)
                 {
-                    string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
                     string inst = "";
                     curr_insts[i].ForEach(x => { inst += x + " "; });
-                    string temp = ($"InstMem[{i,2}] <= 32'h{hex};// {inst,-20}").Trim();
-                    IM_INIT.Add(temp);
+                    IM_INIT.Add(get_entry_IM_INIT(mc[i], inst, i));
                 }
+
+                int HANDLER_ADDR = 1000;
+                for (int i = 0; i < hlt_seq.Count; i++)
+                {
+                    string inst = "";
+                    hlt_seq_insts[i].ForEach(x => { inst += x + " "; });
+                    IM_INIT.Add(get_entry_IM_INIT(hlt_seq[i], inst, HANDLER_ADDR - 1 + i));
+                }
+
                 File.WriteAllLines(IM_INIT_filepath, IM_INIT);
                 Close(); // for now we will close and not parse any other commands
             }

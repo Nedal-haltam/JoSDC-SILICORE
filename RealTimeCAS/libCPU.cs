@@ -102,7 +102,7 @@ namespace ProjectCPUCL
             IM[HANDLER_ADDR] = "00100000000111111111111111111111"; // addi x31 x0 -1
             IM[HANDLER_ADDR + 1] = "11111100000000000000000000000000"; // hlt
             List<string> DM = new List<string>();
-            for (int i = 0; i < 1024; i++) DM.Add("0");
+            for (int i = 0; i < 1024; i++) DM.Add("x");
 
             return (IM, DM, regs);
         }
@@ -370,8 +370,14 @@ namespace ProjectCPUCL
             foreach (string mem in DM)
             {
                 if (i == 20) break;
-                int n = Convert.ToInt32(DM[i], 2);
-                string temp = $"Mem[{i++,2}] = {n,10}\n";
+                string temp;
+                if (mem == "x")
+                {
+                    temp = $"Mem[{i++,2}] = {mem,11}\n";
+                }
+                else
+                    temp = Convert.ToInt32(mem, 2).ToString();
+
                 Console.Write(temp);
             }
         }
@@ -383,7 +389,7 @@ namespace ProjectCPUCL
             int i = 0;
             foreach (int n in regs)
             {
-                string temp = $"index = {i++,10} , reg_out : signed = {n,10} , unsigned = {(uint)n,10}\n";
+                string temp = $"index = {i++,10} , reg_out : signed = {n,11} , unsigned = {(uint)n,10}\n";
                 sb.Append(temp);
             }
             return sb;
@@ -396,8 +402,14 @@ namespace ProjectCPUCL
             foreach (string mem in DM)
             {
                 if (i == 20) break;
-                int n = Convert.ToInt32(DM[i], 2);
-                string temp = $"Mem[{i++,2}] = {n,10}\n";
+                string temp;
+                if (mem == "x")
+                {
+                    temp = $"Mem[{i++,2}] = {mem,11}\n";
+                }
+                else
+                    temp = Convert.ToInt32(mem, 2).ToString();
+
                 sb.Append(temp);
             }
             return sb;

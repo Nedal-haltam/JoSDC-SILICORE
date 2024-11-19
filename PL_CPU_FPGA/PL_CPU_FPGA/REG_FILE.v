@@ -59,7 +59,7 @@ initial begin
   // iterating through the register file to check if the program changed the contents correctly
   $display("Register file content : ");
   for (integer i = 0; i <= 31; i = i + 1)
-    $display("index = %d , reg_out : signed = %d , unsigned = %d",i, $signed(reg_file[i]), $unsigned(reg_file[i]));
+    $display("index = %d , reg_out : signed = %d , unsigned = %d",i[31:0], $signed(reg_file[i]), $unsigned(reg_file[i]));
 end 
 `endif
 

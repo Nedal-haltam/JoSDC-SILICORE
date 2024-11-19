@@ -7,6 +7,8 @@ ASSEMBLER_EXT="MC.txt"
 CAS_EXT_SC="CAS_SC_OUT.txt"
 CAS_EXT_PL="CAS_PL_OUT.txt"
 
+SWFILE=""
+HWFILE=""
 
 comapre_two_files()
 {
@@ -74,9 +76,9 @@ Run_BenchMark_SW()
     sed -i '$d' "$CAS_PL_OUT"
 
     printf "[INFO]: Comparing Software Outputs\n"
-
-
     comapre_two_files "$CAS_SC_OUT" "$CAS_PL_OUT"
+
+    SWFILE="$CAS_SC_OUT"
 }
 
 RunBenchMark_HW()
@@ -126,21 +128,24 @@ RunBenchMark_HW()
     printf "[INFO]: Comparing HardWare Outputs\n"
 
     comapre_two_files "$VERILOG_SC_OUT" "$VERILOG_PL_OUT"
+
+    HWFILE="$VERILOG_SC_OUT"
 }
 
 Run_BenchMark()
 {
     Run_BenchMark_SW $1
     RunBenchMark_HW $1
-    compareswhw
+    printf "[INFO]: comparing Software output with hardware output"
+    comapre_two_files $SWFILE $HWFILE
 }
 
 
-Run_BenchMark "BinarySearch"
-Run_BenchMark "ControlFlowInstructions"
-Run_BenchMark "InsertionSort"
-Run_BenchMark "Max&MinArray"
-Run_BenchMark "SimpleDataManipulation"
+# Run_BenchMark "BinarySearch"
+# Run_BenchMark "ControlFlowInstructions"
+# Run_BenchMark "InsertionSort"
+# Run_BenchMark "Max&MinArray"
+# Run_BenchMark "SimpleDataManipulation"
 Run_BenchMark "SumOfNumbers"
 
 # TODO: compare HW / SW

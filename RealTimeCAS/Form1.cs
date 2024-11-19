@@ -87,8 +87,6 @@ namespace Real_Time_CAS_ASSEM
             }
             else
                 return (0, Exceptions.EXCEPTION, new CPU());
-
-
         }
 
         StringBuilder get_regs_DM(List<int> regs, List<string> DM)
@@ -133,7 +131,7 @@ namespace Real_Time_CAS_ASSEM
 
         private void layout_size()
         {
-            int w = 1100;
+            int w = 1200;
             int h = 600;
             int padding = 20;
             Width = (Width < w) ? w : Width;

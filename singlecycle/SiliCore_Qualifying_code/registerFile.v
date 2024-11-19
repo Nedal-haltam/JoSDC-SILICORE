@@ -60,7 +60,7 @@ initial begin
   #(`MAX_CLOCKS + `reset);
   $display("Register file content : ");
   for (i = 0; i <= 31; i = i + 1)
-    $display("index = %d , reg_out : signed = %d , unsigned = %d",i, $signed(registers[i]), $unsigned(registers[i]));
+    $display("index = %d , reg_out : signed = %d , unsigned = %d",i[31:0], $signed(registers[i]), $unsigned(registers[i]));
 
 end 
 `endif

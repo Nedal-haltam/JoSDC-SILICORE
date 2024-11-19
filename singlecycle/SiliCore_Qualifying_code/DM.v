@@ -27,7 +27,5 @@ initial begin
     $display("Mem[%d] = %d",i[4:0],$signed(data_mem[i]));
 end 
 `endif
-
-
 endmodule
 `endif
