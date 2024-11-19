@@ -8,7 +8,7 @@ module BranchResolver(PC_src, exception_flag, opcode, predicted, Wrong_predictio
 	output predicted;
 
 	
-`include "opcodes.v"
+`include "opcodes.txt"
 
 assign predicted = (opcode == beq || opcode == bne || opcode == jr) ? 1'b1 : 0;
 

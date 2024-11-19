@@ -50,6 +50,11 @@ public static class ASSEMBLERMIPS
         { "sw"   , "101011" },
         { "beq"  , "000100" },
         { "bne"  , "000101" }, 
+        
+        { "blt"  , "000110" }, 
+        { "ble"  , "000111" }, 
+        { "bgt"  , "001001" }, 
+        { "bge"  , "001010" }, 
 
         // J-format
         { "j"    , "000010" },
@@ -98,6 +103,10 @@ public static class ASSEMBLERMIPS
             case "sw":
             case "beq":
             case "bne":
+            case "blt":
+            case "ble":
+            case "bgt":
+            case "bge":
                 return InstType.itype;
             case "j":
             case "jal":
@@ -110,11 +119,13 @@ public static class ASSEMBLERMIPS
     // it takes as input the register name and extracts the index form it
     static string getregindex(string reg)
     {
-        if (!reg.StartsWith("x"))
-            return invinst;
-        string index = reg.Substring(1); // x21
-
-
+        string index = invinst;
+        if (reg.StartsWith("x") || reg.StartsWith("$"))
+        {
+            index = reg.Substring(1);
+        }
+        else
+            return index;
 
         if (byte.TryParse(index, out byte usb) && usb >= 0 && usb <= 31)
         {
@@ -189,7 +200,7 @@ public static class ASSEMBLERMIPS
     }
     static bool isbranch(string mnem)
     {
-        return mnem == "beq" || mnem == "bne";
+        return mnem == "beq" || mnem == "bne" || mnem == "blt" || mnem == "ble" || mnem == "bgt" || mnem == "bge";
     }
     static bool PseudoBranch(string mnem)
     {
@@ -291,7 +302,7 @@ public static class ASSEMBLERMIPS
                 return getjtypeinst(inst);
             case InstType.invalid_Inst:
                 return invinst;
-            default: return invinst;
+            default: return invinst;    
         }
     }
     static int curr_inst_index;
@@ -319,10 +330,6 @@ public static class ASSEMBLERMIPS
         for (int j = 0; j < thecode.Count; j++)
         {
             string line = thecode[j];
-            if (line.Contains("//"))
-            {
-                line = line.Substring(0, line.IndexOf('/'));
-            }
             // curr_inst is a list of tokens (strings)
             List<string> curr_inst = new List<string>();
             int i = 0;
@@ -389,6 +396,14 @@ public static class ASSEMBLERMIPS
         insts.RemoveAll(x => x.Any(y => y.Contains(':')));
     }
 
+
+    public static void assert(string msg)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Error.WriteLine(msg);
+        Console.ResetColor();
+        Environment.Exit(1);
+    }
     public static (List<string>, List<List<string>>) TOP_MAIN()
     {
         lblinvinst.Visible = false;
@@ -410,7 +425,7 @@ public static class ASSEMBLERMIPS
             if (insts.Count != mc.Count)
                 throw new Exception("Instruction Count doesn't match MC Count");
 
-            lblinvinst.Visible |= mc.Any(x => x.Contains(invinst)) || lblinvlabel.Visible || lblmultlabels.Visible;
+            lblinvinst.Visible = mc.Any(x => x.Contains(invinst)) || lblinvlabel.Visible || lblmultlabels.Visible;
             if (lblinvinst.Visible)
                 return (new List<string>(), new List<List<string>>());
 
@@ -419,6 +434,7 @@ public static class ASSEMBLERMIPS
         }
         else
         {
+            assert("mc count = 0lsdfjdskljfkldsj");
             lblinvinst.Visible |= lblinvlabel.Visible || lblmultlabels.Visible;
             return (new List<string>(), new List<List<string>>());
         }

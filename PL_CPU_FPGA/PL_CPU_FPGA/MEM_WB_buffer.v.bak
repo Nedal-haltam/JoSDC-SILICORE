@@ -15,7 +15,7 @@ module MEM_WB_buffer(MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, MEM_rs1_ind, MEM_rs
 	output reg [6:0] WB_opcode;
 	output reg WB_memread, WB_memwrite, WB_regwrite, hlt;	
 	
-	`include "opcodes.v"
+	`include "opcodes.txt"
 	
 	always@(negedge clk, posedge rst) begin
 		if (rst) begin

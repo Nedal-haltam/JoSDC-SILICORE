@@ -20,14 +20,16 @@ namespace main
             Environment.Exit(1);
         }
 
-        static List<string> insts = [];
-        static string source_filepath = "";
+        static string mc_filepath = "";
+        static List<string> mcs = [];
+        static string dm_filepath = "";
+        static List<string> data_mem_init = [];
         static string output_filepath = "";
         static CPU_type cpu_type = CPU_type.SingleCycle;
         static void HandleCommand(List<string> args)
         {
             popF(ref args);
-            if (args.Count != 4)
+            if (args.Count != 5)
             {
                 assert("Missing arguments");
             }
@@ -36,9 +38,12 @@ namespace main
             if (arg == "sim")
             {
                 string cputype = popF(ref args).ToLower();
-                source_filepath = popF(ref args);
+                mc_filepath = popF(ref args);
+                dm_filepath = popF(ref args);
                 output_filepath = popF(ref args);
-                insts = File.ReadAllLines(source_filepath).ToList();
+                
+                mcs = File.ReadAllLines(mc_filepath).ToList();
+                data_mem_init = File.ReadAllLines(dm_filepath).ToList();
                 if (cputype == "singlecycle")
                 {
                     cpu_type = CPU_type.SingleCycle;
@@ -72,7 +77,7 @@ namespace main
 
             if (cpu_type == CPU_type.SingleCycle)
             {
-                SingleCycle cpu = new(insts);
+                SingleCycle cpu = new(mcs, data_mem_init);
                 (int cycles, Exceptions excep) = cpu.Run();
                 sb.Append(get_regs(cpu.regs).ToString());
                 sb.Append(get_DM(cpu.DM).ToString());
@@ -81,7 +86,7 @@ namespace main
             }
             else if (cpu_type == CPU_type.PipeLined)
             {
-                CPU5STAGE cpu = new(insts);
+                CPU5STAGE cpu = new(mcs, data_mem_init);
                 (int cycles, Exceptions excep) = cpu.Run();
                 sb.Append(get_regs(cpu.regs).ToString());
                 sb.Append(get_DM(cpu.DM).ToString());

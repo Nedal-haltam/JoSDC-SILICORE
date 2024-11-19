@@ -18,7 +18,7 @@ module ALU_OPER(opcode, ALU_OP);
 	
 	output reg [3:0] ALU_OP;
 	
-`include "opcodes.v"
+`include "opcodes.txt"
 
 	always@(*) begin
 

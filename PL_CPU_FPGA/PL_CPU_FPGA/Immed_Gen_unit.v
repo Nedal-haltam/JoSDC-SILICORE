@@ -8,7 +8,7 @@ module Immed_Gen_unit(Inst, opcode, Immed);
 	
 	
 	
-`include "opcodes.v"
+`include "opcodes.txt"
 
 	
 	

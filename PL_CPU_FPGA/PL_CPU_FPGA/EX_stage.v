@@ -55,8 +55,7 @@ endmodule
 module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1_ind, rs2_ind, alu_selA, alu_selB, store_rs2_forward, 
 			    reg_write, mem_read, mem_write, rs2_in, rs2_out, alu_out, predicted, Wrong_prediction, rst, is_beq, is_bne, EX_rd_indzero, EX_rd_ind);
 	
-	`include "opcodes.v"
-
+`include "opcodes.txt"
 
 	input [31:0] pc, EX_PFC, ex_haz, mem_haz, rs1, imm;
 	input [6:0] opcode;

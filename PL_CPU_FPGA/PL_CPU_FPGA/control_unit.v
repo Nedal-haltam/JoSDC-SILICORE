@@ -9,8 +9,7 @@ module control_unit(opcode, regwrite, memread, memwrite, is_oper2_immed, is_beq,
 	output is_oper2_immed;
 	output is_beq, is_bne;
 
-`include "opcodes.v"
-
+`include "opcodes.txt"
 	
 	
 

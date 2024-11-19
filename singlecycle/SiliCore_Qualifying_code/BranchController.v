@@ -5,7 +5,7 @@ module BranchController(
 	output reg PCsrc
 );
 
-`include "opcodes.v"
+`include "opcodes.txt"
 
 always@(*) begin
 if (~rst)

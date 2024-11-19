@@ -1,15 +1,13 @@
 .text
 main:
-// Initialize registers
-ORI x2, x0, 0x1
-ORI x3, x0, 0x0
-ORI x4, x0, 0xA
+# Initialize registers
+ORI $2, $0, 0x1
+ORI $3, $0, 0x0
+ORI $4, $0, 0xA
 SUM_LOOP:
-ADD x3, x3, x2
-ADDI x2, x2, 1
-BLE x2, x4, SUM_LOOP
-SW x3, x0, 0
+ADD $3, $3, $2
+ADDI $2, $2, 1
+BLE $2, $4, SUM_LOOP
+SW $3, x0, 0
 END:
-NOP // End program
-
-hlt
+NOP # End program

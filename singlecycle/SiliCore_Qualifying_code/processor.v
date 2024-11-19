@@ -3,7 +3,7 @@
 
 module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, cycles_consumed, clk);
 
-	`include "opcodes.v"
+	`include "opcodes.txt"
 	//inputs
 	input input_clk, rst;
 	output wire clk;

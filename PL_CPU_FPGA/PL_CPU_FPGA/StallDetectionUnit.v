@@ -11,7 +11,7 @@ input Wrong_prediction; // Memread signal from the ID_EX buffer to detect if it 
 input [4:0] id_ex_rd;
 
 
-`include "opcodes.v"
+`include "opcodes.txt"
 
 
 

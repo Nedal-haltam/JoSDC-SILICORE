@@ -13,8 +13,7 @@ parameter [0 : 7 * numofinst - 1] opcodes  = {7'h20, 7'h22, 7'h21, 7'h23, 7'h48,
 		    7'h4e, 7'h27, 7'h00, 7'h02, 7'h63, 7'h6b, 7'h44, 7'h45, 7'h50, 7'h51, 
 			7'h42, 7'h43, 7'h08, 7'h2a };
 
-`include "opcodes.v"
-
+`include "opcodes.txt"
 
 
 assign excep_flag = (rst) ? 0 : 

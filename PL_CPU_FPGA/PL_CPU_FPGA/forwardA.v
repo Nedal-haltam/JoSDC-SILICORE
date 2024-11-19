@@ -5,8 +5,7 @@ module forwardA(id_ex_opcode, id_ex_rs1, id_ex_rs2,
 					);
 parameter bit_width = 32;
 
-`include "opcodes.v"
-
+`include "opcodes.txt"
 // these might containg the funct for the I-format but we will stick the opcode just for naming simplicity
 input [6:0] id_ex_opcode;
 

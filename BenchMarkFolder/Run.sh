@@ -3,9 +3,6 @@
 # for a given bench mark their will be a folder with the name of the benchmark
 # and inside that folder their will be a file named with the same name for simplicity and because simplicity favours regularity
 
-ASSEMBLER_EXT="MC.txt"
-CAS_EXT_SC="CAS_SC_OUT.txt"
-CAS_EXT_PL="CAS_PL_OUT.txt"
 
 SWFILE=""
 HWFILE=""
@@ -28,11 +25,13 @@ Run_BenchMark_SW()
 
     # define the I/O
     ASSEMBLER_IN=$ProgCode
-    ASSEMBLER_OUT_TO_CAS=$ProgFolder""$ASSEMBLER_EXT
-    ASSEMBLER_OUT_TO_HW=$ProgFolder"IM_INIT.v"
+    ASSEMBLER_OUT_TO_CAS_IM=$ProgFolder"MC.txt"
+    ASSEMBLER_OUT_TO_CAS_DM=$ProgFolder"DM.txt"
+    ASSEMBLER_OUT_IM_INIT=$ProgFolder"IM_INIT.INIT"
+    ASSEMBLER_OUT_DM_INIT=$ProgFolder"DM_INIT.INIT"
     # define the program and its arguments
     ASSEMBLER="../MIPSAssembler/bin/Debug/Assembler.exe"
-    ASSEMBLER_ARGS="gen $ASSEMBLER_IN $ASSEMBLER_OUT_TO_CAS $ASSEMBLER_OUT_TO_HW"
+    ASSEMBLER_ARGS="gen $ASSEMBLER_IN $ASSEMBLER_OUT_TO_CAS_IM $ASSEMBLER_OUT_TO_CAS_DM $ASSEMBLER_OUT_IM_INIT $ASSEMBLER_OUT_DM_INIT"
     # run the the assembler
     printf "[INFO]: Assembling "$ProgName"...\n"
     $ASSEMBLER $ASSEMBLER_ARGS
@@ -40,20 +39,21 @@ Run_BenchMark_SW()
     printf "[INFO]: "$ProgName" Assembled Successfully\n"
 
     # define the I/O
-    CAS_IN=$ASSEMBLER_OUT_TO_CAS
-    CAS_SC_OUT=$ProgFolder""$CAS_EXT_SC
-    CAS_PL_OUT=$ProgFolder""$CAS_EXT_PL
+    CAS_IN_IM=$ASSEMBLER_OUT_TO_CAS_IM
+    CAS_IN_DM=$ASSEMBLER_OUT_TO_CAS_DM
+    CAS_SC_OUT=$ProgFolder"CAS_SC_OUT.txt"
+    CAS_PL_OUT=$ProgFolder"CAS_PL_OUT.txt"
     # define the program and its arguments
     CAS="../CycleAccurateSimulator/bin/Debug/net8.0/CAS.exe"
     
-    CAS_ARGS="sim singlecycle $CAS_IN $CAS_SC_OUT"
+    CAS_ARGS="sim singlecycle $CAS_IN_IM $CAS_IN_DM $CAS_SC_OUT"
     # run the CAS on the single cycle
     printf "[INFO]: Simulating "$ProgName" on the Single Cycle\n"
     $CAS $CAS_ARGS
 
     printf "[INFO]: "$ProgName" simulated successfully on the Single Cycle\n"
 
-    CAS_ARGS="sim pipeline $CAS_IN $CAS_PL_OUT"
+    CAS_ARGS="sim pipeline $CAS_IN_IM $CAS_IN_DM $CAS_PL_OUT"
     # run the CAS on the PipeLine
     printf "[INFO]: Simulating "$ProgName" on the PipeLine\n"
     $CAS $CAS_ARGS
@@ -91,7 +91,7 @@ RunBenchMark_HW()
     VERILOG_EXT_SC_OUT="VERILOG_SC_OUT.txt"
     VERILOG_SC=$ProgFolder""$VERILOG_EXT_SC
     VERILOG_SC_OUT=$ProgFolder""$VERILOG_EXT_SC_OUT
-    iverilog -I$BASE_PATH -I$ProgFolder -o $VERILOG_SC -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" $BASE_PATH"SingleCycle_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SC -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" $BASE_PATH"SingleCycle_sim.v"
     vvp $VERILOG_SC > $VERILOG_SC_OUT
 
     printf "[INFO]: simulating on pipeline hardware\n"
@@ -100,7 +100,7 @@ RunBenchMark_HW()
     VERILOG_EXT_PL_OUT="VERILOG_PL_OUT.txt"
     VERILOG_PL=$ProgFolder""$VERILOG_EXT_PL
     VERILOG_PL_OUT=$ProgFolder""$VERILOG_EXT_PL_OUT
-    iverilog -I $BASE_PATH -I$ProgFolder -o $VERILOG_PL -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" $BASE_PATH"PL_CPU_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_PL -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" $BASE_PATH"PL_CPU_sim.v"
     vvp $VERILOG_PL > $VERILOG_PL_OUT
 
 
@@ -136,9 +136,13 @@ Run_BenchMark()
 {
     Run_BenchMark_SW $1
     RunBenchMark_HW $1
-    printf "[INFO]: comparing Software output with hardware output"
+    printf "[INFO]: comparing Software output with hardware output\n"
     comapre_two_files $SWFILE $HWFILE
 }
+
+
+
+
 
 
 # Run_BenchMark "BinarySearch"

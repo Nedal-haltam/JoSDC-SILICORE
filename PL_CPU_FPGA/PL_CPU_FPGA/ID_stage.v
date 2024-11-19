@@ -3,7 +3,7 @@ module ID_stage(pc, inst, opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_da
 			    id_flush,id_flush_mux_sel, Wrong_prediction, exception_flag, clk, pfc, predicted, rs1, rs2, pc_src, 
 				pc_write, if_id_write, if_id_flush, imm,reg_write_from_wb, reg_write, mem_read, mem_write, rst, is_oper2_immed, ID_is_beq, ID_is_bne);
 	
-	`include "opcodes.v"
+	`include "opcodes.txt"
 
 
 	input rst;

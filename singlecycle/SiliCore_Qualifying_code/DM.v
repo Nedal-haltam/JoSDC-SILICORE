@@ -7,14 +7,20 @@ module DM(address, clock,  data,  rden,  wren,  q);
 
     output reg [31 : 0] q;
 
-    reg [31 : 0] data_mem [1023 : 0];
+    reg [31 : 0] DataMem [1023 : 0];
 
     always @(negedge clock) begin
         if (rden)
-            q <= data_mem[address];
+            q <= DataMem[address];
         if (wren)
-            data_mem[address] <= data;
+            DataMem[address] <= data;
     end
+
+initial begin
+
+`include "DM_INIT.INIT"
+
+end
 
 
 `ifdef vscode
@@ -24,7 +30,7 @@ initial begin
   // iterating through some of the addresses of the memory to check if the program loaded and stored the values properly
   $display("Data Memory Content : ");
   for (i = 0; i <= 19; i = i + 1)
-    $display("Mem[%d] = %d",i[4:0],$signed(data_mem[i]));
+    $display("Mem[%d] = %d",i[4:0],$signed(DataMem[i]));
 end 
 `endif
 endmodule

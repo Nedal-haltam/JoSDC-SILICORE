@@ -25,7 +25,7 @@ namespace ProjectCPUCL
         {
             add, addu, subu, sub, and, or, nor, slt, sgt, xor,
             addi, andi, ori, xori, slti, sll, srl,
-            beq, bne,
+            beq, bne, blt, ble, bgt, bge,
             j, jr, jal,
             lw, sw,
             nop, hlt
@@ -85,7 +85,7 @@ namespace ProjectCPUCL
         }
 
 
-        public static (List<string>, List<string>, List<int>) InitMipsCPU(List<string> insts)
+        public static (List<string>, List<string>, List<int>) InitMipsCPU(List<string> insts, List<string> data_mem_init)
         {
             List<int> regs = new List<int>();
             for (int i = 0; i < 32; i++) regs.Add(0);
@@ -102,7 +102,10 @@ namespace ProjectCPUCL
             IM[HANDLER_ADDR]     = "00100000000111111111111111111111"; // addi x31 x0 -1
             IM[HANDLER_ADDR + 1] = "11111100000000000000000000000000"; // hlt
             List<string> DM = new List<string>();
-            for (int i = 0; i < 1024; i++) DM.Add("x");
+
+            DM.AddRange(data_mem_init);
+
+            for (int i = 0; i < 1024 - data_mem_init.Count; i++) DM.Add("x");
 
             return (IM, DM, regs);
         }
@@ -162,6 +165,12 @@ namespace ProjectCPUCL
                 { "1000100" , Mnemonic.beq  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x44
                 { "1000101" , Mnemonic.bne  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x45
 
+                { "1000110", Mnemonic.blt },
+                { "1000111", Mnemonic.ble },
+                { "1001001", Mnemonic.bgt },
+                { "1001010", Mnemonic.bge }, 
+
+
                 // J-format depends on opcode field
                 { "1000010" , Mnemonic.j    }, // PC = zx(addr) << 2  , note.1 , 0x42
                 { "1000011" , Mnemonic.jal  }, // R[31] = PC+1, PC = zx(addr) << 2  , note.1 , 0x43
@@ -198,6 +207,10 @@ namespace ProjectCPUCL
                 case Mnemonic.subu: return Aluop.sub;
                 case Mnemonic.beq: return Aluop.add;
                 case Mnemonic.bne: return Aluop.add;
+                case Mnemonic.blt: return Aluop.add;
+                case Mnemonic.ble: return Aluop.add;
+                case Mnemonic.bgt: return Aluop.add;
+                case Mnemonic.bge: return Aluop.add;
                 case Mnemonic.j: return Aluop.add;
                 case Mnemonic.jr: return Aluop.add;
                 case Mnemonic.jal: return Aluop.add;
@@ -229,6 +242,10 @@ namespace ProjectCPUCL
                 case Mnemonic.subu: return "R";
                 case Mnemonic.beq: return "I";
                 case Mnemonic.bne: return "I";
+                case Mnemonic.blt: return "I";
+                case Mnemonic.ble: return "I";
+                case Mnemonic.bgt: return "I";
+                case Mnemonic.bge: return "I";
                 case Mnemonic.j: return "J";
                 case Mnemonic.jr: return "R";
                 case Mnemonic.jal: return "J";
@@ -294,12 +311,20 @@ namespace ProjectCPUCL
         public static bool isbranch_taken(Instruction inst)
         {
             return (inst.mnem == Mnemonic.beq && inst.oper1 == inst.oper2) ||
-                   (inst.mnem == Mnemonic.bne && inst.oper1 != inst.oper2);
+                   (inst.mnem == Mnemonic.bne && inst.oper1 != inst.oper2) ||
+                   (inst.mnem == Mnemonic.blt && inst.oper1 < inst.oper2) ||
+                   (inst.mnem == Mnemonic.ble && inst.oper1 <= inst.oper2) ||
+                   (inst.mnem == Mnemonic.bgt && inst.oper1 > inst.oper2) ||
+                   (inst.mnem == Mnemonic.bge && inst.oper1 >= inst.oper2);
         }
         public static bool isbranch(Mnemonic mnem)
         {
             return mnem == Mnemonic.beq ||
-                   mnem == Mnemonic.bne;
+                   mnem == Mnemonic.bne ||
+                   mnem == Mnemonic.blt ||
+                   mnem == Mnemonic.ble ||
+                   mnem == Mnemonic.bgt ||
+                   mnem == Mnemonic.bge;
         }
         public static int get_oper1(Instruction inst)
         {
@@ -371,12 +396,7 @@ namespace ProjectCPUCL
             {
                 if (i == 20) break;
                 string temp;
-                if (mem == "x")
-                {
-                    temp = $"Mem[{i++,2}] = {mem,11}\n";
-                }
-                else
-                    temp = Convert.ToInt32(mem, 2).ToString();
+                temp = $"Mem[{i++,2}] = {mem,11}\n";
 
                 Console.Write(temp);
             }
@@ -403,12 +423,8 @@ namespace ProjectCPUCL
             {
                 if (i == 20) break;
                 string temp;
-                if (mem == "x")
-                {
-                    temp = $"Mem[{i++,2}] = {mem,11}\n";
-                }
-                else
-                    temp = Convert.ToInt32(mem, 2).ToString();
+                
+                temp = $"Mem[{i++,2}] = {mem,11}\n";
 
                 sb.Append(temp);
             }
@@ -466,9 +482,9 @@ namespace ProjectCPUCL
             PCplus1, pfc, exception, none
         }
         PCsrc pcsrc;
-        public CPU5STAGE(List<string> insts)
+        public CPU5STAGE(List<string> insts, List<string> data_mem_init)
         {
-            (IM, DM, regs) = InitMipsCPU(insts);
+            (IM, DM, regs) = InitMipsCPU(insts, data_mem_init);
 
             PC = -1;
             hlt = false;
@@ -681,7 +697,7 @@ namespace ProjectCPUCL
                               (temp.mnem == Mnemonic.jr);
             return temp;
         }
-        Instruction mem(Instruction inst)
+        Instruction mem(ref Instruction inst)
         {
             Instruction temp = inst;
             if (inst.mnem == Mnemonic.nop)
@@ -692,11 +708,11 @@ namespace ProjectCPUCL
             detect_exception(inst, Stage.memory);
             if (temp.mnem == Mnemonic.lw)
             {
-                temp.memout = Convert.ToInt32(DM[temp.aluout], 2);
+                temp.memout = Convert.ToInt32(DM[temp.aluout]);
             }
             else if (temp.mnem == Mnemonic.sw)
             {
-                DM[temp.aluout] = Convert.ToString(temp.rt, 2).PadLeft(32, '0');
+                DM[temp.aluout] = Convert.ToString(temp.rt);
             }
 
             EX_HAZ = temp.aluout;
@@ -838,7 +854,7 @@ namespace ProjectCPUCL
                 write_back(MEMWB);
                 if (hlt)
                     return;
-                memed_in_MEM_MIPS = mem(EXMEM);
+                memed_in_MEM_MIPS = mem(ref EXMEM);
                 executed_in_EX_MIPS = execute(IDEX);
                 decoded_in_ID_MIPS = decode(IFID.mc);
                 fetched_in_IF_MIPS = fetch();
@@ -907,9 +923,9 @@ namespace ProjectCPUCL
         public List<int> regs;
         public List<string> IM; // Instruction Mem
 
-        public SingleCycle(List<string> insts)
+        public SingleCycle(List<string> insts, List<string> data_mem_init)
         {
-            (IM, DM, regs) = InitMipsCPU(insts);
+            (IM, DM, regs) = InitMipsCPU(insts, data_mem_init);
 
             PC = 0;
             hlt = false;
@@ -973,11 +989,11 @@ namespace ProjectCPUCL
             if (inst.mnem == Mnemonic.lw)
             {
                 string smemout = DM[inst.aluout];
-                inst.memout = Convert.ToInt32(smemout, 2);
+                inst.memout = Convert.ToInt32(smemout);
             }
             else if (inst.mnem == Mnemonic.sw)
             {
-                string memin = Convert.ToString(inst.rt, 2).PadLeft(32, '0');
+                string memin = Convert.ToString(inst.rt);
                 if (!is_in_range_inc(inst.aluout, 0, DM.Count - 1))
                 {
                     Exception e = new Exception($"Memory address {inst.aluout} is an invalid memory address")

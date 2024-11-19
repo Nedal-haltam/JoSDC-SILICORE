@@ -9,8 +9,9 @@ module IF_ID_buffer(IF_PC, IF_INST, IF_FLUSH, if_id_Write, clk,
 	output reg [6:0] ID_opcode;
 	output reg [4:0] ID_rs1_ind, ID_rs2_ind, ID_rd_ind;
 	output reg [31:0] ID_PC, ID_INST;
+
 	
-`include "opcodes.v"
+`include "opcodes.txt"
 
 
 always @ (posedge clk, posedge rst) begin

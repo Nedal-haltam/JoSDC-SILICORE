@@ -12,7 +12,7 @@ module controlUnit(opcode, funct, rst,
 	output reg [3:0] ALUOp;
 	
 	// parameters (opcodes/functs)
-`include "opcodes.v"	
+`include "opcodes.txt"	
 	
 	// unit logic - generate signals
 	always @(*) begin

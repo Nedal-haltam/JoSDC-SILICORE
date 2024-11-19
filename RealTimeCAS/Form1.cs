@@ -71,7 +71,7 @@ namespace Real_Time_CAS_ASSEM
             CPU cpu = new CPU().Init();
             if (curr_cpu == CPU_type.SingleCycle)
             {
-                SingleCycle sc = new SingleCycle(mc);
+                SingleCycle sc = new SingleCycle(mc, new List<string>());
                 (int cycles, Exceptions excep) = sc.Run();
                 cpu.regs = sc.regs;
                 cpu.DM = sc.DM;
@@ -79,7 +79,7 @@ namespace Real_Time_CAS_ASSEM
             }
             else if (curr_cpu == CPU_type.PipeLined)
             {
-                CPU5STAGE pl = new CPU5STAGE(mc);
+                CPU5STAGE pl = new CPU5STAGE(mc, new List<string>());
                 (int cycles, Exceptions excep) = pl.Run();
                 cpu.regs = pl.regs;
                 cpu.DM = pl.DM;

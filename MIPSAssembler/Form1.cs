@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Windows.Forms;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 using static System.Windows.Forms.LinkLabel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
@@ -19,8 +20,21 @@ namespace Assembler
 
         System.Drawing.Point[] locations = new System.Drawing.Point[0];
         Label[] errors = new Label[0];
+        List<string> curr_text_dir = new List<string>();
+        List<string> curr_data_dir = new List<string>();
         List<string> curr_mc = new List<string>();
         List<List<string>> curr_insts = new List<List<string>>();
+        List<string> hlt_seq = new List<string>() {
+                    "11111100000000000000000000000000", // hlt
+                    "00100000000111111111111111111111", // addi x31 x0 -1
+                    "11111100000000000000000000000000", // hlt
+                };
+        List<List<string>> hlt_seq_insts = new List<List<string>>()
+                {
+                    new List<string>(){ "hlt" },
+                    new List<string>(){ "addi", "x31", "x0", "-1" },
+                    new List<string>(){ "hlt" },
+                };
         // this is the entry point of the entire process because we want to process the input only if the input is changed
 
         void assemble(string[] input)
@@ -29,55 +43,52 @@ namespace Assembler
             (List<string> mc, List<List<string>> insts) = ASSEMBLERMIPS.TOP_MAIN();
             curr_mc = mc;
             curr_insts = insts;
-            output.Lines = mc.ToArray();
             lblErrInvinst.Visible = ASSEMBLERMIPS.lblinvinst.Visible;
             lblErrInvlabel.Visible = ASSEMBLERMIPS.lblinvlabel.Visible;
             lblErrMultlabels.Visible = ASSEMBLERMIPS.lblmultlabels.Visible;
-            lblnumofinst.Text = ASSEMBLERMIPS.lblnumofinst.Text;
+
+
+            curr_insts.AddRange(hlt_seq_insts);
 
             lblNoErr.Visible = !(lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible);
         }
 
 
-        (List<string>, List<string>) get_directives(List<string> src)
+        void get_directives(List<string> src)
         {
             src.ForEach(x => x = x.ToString().Trim(' '));
 
             int data_index = src.IndexOf(".data");
             int text_index = src.IndexOf(".text");
 
-            List<string> data_dir = new List<string>();
-            List<string> text_dir = new List<string>();
+            curr_data_dir.Clear();
+            curr_text_dir.Clear();
 
             if (data_index != -1)
             {
-                data_dir = src.GetRange(data_index, text_index - data_index);
+                curr_data_dir = src.GetRange(data_index, text_index - data_index);
             }
             if (text_index != -1)
             {
-                text_dir = src.GetRange(text_index + 1, src.Count - text_index - 1);
+                curr_text_dir = src.GetRange(text_index + 1, src.Count - text_index - 1);
             }
-
-            return (data_dir, text_dir);
         }
 
 
 
         private void Input_TextChanged(object sender, EventArgs e)
         {
-            //if (comment)
-            //{
-            //    string line = input.Lines[comment_index];
-            //    if (line.StartsWith("//"))
-            //        line.TrimStart('/');
-            //    else
-            //        line = "//" + line;
+            List<string> code = input.Lines.ToList();
+            clean_comments(ref code);
+            get_directives(code);
+            List<string> to_out = new List<string>();
 
-            //    input.Lines[comment_index] = line;
-            //}
-            (List<string> data_dir, List<string> text_dir) = get_directives(input.Lines.ToList());
-
-            assemble(text_dir.ToArray());
+            //(to_out, _ ) = assemble_data_dir(curr_data_dir);
+            assemble(curr_text_dir.ToArray());
+            
+            to_out.AddRange(curr_mc);
+            output.Lines = to_out.ToArray();
+            lblnumofinst.Text = curr_mc.Count.ToString();
 
             update_error_locations();
         }
@@ -147,59 +158,155 @@ namespace Assembler
             return ($"InstMem[{i,2}] <= 32'h{hex};// {inst,-20}").Trim();
         }
 
+
+        void clean_comments(ref List<string> code)
+        {
+            for (int i = 0; i < code.Count; i++)
+            {
+                if (code[i].Contains("//"))
+                {
+                    code[i] = code[i].Substring(0, code[i].IndexOf('/'));
+                }
+                else if (code[i].Contains("#"))
+                {
+                    code[i] = code[i].Substring(0, code[i].IndexOf('#'));
+                }
+
+            }
+        }
+/*
+.data
+value: .word 0X5 # sample data for loading
+.text
+main:
+# Immediate instructions to initialize registers
+ADDI $1, $0, 0xA
+ORI $2, $0, 0xB
+XORI $3, $0, 0xC
+# Basic ALU operations
+ADD $4, $1, $2
+SUB $5, $4, $3
+AND $6, $1, $3
+OR $7, $2, $3
+NOR $8, $2, $3
+XOR $9, $1, $2
+# Comparison operations
+SLT $10, $1, $2
+SGT $11, $3, $1
+# Shift operations
+SLL $12, $1, 2
+SRL $13, $2, 1
+# Load and store word instructions
+LW $14, $0, 0
+SW $4, $0, 0
+*/
+        (List<string>, List<string>) assemble_data_dir(List<string> data_dir)
+        {
+            List<string> data = new List<string>();
+            for (int i = 0; i < data_dir.Count; i++)
+            {
+                int index = data_dir[i].IndexOf(':');
+                if (index != -1)
+                {
+                    string line = data_dir[i].Substring(index + 1);
+                    line = line.Trim();
+                    line = line.Replace(".word", "");
+                    List<string> vals = line.Split(',').ToList();
+                    foreach (string val in vals)
+                    {
+                        int number = 0;
+                        string snum = val.ToLower().Trim();
+                        try
+                        {
+                            if (snum.StartsWith("0x"))
+                                number = Convert.ToInt32(snum, 16);
+                            else
+                                number = Convert.ToInt32(snum);
+                        }
+                        catch (Exception)
+                        {
+                            number = 0;
+                        }
+                        data.Add(number.ToString());
+                    }
+
+                }
+
+            }
+            List<string> DM_INIT = new List<string>();
+            List<string> DM_vals = new List<string>();
+            for (int i = 0; i < data.Count; i++)
+            {
+                DM_vals.Add(data[i].ToString());
+                string temp = $"DataMem[{i,2}] <= 32'd{data[i]};";
+                DM_INIT.Add(temp);
+            }
+
+            return (DM_INIT, DM_vals);
+        }
+
+
+        List<string> get_IM_INIT(List<string> mc)
+        {
+            List<string> IM_INIT = new List<string>();
+            for (int i = 0; i < mc.Count; i++)
+            {
+                string inst = "";
+                curr_insts[i].ForEach(x => { inst += x + " "; });
+                IM_INIT.Add(get_entry_IM_INIT(mc[i], inst, i));
+            }
+            int HANDLER_ADDR = 1000;
+            for (int i = 0; i < hlt_seq.Count; i++)
+            {
+                string inst = "";
+                foreach (List<string> tt in curr_insts)
+                    inst += tt + " ";
+                IM_INIT.Add(get_entry_IM_INIT(hlt_seq[i], inst, HANDLER_ADDR - 1 + i));
+            }
+
+
+            return IM_INIT;
+        }
+
+
         void HandleCommand(List<string> args)
         {
             popF(ref args);
-            if (args.Count != 4)
+            if (args.Count != 6)
             {
                 assert("Missing arguments");
             }
             string arg = popF(ref args).ToLower();
             string source_filepath = popF(ref args);
             string MC_filepath = popF(ref args);
+            string DM_filepath = popF(ref args);
             string IM_INIT_filepath = popF(ref args);
+            string DM_INIT_filepath = popF(ref args);
             if (arg == "gen")
             {
-                string[] src = File.ReadAllLines(source_filepath);
-                (List<string> data_dir, List<string> text_dir) = get_directives(src.ToList());
-                assemble(text_dir.ToArray());
+                List<string> src = File.ReadAllLines(source_filepath).ToList();
+                clean_comments(ref src);
+                get_directives(src.ToList());
+
+                assemble(curr_text_dir.ToArray());
 
                 List<string> mc = new List<string>();
-                List<string> hlt_seq = new List<string>() {
-                    "11111100000000000000000000000000", // hlt
-                    "00100000000111111111111111111111", // addi x31 x0 -1
-                    "11111100000000000000000000000000", // hlt
-                };
-                List<List<string>> hlt_seq_insts = new List<List<string>>()
-                {
-                    new List<string>(){ "hlt" },
-                    new List<string>(){ "addi", "x31", "x0", "-1" },
-                    new List<string>(){ "hlt" },
-                };
-                curr_insts.AddRange(hlt_seq_insts);
+
                 if (lblNoErr.Visible)
                 {
-                    curr_mc.ForEach(x => mc.Add(x));
-                    hlt_seq.ForEach(x => mc.Add(x));
+                    mc.AddRange(curr_mc);
+                    mc.AddRange(hlt_seq);
                 }
                 File.WriteAllLines(MC_filepath, mc);
-                List<string> IM_INIT = new List<string>();
-                for (int i = 0; i < mc.Count; i++)
-                {
-                    string inst = "";
-                    curr_insts[i].ForEach(x => { inst += x + " "; });
-                    IM_INIT.Add(get_entry_IM_INIT(mc[i], inst, i));
-                }
-
-                int HANDLER_ADDR = 1000;
-                for (int i = 0; i < hlt_seq.Count; i++)
-                {
-                    string inst = "";
-                    hlt_seq_insts[i].ForEach(x => { inst += x + " "; });
-                    IM_INIT.Add(get_entry_IM_INIT(hlt_seq[i], inst, HANDLER_ADDR - 1 + i));
-                }
-
+                List<string> IM_INIT = get_IM_INIT(mc);
                 File.WriteAllLines(IM_INIT_filepath, IM_INIT);
+
+
+
+                (List<string> DM_INIT, List<string> DM) = assemble_data_dir(curr_data_dir);
+                File.WriteAllLines(DM_filepath, DM);
+                File.WriteAllLines(DM_INIT_filepath, DM_INIT);
+                
                 Close(); // for now we will close and not parse any other commands
             }
             else

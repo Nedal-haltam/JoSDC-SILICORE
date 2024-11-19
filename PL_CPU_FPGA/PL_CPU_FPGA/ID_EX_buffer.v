@@ -7,7 +7,7 @@ module ID_EX_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 					EX_INST, EX_Immed, EX_rs1,
 					EX_rs2, EX_regwrite, EX_memread, EX_memwrite, EX_PFC, EX_predicted, EX_is_oper2_immed, rst, EX_is_beq, EX_is_bne);
 					
-`include "opcodes.v"
+`include "opcodes.txt"
 	
 	input [6:0] ID_opcode;
 	input [4:0] ID_rs1_ind, ID_rs2_ind, ID_rd_ind;

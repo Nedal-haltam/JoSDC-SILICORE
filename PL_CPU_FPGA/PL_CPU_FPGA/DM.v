@@ -7,17 +7,22 @@ input WR , clk;
 // output [bit_width - 1:0] Data_Out;
 output reg [bit_width - 1:0] Data_Out;
 
-reg [bit_width - 1:0] data_mem [1023 : 0];
+reg [bit_width - 1:0] DataMem [1023 : 0];
   
 always@ (posedge clk)  
   if (WR == 1'b1)
-    data_mem[addr] <= Data_In;
+    DataMem[addr] <= Data_In;
 
 
 always@ (posedge clk) 
-  Data_Out <= data_mem[addr];
+  Data_Out <= DataMem[addr];
 
 
+initial begin
+
+`include "DM_INIT.INIT"
+
+end
 
 
 `ifdef vscode
@@ -26,7 +31,7 @@ initial begin
   // iterating through some of the addresses of the memory to check if the program loaded and stored the values properly
   $display("Data Memory Content : ");
   for (integer i = 0; i <= 19; i = i + 1)
-    $display("Mem[%d] = %d",i[4:0],$signed(data_mem[i]));
+    $display("Mem[%d] = %d",i[4:0],$signed(DataMem[i]));
 
 end 
 `endif
