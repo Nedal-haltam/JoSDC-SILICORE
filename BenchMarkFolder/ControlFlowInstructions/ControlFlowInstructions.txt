@@ -1,0 +1,60 @@
+
+
+.text
+main:
+
+// Initialize registers with immediate values
+ADDI x1, x0, -5
+ADDI x2, x0, 5
+ADDI x3, x0, 5
+ADDI x4, x0, 84
+
+L1:
+
+// Test BEQ
+BEQ x2, x3, L2
+NOP // No operation / SLL x0, x0, 0
+JAL L1
+
+L2:
+
+// Test BNE
+BNE x2, x3, L3
+
+L3:
+
+NOP
+
+L4:
+
+// Test BLTZ
+BLTZ x1, L5
+NOP
+JAL L4
+
+L5:
+
+// Test BGTZ
+BGTZ x2, L6
+NOP
+JAL L5
+
+L6:
+
+// Test JAL
+JAL L7
+NOP
+JAL L6
+
+L7:
+
+// Test JR
+JR x4
+NOP
+JAL L7
+
+L8:
+
+NOP // end of test cases
+
+hlt

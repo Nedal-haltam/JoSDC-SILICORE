@@ -1,0 +1,32 @@
+.data
+Array: .word 0x10, 0xF, 0x5, 0x9, 0x20, 0x19, 0x4, 0x1E, 0x9, 0xB
+.text
+main:
+// Initialize registers
+ORI x2 , x0, 0x0
+ADDI x20, x0, 0xA
+XORI x31, x0, 0x1
+ANDI x5 , x0, 0x0
+LW x10, x5, 0
+LW x15, x5, 0
+LOOP:
+ADDI x2, x2, 1
+SGT x25, x20, x2
+BNE x25, x31, END
+// Choose one of these Insertion based on your memory
+// For Word addressable // For byte addressable
+// ADD x5, x2, x0 // SLL x5, x2, 2
+LW x16, x5, 0
+SGT x26, x16, x10
+BEQ x26, x0, MIN
+OR x10, x16, x0
+J LOOP
+MIN:
+SLT x27, x16, x15
+BEQ x27, x0, LOOP
+ADD x15, x16, x0
+J LOOP
+END:
+NOP // (NOP equals to SLL x0, x0, 0)
+
+hlt

@@ -3,7 +3,6 @@
 
 
 `define vscode
-`timescale 1ns / 1ps
 `define MAX_CLOCKS 2 * (1000)
 `define reset 4
 
@@ -39,8 +38,7 @@ processor cpu(clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, cycles_con
 always #1 clk <= ~clk;
 initial begin
 
-// $display("vcd path = %s", `OUT);
-//$dumpfile(`VCD_OUT);
+$dumpfile(`VCD_OUT);
 $dumpvars;
 
 rst = 0; #(`reset) rst = 1;

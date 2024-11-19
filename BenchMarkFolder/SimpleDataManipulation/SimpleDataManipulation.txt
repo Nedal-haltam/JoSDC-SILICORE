@@ -1,0 +1,28 @@
+.data
+value: .word 0x5 // sample data for loading
+
+
+.text
+main:
+// Immediate instructions to initialize registers
+ADDI x1, x0, 0xA
+ORI x2, x0, 0xB
+XORI x3, x0, 0xC
+// Basic ALU operations
+ADD x4, x1, x2
+SUB x5, x4, x3
+AND x6, x1, x3
+OR x7, x2, x3
+NOR x8, x2, x3
+XOR x9, x1, x2
+// Comparison operations
+SLT x10, x1, x2
+SGT x11, x3, x1
+// Shift operations
+SLL x12, x1, 2
+SRL x13, x2, 1
+// Load and store word instructions
+LW x14, x0, 0x0
+SW x4, x0, 0x0 
+
+hlt

@@ -316,8 +316,13 @@ public static class ASSEMBLERMIPS
     static private List<List<string>> Tokenize(List<string> thecode)
     {
         List<List<string>> insts = new List<List<string>>();
-        foreach (string line in thecode)
+        for (int j = 0; j < thecode.Count; j++)
         {
+            string line = thecode[j];
+            if (line.Contains("//"))
+            {
+                line = line.Substring(0, line.IndexOf('/'));
+            }
             // curr_inst is a list of tokens (strings)
             List<string> curr_inst = new List<string>();
             int i = 0;
@@ -329,8 +334,6 @@ public static class ASSEMBLERMIPS
 
             if (!EmptyLine(token))
             {
-                if (token.Length > 1 && token[0] == '/' && token[1] == '/') // check if more than one letter and if its a comment
-                    continue;
                 curr_inst.Add(token.ToLower());
             }
             while (i < line.Length && (line[i] == ' ' || line[i] == ',')) i++; // consume all unwanted delimiters
@@ -411,6 +414,7 @@ public static class ASSEMBLERMIPS
             if (lblinvinst.Visible)
                 return (new List<string>(), new List<List<string>>());
 
+            lblnumofinst.Text = mc.Count.ToString();
             return (mc, insts);
         }
         else

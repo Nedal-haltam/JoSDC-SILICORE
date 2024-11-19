@@ -8,6 +8,16 @@ CAS_EXT_SC="CAS_SC_OUT.txt"
 CAS_EXT_PL="CAS_PL_OUT.txt"
 
 
+comapre_two_files()
+{
+    if diff $1 $2 > /dev/null; then
+        printf "[INFO]: Files are identical.\n"
+    else
+        printf "[INFO]: Files are different. Detailed differences:\n"
+        diff -a --color=always $1 $2
+    fi
+}
+
 Run_BenchMark_SW()
 {
     ProgName=$1
@@ -65,12 +75,8 @@ Run_BenchMark_SW()
 
     printf "[INFO]: Comparing Software Outputs\n"
 
-    if diff "$CAS_SC_OUT" "$CAS_PL_OUT" > /dev/null; then
-        printf "[INFO]: Files are identical.\n"
-    else
-        printf "[INFO]: Files are different. Detailed differences:\n"
-        diff -a --color=always "$CAS_SC_OUT" "$CAS_PL_OUT"
-    fi
+
+    comapre_two_files "$CAS_SC_OUT" "$CAS_PL_OUT"
 }
 
 RunBenchMark_HW()
@@ -119,20 +125,24 @@ RunBenchMark_HW()
 
     printf "[INFO]: Comparing HardWare Outputs\n"
 
-    if diff "$VERILOG_SC_OUT" "$VERILOG_PL_OUT" > /dev/null; then
-        printf "[INFO]: Files are identical.\n"
-    else
-        printf "[INFO]: Files are different. Detailed differences:\n"
-        diff -a --color=always "$VERILOG_SC_OUT" "$VERILOG_PL_OUT"
-    fi
+    comapre_two_files "$VERILOG_SC_OUT" "$VERILOG_PL_OUT"
+}
+
+Run_BenchMark()
+{
+    Run_BenchMark_SW $1
+    RunBenchMark_HW $1
+    compareswhw
 }
 
 
+Run_BenchMark "BinarySearch"
+Run_BenchMark "ControlFlowInstructions"
+Run_BenchMark "InsertionSort"
+Run_BenchMark "Max&MinArray"
+Run_BenchMark "SimpleDataManipulation"
+Run_BenchMark "SumOfNumbers"
 
-
-
-Run_BenchMark_SW "code"
-RunBenchMark_HW "code"
 # TODO: compare HW / SW
 
 read -p "Press Enter to exit"

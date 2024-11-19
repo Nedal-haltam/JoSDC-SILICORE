@@ -53,9 +53,12 @@ end
 BranchController branchcontroller(.opcode(opcode), .funct(funct), .operand1(readData1), .operand2(ALUin2), .PCsrc(PCsrc), .rst(rst));
 
 assign PCPlus1 = PC + 6'd1;
-assign adderResult = (opcode == jal || opcode == j) ? address : (
-	(opcode == 0 && funct == jr) ? readData1 : ((opcode == j || opcode == jal) ? address : PC + imm[9:0])
+assign adderResult = (opcode == jal || opcode == j) ? address : 
+(
+	(opcode == 0 && funct == jr) ? readData1 : ( PC + imm[9:0])
 );
+
+
 mux2x1 #(32) PCMux(.in1(PCPlus1), .in2(adderResult), .s(PCsrc), .out(nextPC));
 programCounter pc(.clk(clk), .rst(rst), .PCin(nextPC), .PCout(PC));	
 

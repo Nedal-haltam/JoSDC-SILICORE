@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Windows.Forms;
+using static System.Windows.Forms.LinkLabel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Assembler
 {
@@ -35,10 +38,52 @@ namespace Assembler
             lblNoErr.Visible = !(lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible);
         }
 
+
+        (List<string>, List<string>) get_directives(List<string> src)
+        {
+            src.ForEach(x => x = x.ToString().Trim(' '));
+
+            int data_index = src.IndexOf(".data");
+            int text_index = src.IndexOf(".text");
+
+            List<string> data_dir = new List<string>();
+            List<string> text_dir = new List<string>();
+
+            if (data_index != -1)
+            {
+                data_dir = src.GetRange(data_index, text_index - data_index);
+            }
+            if (text_index != -1)
+            {
+                text_dir = src.GetRange(text_index + 1, src.Count - text_index - 1);
+            }
+
+            return (data_dir, text_dir);
+        }
+
+
+
         private void Input_TextChanged(object sender, EventArgs e)
         {
-            assemble(input.Lines);
+            //if (comment)
+            //{
+            //    string line = input.Lines[comment_index];
+            //    if (line.StartsWith("//"))
+            //        line.TrimStart('/');
+            //    else
+            //        line = "//" + line;
 
+            //    input.Lines[comment_index] = line;
+            //}
+            (List<string> data_dir, List<string> text_dir) = get_directives(input.Lines.ToList());
+
+            assemble(text_dir.ToArray());
+
+            update_error_locations();
+        }
+
+        void update_error_locations()
+        {
             int j = 0;
             for (int i = 0; i < errors.Length; i++)
             {
@@ -46,6 +91,7 @@ namespace Assembler
                     errors[i].Location = locations[j++];
             }
         }
+
 
         private void layout_size()
         {
@@ -76,12 +122,7 @@ namespace Assembler
                 new System.Drawing.Point(lblErr.Location.X, lblErr.Location.Y + lblErr.Size.Height*4 + 10)
             };
 
-            int j = 0;
-            for (int i = 0; i < errors.Length; i++)
-            {
-                if (errors[i].Visible)
-                    errors[i].Location = locations[j++];
-            }
+            update_error_locations();
         }
 
         private T popF<T>(ref List<T> vals)
@@ -114,7 +155,9 @@ namespace Assembler
             string IM_INIT_filepath = popF(ref args);
             if (arg == "gen")
             {
-                assemble(File.ReadAllLines(source_filepath));
+                string[] src = File.ReadAllLines(source_filepath);
+                (List<string> data_dir, List<string> text_dir) = get_directives(src.ToList());
+                assemble(text_dir.ToArray());
 
                 List<string> mc = new List<string>();
                 if (!lblNoErr.Visible)

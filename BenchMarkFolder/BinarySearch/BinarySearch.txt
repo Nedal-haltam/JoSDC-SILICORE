@@ -1,0 +1,36 @@
+.data
+myArray: .word 1, 4, 5, 7, 9, 12, 15, 17, 20, 21, 30
+arraySize: .word 11
+.text
+//Initailiztion
+addi x1, x0, 0x0
+addi x2, x0, 0xB
+addi x3, x0, 0x7
+loop:
+slt x7, x2, x1
+bne x0, x7, notFound
+add x4, x2, x1
+srl x5, x4, 1
+//sll x5, x5, 2 For byte addressable memory
+lw x6, x5, 0
+//srl x5, x5, 2 For byte addressable memory
+beq x3, x6, found
+slt x6, x6, x1
+beq x6, x0, leftHalf
+j rightHalf
+leftHalf:
+add x2, x5, 0xFFFF // "FFFF=-1"
+j loop
+rightHalf:
+addi x1, x5, 0x1
+j loop
+found:
+add x8, xzero, x5
+j finish
+notFound:
+addi x8, x0, 0xFFFF
+j finish
+finish:
+NOP
+
+hlt
