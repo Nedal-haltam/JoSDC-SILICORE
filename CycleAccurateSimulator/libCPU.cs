@@ -99,7 +99,7 @@ namespace ProjectCPUCL
             string nop = "0".PadLeft(32, '0');
             for (int i = 0; i < 1024 - curr_count; i++) IM.Add(nop);
             IM[HANDLER_ADDR - 1] = "11111100000000000000000000000000"; // hlt
-            IM[HANDLER_ADDR]     = "00100000000111111111111111111111"; // addi x31 x0 -1
+            IM[HANDLER_ADDR] = "00100000000111111111111111111111"; // addi x31 x0 -1
             IM[HANDLER_ADDR + 1] = "11111100000000000000000000000000"; // hlt
             List<string> DM = new List<string>();
 
@@ -423,7 +423,7 @@ namespace ProjectCPUCL
             {
                 if (i == 20) break;
                 string temp;
-                
+
                 temp = $"Mem[{i++,2}] = {mem,11}\n";
 
                 sb.Append(temp);
@@ -607,7 +607,7 @@ namespace ProjectCPUCL
                 }
                 else if (decoded.format == "I")
                 {
-                    if (decoded.rsind == rdind)
+                    if (decoded.rsind == rdind || decoded.rtind == rdind)
                     {
                         throw new Exception(BUBBLE) { Source = LOAD_USE };
                     }
@@ -619,7 +619,8 @@ namespace ProjectCPUCL
             }
             else
             {
-                if (decoded.mnem == Mnemonic.beq || decoded.mnem == Mnemonic.bne)
+                if (decoded.mnem == Mnemonic.beq || decoded.mnem == Mnemonic.bne || decoded.mnem == Mnemonic.blt || decoded.mnem == Mnemonic.ble
+                    || decoded.mnem == Mnemonic.bgt || decoded.mnem == Mnemonic.bge)
                 {
                     pcsrc = PCsrc.pfc;
                     targetaddress = decoded.PC + decoded.immeds;
@@ -694,6 +695,10 @@ namespace ProjectCPUCL
             temp.aluout = execute_inst(temp);
             WrongPrediction = (temp.mnem == Mnemonic.beq && temp.oper1 != temp.oper2) ||
                               (temp.mnem == Mnemonic.bne && temp.oper1 == temp.oper2) ||
+                              (temp.mnem == Mnemonic.blt && temp.oper1 >= temp.oper2) ||
+                              (temp.mnem == Mnemonic.ble && temp.oper1 > temp.oper2) ||
+                              (temp.mnem == Mnemonic.bgt && temp.oper1 <= temp.oper2) ||
+                              (temp.mnem == Mnemonic.bge && temp.oper1 < temp.oper2) ||
                               (temp.mnem == Mnemonic.jr);
             return temp;
         }

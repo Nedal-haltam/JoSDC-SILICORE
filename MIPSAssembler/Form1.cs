@@ -259,7 +259,7 @@ SW $4, $0, 0
             for (int i = 0; i < hlt_seq.Count; i++)
             {
                 string inst = "";
-                foreach (List<string> tt in curr_insts)
+                foreach (string tt in curr_insts[i])
                     inst += tt + " ";
                 IM_INIT.Add(get_entry_IM_INIT(hlt_seq[i], inst, HANDLER_ADDR - 1 + i));
             }
@@ -295,7 +295,6 @@ SW $4, $0, 0
                 if (lblNoErr.Visible)
                 {
                     mc.AddRange(curr_mc);
-                    mc.AddRange(hlt_seq);
                 }
                 File.WriteAllLines(MC_filepath, mc);
                 List<string> IM_INIT = get_IM_INIT(mc);

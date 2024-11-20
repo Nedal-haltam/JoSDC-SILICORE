@@ -74,7 +74,6 @@ namespace main
             HandleCommand(args);
 
             StringBuilder sb = new StringBuilder();
-
             if (cpu_type == CPU_type.SingleCycle)
             {
                 SingleCycle cpu = new(mcs, data_mem_init);

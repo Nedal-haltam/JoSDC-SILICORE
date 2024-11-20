@@ -143,7 +143,7 @@ module controlUnit(opcode, funct, rst,
 					ALUSrc <= 1'b1; // correct signal - operand is immediate			
 				end
 					
-				beq : begin
+				beq, bne, blt, ble, bgt, bge : begin
 					ALUOp <= 4'd1; // correct signal - sub = 1
 				end
 				

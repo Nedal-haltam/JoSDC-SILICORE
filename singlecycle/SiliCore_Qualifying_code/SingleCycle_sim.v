@@ -3,7 +3,7 @@
 
 
 `define vscode
-`define MAX_CLOCKS 2 * (1000)
+`define MAX_CLOCKS 2 * (100000)
 `define reset 4
 
 `ifdef vscode
@@ -15,6 +15,7 @@
 `include "ALU.v" 
 `include "BranchController.v" 
 `include "DM.v" 
+`include "exception_detection_unit.v"
 `include "processor.v"
 `endif
 

@@ -4,6 +4,7 @@
 module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, cycles_consumed, clk);
 
 	`include "opcodes.txt"
+	parameter handler_addr = 32'd1000;
 	//inputs
 	input input_clk, rst;
 	output wire clk;
@@ -17,8 +18,8 @@ module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, c
 	wire [5:0] opcode, funct;
 	wire [4:0] rs, rt, rd, WriteRegister;
 	wire [3:0] ALUOp;
-	wire RegDst, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, zero, PCsrc, hlt;
-
+	wire RegDst, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, zero, hlt, excep_flag;
+	wire [1:0] PCsrc;
 	
 	output [31 : 0] regs0;
 	output [31 : 0] regs1;
@@ -50,16 +51,24 @@ always@(posedge clk , negedge rst) begin
 
 end
 
-BranchController branchcontroller(.opcode(opcode), .funct(funct), .operand1(readData1), .operand2(ALUin2), .PCsrc(PCsrc), .rst(rst));
+BranchController branchcontroller(.opcode(opcode), .funct(funct), .operand1(readData1), .operand2(ALUin2), .excep_flag(excep_flag), .PCsrc(PCsrc), .rst(rst));
 
-assign PCPlus1 = PC + 6'd1;
+exception_detect_unit EDU(PC, opcode, funct, excep_flag, clk, rst);
+
+assign PCPlus1 = PC + 32'd1;
 assign adderResult = (opcode == jal || opcode == j) ? address : 
 (
 	(opcode == 0 && funct == jr) ? readData1 : ( PC + imm[9:0])
 );
 
 
-mux2x1 #(32) PCMux(.in1(PCPlus1), .in2(adderResult), .s(PCsrc), .out(nextPC));
+assign nextPC = (PCsrc == 2'b00) ? PCPlus1 : 
+(
+	(PCsrc == 2'b01) ? adderResult :
+	(
+		(PCsrc == 2'b10) ? handler_addr : handler_addr  // this is not by mistake because if PCsrc is invalid we should go to the exception handler
+	)
+);
 programCounter pc(.clk(clk), .rst(rst), .PCin(nextPC), .PCout(PC));	
 
 

@@ -49,9 +49,9 @@ always @ (posedge clk, posedge rst) begin
 				
 				ID_opcode <= {1'b1 , IF_INST[31:26]};
 				ID_rs1_ind <= IF_INST[25:21]; // rs_ind
-				ID_rs2_ind <= IF_INST[20:16]; // no rt_ind
+				ID_rs2_ind <= IF_INST[20:16]; // rt_ind
 				if ({1'b1 , IF_INST[31:26]} == jal)
-					ID_rd_ind <= 31;  // rd_ind = rt_ind
+					ID_rd_ind <= 31;  // rd_ind = $ra
 				else
 					ID_rd_ind <= IF_INST[20:16];  // rd_ind = rt_ind
 			end

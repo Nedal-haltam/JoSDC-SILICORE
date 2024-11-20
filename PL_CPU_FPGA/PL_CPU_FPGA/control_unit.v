@@ -1,5 +1,5 @@
 
-module control_unit(opcode, regwrite, memread, memwrite, is_oper2_immed, is_beq, is_bne);
+module control_unit(opcode, regwrite, memread, memwrite, is_oper2_immed, is_beq, is_bne, is_blt, is_ble, is_bgt, is_bge);
 
    input [6:0] 	opcode;
 	
@@ -7,10 +7,9 @@ module control_unit(opcode, regwrite, memread, memwrite, is_oper2_immed, is_beq,
 	output memread; 								
 	output memwrite;
 	output is_oper2_immed;
-	output is_beq, is_bne;
+	output is_beq, is_bne, is_blt, is_ble, is_bgt, is_bge;
 
 `include "opcodes.txt"
-	
 	
 
 assign is_oper2_immed = (opcode == addi || opcode == andi || opcode == ori || 
@@ -19,19 +18,13 @@ assign is_oper2_immed = (opcode == addi || opcode == andi || opcode == ori ||
 
 assign is_beq = opcode == beq;
 assign is_bne = opcode == bne;
+assign is_blt = opcode == blt;
+assign is_ble = opcode == ble;
+assign is_bgt = opcode == bgt;
+assign is_bge = opcode == bge;
 
-assign regwrite = (!(opcode == jr || opcode == sw || opcode == beq || opcode == bne || opcode == j));
+assign regwrite = (!(opcode == jr || opcode == sw || opcode == beq || opcode == bne || opcode == blt || opcode == ble || opcode == bgt || opcode == bge || opcode == j));
 assign memread = opcode == lw;
 assign memwrite = opcode == sw;
-// always @(opcode) begin
-// 		{regwrite, memread, memwrite} <= 0; //By Default all Control Signals are equal to zero
-// 		// if none of these instructions then the the regwrite = 1
-// 		if (!(opcode == jr || opcode == sw || opcode == beq || opcode == bne || opcode == j))
-// 			regwrite <= 1'b1;
-// 		if (opcode == lw)
-// 			memread <= 1'b1;
-// 		if (opcode == sw)
-// 			memwrite <= 1'b1;
-			
-// end	
+
 endmodule

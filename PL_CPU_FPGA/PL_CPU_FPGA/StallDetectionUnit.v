@@ -30,7 +30,7 @@ always@(*) begin
 
 	end
 
-	if (EX_memread && id_ex_rd != 0 && (if_id_rs1 == id_ex_rd || if_id_rs2 == id_ex_rd)) begin // load use
+	else if (EX_memread && id_ex_rd != 0 && (if_id_rs1 == id_ex_rd || if_id_rs2 == id_ex_rd)) begin // load use
 
 		PC_Write <= 0;
 		if_id_Write <= 0;
@@ -48,7 +48,8 @@ always@(*) begin
 
 	end
 
-    else if (if_id_opcode == beq || if_id_opcode == bne) begin // static prediction (for now)
+    else if (if_id_opcode == beq || if_id_opcode == bne || if_id_opcode == blt || if_id_opcode == ble || if_id_opcode == bgt || if_id_opcode == bge) begin 
+	// static prediction (for now)
 		
 		PC_Write <= 1'b1;
 		if_id_Write <= 1'b1;

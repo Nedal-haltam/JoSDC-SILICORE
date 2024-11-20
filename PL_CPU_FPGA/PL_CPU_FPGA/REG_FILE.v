@@ -34,7 +34,7 @@ end
 
 always@(posedge clk) begin
 
-if (wr_reg == rd_reg1 && wr_reg)
+if (wr_reg == rd_reg1 && wr_reg && reg_wr)
   rd_data1 <= wr_data;
 else
   rd_data1 <= reg_file[rd_reg1];
@@ -42,7 +42,7 @@ else
 end
 always@(posedge clk) begin
 
-if (wr_reg == rd_reg2 && wr_reg)
+if (wr_reg == rd_reg2 && wr_reg && reg_wr)
   rd_data2 <= wr_data;
 else
   rd_data2 <= reg_file[rd_reg2];

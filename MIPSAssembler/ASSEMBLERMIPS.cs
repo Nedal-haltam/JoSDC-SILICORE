@@ -123,6 +123,8 @@ public static class ASSEMBLERMIPS
         if (reg.StartsWith("x") || reg.StartsWith("$"))
         {
             index = reg.Substring(1);
+            if (index == "zero")
+                index = "0";
         }
         else
             return index;
@@ -201,14 +203,6 @@ public static class ASSEMBLERMIPS
     static bool isbranch(string mnem)
     {
         return mnem == "beq" || mnem == "bne" || mnem == "blt" || mnem == "ble" || mnem == "bgt" || mnem == "bge";
-    }
-    static bool PseudoBranch(string mnem)
-    {
-        return mnem == "bltz" || mnem == "bgez";
-    }
-    static bool islogicalimmed(string mnem)
-    {
-        return mnem == "andi" || mnem == "ori" || mnem == "xori";
     }
     static string getitypeinst(List<string> inst)
     {
@@ -322,6 +316,49 @@ public static class ASSEMBLERMIPS
 
         return mcs;
     }
+
+    static bool is_pseudo_branch(string mnem)
+    {
+        return mnem == "beqz" || mnem == "bnez" || mnem == "bltz" || mnem == "blez" || mnem == "bgtz" || mnem == "bgez";
+    }
+
+
+    static bool is_pseudo(string mnem, int token_count)
+    {
+        if (is_pseudo_branch(mnem))
+        {
+            if (token_count == 3)
+                return true;
+        }
+        return false;
+    }
+
+    static void pseudo_to_inst(ref List<string> pseudo)
+    {
+        if (is_pseudo_branch(pseudo[0]))
+        {
+            pseudo[0] = pseudo[0].Substring(0, 3);
+            pseudo.Insert(2, "$0");
+        }
+    }
+
+
+    static void substitute_pseudo_insts(ref List<List<string>> insts)
+    {
+        for (int i = 0; i < insts.Count; i++)
+        {
+            List<string> inst = insts[i];
+            if (inst.Count > 0 && is_pseudo(inst[0], inst.Count))
+            {
+                pseudo_to_inst(ref inst);
+            }
+
+        }
+
+    }
+
+
+
     // assmebling the program starts form here 
     // it tokenizes each non empty instruction and returns a list of parsable instruction each one of them is a list of tokens
     static private List<List<string>> Tokenize(List<string> thecode)
@@ -349,7 +386,7 @@ public static class ASSEMBLERMIPS
 
             if (curr_inst.Count != 0) insts.Add(curr_inst);
         }
-
+        substitute_pseudo_insts(ref insts);
         subtitute_labels(insts);
 
         return insts;
@@ -434,7 +471,6 @@ public static class ASSEMBLERMIPS
         }
         else
         {
-            assert("mc count = 0lsdfjdskljfkldsj");
             lblinvinst.Visible |= lblinvlabel.Visible || lblmultlabels.Visible;
             return (new List<string>(), new List<List<string>>());
         }

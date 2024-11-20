@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -19,6 +20,8 @@ namespace Real_Time_CAS_ASSEM
         }
         List<string> curr_mc = new List<string>();
         List<List<string>> curr_insts = new List<List<string>>();
+        List<string> curr_data_dir = new List<string>();
+        List<string> curr_text_dir = new List<string>();
         CPU_type curr_cpu = CPU_type.SingleCycle;
         System.Drawing.Point[] locations = new System.Drawing.Point[0];
         Label[] errors = new Label[0];
@@ -54,6 +57,21 @@ namespace Real_Time_CAS_ASSEM
             }
             return to_copy;
         }
+        void clean_comments(ref List<string> code)
+        {
+            for (int i = 0; i < code.Count; i++)
+            {
+                if (code[i].Contains("//"))
+                {
+                    code[i] = code[i].Substring(0, code[i].IndexOf('/'));
+                }
+                else if (code[i].Contains("#"))
+                {
+                    code[i] = code[i].Substring(0, code[i].IndexOf('#'));
+                }
+
+            }
+        }
         List<string> assemble(string[] input)
         {
             ASSEMBLERMIPS.input.Lines = input;
@@ -66,12 +84,57 @@ namespace Real_Time_CAS_ASSEM
             lblnumofinst.Text = ASSEMBLERMIPS.lblnumofinst.Text;
             return mc;
         }
+        (List<string>, List<string>) assemble_data_dir(List<string> data_dir)
+        {
+            List<string> data = new List<string>();
+            for (int i = 0; i < data_dir.Count; i++)
+            {
+                int index = data_dir[i].IndexOf(':');
+                if (index != -1)
+                {
+                    string line = data_dir[i].Substring(index + 1);
+                    line = line.Trim();
+                    line = line.Replace(".word", "");
+                    List<string> vals = line.Split(',').ToList();
+                    foreach (string val in vals)
+                    {
+                        int number = 0;
+                        string snum = val.ToLower().Trim();
+                        try
+                        {
+                            if (snum.StartsWith("0x"))
+                                number = Convert.ToInt32(snum, 16);
+                            else
+                                number = Convert.ToInt32(snum);
+                        }
+                        catch (Exception)
+                        {
+                            number = 0;
+                        }
+                        data.Add(number.ToString());
+                    }
+
+                }
+
+            }
+            List<string> DM_INIT = new List<string>();
+            List<string> DM_vals = new List<string>();
+            for (int i = 0; i < data.Count; i++)
+            {
+                DM_vals.Add(data[i].ToString());
+                string temp = $"DataMem[{i,2}] <= 32'd{data[i]};";
+                DM_INIT.Add(temp);
+            }
+
+            return (DM_INIT, DM_vals);
+        }
         (int, Exceptions, CPU) SimulateCPU(List<string> mc)
         {
+            (_, List<string> dm_vals) = assemble_data_dir(curr_data_dir);
             CPU cpu = new CPU().Init();
             if (curr_cpu == CPU_type.SingleCycle)
             {
-                SingleCycle sc = new SingleCycle(mc, new List<string>());
+                SingleCycle sc = new SingleCycle(mc, dm_vals);
                 (int cycles, Exceptions excep) = sc.Run();
                 cpu.regs = sc.regs;
                 cpu.DM = sc.DM;
@@ -79,7 +142,7 @@ namespace Real_Time_CAS_ASSEM
             }
             else if (curr_cpu == CPU_type.PipeLined)
             {
-                CPU5STAGE pl = new CPU5STAGE(mc, new List<string>());
+                CPU5STAGE pl = new CPU5STAGE(mc, dm_vals);
                 (int cycles, Exceptions excep) = pl.Run();
                 cpu.regs = pl.regs;
                 cpu.DM = pl.DM;
@@ -212,11 +275,32 @@ namespace Real_Time_CAS_ASSEM
             else
                 Clipboard.SetText(" ");
         }
+        void get_directives(List<string> src)
+        {
+            src.ForEach(x => x = x.ToString().Trim(' '));
 
+            int data_index = src.IndexOf(".data");
+            int text_index = src.IndexOf(".text");
+
+            curr_data_dir.Clear();
+            curr_text_dir.Clear();
+
+            if (data_index != -1)
+            {
+                curr_data_dir = src.GetRange(data_index, text_index - data_index);
+            }
+            if (text_index != -1)
+            {
+                curr_text_dir = src.GetRange(text_index + 1, src.Count - text_index - 1);
+            }
+        }
         private void input_TextChanged(object sender, EventArgs e)
         {
             lblErrInfloop.Visible = false;
-            List<string> mc = assemble(input.Lines);
+            List<string> code = input.Lines.ToList();
+            clean_comments(ref code);
+            get_directives(code);
+            List<string> mc = assemble(curr_text_dir.ToArray());
 
 
             (int cycles, Exceptions excep, CPU cpu) = SimulateCPU(mc);

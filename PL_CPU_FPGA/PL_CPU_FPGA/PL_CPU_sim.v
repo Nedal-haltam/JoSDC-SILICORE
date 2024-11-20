@@ -2,7 +2,7 @@
 
 
 `define vscode
-`define MAX_CLOCKS (2 * 10000)
+`define MAX_CLOCKS (2 * 100000)
 `define reset 4
 
 // `include "forward_unit.v"

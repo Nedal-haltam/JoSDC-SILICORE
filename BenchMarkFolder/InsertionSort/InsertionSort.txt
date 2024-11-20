@@ -1,52 +1,50 @@
 .data
 
-// sample data for loading (fill any 10 elements)
+# sample data for loading (fill any 10 elements)
 Arr: .word 0x5, 0x7, 0x2, 0xF, 0xA, 0x10, 0x30, 0x1, 0xFF, 0x55
 .text
 main:
 
-// Initialize registers
-ORI x2, x0, 0x0
-XORI x10, x0, 0x0
-ADDI x20, x0, 0xA
-ADD x5, x0, x0
-ADDI x1, x0, 0x1
+# Initialize registers
+ORI $2, $0, 0x0
+XORI $10, $0, 0x0
+ADDI $20, $0, 0xA
+ADD $5, $0, $0
+ADDI $1, $0, 0x1
 
 LOOP1:
 
-// use one line according to your addressing mode
-// ADD x5, x1, x0 // Word Addressing mode
-// SLL x5, x1, 2 // Byte Addressing mode
-LW x15, x5, 0
-OR x10, x15, x0
-ADDI x2, x1, 0xFFFF // "FFFF=-1"
+# use one line according to your addressing mode
+ADD $5, $1, $0 # Word Addressing mode
+# SLL $5, $1, 2 # Byte Addressing mode
+LW $15, x5, 0
+OR $10, $15, $0
+ADDI $2, $1, 0xFFFF # "FFFF=-1"
 
 LOOP2:
 
-// use one line according to your addressing mode
-// ADD x6, x2, x0 // Word Addressing mode
-// SLL x6, x2, 2 // Byte Addressing mode
-LW x16, x6, 0
-SGT x25, x2, x0
-SGT x26, x16, x10
-AND x27, x26, x25
-BEQ x27, x0, EXIT2
-ADDI x7, x2, 0x1
-// This line is commented, you may use it only if your memory is byte addressable
-// SLL x7, x1, 2
-SW x16, x7, 0
-ADDI x2, x2, 0xFFFF
+# use one line according to your addressing mode
+ADD $6, $2, $0 # Word Addressing mode
+# SLL $6, $2, 2 # Byte Addressing mode
+LW $16, x6, 0
+SGT $25, $2, $0
+SGT $26, $16, $10
+AND $27, $26, $25
+BEQ $27, $0, EXIT2
+ADDI $7, $2, 0x1
+# This line is commented, you may use it only if your memory is byte addressable
+# SLL $7, $1, 2
+SW $16, x7, 0
+ADDI $2, $2, 0xFFFF
 J LOOP2
 
 EXIT2:
 
-SW x10, x7, 0
-ADDI x1, x1, 0x1
-SLT x28, x1, x20
-BNE x28, x0, LOOP1
+SW $10, x7, 0
+ADDI $1, $1, 0x1
+SLT $28, $1, $20
+BNE $28, $0, LOOP1
 
 FINISH:
 
-NOP // NOP equals to SLL x0, x0, 0
-
-hlt
+NOP # NOP equals to SLL $0, $0, 0

@@ -10,7 +10,7 @@ module BranchResolver(PC_src, exception_flag, opcode, predicted, Wrong_predictio
 	
 `include "opcodes.txt"
 
-assign predicted = (opcode == beq || opcode == bne || opcode == jr) ? 1'b1 : 0;
+assign predicted = (opcode == beq || opcode == bne || opcode == blt || opcode == ble || opcode == bgt || opcode == bge || opcode == jr) ? 1'b1 : 0;
 
 assign PC_src = (exception_flag) ? 3'b001 : 
 (
@@ -18,7 +18,7 @@ assign PC_src = (exception_flag) ? 3'b001 :
 		(
 			(opcode == hlt_inst) ? 3'b011 : 
 				(
-					(opcode == beq || opcode == bne || opcode == j || opcode == jal) ? 3'b010 : 0
+					(opcode == beq || opcode == bne || opcode == blt || opcode == ble || opcode == bgt || opcode == bge || opcode == j || opcode == jal) ? 3'b010 : 0
 				)
 
 		)

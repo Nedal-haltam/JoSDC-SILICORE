@@ -1,7 +1,7 @@
 
 
 
-module compare(out, a, b);
+module compare_equal(out, a, b);
 
 input [31:0] a, b;
 output out;
@@ -41,7 +41,7 @@ xor xor29(temp[29], a[29], b[29]);
 xor xor30(temp[30], a[30], b[30]);
 xor xor31(temp[31], a[31], b[31]);
 
-or or1(out
+nor or1(out
 , temp[0]
 , temp[1], temp[2], temp[3], temp[4], temp[5], temp[6], temp[7], temp[8], temp[9], temp[10]
 , temp[11], temp[12], temp[13], temp[14], temp[15], temp[16], temp[17], temp[18], temp[19], temp[20]
@@ -51,9 +51,19 @@ or or1(out
 
 endmodule
 
+module compare_lt_gt(lt, gt, a, b);
+
+input [31:0] a, b;
+output lt, gt;
+
+assign lt = ($signed(a) < $signed(b)) ? 1'b1 : 1'b0;
+assign gt = ($signed(a) > $signed(b)) ? 1'b1 : 1'b0;
+
+endmodule
+
 
 module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1_ind, rs2_ind, alu_selA, alu_selB, store_rs2_forward, 
-			    reg_write, mem_read, mem_write, rs2_in, rs2_out, alu_out, predicted, Wrong_prediction, rst, is_beq, is_bne, EX_rd_indzero, EX_rd_ind);
+			    reg_write, mem_read, mem_write, rs2_in, rs2_out, alu_out, predicted, Wrong_prediction, rst, is_beq, is_bne, is_blt, is_ble, is_bgt, is_bge, EX_rd_indzero, EX_rd_ind);
 	
 `include "opcodes.txt"
 
@@ -63,7 +73,7 @@ module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1
     input [1:0] alu_selA, store_rs2_forward;
 	input [2:0] alu_selB;
 	
-	input reg_write, mem_read, mem_write, predicted, rst, is_beq, is_bne;
+	input reg_write, mem_read, mem_write, predicted, rst, is_beq, is_bne, is_blt, is_ble, is_bgt, is_bge;
     input [31:0] rs2_in;
 	
     output [31:0] alu_out, rs2_out, EX_PFC_to_IF; 
@@ -89,13 +99,20 @@ module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1
 	// here we assume branch is alyaws taken so we check if our prediction is wrong or not.
 	// so the Wrong_prediction will be high if we are wrong
 
-	wire temp2, temp3;
+	wire is_eq, is_lt, is_gt;
 	wire BranchDecision;
 	// TODO: make faster comparison logic instead of default `equal` block of the FPGA 
-	compare cmp(is_equal, oper1, oper2);
-	assign temp2 = is_beq && ~is_equal;
-	assign temp3 = is_bne && is_equal;
-	assign BranchDecision = temp2 || temp3;
+
+	compare_equal cmp1(is_eq, oper1, oper2);
+	compare_lt_gt cmp2(is_lt, is_gt, oper1, oper2);
+	assign is_beq_taken = is_beq &&  (is_eq);
+	assign is_bne_taken = is_bne && ~(is_eq);
+	assign is_blt_taken = is_blt &&  (is_lt);
+	assign is_ble_taken = is_ble &&  (is_lt || is_eq);
+	assign is_bgt_taken = is_bgt &&  (is_gt);
+	assign is_bge_taken = is_bge &&  (is_gt || is_eq);
+
+	assign BranchDecision = is_beq_taken || is_bne_taken || is_blt_taken || is_ble_taken || is_bgt_taken || is_bge_taken;
 
 	assign Wrong_prediction = (rst || BranchDecision == predicted) ? 0 : 1'b1;
 
