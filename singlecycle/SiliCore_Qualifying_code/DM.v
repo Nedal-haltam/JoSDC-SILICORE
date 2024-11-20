@@ -2,7 +2,7 @@
 module DM(address, clock,  data,  rden,  wren,  q);
 
     input clock, rden, wren;
-    input [7 : 0] address;
+    input [31 : 0] address;
     input [31 : 0] data;
 
     output reg [31 : 0] q;
@@ -11,7 +11,7 @@ module DM(address, clock,  data,  rden,  wren,  q);
 
     always @(negedge clock) begin
         if (rden)
-            q <= DataMem[address];
+            q <= DataMem[address[9:0]];
         if (wren)
             DataMem[address] <= data;
     end

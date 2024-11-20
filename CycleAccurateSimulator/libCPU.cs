@@ -1016,7 +1016,11 @@ namespace ProjectCPUCL
                 hlt = true;
 
             if (iswb(inst.mnem) && inst.rdind != 0)
+            {
                 regs[inst.rdind] = (inst.mnem == Mnemonic.lw) ? inst.memout : inst.aluout;
+                //Console.WriteLine($"writereg = {inst.rdind} , writedata = {regs[inst.rdind]}");
+            }
+                
         }
         void ConsumeInst()
         {
@@ -1024,6 +1028,7 @@ namespace ProjectCPUCL
             try
             {
                 // fetching
+                //Console.WriteLine($"PC = {PC}");
                 string mc = IM[PC];
                 // decoding
                 inst = decodemc(mc, PC);
@@ -1037,8 +1042,8 @@ namespace ProjectCPUCL
             catch (Exception e)
             {
                 PC = HANDLER_ADDR;
-                ConsumeInst();
-                ConsumeInst();
+                
+                Run();
                 throw e;
             }
 
@@ -1073,8 +1078,9 @@ namespace ProjectCPUCL
                 }
                 catch (Exception e)
                 {
+                    //Console.WriteLine($"cycles consumed = {i}");
                     i--;
-                    return (0, Exceptions.EXCEPTION);
+                    return (i, Exceptions.EXCEPTION);
                 }
                 if (hlt)
                     return (i, Exceptions.NONE);

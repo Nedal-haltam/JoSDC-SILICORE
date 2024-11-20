@@ -147,16 +147,10 @@ Run_BenchMark()
 
 Run_BenchMark "BinarySearch"
 Run_BenchMark "ControlFlowInstructions"
-Run_BenchMark "InsertionSort"
+# Run_BenchMark "InsertionSort"
 Run_BenchMark "Max&MinArray"
 Run_BenchMark "DataManipulation"
 Run_BenchMark "SumOfNumbers"
 
-# TODO: compare HW / SW
-
 read -p "Press Enter to exit"
-# if [ $? -eq 0 ]; then
-#     printf "Script executed successfully!\n"
-# else
-#     printf "An error occurred."
-# fi
+

@@ -58,7 +58,7 @@ exception_detect_unit EDU(PC, opcode, funct, excep_flag, clk, rst);
 assign PCPlus1 = PC + 32'd1;
 assign adderResult = (opcode == jal || opcode == j) ? address : 
 (
-	(opcode == 0 && funct == jr) ? readData1 : ( PC + imm[9:0])
+	(opcode == 0 && funct == jr) ? readData1 : ( PC + {{32{imm[15]}}, imm})
 );
 
 
@@ -101,7 +101,7 @@ ALU alu(.operand1(readData1_w), .operand2(ALUin2), .opSel(ALUOp), .result(ALURes
 
 
 
-DM dataMem(.address(ALUResult[7:0]), .clock(clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
+DM dataMem(.address(ALUResult[31:0]), .clock(clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
 
 mux2x1 #(32) WBMux(.in1(ALUResult), .in2(memoryReadData), .s(MemtoReg), .out(writeData));
 

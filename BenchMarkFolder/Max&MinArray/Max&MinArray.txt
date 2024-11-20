@@ -7,8 +7,8 @@ ORI $2 , $0, 0x0
 ADDI $20, $0, 0xA
 XORI $31, $0, 0x1
 ANDI $5 , $0, 0x0
-LW $10, x5, 0
-LW $15, x5, 0
+LW $10, $5, 0
+LW $15, $5, 0
 LOOP:
 ADDI $2, $2, 1
 SGT $25, $20, $2
@@ -16,7 +16,7 @@ BNE $25, $31, END
 # Choose one of these Insertion based on your memory
 # For Word addressable # For byte addressable
 ADD $5, $2, $0 # SLL $5, $2, 2
-LW $16, x5, 0
+LW $16, $5, 0
 SGT $26, $16, $10
 BEQ $26, $0, MIN
 OR $10, $16, $0
@@ -28,6 +28,3 @@ ADD $15, $16, $0
 J LOOP
 END:
 NOP # (NOP equals to SLL $0, $0, 0)
-
-
-hlt

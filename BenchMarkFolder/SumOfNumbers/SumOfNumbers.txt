@@ -7,7 +7,8 @@ ORI $4, $0, 0xA
 SUM_LOOP:
 ADD $3, $3, $2
 ADDI $2, $2, 1
-BLE $2, $4, SUM_LOOP
+SLT $5, $4, $2
+BEQ $5, $0, SUM_LOOP
 SW $3, x0, 0
 END:
 NOP # End program

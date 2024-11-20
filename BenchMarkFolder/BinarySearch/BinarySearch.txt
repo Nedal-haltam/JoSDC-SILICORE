@@ -11,32 +11,24 @@ slt $7, $2, $1
 bne $0, $7, notFound
 add $4, $2, $1
 srl $5, $4, 1
-#sll $5, $5, 2 # For byte addressable memory
-lw $6, x5, 0
-#srl $5, $5, 2 # For byte addressable memory
+#sll $5, $5, 2 For byte addressable memory
+lw $6, $5, 0
+#srl $5, $5, 2 For byte addressable memory
 beq $3, $6, found
-
-# was: slt $6, $6, $1 after: slt $6, $6, $3, because the comparing is wrong with $1
 slt $6, $6, $3
 beq $6, $0, leftHalf
 j rightHalf
 leftHalf:
-
-# the mentors wrote : add $2, $5, 0xFFFF , which is wrong the the instruction is addi because it envolves immediate
-addi $2, $5, 0xFFFF # "FFFF=-1"
+addi $2, $5, 0xFFFF # "FFFF=-1" # the instruction was: add / after: addi because you are dealing with immediate
 j loop
 rightHalf:
 addi $1, $5, 0x1
 j loop
 found:
-add $8, $zero, $5
+add $8, $0, $5
 j finish
 notFound:
 addi $8, $0, 0xFFFF
 j finish
 finish:
 NOP
-
-hlt
-
-

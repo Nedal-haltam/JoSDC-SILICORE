@@ -42,7 +42,9 @@ namespace Assembler
             ASSEMBLERMIPS.input.Lines = input;
             (List<string> mc, List<List<string>> insts) = ASSEMBLERMIPS.TOP_MAIN();
             curr_mc = mc;
+            curr_mc.Add("11111100000000000000000000000000");
             curr_insts = insts;
+            curr_insts.Add(new List<string>() { "hlt" });
             lblErrInvinst.Visible = ASSEMBLERMIPS.lblinvinst.Visible;
             lblErrInvlabel.Visible = ASSEMBLERMIPS.lblinvlabel.Visible;
             lblErrMultlabels.Visible = ASSEMBLERMIPS.lblmultlabels.Visible;

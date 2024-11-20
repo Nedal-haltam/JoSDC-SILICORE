@@ -11,11 +11,11 @@ reg [bit_width - 1:0] DataMem [1023 : 0];
   
 always@ (posedge clk)  
   if (WR == 1'b1)
-    DataMem[addr] <= Data_In;
+    DataMem[addr[9:0]] <= Data_In;
 
 
 always@ (posedge clk) 
-  Data_Out <= DataMem[addr];
+  Data_Out <= DataMem[addr[9:0]];
 
 
 initial begin

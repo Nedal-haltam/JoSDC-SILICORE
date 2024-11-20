@@ -1016,7 +1016,9 @@ namespace ProjectCPUCL
                 hlt = true;
 
             if (iswb(inst.mnem) && inst.rdind != 0)
+            {
                 regs[inst.rdind] = (inst.mnem == Mnemonic.lw) ? inst.memout : inst.aluout;
+            }
         }
         void ConsumeInst()
         {
@@ -1037,8 +1039,7 @@ namespace ProjectCPUCL
             catch (Exception e)
             {
                 PC = HANDLER_ADDR;
-                ConsumeInst();
-                ConsumeInst();
+                Run();
                 throw e;
             }
 
@@ -1074,7 +1075,7 @@ namespace ProjectCPUCL
                 catch (Exception e)
                 {
                     i--;
-                    return (0, Exceptions.EXCEPTION);
+                    return (i, Exceptions.EXCEPTION);
                 }
                 if (hlt)
                     return (i, Exceptions.NONE);
