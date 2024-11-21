@@ -147,7 +147,7 @@ Run_BenchMark()
 
 Run_BenchMark "BinarySearch"
 Run_BenchMark "ControlFlowInstructions"
-# Run_BenchMark "InsertionSort"
+# Run_BenchMark "InsertionSort" // their insertion sort is broke
 Run_BenchMark "Max&MinArray"
 Run_BenchMark "DataManipulation"
 Run_BenchMark "SumOfNumbers"
