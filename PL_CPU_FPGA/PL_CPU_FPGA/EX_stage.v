@@ -89,22 +89,23 @@ and and27(temp[27], ~a[27], b[27]);
 and and28(temp[28], ~a[28], b[28]);
 and and29(temp[29], ~a[29], b[29]);
 and and30(temp[30], ~a[30], b[30]);
-and and31(temp[31], a[31], ~b[31]);
+// and and31(temp[31], a[31], ~b[31]);
 
-wire ltw;
-or or1(ltw
+wire ltw, ltww;
+nor or1(ltw
 , temp[0]
 , temp[1], temp[2], temp[3], temp[4], temp[5], temp[6], temp[7], temp[8], temp[9], temp[10]
 , temp[11], temp[12], temp[13], temp[14], temp[15], temp[16], temp[17], temp[18], temp[19], temp[20]
 , temp[21], temp[22], temp[23], temp[24], temp[25], temp[26], temp[27], temp[28], temp[29], temp[30]
-, temp[31]);
+, a[31] & ~b[31] );
 
-wire twoneg;
-and compareneg(twoneg, a[31] , b[31]);
-xor invert(lt, twoneg, ltw);
-
-
-
+nor (ltww, ~a[31] & b[31], ltw);
+xor (lt, ltww, a[31] &  b[31]);
+// cases : 
+// two  positive                 ~a[31] & ~b[31] ->      compare all the bits normally
+// two  negative                  a[31] &  b[31] -> also compare all the bits normally with inversion at the end
+// a is positive , b is negative ~a[31] &  b[31] ->      we directly conclude that a is not less than b
+// a is negative , b is positive  a[31] & ~b[31] -> also we directly conclude that a is     less than b
 
 endmodule
 
@@ -160,7 +161,7 @@ module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1
 	assign is_bne_taken = is_bne && ~(is_eq);
 	assign is_blt_taken = is_blt &&  (is_lt);
 	assign is_ble_taken = is_ble &&  (is_lt || is_eq);
-	assign is_bgt_taken = is_bgt &&  (~is_lt && ~is_eq);
+	assign is_bgt_taken = is_bgt && ~(is_lt || is_eq);
 	assign is_bge_taken = is_bge && ~(is_lt);
 
 	assign BranchDecision = is_beq_taken || is_bne_taken || is_blt_taken || is_ble_taken || is_bgt_taken || is_bge_taken;
