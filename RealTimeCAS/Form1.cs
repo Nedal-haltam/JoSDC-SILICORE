@@ -285,7 +285,7 @@ namespace Real_Time_CAS_ASSEM
             curr_data_dir.Clear();
             curr_text_dir.Clear();
 
-            if (data_index != -1)
+            if (data_index != -1 && text_index  != -1)
             {
                 curr_data_dir = src.GetRange(data_index, text_index - data_index);
             }

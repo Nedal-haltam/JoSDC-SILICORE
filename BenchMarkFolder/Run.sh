@@ -151,6 +151,7 @@ Run_BenchMark "ControlFlowInstructions"
 Run_BenchMark "Max&MinArray"
 Run_BenchMark "DataManipulation"
 Run_BenchMark "SumOfNumbers"
+Run_BenchMark "InsertionSort(SiliCore_version)"
 
 read -p "Press Enter to exit"
 

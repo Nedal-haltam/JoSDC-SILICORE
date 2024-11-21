@@ -21,16 +21,24 @@ input ex_mem_wr, mem_wb_wr, is_oper2_immed, ex_mem_rdzero, mem_wb_rdzero;
 output [2:0] forwardB; // the selection lines for the ALU oprands mux
 
 
-assign forwardB = 
-(id_ex_opcode == jal)  ? 3'b001 :
-	(
-		(is_oper2_immed) ? 3'b000 :
-			(
-				(ex_mem_wr && ex_mem_rdzero && ex_mem_rd == id_ex_rs2) ? 3'b010 :
-					(
-						(mem_wb_wr && mem_wb_rdzero && mem_wb_rd == id_ex_rs2) ? 3'b011 : 3'b100
-					)
-			)
-	);
+wire exhaz, memhaz;
+assign exhaz = ex_mem_wr && ex_mem_rdzero && ex_mem_rd == id_ex_rs2;
+assign memhaz = mem_wb_wr && mem_wb_rdzero && mem_wb_rd == id_ex_rs2;
+
+// MUX_8x1 alu_oper2(rs2_in, mem_haz, ex_haz, 0, imm, imm, imm, 32'b1, alu_selB, oper2);
+assign forwardB[0] = id_ex_opcode == jal || (memhaz && ~exhaz);
+assign forwardB[1] = id_ex_opcode == jal ||  exhaz;
+assign forwardB[2] = id_ex_opcode == jal ||  is_oper2_immed;
+// assign forwardB = 
+// (id_ex_opcode == jal)  ? 3'b001 :
+// 	(
+// 		(is_oper2_immed) ? 3'b000 :
+// 			(
+// 				(ex_mem_wr && ex_mem_rdzero && ex_mem_rd == id_ex_rs2) ? 3'b010 :
+// 					(
+// 						(mem_wb_wr && mem_wb_rdzero && mem_wb_rd == id_ex_rs2) ? 3'b011 : 3'b100
+// 					)
+// 			)
+// 	);
 
 endmodule

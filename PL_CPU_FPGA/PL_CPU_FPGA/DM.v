@@ -36,4 +36,31 @@ initial begin
 end 
 `endif
 endmodule
+`else
+module DM(addr , Data_In , Data_Out , WR , clk);
+
+parameter bit_width = 32;
+input [bit_width - 1:0] addr , Data_In;
+input WR , clk;
+// output [bit_width - 1:0] Data_Out;
+output reg [bit_width - 1:0] Data_Out;
+
+reg [bit_width - 1:0] DataMem [1023 : 0];
+  
+always@ (posedge clk)  
+  if (WR == 1'b1)
+    DataMem[addr[9:0]] <= Data_In;
+
+
+always@ (posedge clk) 
+  Data_Out <= DataMem[addr[9:0]];
+
+
+initial begin
+
+`include "DM_INIT.INIT"
+
+end
+
+endmodule
 `endif

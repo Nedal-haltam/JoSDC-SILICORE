@@ -16,6 +16,11 @@ namespace ProjectCPUCL
 
         public const int HANDLER_ADDR = 1000;
         public const string EXCEPTION = "EXCEPTION";
+        public const string FETCH = "FETCH";
+        public const string DECODE = "DECODE";
+        public const string EXECUTE = "EXECUTE";
+        public const string MEMORY = "MEMORY";
+        public const string WRITEBACK = "WRITEBACK";
         public const string INVALID_OPCODED = "INVALID_OPCODED";
         public const string BUBBLE = "BUBBLE";
         public const string WRONG_PRED = "WRONG_PRED";
@@ -560,7 +565,7 @@ namespace ProjectCPUCL
             {
                 Exception e = new Exception(EXCEPTION)
                 {
-                    HResult = (int)Stage.decode
+                    Source = DECODE
                 };
                 throw e;
             }
@@ -744,27 +749,27 @@ namespace ProjectCPUCL
             PC = HANDLER_ADDR;
             IFID.mc = fetch();
 
-            Stage s = (Stage)e.HResult;
+            string s = e.Source;
 
-            if (s == Stage.decode)
+            if (s == DECODE)
             {
                 IDEX = new Instruction().Init();
                 EXMEM = executed_in_EX_MIPS;
                 MEMWB = memed_in_MEM_MIPS;
             }
-            else if (s == Stage.execute)
+            else if (s == EXECUTE)
             {
                 IDEX = new Instruction().Init();
                 EXMEM = new Instruction().Init();
                 MEMWB = memed_in_MEM_MIPS;
             }
-            else if (s == Stage.memory || s == Stage.write_back) // made them in a single if condition because they have the same effect in an exception case
+            else if (s == MEMORY || s == WRITEBACK) // made them in a single if condition because they have the same effect in an exception case
             {
                 IDEX = new Instruction().Init();
                 EXMEM = new Instruction().Init();
                 MEMWB = new Instruction().Init();
                 EX_HAZ = 0;
-                MEM_HAZ = (s == Stage.write_back) ? 0 : MEM_HAZ;
+                MEM_HAZ = (s == WRITEBACK) ? 0 : MEM_HAZ;
             }
 
         }
@@ -777,14 +782,14 @@ namespace ProjectCPUCL
                 // detect if there is an exception in the decode operation in the decode stage
                 if ((!isvalid_opcode_funct(inst) || !isvalid_format(inst.format)) && inst.mnem != Mnemonic.nop)
                 {
-                    e.HResult = (int)stage;
+                    e.Source = DECODE;
                     throw e;
                 }
                 if (isbranch(inst.mnem) || inst.mnem == Mnemonic.j || inst.mnem == Mnemonic.jal || inst.mnem == Mnemonic.jr)
                 {
                     if (!is_in_range_inc(PC, 0, IM.Count - 1) && !(PC == IM.Count))
                     {
-                        e.HResult = (int)stage;
+                        e.Source = DECODE;
                         throw e;
                     }
                 }
@@ -794,7 +799,7 @@ namespace ProjectCPUCL
                 // detect if there is an exception in the execution of the instruction in the execute stage (/0)
                 if (inst.oper2 == 0 && inst.aluop == Aluop.div)
                 {
-                    e.HResult = (int)stage;
+                    e.Source = EXECUTE;
                     throw e;
                 }
             }
@@ -803,7 +808,7 @@ namespace ProjectCPUCL
                 // detect if there is an exception in the memory operation in the mem stage (invalid address)
                 if ((inst.mnem == Mnemonic.lw || inst.mnem == Mnemonic.sw) && !is_in_range_inc(inst.aluout, 0, DM.Count - 1))
                 {
-                    e.HResult = (int)stage;
+                    e.Source = MEMORY;
                     throw e;
                 }
             }
@@ -812,7 +817,7 @@ namespace ProjectCPUCL
                 // detect if there is an exception in the write back to the reg file in the wb stage (invalid reg or control signals)
                 if (!isvalid_reg_ind(inst))
                 {
-                    e.HResult = (int)stage;
+                    e.Source = WRITEBACK;
                     throw e;
                 }
             }
@@ -963,7 +968,7 @@ namespace ProjectCPUCL
             {
                 Exception e = new Exception(EXCEPTION)
                 {
-                    HResult = (int)Stage.decode
+                    Source = DECODE
                 };
                 throw e;
             }

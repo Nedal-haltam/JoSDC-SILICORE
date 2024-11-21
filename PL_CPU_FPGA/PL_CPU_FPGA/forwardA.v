@@ -19,13 +19,24 @@ input ex_mem_wr, mem_wb_wr, ex_mem_rdzero, mem_wb_rdzero;
 
 output [1:0] forwardA; // the selection lines for the ALU oprands mux
 
+// 0 -> defualt from register file
+// 1 -> EXE HAZ
+// 2 -> MEM HAZ
+// 3 -> jal operandA
+wire exhaz, memhaz;
+assign exhaz = ex_mem_wr && ex_mem_rdzero && ex_mem_rd == id_ex_rs1;
+assign memhaz = mem_wb_wr && mem_wb_rdzero && mem_wb_rd == id_ex_rs1;
 
-assign forwardA = (id_ex_opcode == jal) ? 2'b00 : 
-(
-	(ex_mem_wr && ex_mem_rdzero && ex_mem_rd == id_ex_rs1) ? 2'b01 : 
-	(
-		(mem_wb_wr && mem_wb_rdzero && mem_wb_rd == id_ex_rs1) ? 2'b10 : 2'b11
-	)
-);
+assign forwardA[0] = id_ex_opcode == jal || (memhaz && ~exhaz);
+assign forwardA[1] = id_ex_opcode == jal || exhaz;
+
+
+// assign forwardA = (id_ex_opcode == jal) ? 2'b00 : 
+// (
+// 	(ex_mem_wr && ex_mem_rdzero && ex_mem_rd == id_ex_rs1) ? 2'b01 : 
+// 	(
+// 		(mem_wb_wr && mem_wb_rdzero && mem_wb_rd == id_ex_rs1) ? 2'b10 : 2'b11
+// 	)
+// );
 
 endmodule

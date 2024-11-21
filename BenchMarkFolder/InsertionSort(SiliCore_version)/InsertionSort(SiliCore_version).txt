@@ -1,0 +1,46 @@
+.data
+array: 2, 3, 45, 5, 3, 5, 5, 4, 43, 5, 4, 0, 5, 4, 5, 6, 44, 45, 65, 23
+
+
+.text
+
+main:
+ADDI X20, X0, 20
+ADDI x1, x0, 2
+ADDi  x22, x0, -1
+
+
+
+FOR_LOOP:
+
+
+BGE  x1, x20, EXIT
+LW   x8, x1, 0
+ADDI x2, x1, -1
+
+
+WHILE_LOOP:
+
+
+SGT  x3, x2, x22
+BEQ  x3, x0, EXIT_WHILE
+
+LW   x5, x2, 0
+SGT  x4, x5, x8
+AND  x7, x3, x4
+BEQ  x7, x0, EXIT_WHILE
+
+ADDI x6, x2, 1
+SW   x5, x6, 0
+ADDI x2, x2, -1
+J    WHILE_LOOP
+
+EXIT_WHILE:
+
+ADDI x2, x2, 1
+SW   x8, x2, 0
+ADDI x1, x1, 1
+
+J    FOR_LOOP
+
+EXIT:
