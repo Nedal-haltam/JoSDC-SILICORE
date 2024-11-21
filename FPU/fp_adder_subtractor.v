@@ -24,6 +24,10 @@ module fp_adder_subtractor(
         // variables used later to count leading zeros
         leadingZeros = 0;
 
+        //initializing the overflow and underflow variables
+        overflow = 1'b0;
+        underflow = 1'b0;
+
         e_op1 = operand1[30:23];
         e_op2 = operand2[30:23];
 
