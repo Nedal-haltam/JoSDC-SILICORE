@@ -75,7 +75,7 @@ module fp_adder_subtractor(
             end
 
             //Finds the difference between the exponents | STEP 2
-            // makes the exponents equal (to the bigger exponent)
+            // makes the exponents equal (to the bigger exponent) | STEP 3
             if(e_op1 > e_op2) begin
                 e_diff = (e_op2 == 8'b0) ? e_op1 - 8'b1 : e_op1 - e_op2;
                 // applies the changes to the exponent and the significand
@@ -88,7 +88,8 @@ module fp_adder_subtractor(
                 e_op1 += e_diff;
                 s_op1 >> e_diff;
             end
-            
+
+            // Adds the significands | STEP 4
             // if the operands have the same sign
             if(operand1[31] == operand2[31]) begin
                 op_result = s_op1 + s_op2;
@@ -104,7 +105,7 @@ module fp_adder_subtractor(
                 result[31] = operand2[31];
             end
 
-            // result needs to be normalized ()
+            // result needs to be normalized | STEP 5
             if(op_result[24] == 1) begin
                 result[22:0] = op_result[23:1];
                 result[30:23] = e_op1 + 1'b1;
