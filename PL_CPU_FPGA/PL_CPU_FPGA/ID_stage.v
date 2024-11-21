@@ -28,7 +28,7 @@ module ID_stage(pc, inst, opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_da
 	
 	Immed_Gen_unit immed_gen(inst, opcode, imm);
 	
-	assign pfc = (opcode == beq || opcode == bne || opcode == blt || opcode == ble || opcode == bgt || opcode == bge) ? pc + imm : imm;
+	assign pfc = (ID_is_beq || ID_is_bne || ID_is_blt || ID_is_ble || ID_is_bgt || ID_is_bge) ? pc + imm : imm;
 
 	
     BranchResolver BR(pc_src, exception_flag, opcode, predicted, Wrong_prediction, rst);

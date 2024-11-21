@@ -1,11 +1,11 @@
 
-module PC_register(addr_in, addr_out, PC_Write, clk, rst);
+module PC_register(DataIn, DataOut, PC_Write, clk, rst);
 	
-	input [31:0] addr_in;
+	input [31:0] DataIn;
 	input clk, rst;
 	input PC_Write;
 	
-  output reg [31:0] addr_out;
+  output reg [31:0] DataOut;
 	
 
 parameter initialaddr = -1;
@@ -13,9 +13,9 @@ parameter initialaddr = -1;
 always@(posedge clk, posedge rst) begin 
 
 if (rst)
-	addr_out <= initialaddr;      
+	DataOut <= initialaddr;      
 else if (PC_Write)
-	addr_out <= addr_in;		
+	DataOut <= DataIn;		
 
 end
 	
