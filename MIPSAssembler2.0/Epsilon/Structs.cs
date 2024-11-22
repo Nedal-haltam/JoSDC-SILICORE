@@ -3,11 +3,11 @@
 
     struct NodeIntLit
     {
-        Token intlit;
+        public Token intlit;
     }
     struct NodeIdent
     {
-        Token ident;
+        public Token ident;
     }
     struct NodeTerm
     {
@@ -31,7 +31,7 @@
         public NodeExpr* rhs;
     }
 
-    unsafe struct NodeExpr
+    struct NodeExpr
     {
         public enum NodeExprType
         {
@@ -39,7 +39,7 @@
         }
         public NodeExprType type;
         public NodeTerm term;
-        public NodeBinExpr* expr;
+        public NodeBinExpr expr;
     }
 
     //struct NodeStmtFor
@@ -64,18 +64,24 @@
 
     struct NodeStmtDeclare
     {
-        public enum VarType
+        public enum NodeStmtDeclareType
         {
             Reg, Mem
         }
-        public VarType type;
+        public NodeStmtDeclareType type;
         public Token ident;
         public NodeExpr expr;
     }
 
     struct NodeStmt
     {
-        public dynamic var;
+        public enum NodeStmtType
+        {
+            nodestmtdeclare, nodestmtassign
+        }
+        public NodeStmtType type;
+        public NodeStmtDeclare declare;
+        public NodeStmtAssign assign;
     }
 
 /*

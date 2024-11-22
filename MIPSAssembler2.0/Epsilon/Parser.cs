@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualBasic;
+using NuGet.Common;
+using OfficeOpenXml.Drawing;
 using OfficeOpenXml.Drawing.Style.Fill;
 using OfficeOpenXml.FormulaParsing.Exceptions;
 using OfficeOpenXml.FormulaParsing.Ranges;
@@ -8,7 +10,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-
+#pragma warning disable CS8629 // Nullable value type may be null.
 namespace Epsilon
 {
     struct NodeProg
@@ -22,40 +24,47 @@ namespace Epsilon
     }
     class Parser
     {
-        Temp<Token> peek(int offset = 0)
+        Token? peek(int offset = 0)
         {
-            bool still = (m_curr_index + offset < m_tokens.Count);
-            Temp<Token> t = new()
+            if (m_curr_index + offset < m_tokens.Count)
             {
-                hasvalue = still,
-                value = (still) ? m_tokens[m_curr_index + offset] : new Token()
-            };
-            return t;
-        }
-        Token? try_consume(TokenType type)
-        {
-            if (peek().hasvalue && peek().value.Type == type) {
-                return consume();
+                return m_tokens[m_curr_index + offset];
             }
             return null;
         }
-        Token? try_consume_err(TokenType type)
+        Token? peek(TokenType type, int offset = 0)
         {
-            if (peek().hasvalue && peek().value.Type == type)
+            Token? token = peek(offset);
+            if (token.HasValue && token.Value.Type == type)
             {
-                return consume();
+                return token;
             }
-            ErrorExpected($"Expected: {type}");
             return null;
         }
         Token consume()
         {
             return m_tokens.ElementAt(m_curr_index++);
         }
+        Token? try_consume(TokenType type)
+        {
+            if (peek(type).HasValue) {
+                return consume();
+            }
+            return null;
+        }
+        Token? try_consume_err(TokenType type)
+        {
+            if (peek(type).HasValue)
+            {
+                return consume();
+            }
+            ErrorExpected($"Expected: {type}");
+            return null;
+        }
         void ErrorExpected(string msg)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Error Expected {msg} on line: {peek().value.Line}");
+            Console.WriteLine($"Error Expected {msg} on line: {peek().Value.Line}");
             Console.ResetColor();
             Environment.Exit(1);
         }
@@ -67,28 +76,68 @@ namespace Epsilon
             m_tokens = tokens;
         }
 
-
         bool IsStmtDeclare()
         {
-            throw new NotImplementedException();
+            return (peek(TokenType.Reg, 0).HasValue || peek(TokenType.Mem, 0).HasValue) &&
+                   peek(TokenType.Ident, 1).HasValue &&
+                   peek(TokenType.Equal, 2).HasValue;
         }
 
         bool IsStmtAssign()
         {
+            return peek(TokenType.Ident).HasValue &&
+                   peek(TokenType.Equal).HasValue;
+        }
+
+        NodeExpr? ParseExpr()
+        {
             throw new NotImplementedException();
         }
 
-
         NodeStmt? ParseStmt()
         {
-            // TODO: see what possible statements you have and parse it (stmts: declare, assign, if, for)
+            // see what possible statements you have and parse it (stmts: declare, assign, if, for)
             if (IsStmtDeclare())
             {
-
+                Token reg_mem = consume();
+                NodeStmtDeclare declare = new NodeStmtDeclare();
+                declare.type = (reg_mem.Type == TokenType.Reg) ? NodeStmtDeclare.NodeStmtDeclareType.Reg : NodeStmtDeclare.NodeStmtDeclareType.Mem;
+                declare.ident = consume();
+                consume();
+                NodeExpr? expr = ParseExpr();
+                if (expr.HasValue)
+                {
+                    declare.expr = expr.Value;
+                }
+                else
+                {
+                    ErrorExpected("expression");
+                }
+                try_consume_err(TokenType.SemiColon);
+                NodeStmt stmt = new NodeStmt();
+                stmt.type = NodeStmt.NodeStmtType.nodestmtdeclare;
+                stmt.declare = declare;
+                return stmt;
             }
             else if (IsStmtAssign())
             {
-
+                NodeStmtAssign assign = new NodeStmtAssign();
+                assign.ident = consume();
+                consume();
+                NodeExpr? expr = ParseExpr();
+                if (expr.HasValue)
+                {
+                    assign.expr = expr.Value;
+                }
+                else
+                {
+                    ErrorExpected("expression");
+                }
+                try_consume_err(TokenType.SemiColon);
+                NodeStmt stmt = new NodeStmt();
+                stmt.type = NodeStmt.NodeStmtType.nodestmtassign;
+                stmt.assign = assign;
+                return stmt;
             }   
 
 
@@ -100,11 +149,11 @@ namespace Epsilon
         {
             NodeProg prog = new NodeProg();
             
-            while (peek().hasvalue)
+            while (peek().HasValue)
             {
                 NodeStmt? stmt = ParseStmt();
-                if (stmt != null)
-                    prog.stmts.Add((NodeStmt)stmt);
+                if (stmt.HasValue)
+                    prog.stmts.Add(stmt.Value);
                 else
                     ErrorExpected($"statement");
             }
@@ -113,3 +162,4 @@ namespace Epsilon
         }
     }
 }
+#pragma warning restore CS8629 // Nullable value type may be null.
