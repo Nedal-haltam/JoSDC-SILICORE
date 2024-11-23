@@ -1,8 +1,14 @@
-int x = 1; // 1
+/*
+sdfdsf
+sdfdsffsd
+f
+d
+*/
+int x = 1;
 
-int y = x + 1; // 2
-
-int z = x + y; // 3
+int y = x + 1;  //df/sdfdsfdsfdsf
+// 2
+int z = x + y
 
 int nedal = z - (5 - 2) + 5;
 

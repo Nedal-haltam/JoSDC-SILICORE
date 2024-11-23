@@ -121,15 +121,19 @@ namespace Epsilon
                         consume();
                     }
                 }
-                else if (peek('/').HasValue && peek('*').HasValue)
+                else if (peek('/').HasValue && peek('*', 1).HasValue)
                 {
                     consume();
                     consume();
                     while (peek().HasValue)
                     {
-                        if (peek('*').HasValue && peek('/').HasValue)
+                        if (peek('*').HasValue && peek('/', 1).HasValue)
                         {
                             break;
+                        }
+                        if (peek('\n').HasValue)
+                        {
+                            line++;
                         }
                         consume();
                     }
