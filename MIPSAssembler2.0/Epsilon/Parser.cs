@@ -1,29 +1,18 @@
-﻿using Microsoft.VisualBasic;
-using NuGet.Common;
-using OfficeOpenXml.Drawing;
-using OfficeOpenXml.Drawing.Style.Fill;
-using OfficeOpenXml.FormulaParsing.Exceptions;
-using OfficeOpenXml.FormulaParsing.Ranges;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-#pragma warning disable CS8629 // Nullable value type may be null.
+﻿#pragma warning disable CS8629 // Nullable value type may be null.
+
+
+
 namespace Epsilon
 {
-    struct NodeProg
-    {
-        public List<NodeStmt> stmts;
-
-        public NodeProg()
-        {
-            stmts = new List<NodeStmt>();
-        }
-    }
     class Parser
     {
+        private List<Token> m_tokens;
+        private int m_curr_index = 0;
+        public Parser(List<Token> tokens)
+        {
+            m_tokens = tokens;
+        }
+
         Token? peek(int offset = 0)
         {
             if (m_curr_index + offset < m_tokens.Count)
@@ -45,13 +34,6 @@ namespace Epsilon
         {
             return m_tokens.ElementAt(m_curr_index++);
         }
-        Token? try_consume(TokenType type)
-        {
-            if (peek(type).HasValue) {
-                return consume();
-            }
-            return null;
-        }
         Token? try_consume_err(TokenType type)
         {
             if (peek(type).HasValue)
@@ -64,21 +46,14 @@ namespace Epsilon
         void ErrorExpected(string msg)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Error Expected {msg} on line: {peek().Value.Line}");
+            Console.WriteLine($"Parser: Error Expected {msg} on line: {peek(-1).Value.Line}");
             Console.ResetColor();
             Environment.Exit(1);
         }
 
-        private List<Token> m_tokens;
-        private int m_curr_index = 0;
-        public Parser(List<Token> tokens)
-        {
-            m_tokens = tokens;
-        }
-
         bool IsStmtDeclare()
         {
-            return (peek(TokenType.Reg, 0).HasValue || peek(TokenType.Mem, 0).HasValue) &&
+            return (peek(TokenType.Int, 0).HasValue) &&
                    peek(TokenType.Ident, 1).HasValue &&
                    peek(TokenType.Equal, 2).HasValue;
         }
@@ -89,9 +64,69 @@ namespace Epsilon
                    peek(TokenType.Equal).HasValue;
         }
 
-        NodeExpr? ParseExpr()
+        bool IsBinExpr()
         {
-            throw new NotImplementedException();
+            return peek(TokenType.Plus).HasValue ||
+                   peek(TokenType.Minus).HasValue ||
+                   peek(TokenType.And).HasValue ||
+                   peek(TokenType.Or).HasValue ||
+                   peek(TokenType.Xor).HasValue ||
+                   peek(TokenType.Nor).HasValue ||
+                   peek(TokenType.Sll).HasValue ||
+                   peek(TokenType.Srl).HasValue;
+        }
+
+
+        NodeTerm? ParseTerm()
+        {
+            NodeTerm term = new NodeTerm();
+            if (peek(TokenType.IntLit).HasValue)
+            {
+                term.type = NodeTerm.NodeTermType.intlit;
+                term.intlit.intlit = consume();
+                return term;
+            }
+            else if (peek(TokenType.Ident).HasValue)
+            {
+                term.type = NodeTerm.NodeTermType.ident;
+                term.ident.ident = consume();
+                return term;
+            }
+
+            return null;
+        }
+
+        unsafe NodeExpr? ParseExpr()
+        {
+            NodeTerm? Termlhs = ParseTerm();
+            if (!Termlhs.HasValue)
+            {
+                return null;
+            }
+            NodeExpr expr = new NodeExpr();
+            if (IsBinExpr())
+            {
+                expr.type = NodeExpr.NodeExprType.binExpr;
+                NodeBinExpr binExpr = new NodeBinExpr();
+                binExpr.type = (NodeBinExpr.NodeBinExprType)consume().Type;
+                binExpr.lhs.type = NodeExpr.NodeExprType.term;
+                binExpr.lhs.term = Termlhs.Value;
+                binExpr.rhs.type = NodeExpr.NodeExprType.term;
+                NodeTerm? Termrhs = ParseTerm(); // TODO: make it parse an expression and introduce operation precedence
+                if (!Termrhs.HasValue)
+                {
+                    return null;
+                }
+                binExpr.rhs.term = Termrhs.Value;
+                expr.binexpr = binExpr;
+                return expr;
+            }
+            else
+            {
+                expr.type = NodeExpr.NodeExprType.term;
+                expr.term = Termlhs.Value;
+                return expr;
+            }
         }
 
         NodeStmt? ParseStmt()
@@ -99,9 +134,12 @@ namespace Epsilon
             // see what possible statements you have and parse it (stmts: declare, assign, if, for)
             if (IsStmtDeclare())
             {
-                Token reg_mem = consume();
+                Token vartype = consume();
                 NodeStmtDeclare declare = new NodeStmtDeclare();
-                declare.type = (reg_mem.Type == TokenType.Reg) ? NodeStmtDeclare.NodeStmtDeclareType.Reg : NodeStmtDeclare.NodeStmtDeclareType.Mem;
+                if (vartype.Type == TokenType.Int)
+                {
+                    declare.type = NodeStmtDeclare.NodeStmtDeclareType.Int;
+                }
                 declare.ident = consume();
                 consume();
                 NodeExpr? expr = ParseExpr();
@@ -139,6 +177,25 @@ namespace Epsilon
                 stmt.assign = assign;
                 return stmt;
             }   
+            else if (peek(TokenType.Return).HasValue)
+            {
+                consume();
+                NodeStmtReturn Return = new NodeStmtReturn();
+                NodeExpr? expr = ParseExpr();
+                if (expr.HasValue)
+                {
+                    Return.expr = expr.Value;
+                }
+                else
+                {
+                    ErrorExpected("expression ");
+                }
+                try_consume_err(TokenType.SemiColon);
+                NodeStmt stmt = new NodeStmt();
+                stmt.type = NodeStmt.NodeStmtType.Return;
+                stmt.Return = Return;
+                return stmt;
+            }
 
 
             return null;

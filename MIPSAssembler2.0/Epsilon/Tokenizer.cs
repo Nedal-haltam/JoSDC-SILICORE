@@ -1,11 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 #pragma warning disable CS8629 // Nullable value type may be null.
+
+
+
 namespace Epsilon
 {
+    struct Token
+    {
+        public TokenType Type;
+        public string Value;
+        public int Line;
+    }
+    enum TokenType
+    {
+        // `(` , `)` , `[` , `]` , `,` , (+, -, <, >, &, |, ^, ~|, <<, >>) , `=` , `;` , `\n` (for line increament) , else invalid token
+        OpenParen, CloseParen, OpenSquare, CloseSquare, OpenCurly, CloseCurly, Comma, Plus,
+        Minus, And, Or, Xor, Nor, Sll, Srl, Equal, SemiColon, NewLine,
+        Int, Ident, For, Iff, Elif, Else, IntLit, Return
+    }
     class Tokenizer
     {
         private string m_thecode;
@@ -60,13 +72,9 @@ namespace Epsilon
                     // and then check if it is one of the supported keywords or not and it may be the follwing
                     // reg , mem , identifier (aka. var) , hlt (exit), if , elif , else , for , 
                     string word = buffer.ToString();
-                    if (word == "reg")
+                    if (word == "int")
                     {
-                        tokens.Add(new() { Value = word, Type = TokenType.Reg, Line = line });
-                    }
-                    else if (word == "mem")
-                    {
-                        tokens.Add(new() { Value = word, Type = TokenType.Mem, Line = line });
+                        tokens.Add(new() { Value = word, Type = TokenType.Int, Line = line });
                     }
                     else if (word == "if")
                     {
@@ -84,9 +92,9 @@ namespace Epsilon
                     {
                         tokens.Add(new() { Value = word, Type = TokenType.For, Line = line });
                     }
-                    else if (word == "hlt")
+                    else if (word == "return")
                     {
-                        tokens.Add(new() { Value = word, Type = TokenType.Hlt, Line = line });
+                        tokens.Add(new() { Value = word, Type = TokenType.Return, Line = line });
                     }
                     else // else it is a variables (identifier)
                     {

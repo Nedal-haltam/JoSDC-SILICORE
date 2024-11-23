@@ -1,4 +1,9 @@
-﻿namespace Epsilon
+﻿
+
+
+using System.Runtime.InteropServices;
+
+namespace Epsilon
 {
 
     struct NodeIntLit
@@ -20,15 +25,19 @@
         public NodeIdent ident;
     }
 
-    unsafe struct NodeBinExpr // could be (add, sub, and, or, xor, nor, sll, srl)
+    class NodeBinExpr // could be (add, sub, and, or, xor, nor, sll, srl)
     {
         public enum NodeBinExprType
         {
-            add, sub, and, or, xor, nor, sll, srl
+            add = 7, sub, and, or, xor, nor, sll, srl
         }
         public NodeBinExprType type;
-        public NodeExpr* lhs;
-        public NodeExpr* rhs;
+        public NodeExpr lhs;
+        public NodeExpr rhs;
+
+        public NodeBinExpr()
+        {
+        }
     }
 
     struct NodeExpr
@@ -39,7 +48,7 @@
         }
         public NodeExprType type;
         public NodeTerm term;
-        public NodeBinExpr expr;
+        public NodeBinExpr binexpr;
     }
 
     //struct NodeStmtFor
@@ -56,6 +65,12 @@
     //    public NodeScope scope;
     //}
 
+    struct NodeStmtReturn
+    {
+        public NodeExpr expr;
+    }
+
+
     struct NodeStmtAssign
     {
         public Token ident;
@@ -66,7 +81,7 @@
     {
         public enum NodeStmtDeclareType
         {
-            Reg, Mem
+            Int
         }
         public NodeStmtDeclareType type;
         public Token ident;
@@ -77,49 +92,60 @@
     {
         public enum NodeStmtType
         {
-            nodestmtdeclare, nodestmtassign
+            nodestmtdeclare, nodestmtassign, Return
         }
         public NodeStmtType type;
         public NodeStmtDeclare declare;
         public NodeStmtAssign assign;
+        public NodeStmtReturn Return;
+    }
+    struct NodeProg
+    {
+        public List<NodeStmt> stmts;
+
+        public NodeProg()
+        {
+            stmts = new List<NodeStmt>();
+        }
     }
 
-/*
 
-NodeStmt: could be one of the following
-    
-    NodeStmtDeclare: could be
-        StmtReg: is composed of
+    /*
+
+    NodeStmt: could be one of the following
+
+        NodeStmtDeclare: could be
+            StmtReg: is composed of
+                identifier
+                expression
+
+            StmtMem: is composed of
+                identifier
+                expression
+
+        StmtAssign: is composed of
             identifier
             expression
-        
-        StmtMem: is composed of
-            identifier
-            expression
 
-    StmtAssign: is composed of
-        identifier
-        expression
-    
-    StmtIf: is composed of 
-        condition
-        scope
+        StmtIf: is composed of 
+            condition
+            scope
 
-    StmtFor: is composed of
-        Initialization: could be
-            StmtReg
-            StmtAssign
-        condition
-        update: is an
-            expression
-        scope: is a
-            list of statements    
+        StmtFor: is composed of
+            Initialization: could be
+                StmtReg
+                StmtAssign
+            condition
+            update: is an
+                expression
+            scope: is a
+                list of statements    
 
 
 
-excpression: could be a 
-    intlit, ident, binary expr
+    excpression: could be a 
+        intlit, ident, binary expr
 
-*/
+    */
 
 }
