@@ -63,10 +63,14 @@ namespace Epsilon
                 m_outputcode.Append($"lw {dest_reg}, x29, {rel_loc}\n");
                 GenPush(dest_reg);
             }
+            else if (term.type == NodeTerm.NodeTermType.paren)
+            {
+                GenExpr(term.paren.expr);
+            }
 
         }
 
-        unsafe void GenBinExpr(NodeBinExpr binExpr)
+        void GenBinExpr(NodeBinExpr binExpr)
         {
             string source_reg1 = "x1", source_reg2 = "x2";
             GenExpr(binExpr.rhs);
@@ -77,7 +81,7 @@ namespace Epsilon
             GenPush(source_reg1);
         }
 
-        unsafe void GenExpr(NodeExpr expr)
+        void GenExpr(NodeExpr expr)
         {
             if (expr.type == NodeExpr.NodeExprType.term)
             {
@@ -89,7 +93,7 @@ namespace Epsilon
             }
         }
 
-        unsafe void GenStmtDeclare(NodeStmtDeclare declare)
+        void GenStmtDeclare(NodeStmtDeclare declare)
         {
             Token ident = declare.ident;
             if (m_Vars.Contains(ident.Value))
@@ -100,7 +104,7 @@ namespace Epsilon
                 m_Vars.Add(ident.Value);
             GenExpr(declare.expr);
         }
-        unsafe void GenStmtAssign(NodeStmtAssign assign)
+        void GenStmtAssign(NodeStmtAssign assign)
         {
             Token ident = assign.ident;
             if (!m_Vars.Contains(ident.Value))

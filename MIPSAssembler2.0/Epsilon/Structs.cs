@@ -6,23 +6,28 @@ using System.Runtime.InteropServices;
 namespace Epsilon
 {
 
-    struct NodeIntLit
+    struct NodeTermIntLit
     {
         public Token intlit;
     }
-    struct NodeIdent
+    struct NodeTermIdent
     {
         public Token ident;
+    }
+    class NodeTermParen
+    {
+        public NodeExpr expr;
     }
     struct NodeTerm
     {
         public enum NodeTermType
         {
-            intlit, ident
+            intlit, ident, paren
         }
         public NodeTermType type;
-        public NodeIntLit intlit;
-        public NodeIdent ident;
+        public NodeTermIntLit intlit;
+        public NodeTermIdent ident;
+        public NodeTermParen paren;
     }
 
     class NodeBinExpr // could be (add, sub, and, or, xor, nor, sll, srl)

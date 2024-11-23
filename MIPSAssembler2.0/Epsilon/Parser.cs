@@ -92,40 +92,93 @@ namespace Epsilon
                 term.ident.ident = consume();
                 return term;
             }
+            else if (peek(TokenType.OpenParen).HasValue)
+            {
+                consume();
+                NodeExpr? expr = ParseExpr();
+                if (!expr.HasValue)
+                {
+                    ErrorExpected("expression");
+                }
+                try_consume_err(TokenType.CloseParen);
+                NodeTermParen paren = new NodeTermParen();
+                paren.expr = expr.Value;
+                term.type = NodeTerm.NodeTermType.paren;
+                term.paren = paren;
+                return term;
+            }
 
             return null;
         }
 
-        unsafe NodeExpr? ParseExpr()
+        int? GetPrec(TokenType type)
+        {
+            switch (type)
+            {
+                case TokenType.Plus:
+                case TokenType.Minus:
+                    return 0;
+                case TokenType.star:
+                case TokenType.fslash:
+                    return 1;
+                default: return null;
+            }
+        }
+
+        NodeExpr? ParseExpr(int min_prec = 0)
         {
             NodeTerm? Termlhs = ParseTerm();
             if (!Termlhs.HasValue)
             {
                 return null;
             }
-            NodeExpr expr = new NodeExpr();
+            NodeExpr exprlhs = new NodeExpr();
+            exprlhs.type = NodeExpr.NodeExprType.term;
+            exprlhs.term = Termlhs.Value;
+
             if (IsBinExpr())
             {
-                expr.type = NodeExpr.NodeExprType.binExpr;
-                NodeBinExpr binExpr = new NodeBinExpr();
-                binExpr.type = (NodeBinExpr.NodeBinExprType)consume().Type;
-                binExpr.lhs.type = NodeExpr.NodeExprType.term;
-                binExpr.lhs.term = Termlhs.Value;
-                binExpr.rhs.type = NodeExpr.NodeExprType.term;
-                NodeTerm? Termrhs = ParseTerm(); // TODO: make it parse an expression and introduce operation precedence
-                if (!Termrhs.HasValue)
+                while (true)
                 {
-                    return null;
+                    Token? curr_tok = peek();
+                    int? prec;
+                    if (curr_tok.HasValue)
+                    {
+                        prec = GetPrec(curr_tok.Value.Type);
+                        if (!prec.HasValue || prec < min_prec)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    Token op = consume();
+                    int next_min_prec = prec.Value + 1;
+                    NodeExpr? expr_rhs = ParseExpr(next_min_prec);
+                    if (!expr_rhs.HasValue)
+                    {
+                        ErrorExpected("expression");
+                    }
+                    NodeBinExpr expr = new NodeBinExpr();
+                    NodeExpr expr_lhs2 = new NodeExpr();
+                    expr_lhs2 = exprlhs;
+                    expr.type = (NodeBinExpr.NodeBinExprType)op.Type;
+                    expr.lhs = expr_lhs2;
+                    expr.rhs = expr_rhs.Value;
+
+                    exprlhs.type = NodeExpr.NodeExprType.binExpr;
+                    exprlhs.binexpr = expr;
                 }
-                binExpr.rhs.term = Termrhs.Value;
-                expr.binexpr = binExpr;
-                return expr;
+
+                return exprlhs;
             }
             else
             {
-                expr.type = NodeExpr.NodeExprType.term;
-                expr.term = Termlhs.Value;
-                return expr;
+                exprlhs.type = NodeExpr.NodeExprType.term;
+                exprlhs.term = Termlhs.Value;
+                return exprlhs;
             }
         }
 

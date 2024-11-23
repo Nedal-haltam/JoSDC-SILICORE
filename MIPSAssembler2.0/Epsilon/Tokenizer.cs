@@ -16,7 +16,7 @@ namespace Epsilon
         // `(` , `)` , `[` , `]` , `,` , (+, -, <, >, &, |, ^, ~|, <<, >>) , `=` , `;` , `\n` (for line increament) , else invalid token
         OpenParen, CloseParen, OpenSquare, CloseSquare, OpenCurly, CloseCurly, Comma, Plus,
         Minus, And, Or, Xor, Nor, Sll, Srl, Equal, SemiColon, NewLine,
-        Int, Ident, For, Iff, Elif, Else, IntLit, Return
+        Int, Ident, For, Iff, Elif, Else, IntLit, Return, fslash, star
     }
     class Tokenizer
     {
@@ -116,7 +116,7 @@ namespace Epsilon
                 {
                     consume();
                     consume();
-                    while (peek('\n').HasValue)
+                    while (!peek('\n').HasValue)
                     {
                         consume();
                     }
@@ -177,6 +177,16 @@ namespace Epsilon
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Minus, Line = line });
+                }
+                else if (peek().Value == '*')
+                {
+                    buffer.Append(consume());
+                    tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.star, Line = line });
+                }
+                else if (peek().Value == '/')
+                {
+                    buffer.Append(consume());
+                    tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.fslash, Line = line });
                 }
                 //else if (peek().Value == '<')
                 //{
