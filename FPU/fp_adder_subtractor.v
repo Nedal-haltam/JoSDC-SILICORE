@@ -2,10 +2,10 @@ module fp_adder_subtractor(
     input [31:0] operand1,
     input [31:0] operand2,
     input operation, // 0 for addition and 1 for subtraction (XOR with the sign of the second op)
-    output [31:0] result,
-    output overflow,
-    output underflow
-)
+    output reg [31:0] result,
+    output reg overflow,
+    output reg underflow
+);
     // 8-bit difference between the exponents
     reg [7:0] e_diff;
     // 8-bit exponents
@@ -46,7 +46,7 @@ module fp_adder_subtractor(
             result[22:0] <= 23'h7FFFFF;
           end
           else begin
-            result[31] == operand1[31];
+            result[31] = operand1[31];
             result[30:23] <= 8'hFF;
             result[22:0] <= 23'b0;
           end
@@ -83,14 +83,14 @@ module fp_adder_subtractor(
             if(e_op1 > e_op2) begin
                 e_diff = (e_op2 == 8'b0) ? e_op1 - 8'b1 : e_op1 - e_op2;
                 // applies the changes to the exponent and the significand
-                e_op2 += e_diff;
-                s_op2 >> e_diff;
+                e_op2 = e_op2 + e_diff;
+                s_op2 = s_op2 >> e_diff;
             end
             else if(e_op2 > e_op1) begin
                 e_diff = (e_op1 == 8'b0) ? e_op2 - 8'b1 : e_op2 - e_op1;
                 // applies the changes to the exponent and the significand
-                e_op1 += e_diff;
-                s_op1 >> e_diff;
+                e_op1 = e_op1 + e_diff;
+                s_op1 = s_op1 >> e_diff;
             end
 
             // Adds the significands | STEP 4
