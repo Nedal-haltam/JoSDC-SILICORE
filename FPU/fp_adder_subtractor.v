@@ -1,7 +1,7 @@
 module fp_adder_subtractor(
     input [31:0] operand1,
     input [31:0] operand2,
-    input operation, // 0 for addition and 1 for subtraction
+    input operation, // 0 for addition and 1 for subtraction (XOR with the sign of the second op)
     output [31:0] result,
     output overflow,
     output underflow
@@ -40,7 +40,7 @@ module fp_adder_subtractor(
         // either operands are infinity
         else if((operand1[30:23] == 8'hFF && operand1[22:0] == 23'b0) || (operand2[30:23] == 8'hFF && operand2[22:0] == 23'b0)) begin
           // checks if the signs are different
-          if(operand1[31] ^ operand2[31] == 1'b1) begin
+          if(operand1[31] ^ (operation ^ operand2[31]) == 1'b1) begin
             // result is NaN
           	result[30:23] <= 8'hFF;
             result[22:0] <= 23'h7FFFFF;
@@ -95,7 +95,7 @@ module fp_adder_subtractor(
 
             // Adds the significands | STEP 4
             // if the operands have the same sign
-            if(operand1[31] == operand2[31]) begin
+            if(operand1[31] == (operation ^ operand2[31])) begin
                 op_result = s_op1 + s_op2;
                 result[31] = operand1[31];
             end
@@ -106,20 +106,36 @@ module fp_adder_subtractor(
             end
             else begin
                 op_result = s_op2 - s_op1;
-                result[31] = operand2[31];
+                result[31] = (operation ^ operand2[31]);
             end
 
             // result needs to be normalized | STEP 5
             if(op_result[24] == 1) begin
-                result[22:0] = op_result[23:1];
-                result[30:23] = e_op1 + 1'b1;
+                // Checks for overflow | STEP 6
+                if(e_op1 + 1'b1 > 254) begin
+                    overflow = 1'b1;
+                    result[30:23] = 8'hFF;
+                    result[22:0] = 23'b0;
+                end
+                else begin
+                    result[22:0] = op_result[23:1];
+                    result[30:23] = e_op1 + 1'b1;
+                end
             end
             else if(op_result[23] == 0) begin
-                for (i = 22; op_result[i] == 0 && i >= 0; i -= 1) begin
-                    leadingZeros += 1;
+                // subnormal result
+                if(e_op1 == 8'b0) begin
+                    result[22:0] = op_result[22:0];
+                    result[30:23] = 8'b0;
                 end
-                result[22:0] = op_result[22:0] << leadingZeros + 1;
-                result[30:23] = e_op1 - leadingZeros - 1;
+                // normalized result
+                else begin
+                    for (i = 22; op_result[i] == 0 && i >= 0; i -= 1) begin
+                    leadingZeros += 1;
+                    result[22:0] = op_result[22:0] << leadingZeros + 1;
+                    result[30:23] = e_op1 - leadingZeros - 1;
+                    end
+                end           
             end 
 
             // if all bits of the smaller operand are shifted out
@@ -131,5 +147,4 @@ module fp_adder_subtractor(
             end
         end
     end
-
 endmodule
