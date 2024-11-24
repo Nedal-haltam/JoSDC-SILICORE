@@ -459,9 +459,7 @@ namespace ProjectCPUCL
     }
 
     public class CPU5STAGE
-    {   // TODO: -log the info of the run every time you run the cpu on the given instructions (necessary for the real time app) make a btn for that
-        //       -implement floating point (in terms of reg file and FP ALU)
-        //       -modify the HANDLER address to a suitable location in the instruction memory
+    {   
         int PC;
         bool hlt;
         bool WrongPrediction;

@@ -151,8 +151,6 @@ module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1
 
 	wire is_eq, is_lt;
 	wire BranchDecision;
-	// TODO: make faster comparison logic instead of default `equal` block of the FPGA 
-
 	compare_equal cmp1(is_eq, oper1, oper2);
 	compare_lt_gt cmp2(is_lt, oper1, oper2);
 	// assign is_eq = oper1 == oper2;

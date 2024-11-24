@@ -230,7 +230,6 @@ void Schedule(List<Instruction> instructions, string Folder)
 void main()
 {
     //raylib();
-    // TODO: check what dependencies to consider when scheduling
     List<Instruction> instructions = [];
 
     // this results in 9 cycles
