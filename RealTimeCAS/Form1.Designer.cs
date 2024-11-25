@@ -36,7 +36,6 @@
             this.lblErrInvlabel = new System.Windows.Forms.Label();
             this.lblnumofinst = new System.Windows.Forms.Label();
             this.lblnumofinsttxt = new System.Windows.Forms.Label();
-            this.output = new System.Windows.Forms.RichTextBox();
             this.lblcyclestxt = new System.Windows.Forms.Label();
             this.lblcycles = new System.Windows.Forms.Label();
             this.lblErrInfloop = new System.Windows.Forms.Label();
@@ -46,6 +45,17 @@
             this.lblNoErr = new System.Windows.Forms.Label();
             this.btncascopy = new System.Windows.Forms.Button();
             this.lblexception = new System.Windows.Forms.Label();
+            this.output = new System.Windows.Forms.RichTextBox();
+            this.cmbinstwidth = new System.Windows.Forms.ComboBox();
+            this.cmbinstdepth = new System.Windows.Forms.ComboBox();
+            this.lblinstmiftxt = new System.Windows.Forms.Label();
+            this.lblinstmifwidth = new System.Windows.Forms.Label();
+            this.lblinstmifdepth = new System.Windows.Forms.Label();
+            this.lbldatamifdepth = new System.Windows.Forms.Label();
+            this.lbldatamifwidth = new System.Windows.Forms.Label();
+            this.lbldatamiftxt = new System.Windows.Forms.Label();
+            this.cmbdatadepth = new System.Windows.Forms.ComboBox();
+            this.cmbdatawidth = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // input
@@ -73,7 +83,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblErrInvinst.AutoSize = true;
             this.lblErrInvinst.ForeColor = System.Drawing.Color.Red;
-            this.lblErrInvinst.Location = new System.Drawing.Point(1098, 171);
+            this.lblErrInvinst.Location = new System.Drawing.Point(1098, 314);
             this.lblErrInvinst.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblErrInvinst.Name = "lblErrInvinst";
             this.lblErrInvinst.Size = new System.Drawing.Size(164, 16);
@@ -88,7 +98,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblErrMultlabels.AutoSize = true;
             this.lblErrMultlabels.ForeColor = System.Drawing.Color.Red;
-            this.lblErrMultlabels.Location = new System.Drawing.Point(1098, 253);
+            this.lblErrMultlabels.Location = new System.Drawing.Point(1098, 396);
             this.lblErrMultlabels.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblErrMultlabels.Name = "lblErrMultlabels";
             this.lblErrMultlabels.Size = new System.Drawing.Size(181, 16);
@@ -103,7 +113,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblErrInvlabel.AutoSize = true;
             this.lblErrInvlabel.ForeColor = System.Drawing.Color.Red;
-            this.lblErrInvlabel.Location = new System.Drawing.Point(1098, 227);
+            this.lblErrInvlabel.Location = new System.Drawing.Point(1098, 370);
             this.lblErrInvlabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblErrInvlabel.Name = "lblErrInvlabel";
             this.lblErrInvlabel.Size = new System.Drawing.Size(154, 16);
@@ -136,18 +146,6 @@
             this.lblnumofinsttxt.Size = new System.Drawing.Size(147, 16);
             this.lblnumofinsttxt.TabIndex = 9;
             this.lblnumofinsttxt.Text = "Number of Instructions : ";
-            // 
-            // output
-            // 
-            this.output.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.output.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.output.Location = new System.Drawing.Point(523, 34);
-            this.output.Margin = new System.Windows.Forms.Padding(4);
-            this.output.Name = "output";
-            this.output.Size = new System.Drawing.Size(567, 579);
-            this.output.TabIndex = 8;
-            this.output.Text = "";
             // 
             // lblcyclestxt
             // 
@@ -182,7 +180,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblErrInfloop.AutoSize = true;
             this.lblErrInfloop.ForeColor = System.Drawing.Color.Red;
-            this.lblErrInfloop.Location = new System.Drawing.Point(1098, 199);
+            this.lblErrInfloop.Location = new System.Drawing.Point(1098, 342);
             this.lblErrInfloop.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblErrInfloop.Name = "lblErrInfloop";
             this.lblErrInfloop.Size = new System.Drawing.Size(130, 16);
@@ -207,7 +205,7 @@
             this.cmbcpulist.Items.AddRange(new object[] {
             "Pipe Lined",
             "Single Cycle"});
-            this.cmbcpulist.Location = new System.Drawing.Point(1101, 41);
+            this.cmbcpulist.Location = new System.Drawing.Point(1202, 9);
             this.cmbcpulist.MaxDropDownItems = 4;
             this.cmbcpulist.Name = "cmbcpulist";
             this.cmbcpulist.Size = new System.Drawing.Size(121, 24);
@@ -222,7 +220,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblErr.AutoSize = true;
             this.lblErr.ForeColor = System.Drawing.Color.Red;
-            this.lblErr.Location = new System.Drawing.Point(1098, 143);
+            this.lblErr.Location = new System.Drawing.Point(1098, 286);
             this.lblErr.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblErr.Name = "lblErr";
             this.lblErr.Size = new System.Drawing.Size(46, 16);
@@ -236,7 +234,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblNoErr.AutoSize = true;
             this.lblNoErr.ForeColor = System.Drawing.Color.Red;
-            this.lblNoErr.Location = new System.Drawing.Point(1152, 143);
+            this.lblNoErr.Location = new System.Drawing.Point(1152, 286);
             this.lblNoErr.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblNoErr.Name = "lblNoErr";
             this.lblNoErr.Size = new System.Drawing.Size(122, 16);
@@ -261,18 +259,212 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblexception.AutoSize = true;
             this.lblexception.ForeColor = System.Drawing.Color.Red;
-            this.lblexception.Location = new System.Drawing.Point(1098, 100);
+            this.lblexception.Location = new System.Drawing.Point(1098, 243);
             this.lblexception.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblexception.Name = "lblexception";
             this.lblexception.Size = new System.Drawing.Size(127, 16);
             this.lblexception.TabIndex = 22;
             this.lblexception.Text = "Exception Detected!";
             // 
+            // output
+            // 
+            this.output.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.output.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.output.Location = new System.Drawing.Point(523, 34);
+            this.output.Margin = new System.Windows.Forms.Padding(4);
+            this.output.Name = "output";
+            this.output.Size = new System.Drawing.Size(567, 579);
+            this.output.TabIndex = 8;
+            this.output.Text = "";
+            // 
+            // cmbinstwidth
+            // 
+            this.cmbinstwidth.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbinstwidth.FormattingEnabled = true;
+            this.cmbinstwidth.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "4",
+            "8",
+            "16",
+            "32",
+            "64"});
+            this.cmbinstwidth.Location = new System.Drawing.Point(1101, 95);
+            this.cmbinstwidth.MaxDropDownItems = 4;
+            this.cmbinstwidth.Name = "cmbinstwidth";
+            this.cmbinstwidth.Size = new System.Drawing.Size(95, 24);
+            this.cmbinstwidth.TabIndex = 23;
+            this.cmbinstwidth.Tag = "instwidth";
+            this.cmbinstwidth.SelectedIndexChanged += new System.EventHandler(this.MIF_COMBO_BOX_CHANGED_INDEX);
+            // 
+            // cmbinstdepth
+            // 
+            this.cmbinstdepth.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbinstdepth.FormattingEnabled = true;
+            this.cmbinstdepth.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "4",
+            "8",
+            "16",
+            "32",
+            "64",
+            "128",
+            "256",
+            "512",
+            "1024",
+            "2048",
+            "4096",
+            "8192"});
+            this.cmbinstdepth.Location = new System.Drawing.Point(1202, 95);
+            this.cmbinstdepth.MaxDropDownItems = 4;
+            this.cmbinstdepth.Name = "cmbinstdepth";
+            this.cmbinstdepth.Size = new System.Drawing.Size(95, 24);
+            this.cmbinstdepth.TabIndex = 24;
+            this.cmbinstdepth.Tag = "instdepth";
+            this.cmbinstdepth.SelectedIndexChanged += new System.EventHandler(this.MIF_COMBO_BOX_CHANGED_INDEX);
+            // 
+            // lblinstmiftxt
+            // 
+            this.lblinstmiftxt.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblinstmiftxt.AutoSize = true;
+            this.lblinstmiftxt.Location = new System.Drawing.Point(1098, 44);
+            this.lblinstmiftxt.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblinstmiftxt.Name = "lblinstmiftxt";
+            this.lblinstmiftxt.Size = new System.Drawing.Size(140, 16);
+            this.lblinstmiftxt.TabIndex = 25;
+            this.lblinstmiftxt.Text = "Instruction MIF settings";
+            // 
+            // lblinstmifwidth
+            // 
+            this.lblinstmifwidth.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblinstmifwidth.AutoSize = true;
+            this.lblinstmifwidth.Location = new System.Drawing.Point(1098, 76);
+            this.lblinstmifwidth.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblinstmifwidth.Name = "lblinstmifwidth";
+            this.lblinstmifwidth.Size = new System.Drawing.Size(52, 16);
+            this.lblinstmifwidth.TabIndex = 26;
+            this.lblinstmifwidth.Text = "WIDTH";
+            // 
+            // lblinstmifdepth
+            // 
+            this.lblinstmifdepth.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblinstmifdepth.AutoSize = true;
+            this.lblinstmifdepth.Location = new System.Drawing.Point(1200, 76);
+            this.lblinstmifdepth.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblinstmifdepth.Name = "lblinstmifdepth";
+            this.lblinstmifdepth.Size = new System.Drawing.Size(54, 16);
+            this.lblinstmifdepth.TabIndex = 27;
+            this.lblinstmifdepth.Text = "DEPTH";
+            // 
+            // lbldatamifdepth
+            // 
+            this.lbldatamifdepth.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbldatamifdepth.AutoSize = true;
+            this.lbldatamifdepth.Location = new System.Drawing.Point(1201, 161);
+            this.lbldatamifdepth.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbldatamifdepth.Name = "lbldatamifdepth";
+            this.lbldatamifdepth.Size = new System.Drawing.Size(54, 16);
+            this.lbldatamifdepth.TabIndex = 32;
+            this.lbldatamifdepth.Text = "DEPTH";
+            // 
+            // lbldatamifwidth
+            // 
+            this.lbldatamifwidth.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbldatamifwidth.AutoSize = true;
+            this.lbldatamifwidth.Location = new System.Drawing.Point(1099, 161);
+            this.lbldatamifwidth.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbldatamifwidth.Name = "lbldatamifwidth";
+            this.lbldatamifwidth.Size = new System.Drawing.Size(52, 16);
+            this.lbldatamifwidth.TabIndex = 31;
+            this.lbldatamifwidth.Text = "WIDTH";
+            // 
+            // lbldatamiftxt
+            // 
+            this.lbldatamiftxt.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbldatamiftxt.AutoSize = true;
+            this.lbldatamiftxt.Location = new System.Drawing.Point(1099, 129);
+            this.lbldatamiftxt.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbldatamiftxt.Name = "lbldatamiftxt";
+            this.lbldatamiftxt.Size = new System.Drawing.Size(110, 16);
+            this.lbldatamiftxt.TabIndex = 30;
+            this.lbldatamiftxt.Text = "Data MIF settings";
+            // 
+            // cmbdatadepth
+            // 
+            this.cmbdatadepth.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbdatadepth.FormattingEnabled = true;
+            this.cmbdatadepth.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "4",
+            "8",
+            "16",
+            "32",
+            "64",
+            "128",
+            "256",
+            "512",
+            "1024",
+            "2048",
+            "4096",
+            "8192"});
+            this.cmbdatadepth.Location = new System.Drawing.Point(1203, 180);
+            this.cmbdatadepth.MaxDropDownItems = 4;
+            this.cmbdatadepth.Name = "cmbdatadepth";
+            this.cmbdatadepth.Size = new System.Drawing.Size(95, 24);
+            this.cmbdatadepth.TabIndex = 29;
+            this.cmbdatadepth.Tag = "datadepth";
+            this.cmbdatadepth.SelectedIndexChanged += new System.EventHandler(this.MIF_COMBO_BOX_CHANGED_INDEX);
+            // 
+            // cmbdatawidth
+            // 
+            this.cmbdatawidth.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbdatawidth.FormattingEnabled = true;
+            this.cmbdatawidth.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "4",
+            "8",
+            "16",
+            "32",
+            "64"});
+            this.cmbdatawidth.Location = new System.Drawing.Point(1102, 180);
+            this.cmbdatawidth.MaxDropDownItems = 4;
+            this.cmbdatawidth.Name = "cmbdatawidth";
+            this.cmbdatawidth.Size = new System.Drawing.Size(95, 24);
+            this.cmbdatawidth.TabIndex = 28;
+            this.cmbdatawidth.Tag = "datawidth";
+            this.cmbdatawidth.SelectedIndexChanged += new System.EventHandler(this.MIF_COMBO_BOX_CHANGED_INDEX);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1346, 664);
+            this.Controls.Add(this.lbldatamifdepth);
+            this.Controls.Add(this.lbldatamifwidth);
+            this.Controls.Add(this.lbldatamiftxt);
+            this.Controls.Add(this.cmbdatadepth);
+            this.Controls.Add(this.cmbdatawidth);
+            this.Controls.Add(this.lblinstmifdepth);
+            this.Controls.Add(this.lblinstmifwidth);
+            this.Controls.Add(this.lblinstmiftxt);
+            this.Controls.Add(this.cmbinstdepth);
+            this.Controls.Add(this.cmbinstwidth);
             this.Controls.Add(this.lblexception);
             this.Controls.Add(this.btncascopy);
             this.Controls.Add(this.lblNoErr);
@@ -307,7 +499,6 @@
         private System.Windows.Forms.Label lblErrInvlabel;
         private System.Windows.Forms.Label lblnumofinst;
         private System.Windows.Forms.Label lblnumofinsttxt;
-        private System.Windows.Forms.RichTextBox output;
         private System.Windows.Forms.Label lblcyclestxt;
         private System.Windows.Forms.Label lblcycles;
         private System.Windows.Forms.Label lblErrInfloop;
@@ -317,6 +508,17 @@
         private System.Windows.Forms.Label lblNoErr;
         private System.Windows.Forms.Button btncascopy;
         private System.Windows.Forms.Label lblexception;
+        private System.Windows.Forms.RichTextBox output;
+        private System.Windows.Forms.ComboBox cmbinstwidth;
+        private System.Windows.Forms.ComboBox cmbinstdepth;
+        private System.Windows.Forms.Label lblinstmiftxt;
+        private System.Windows.Forms.Label lblinstmifwidth;
+        private System.Windows.Forms.Label lblinstmifdepth;
+        private System.Windows.Forms.Label lbldatamifdepth;
+        private System.Windows.Forms.Label lbldatamifwidth;
+        private System.Windows.Forms.Label lbldatamiftxt;
+        private System.Windows.Forms.ComboBox cmbdatadepth;
+        private System.Windows.Forms.ComboBox cmbdatawidth;
     }
 }
 

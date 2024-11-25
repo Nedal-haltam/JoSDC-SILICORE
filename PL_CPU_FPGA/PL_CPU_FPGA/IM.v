@@ -18,7 +18,7 @@ initial begin
 for (i = 0; i < 1024; i = i + 1)
     InstMem[i] <= 0;
 
-// TODO: it will probably be changed to a MIF file in the modelsim simulation and FPGA prototyping
+// TODO: it will be changed to a MIF file in the modelsim simulation and FPGA prototyping
 `include "IM_INIT.INIT"
 
 

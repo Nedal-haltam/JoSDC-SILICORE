@@ -200,7 +200,7 @@ public static class ASSEMBLERMIPS
         }
         return mc;
     }
-    static bool isbranch(string mnem)
+    public static bool isbranch(string mnem)
     {
         return mnem == "beq" || mnem == "bne" || mnem == "blt" || mnem == "ble" || mnem == "bgt" || mnem == "bge";
     }
@@ -450,6 +450,7 @@ public static class ASSEMBLERMIPS
         labels.Clear();
         
         List<string> thecode = input.Lines.ToList();
+        thecode.Add("HLT");
         List<List<string>> insts = new List<List<string>>();
 
         thecode.RemoveAll(x => (string.Empty == x || string.IsNullOrEmpty(x) || string.IsNullOrWhiteSpace(x)));

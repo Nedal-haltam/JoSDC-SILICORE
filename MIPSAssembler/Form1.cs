@@ -42,9 +42,7 @@ namespace Assembler
             ASSEMBLERMIPS.input.Lines = input;
             (List<string> mc, List<List<string>> insts) = ASSEMBLERMIPS.TOP_MAIN();
             curr_mc = mc;
-            curr_mc.Add("11111100000000000000000000000000");
             curr_insts = insts;
-            curr_insts.Add(new List<string>() { "hlt" });
             lblErrInvinst.Visible = ASSEMBLERMIPS.lblinvinst.Visible;
             lblErrInvlabel.Visible = ASSEMBLERMIPS.lblinvlabel.Visible;
             lblErrMultlabels.Visible = ASSEMBLERMIPS.lblmultlabels.Visible;
@@ -66,7 +64,7 @@ namespace Assembler
             curr_data_dir.Clear();
             curr_text_dir.Clear();
 
-            if (data_index != -1)
+            if (data_index != -1 && text_index != -1)
             {
                 curr_data_dir = src.GetRange(data_index, text_index - data_index);
             }
@@ -341,9 +339,15 @@ SW $4, $0, 0
             for (int i = 0; i < curr_mc.Count; i++)
             {
                 string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
-                string inst = "";
-                curr_insts[i].ForEach(x => { inst += x + " "; });
-                string temp = ($"Bin: \"{curr_mc[i]}\", Hex: 0x{hex}; // {inst,-20}").Trim() + '\n';
+                List<string> inst = new List<string>();
+                curr_insts[i].ForEach(x => { inst.Add(x + " "); });
+                if (ASSEMBLERMIPS.isbranch(curr_insts[i][0]))
+                {
+                    inst[inst.Count - 1] = Convert.ToInt16(curr_mc[i].Substring(16), 2).ToString();
+                }
+                string string_inst = "";
+                inst.ForEach(x => string_inst += x);
+                string temp = ($"Bin: \"{curr_mc[i]}\", Hex: 0x{hex}; // {string_inst,-20}").Trim() + '\n';
                 tb_tocopy += temp;
             }
             if (tb_tocopy.Length > 0)
@@ -358,4 +362,21 @@ SW $4, $0, 0
         }
     }
 }
+/*
 
+.data
+array: .word 1, 2, 3, 4, 5
+
+.text
+main:
+
+addi x1, x1, 3
+
+beq x1, x0, LABEL
+
+add x2, x1, x1
+sub x3, x0, x2
+
+LABEL:
+
+*/

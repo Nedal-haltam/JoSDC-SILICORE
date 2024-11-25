@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -18,10 +19,15 @@ namespace Real_Time_CAS_ASSEM
         {
             InitializeComponent();
         }
-        List<string> curr_mc = new List<string>();
         List<List<string>> curr_insts = new List<List<string>>();
+        List<string> curr_mc = new List<string>();
+        List<string> curr_data = new List<string>();
         List<string> curr_data_dir = new List<string>();
         List<string> curr_text_dir = new List<string>();
+        int MIFinstwidth = 0;
+        int MIFinstdepth = 0;
+        int MIFdatawidth = 0;
+        int MIFdatadepth = 0;
         CPU_type curr_cpu = CPU_type.SingleCycle;
         System.Drawing.Point[] locations = new System.Drawing.Point[0];
         Label[] errors = new Label[0];
@@ -48,7 +54,6 @@ namespace Real_Time_CAS_ASSEM
             {
                 for (int i = 0; i < curr_mc.Count; i++)
                 {
-                    string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
                     string inst = "";
                     curr_insts[i].ForEach(x => { inst += x + " "; });
                     string temp = ($"\"{curr_mc[i]}\", // {inst,-20}").Trim() + '\n';
@@ -173,7 +178,7 @@ namespace Real_Time_CAS_ASSEM
             else if (excep == Exceptions.NONE && cycles != 0)
             {
                 lblcycles.Text = cycles.ToString();
-                StringBuilder  toout = get_regs_DM(regs, DM);
+                StringBuilder toout = get_regs_DM(regs, DM);
                 output.Lines = toout.ToString().Split('\n');
             }
             else
@@ -196,7 +201,7 @@ namespace Real_Time_CAS_ASSEM
         {
             int w = 1200;
             int h = 600;
-            int padding = 20;
+            int padding = 10;
             Width = (Width < w) ? w : Width;
             Height = (Height < h) ? h : Height;
             int p = Width / 3;
@@ -211,12 +216,11 @@ namespace Real_Time_CAS_ASSEM
             lblcyclestxt.Location = new System.Drawing.Point(lblnumofinst.Location.X + lblnumofinst.Size.Width + padding, output.Location.Y - lblnumofinsttxt.Size.Height);
             lblcycles.Location = new System.Drawing.Point(lblcyclestxt.Location.X + lblcyclestxt.Size.Width, lblcyclestxt.Location.Y);
 
-
-            cmbcpulist.Location = new System.Drawing.Point(output.Location.X + output.Width, output.Location.Y);
-            btntbcopy.Location = new System.Drawing.Point(cmbcpulist.Location.X, btntbcopy.Location.Y);
+            btntbcopy.Location = new System.Drawing.Point(output.Location.X + output.Width, btntbcopy.Location.Y);
+            cmbcpulist.Location = new System.Drawing.Point(btntbcopy.Location.X + btntbcopy.Width, btntbcopy.Location.Y);
             btncascopy.Location = new System.Drawing.Point(btntbcopy.Location.X - btntbcopy.Size.Width, btncascopy.Location.Y);
             
-            lblErr.Location = new System.Drawing.Point(cmbcpulist.Location.X, lblErr.Location.Y);
+            lblErr.Location = new System.Drawing.Point(btntbcopy.Location.X, lblErr.Location.Y);
             lblNoErr.Location = new System.Drawing.Point(lblErr.Location.X + lblErr.Size.Width, lblErr.Location.Y);
             lblexception.Location = new System.Drawing.Point(lblErr.Location.X, lblErr.Location.Y - lblexception.Size.Height - padding);
 
@@ -229,6 +233,22 @@ namespace Real_Time_CAS_ASSEM
             };
 
 
+            lblinstmiftxt.Location = new System.Drawing.Point(btntbcopy.Location.X, btntbcopy.Location.Y + btntbcopy.Size.Height + padding);
+
+            lblinstmifwidth.Location = new System.Drawing.Point(lblinstmiftxt.Location.X, lblinstmiftxt.Location.Y + lblinstmiftxt.Size.Height + padding);
+            cmbinstwidth.Location = new System.Drawing.Point(lblinstmifwidth.Location.X, lblinstmifwidth.Location.Y + lblinstmifwidth.Size.Height);
+
+            cmbinstdepth.Location = new System.Drawing.Point(cmbinstwidth.Location.X + cmbinstwidth.Size.Width, cmbinstwidth.Location.Y);
+            lblinstmifdepth.Location = new System.Drawing.Point(cmbinstdepth.Location.X, cmbinstdepth.Location.Y - lblinstmifdepth.Size.Height);
+
+
+            lbldatamiftxt.Location = new System.Drawing.Point(cmbinstwidth.Location.X, cmbinstwidth.Location.Y + cmbinstwidth.Size.Height + padding);
+
+            lbldatamifwidth.Location = new System.Drawing.Point(lbldatamiftxt.Location.X, lbldatamiftxt.Location.Y + lbldatamiftxt.Size.Height + padding);
+            cmbdatawidth.Location = new System.Drawing.Point(lbldatamifwidth.Location.X, lbldatamifwidth.Location.Y + lbldatamifwidth.Size.Height);
+
+            cmbdatadepth.Location = new System.Drawing.Point(cmbdatawidth.Location.X + cmbdatawidth.Size.Width, cmbdatawidth.Location.Y);
+            lbldatamifdepth.Location = new System.Drawing.Point(cmbdatadepth.Location.X, cmbdatadepth.Location.Y - lbldatamifdepth.Size.Height);
 
 
 
@@ -242,7 +262,6 @@ namespace Real_Time_CAS_ASSEM
         private void Form1_Load(object sender, EventArgs e)
         {
             layout_size();
-            cmbcpulist.SelectedIndex = 1;
             curr_cpu = (CPU_type)cmbcpulist.SelectedIndex;
             errors = new Label[] {
                 lblErrInfloop,
@@ -250,15 +269,52 @@ namespace Real_Time_CAS_ASSEM
                 lblErrInvlabel,
                 lblErrMultlabels,
             };
+
+            cmbcpulist.SelectedIndex = 1;
+            cmbinstdepth.SelectedIndex = 0;
+            cmbinstwidth.SelectedIndex = 0;
+            cmbdatawidth.SelectedIndex = 0;
+            cmbdatadepth.SelectedIndex = 0;
+        }
+
+        StringBuilder GetMIF(List<string> list, int width, int depth, int from_base)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"WIDTH={width};\n");
+            sb.Append($"DEPTH={depth};\n");
+            sb.Append("ADDRESS_RADIX=HEX;\n");
+            sb.Append("DATA_RADIX=HEX;\n");
+            sb.Append("CONTENT BEGIN\n");
+            int i;
+            for (i = 0; i < list.Count; i++)
+            {
+                string index = i.ToString("X").PadLeft(2, '0');
+                string val = Convert.ToInt32(list[i], from_base).ToString("X").PadLeft(8, '0');
+                sb.Append($"{index} : {val};\n");
+            }
+
+            sb.Append($"[{i}..{depth - 1}] : 0;\n");
+            sb.Append("END;\n");
+
+            return sb;
         }
 
         private void btntbcopy_Click(object sender, EventArgs e)
         {
             StringBuilder to_copy = get_insts_string(CopyType.TB_copy);
+            int i = 0;
+            to_copy.Append("\n\n");
+            curr_data.ForEach(x => to_copy.Append($"DataMem[{i++}] = 32'd{x};\n"));
             if (to_copy.Length > 0)
                 Clipboard.SetText(to_copy.ToString());
             else
                 Clipboard.SetText(" ");
+
+            StringBuilder inst_mif = GetMIF(curr_mc, MIFinstwidth, MIFinstdepth, 2);
+            File.WriteAllText("./INSTRUCTION_MIF_FILE.mif", inst_mif.ToString());
+
+            StringBuilder data_mif = GetMIF(curr_data, MIFdatawidth, MIFdatadepth, 10);
+            File.WriteAllText("./DATA_MIF_FILE.mif", data_mif.ToString());
         }
 
         private void cmbcpulist_SelectedIndexChanged(object sender, EventArgs e)
@@ -301,7 +357,8 @@ namespace Real_Time_CAS_ASSEM
             clean_comments(ref code);
             get_directives(code);
             List<string> mc = assemble(curr_text_dir.ToArray());
-
+            (_ , List<string> temp) = assemble_data_dir(curr_data_dir);
+            curr_data = temp;
 
             (int cycles, Exceptions excep, CPU cpu) = SimulateCPU(mc);
 
@@ -309,13 +366,34 @@ namespace Real_Time_CAS_ASSEM
 
             update(mc, cycles, excep, cpu.regs, cpu.DM);
 
-            lblNoErr.Visible = !(lblErrInfloop.Visible || lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible);
+            lblNoErr.Visible = !(lblErrInfloop.Visible || lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible || lblexception.Visible);
             
             int j = 0;
             for (int i = 0; i < errors.Length; i++)
             {
                 if (errors[i].Visible)
                     errors[i].Location = locations[j++];
+            }
+        }
+
+        private void MIF_COMBO_BOX_CHANGED_INDEX(object sender, EventArgs e)
+        {
+            int val = (int)Math.Pow(2, ((ComboBox)sender).SelectedIndex);
+            if (((ComboBox)sender).Tag.ToString() == "instwidth")
+            {
+                MIFinstwidth = val;
+            }    
+            else if (((ComboBox)sender).Tag.ToString() == "instdepth")
+            {
+                MIFinstdepth = val;
+            }
+            else if (((ComboBox)sender).Tag.ToString() == "datawidth")
+            {
+                MIFdatawidth = val;
+            }
+            else if (((ComboBox)sender).Tag.ToString() == "datadepth")
+            {
+                MIFdatadepth = val;
             }
         }
     }
