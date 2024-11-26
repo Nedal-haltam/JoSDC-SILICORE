@@ -1,6 +1,4 @@
-﻿using Raylib_cs;
-using static Raylib_cs.Raylib;
-using Color = Raylib_cs.Color;
+﻿using Color = Raylib_cs.Color;
 using Rectangle = Raylib_cs.Rectangle;
 
 enum Mode

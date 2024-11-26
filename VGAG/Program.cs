@@ -1,13 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Numerics;
-using System.Runtime.CompilerServices;
+﻿using System.Numerics;
 using System.Text;
 using Raylib_cs;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Raylib_cs.Raylib;
 using Color = Raylib_cs.Color;
 using Rectangle = Raylib_cs.Rectangle;
+
+
 
 Mode m = Mode.drawing;
 Color BrushColor = Color.White;
@@ -34,7 +32,7 @@ List<List<Cell>> InitGrid(Rectangle boundary)
 {
     Color BackColor = Color.Black;
     List<List<Cell>> grid = [];
-    int gap = (small) ? 0 : 1;
+    int gap = (small) ? 0 : 0;
     for (int i = 0; i < boundary.Height; i++)
     {
         List<Cell> rects = [];
@@ -74,6 +72,8 @@ void UpdateGrid_drawing(ref List<List<Cell>> grid, int delta)
                 temp.drawn = mousebtnL;
                 temp.color = c;
                 grid[i][j] = temp;
+                //if (small)
+                //{
                 for (int dy = i - delta; dy < i + delta; dy++)
                 {
                     for (int dx = j - delta; dx < j + delta; dx++)
@@ -92,6 +92,8 @@ void UpdateGrid_drawing(ref List<List<Cell>> grid, int delta)
                         }
                     }
                 }
+            //}
+
             }
             DrawRectangleRec(grid[i][j].rect, grid[i][j].color);
         }
@@ -492,7 +494,7 @@ unsafe void main()
 
     SetConfigFlags(ConfigFlags.AlwaysRunWindow);
     InitWindow(w, h, "VGAG");
-    SetTargetFPS(60); // maximum FPS
+    SetTargetFPS(0); // maximum FPS
 
     int x = (w / 2 - (OrigW) / 2);
     int y = (h / 2 - (OrigH) / 2);
