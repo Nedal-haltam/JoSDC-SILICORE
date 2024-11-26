@@ -46,7 +46,7 @@ namespace Epsilon
         void ErrorExpected(string msg)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Parser: Error Expected {msg} on line: {peek(-1).Value.Line}");
+            Console.WriteLine($"Parser: Error Expected {msg} on line: {peek().Value.Line}");
             Console.ResetColor();
             Environment.Exit(1);
         }
@@ -54,14 +54,14 @@ namespace Epsilon
         bool IsStmtDeclare()
         {
             return (peek(TokenType.Int, 0).HasValue) &&
-                   peek(TokenType.Ident, 1).HasValue &&
-                   peek(TokenType.Equal, 2).HasValue;
+                   peek(TokenType.Ident, 1).HasValue
+                   ;//&& peek(TokenType.Equal, 2).HasValue;
         }
 
         bool IsStmtAssign()
         {
             return peek(TokenType.Ident).HasValue &&
-                   peek(TokenType.Equal).HasValue;
+                   peek(TokenType.Equal, 1).HasValue;
         }
 
         bool IsBinExpr()
@@ -194,15 +194,29 @@ namespace Epsilon
                     declare.type = NodeStmtDeclare.NodeStmtDeclareType.Int;
                 }
                 declare.ident = consume();
-                consume();
-                NodeExpr? expr = ParseExpr();
-                if (expr.HasValue)
+                if (peek(TokenType.Equal).HasValue)
                 {
-                    declare.expr = expr.Value;
+                    consume();
+                    NodeExpr? expr = ParseExpr();
+                    if (expr.HasValue)
+                    {
+                        declare.expr = expr.Value;
+                    }
+                    else
+                    {
+                        ErrorExpected("expression");
+                    }
                 }
                 else
                 {
-                    ErrorExpected("expression");
+                    NodeExpr expr = new()
+                    {
+                        type = NodeExpr.NodeExprType.term
+                    };
+                    expr.term.type = NodeTerm.NodeTermType.intlit;
+                    expr.term.intlit.intlit.Type = TokenType.Int;
+                    expr.term.intlit.intlit.Value = "0";
+                    declare.expr = expr;
                 }
                 try_consume_err(TokenType.SemiColon);
                 NodeStmt stmt = new NodeStmt();

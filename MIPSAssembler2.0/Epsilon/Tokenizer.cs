@@ -59,13 +59,14 @@ namespace Epsilon
             int line = 1;
             while (peek().HasValue)
             {
+                char curr_token = peek().Value;
                 // it may be the follwing
                 // letter, digit , // (comment) , `(` , `)` , `[` , `]` , `,` , (+, -, <, >, &, |, ^, ~|, <<, >>) , `=` , `;` , `\n` (for line increament) , ` ` , else invalid token
-                if (char.IsAsciiLetter(peek().Value))
+                if (char.IsAsciiLetter(curr_token) || curr_token == '_')
                 {
                     buffer.Append(consume());
                     // if it is a letter we will consume until it is not IsAsciiLetterOrDigit
-                    while (peek().HasValue && char.IsAsciiLetterOrDigit(peek().Value))
+                    while (peek().HasValue && (char.IsAsciiLetterOrDigit(peek().Value) || peek('_').HasValue))
                     {
                         buffer.Append(consume());
                     }
@@ -102,7 +103,7 @@ namespace Epsilon
                     }
                     buffer.Clear();
                 }
-                else if (char.IsDigit(peek().Value))
+                else if (char.IsDigit(curr_token))
                 {
                     buffer.Append(consume());
                     while (peek().HasValue && char.IsDigit(peek().Value))
@@ -146,52 +147,53 @@ namespace Epsilon
                         consume();
                     }
                 }
-                else if (peek().Value == '(')
+                else if (curr_token == '(')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.OpenParen, Line = line });
                 }
-                else if (peek().Value == ')')
+                else if (curr_token == ')')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.CloseParen, Line = line });
                 }
-                else if (peek().Value == '[')
+                else if (curr_token == '[')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.OpenSquare, Line = line });
                 }
-                else if (peek().Value == ']')
+                else if (curr_token == ']')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.CloseSquare, Line = line });
                 }
-                else if (peek().Value == ',')
+                else if (curr_token == ',')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Comma, Line = line });
                 }
                 // operators
-                else if (peek().Value == '+')
+                else if (curr_token == '+')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Plus, Line = line });
                 }
-                else if (peek().Value == '-')
+                else if (curr_token == '-')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Minus, Line = line });
                 }
-                else if (peek().Value == '*')
+                else if (curr_token == '*')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.star, Line = line });
                 }
-                else if (peek().Value == '/')
+                else if (curr_token == '/')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.fslash, Line = line });
                 }
+
                 //else if (peek().Value == '<')
                 //{
                 //    buffer.Append(consume());
@@ -202,17 +204,17 @@ namespace Epsilon
                 //    buffer.Append(consume());
                 //    tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.GreaterThan, Line = line });
                 //}
-                else if (peek().Value == '&')
+                else if (curr_token == '&')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.And, Line = line });
                 }
-                else if (peek().Value == '|')
+                else if (curr_token == '|')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Or, Line = line });
                 }
-                else if (peek().Value == '^')
+                else if (curr_token == '^')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Xor, Line = line });
@@ -236,22 +238,22 @@ namespace Epsilon
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Nor, Line = line });
                 }
                 // end operators
-                else if (peek().Value == '=')
+                else if (curr_token == '=')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Equal, Line = line });
                 }
-                else if (peek().Value == ';')
+                else if (curr_token == ';')
                 {
                     buffer.Append(consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.SemiColon, Line = line });
                 }
-                else if (peek().Value == '\n')
+                else if (curr_token == '\n')
                 {
                     consume();
                     line++;
                 }
-                else if (char.IsWhiteSpace(peek().Value))
+                else if (char.IsWhiteSpace(curr_token))
                 {
                     consume();
                 }
@@ -259,7 +261,7 @@ namespace Epsilon
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
 
-                    Console.Error.WriteLine($"Invalid token: {peek().Value}");
+                    Console.Error.WriteLine($"Invalid token: {curr_token}");
                     Environment.Exit(1);
                     Console.ResetColor();
                 }

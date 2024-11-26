@@ -1,15 +1,6 @@
-/*
-sdfdsf
-sdfdsffsd
-f
-d
-*/
-int x = 1;
 
-int y = x + 1;  //df/sdfdsfdsfdsf
-// 2
-int z = x + y;
+int x_x;
 
-int nedal = z - (5 - 2) + 5;
+x_x = 10;
 
-return 0;
+int Y_Y = x_x + 10;
