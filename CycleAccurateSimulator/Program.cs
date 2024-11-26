@@ -67,8 +67,27 @@ namespace main
 
         static void Main()
         {
+            bool command = true;
+
             List<string> args = Environment.GetCommandLineArgs().ToList();
-            HandleCommand(args);
+            if (command)
+                HandleCommand(args);
+
+
+            if (!command)
+            {
+                mcs = [
+
+"00100000000000010000000001111011", // addi x1 x0 123
+"00000000001000010001000000100000", // add x2 x1 x1
+"00010000001000000000000000000011", // beq x1 x0 l
+"00000000010000010001100000100000", // add x3 x2 x1
+"00000000000000110010000000100010", // sub x4 x0 x3
+"11111100000000000000000000000000", // hlt
+
+                ];
+            }
+            
             StringBuilder sb = new StringBuilder();
             if (cpu_type == CPU_type.SingleCycle)
             {
@@ -88,7 +107,11 @@ namespace main
                 //sb.Append($"Exception Type : {excep.ToString()}");
                 sb.Append($"Number of cycles consumed : {cycles,10}\n");
             }
-            File.WriteAllText(output_filepath, sb.ToString());
+            if (!command)
+                Console.WriteLine( sb.ToString() );
+
+            if (command)
+                File.WriteAllText(output_filepath, sb.ToString());
         }
     }
 }
