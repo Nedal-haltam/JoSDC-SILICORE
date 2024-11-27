@@ -269,10 +269,32 @@ SW $4, $0, 0
         }
 
 
+        StringBuilder GetMIF(List<string> list, int width, int depth, int from_base)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"WIDTH={width};\n");
+            sb.Append($"DEPTH={depth};\n");
+            sb.Append("ADDRESS_RADIX=HEX;\n");
+            sb.Append("DATA_RADIX=HEX;\n");
+            sb.Append("CONTENT BEGIN\n");
+            int i;
+            for (i = 0; i < list.Count; i++)
+            {
+                string index = i.ToString("X").PadLeft(2, '0');
+                string val = Convert.ToInt32(list[i], from_base).ToString("X").PadLeft(8, '0');
+                sb.Append($"{index} : {val};\n");
+            }
+
+            sb.Append($"[{i}..{depth - 1}] : 0;\n");
+            sb.Append("END;\n");
+
+            return sb;
+        }
+
         void HandleCommand(List<string> args)
         {
             popF(ref args);
-            if (args.Count != 6)
+            if (args.Count != 8)
             {
                 assert("Missing arguments");
             }
@@ -282,6 +304,8 @@ SW $4, $0, 0
             string DM_filepath = popF(ref args);
             string IM_INIT_filepath = popF(ref args);
             string DM_INIT_filepath = popF(ref args);
+            string IM_MIF_filepath = popF(ref args);
+            string DM_MIF_filepath = popF(ref args);
             if (arg == "gen")
             {
                 List<string> src = File.ReadAllLines(source_filepath).ToList();
@@ -297,15 +321,25 @@ SW $4, $0, 0
                     mc.AddRange(curr_mc);
                 }
                 File.WriteAllLines(MC_filepath, mc);
+
                 List<string> IM_INIT = get_IM_INIT(mc);
                 File.WriteAllLines(IM_INIT_filepath, IM_INIT);
-
-
 
                 (List<string> DM_INIT, List<string> DM) = assemble_data_dir(curr_data_dir);
                 File.WriteAllLines(DM_filepath, DM);
                 File.WriteAllLines(DM_INIT_filepath, DM_INIT);
+
                 
+                StringBuilder sb = GetMIF(curr_mc, 32, 1024, 2);
+                File.WriteAllText(IM_MIF_filepath, sb.ToString());
+
+
+
+                sb.Clear();
+                sb = GetMIF(DM, 32, 1024, 10);
+                File.WriteAllText(DM_MIF_filepath, sb.ToString());
+                
+
                 Close(); // for now we will close and not parse any other commands
             }
             else
