@@ -13,8 +13,9 @@ ADDi  x22, x0, -1
 
 FOR_LOOP:
 
-
-BGE  x1, x20, EXIT
+SUB x31, x1, x20
+BGEZ x31, EXIT
+# BGE  x1, x20, EXIT
 LW   x8, x1, 0
 ADDI x2, x1, -1
 

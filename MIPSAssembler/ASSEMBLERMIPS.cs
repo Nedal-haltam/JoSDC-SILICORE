@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Authentication;
@@ -51,10 +52,10 @@ public static class ASSEMBLERMIPS
         { "beq"  , "000100" },
         { "bne"  , "000101" }, 
         
-        { "blt"  , "000110" }, 
-        { "ble"  , "000111" }, 
-        { "bgt"  , "001001" }, 
-        { "bge"  , "001010" }, 
+        //{ "blt"  , "000110" }, 
+        //{ "ble"  , "000111" }, 
+        //{ "bgt"  , "001001" }, 
+        //{ "bge"  , "001010" }, 
 
         // J-format
         { "j"    , "000010" },
@@ -103,10 +104,10 @@ public static class ASSEMBLERMIPS
             case "sw":
             case "beq":
             case "bne":
-            case "blt":
-            case "ble":
-            case "bgt":
-            case "bge":
+            //case "blt":
+            //case "ble":
+            //case "bgt":
+            //case "bge":
                 return InstType.itype;
             case "j":
             case "jal":
@@ -202,7 +203,7 @@ public static class ASSEMBLERMIPS
     }
     public static bool isbranch(string mnem)
     {
-        return mnem == "beq" || mnem == "bne" || mnem == "blt" || mnem == "ble" || mnem == "bgt" || mnem == "bge";
+        return mnem == "beq" || mnem == "bne";
     }
     static string getitypeinst(List<string> inst)
     {
@@ -319,27 +320,37 @@ public static class ASSEMBLERMIPS
 
     static bool is_pseudo_branch(string mnem)
     {
-        return mnem == "beqz" || mnem == "bnez" || mnem == "bltz" || mnem == "blez" || mnem == "bgtz" || mnem == "bgez";
+        return mnem == "bltz" || mnem == "bgez";
     }
 
 
-    static bool is_pseudo(string mnem, int token_count)
+    static bool is_pseudo(string mnem)
     {
-        if (is_pseudo_branch(mnem))
-        {
-            if (token_count == 3)
-                return true;
-        }
-        return false;
+        return is_pseudo_branch(mnem)/* || other pseudo insts*/;
     }
 
-    static void pseudo_to_inst(ref List<string> pseudo)
+    static List<List<string>> pseudo_to_inst(List<string> pseudo)
     {
-        if (is_pseudo_branch(pseudo[0]))
+        if (is_pseudo_branch(pseudo[0]) && pseudo.Count == 3)
         {
-            pseudo[0] = pseudo[0].Substring(0, 3);
-            pseudo.Insert(2, "$0");
+            if (pseudo[0] == "bltz")
+            {
+                return new List<List<string>>() {
+                new List<string>() {"slt", "x31", {pseudo[1]}, "x0" },
+                new List<string>() {"bne", "x31", "x0", {pseudo[2]} },
+            };
+
+            }
+            else if (pseudo[0] == "bgez")
+            {
+                return new List<List<string>>() {
+                new List<string>() {"slt", "x31", {pseudo[1]}, "x0" },
+                new List<string>() {"beq", "x31", "x0", {pseudo[2]} },
+            };
+
+            }
         }
+        return new List<List<string>>() { new List<string>() { invinst } };
     }
 
 
@@ -348,11 +359,13 @@ public static class ASSEMBLERMIPS
         for (int i = 0; i < insts.Count; i++)
         {
             List<string> inst = insts[i];
-            if (inst.Count > 0 && is_pseudo(inst[0], inst.Count))
+            if (inst.Count > 0 && is_pseudo(inst[0]))
             {
-                pseudo_to_inst(ref inst);
+                List<List<string>> replace = pseudo_to_inst(inst);
+                insts.RemoveAt(i);
+                insts.InsertRange(i, replace);
+                i = 0;
             }
-
         }
 
     }

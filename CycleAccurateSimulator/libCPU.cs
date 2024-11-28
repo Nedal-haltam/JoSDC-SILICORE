@@ -30,7 +30,7 @@ namespace ProjectCPUCL
         {
             add, addu, subu, sub, and, or, nor, slt, sgt, xor,
             addi, andi, ori, xori, slti, sll, srl,
-            beq, bne, blt, ble, bgt, bge,
+            beq, bne, /*blt, ble, bgt, bge,*/
             j, jr, jal,
             lw, sw,
             nop, hlt
@@ -170,10 +170,10 @@ namespace ProjectCPUCL
                 { "1000100" , Mnemonic.beq  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x44
                 { "1000101" , Mnemonic.bne  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x45
 
-                { "1000110", Mnemonic.blt },
-                { "1000111", Mnemonic.ble },
-                { "1001001", Mnemonic.bgt },
-                { "1001010", Mnemonic.bge }, 
+                //{ "1000110", Mnemonic.blt },
+                //{ "1000111", Mnemonic.ble },
+                //{ "1001001", Mnemonic.bgt },
+                //{ "1001010", Mnemonic.bge }, 
 
 
                 // J-format depends on opcode field
@@ -212,10 +212,10 @@ namespace ProjectCPUCL
                 case Mnemonic.subu: return Aluop.sub;
                 case Mnemonic.beq: return Aluop.add;
                 case Mnemonic.bne: return Aluop.add;
-                case Mnemonic.blt: return Aluop.add;
-                case Mnemonic.ble: return Aluop.add;
-                case Mnemonic.bgt: return Aluop.add;
-                case Mnemonic.bge: return Aluop.add;
+                //case Mnemonic.blt: return Aluop.add;
+                //case Mnemonic.ble: return Aluop.add;
+                //case Mnemonic.bgt: return Aluop.add;
+                //case Mnemonic.bge: return Aluop.add;
                 case Mnemonic.j: return Aluop.add;
                 case Mnemonic.jr: return Aluop.add;
                 case Mnemonic.jal: return Aluop.add;
@@ -247,10 +247,10 @@ namespace ProjectCPUCL
                 case Mnemonic.subu: return "R";
                 case Mnemonic.beq: return "I";
                 case Mnemonic.bne: return "I";
-                case Mnemonic.blt: return "I";
-                case Mnemonic.ble: return "I";
-                case Mnemonic.bgt: return "I";
-                case Mnemonic.bge: return "I";
+                //case Mnemonic.blt: return "I";
+                //case Mnemonic.ble: return "I";
+                //case Mnemonic.bgt: return "I";
+                //case Mnemonic.bge: return "I";
                 case Mnemonic.j: return "J";
                 case Mnemonic.jr: return "R";
                 case Mnemonic.jal: return "J";
@@ -316,20 +316,20 @@ namespace ProjectCPUCL
         public static bool isbranch_taken(Instruction inst)
         {
             return (inst.mnem == Mnemonic.beq && inst.oper1 == inst.oper2) ||
-                   (inst.mnem == Mnemonic.bne && inst.oper1 != inst.oper2) ||
-                   (inst.mnem == Mnemonic.blt && inst.oper1 < inst.oper2) ||
-                   (inst.mnem == Mnemonic.ble && inst.oper1 <= inst.oper2) ||
-                   (inst.mnem == Mnemonic.bgt && inst.oper1 > inst.oper2) ||
-                   (inst.mnem == Mnemonic.bge && inst.oper1 >= inst.oper2);
+                   (inst.mnem == Mnemonic.bne && inst.oper1 != inst.oper2);
+                   //(inst.mnem == Mnemonic.blt && inst.oper1 < inst.oper2) ||
+                   //(inst.mnem == Mnemonic.ble && inst.oper1 <= inst.oper2) ||
+                   //(inst.mnem == Mnemonic.bgt && inst.oper1 > inst.oper2) ||
+                   //(inst.mnem == Mnemonic.bge && inst.oper1 >= inst.oper2);
         }
         public static bool isbranch(Mnemonic mnem)
         {
             return mnem == Mnemonic.beq ||
-                   mnem == Mnemonic.bne ||
-                   mnem == Mnemonic.blt ||
-                   mnem == Mnemonic.ble ||
-                   mnem == Mnemonic.bgt ||
-                   mnem == Mnemonic.bge;
+                   mnem == Mnemonic.bne;
+                   //mnem == Mnemonic.blt ||
+                   //mnem == Mnemonic.ble ||
+                   //mnem == Mnemonic.bgt ||
+                   //mnem == Mnemonic.bge;
         }
         public static int get_oper1(Instruction inst)
         {
@@ -622,8 +622,8 @@ namespace ProjectCPUCL
             }
             else
             {
-                if (decoded.mnem == Mnemonic.beq || decoded.mnem == Mnemonic.bne || decoded.mnem == Mnemonic.blt || decoded.mnem == Mnemonic.ble
-                    || decoded.mnem == Mnemonic.bgt || decoded.mnem == Mnemonic.bge)
+                if (decoded.mnem == Mnemonic.beq || decoded.mnem == Mnemonic.bne /*|| decoded.mnem == Mnemonic.blt || decoded.mnem == Mnemonic.ble
+                    || decoded.mnem == Mnemonic.bgt || decoded.mnem == Mnemonic.bge*/)
                 {
                     pcsrc = PCsrc.pfc;
                     targetaddress = decoded.PC + decoded.immeds;
@@ -698,10 +698,10 @@ namespace ProjectCPUCL
             temp.aluout = execute_inst(temp);
             WrongPrediction = (temp.mnem == Mnemonic.beq && temp.oper1 != temp.oper2) ||
                               (temp.mnem == Mnemonic.bne && temp.oper1 == temp.oper2) ||
-                              (temp.mnem == Mnemonic.blt && temp.oper1 >= temp.oper2) ||
-                              (temp.mnem == Mnemonic.ble && temp.oper1 > temp.oper2) ||
-                              (temp.mnem == Mnemonic.bgt && temp.oper1 <= temp.oper2) ||
-                              (temp.mnem == Mnemonic.bge && temp.oper1 < temp.oper2) ||
+                              //(temp.mnem == Mnemonic.blt && temp.oper1 >= temp.oper2) ||
+                              //(temp.mnem == Mnemonic.ble && temp.oper1 > temp.oper2) ||
+                              //(temp.mnem == Mnemonic.bgt && temp.oper1 <= temp.oper2) ||
+                              //(temp.mnem == Mnemonic.bge && temp.oper1 < temp.oper2) ||
                               (temp.mnem == Mnemonic.jr);
             return temp;
         }
