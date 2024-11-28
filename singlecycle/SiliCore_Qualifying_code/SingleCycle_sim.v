@@ -15,7 +15,6 @@
 `include "ALU.v" 
 `include "BranchController.v" 
 `include "DM.v" 
-`include "exception_detection_unit.v"
 `include "processor.v"
 `endif
 

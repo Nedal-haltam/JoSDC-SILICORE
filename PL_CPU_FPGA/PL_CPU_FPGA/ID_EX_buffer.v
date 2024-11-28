@@ -2,12 +2,12 @@
 module ID_EX_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 					ID_PC, ID_INST, ID_Immed, ID_rs1, ID_rs2, ID_regwrite,
 					ID_memread, ID_memwrite, clk, ID_FLUSH, ID_PFC, ID_predicted, ID_is_oper2_immed,
-					ID_is_beq, ID_is_bne, ID_is_blt, ID_is_ble, ID_is_bgt, ID_is_bge,
+					ID_is_beq, ID_is_bne,
 					EX_opcode, EX_rs1_ind,
 					EX_rs2_ind, EX_rd_ind, EX_PC,
 					EX_INST, EX_Immed, EX_rs1,
 					EX_rs2, EX_regwrite, EX_memread, EX_memwrite, EX_PFC, EX_predicted, EX_is_oper2_immed, rst, 
-					EX_is_beq, EX_is_bne, EX_is_blt, EX_is_ble, EX_is_bgt, EX_is_bge);
+					EX_is_beq, EX_is_bne);
 					
 `include "opcodes.txt"
 	
@@ -21,13 +21,13 @@ module ID_EX_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 	output reg [4:0] EX_rs1_ind, EX_rs2_ind, EX_rd_ind;
 	output reg [31:0] EX_PC, EX_INST, EX_Immed, EX_rs1, EX_rs2, EX_PFC;
 	output reg EX_regwrite, EX_memread, EX_memwrite, EX_predicted, EX_is_oper2_immed, 
-			   EX_is_beq, EX_is_bne, EX_is_blt, EX_is_ble, EX_is_bgt, EX_is_bge;
+			   EX_is_beq, EX_is_bne;
 	
 	always@(posedge clk, posedge rst) begin
 		
 	if (rst) begin
 		{EX_opcode, EX_rs1_ind, EX_rs2_ind, EX_rd_ind, EX_PC, EX_INST, EX_Immed, EX_rs1, EX_rs2, EX_regwrite, EX_memread, 
-		EX_memwrite, EX_predicted, EX_is_oper2_immed, EX_is_beq, EX_is_bne, EX_is_blt, EX_is_ble, EX_is_bgt, EX_is_bge} <= 0;
+		EX_memwrite, EX_predicted, EX_is_oper2_immed, EX_is_beq, EX_is_bne} <= 0;
 	end
 	else if (!ID_FLUSH) begin
 		
@@ -48,14 +48,10 @@ module ID_EX_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 		EX_is_oper2_immed <= ID_is_oper2_immed;
 		EX_is_beq <= ID_is_beq; 
 		EX_is_bne <= ID_is_bne; 
-		EX_is_blt <= ID_is_blt; 
-		EX_is_ble <= ID_is_ble; 
-		EX_is_bgt <= ID_is_bgt; 
-		EX_is_bge <= ID_is_bge;
 		end 
 		else
 		{EX_opcode, EX_rs1_ind, EX_rs2_ind, EX_rd_ind, EX_PC, EX_INST, EX_Immed, EX_rs1, EX_rs2, EX_regwrite, EX_memread, 
-		EX_memwrite, EX_predicted, EX_is_oper2_immed, EX_is_beq, EX_is_bne, EX_is_blt, EX_is_ble, EX_is_bgt, EX_is_bge} <= 0;
+		EX_memwrite, EX_predicted, EX_is_oper2_immed, EX_is_beq, EX_is_bne} <= 0;
 		
 	end
 	

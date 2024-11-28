@@ -15,10 +15,6 @@ else if (excep_flag)
 	PCsrc <= 2'b10;
 else if (opcode == beq && operand1 == operand2 || 
          opcode == bne && operand1 != operand2 ||
-         opcode == blt && $signed(operand1) < $signed(operand2) ||
-         opcode == ble && $signed(operand1) <= $signed(operand2) ||
-         opcode == bgt && $signed(operand1) > $signed(operand2) ||
-         opcode == bge && $signed(operand1) >= $signed(operand2) ||
 		 opcode == j || opcode == jal || (opcode == 0 && funct == jr))
 	PCsrc <= 2'b01;
 else

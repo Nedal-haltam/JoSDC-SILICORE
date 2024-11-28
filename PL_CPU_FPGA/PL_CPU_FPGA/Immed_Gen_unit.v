@@ -36,7 +36,7 @@ module Immed_Gen_unit(Inst, opcode, Immed);
 				Immed <= {32'd0 , Inst[25:0]};
 			
 			else if (opcode == addi || opcode == lw || opcode == sw || 
-			         opcode == beq || opcode == bne || opcode == blt || opcode == ble || opcode == bgt || opcode == bge || opcode == slti)
+			         opcode == beq || opcode == bne || opcode == slti)
 				Immed <= {{32{Inst[15]}} , Inst[15:0]};
 				
 				

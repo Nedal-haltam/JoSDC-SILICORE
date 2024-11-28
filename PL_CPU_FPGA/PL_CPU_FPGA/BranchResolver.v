@@ -10,7 +10,12 @@ module BranchResolver(PC_src, exception_flag, opcode, predicted, Wrong_predictio
 	
 `include "opcodes.txt"
 
-assign predicted = (opcode == beq || opcode == bne || opcode == blt || opcode == ble || opcode == bgt || opcode == bge || opcode == jr) ? 1'b1 : 0;
+// TODO: the JR instruction always jumps but the problem me occur when there is a dependecy on the previous instructions
+//		 so it may introduce a bubble if there is (because forwarding it the value to the decode stage will make the perfomace worse)
+//		 but the other case is when there is no such dependency so it can jump and change the PC without delaying or introducing a bubble
+
+assign predicted = (opcode == beq || opcode == bne || opcode == jr) ? 1'b1 : 0;
+
 
 assign PC_src = (exception_flag) ? 3'b001 : 
 (
@@ -18,9 +23,8 @@ assign PC_src = (exception_flag) ? 3'b001 :
 		(
 			(opcode == hlt_inst) ? 3'b011 : 
 				(
-					(opcode == beq || opcode == bne || opcode == blt || opcode == ble || opcode == bgt || opcode == bge || opcode == j || opcode == jal) ? 3'b010 : 0
+					(opcode == beq || opcode == bne /*|| opcode == blt || opcode == ble || opcode == bgt || opcode == bge*/ || opcode == j || opcode == jal) ? 3'b010 : 0
 				)
-
 		)
 );
 

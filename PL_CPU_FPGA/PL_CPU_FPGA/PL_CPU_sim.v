@@ -32,7 +32,6 @@
 `include "StallDetectionUnit.v"
 `include "Immed_Gen_unit.v"
 `include "CompareEqual.v"
-`include "CompareLessThan.v"
 `include "BranchDecision.v"
 `include "CPU5STAGE.v"
 

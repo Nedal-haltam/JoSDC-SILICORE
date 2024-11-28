@@ -48,15 +48,6 @@ always@(*) begin
 
 	end
 
-    else if (if_id_opcode == beq || if_id_opcode == bne || if_id_opcode == blt || if_id_opcode == ble || if_id_opcode == bgt || if_id_opcode == bge) begin 
-	// static prediction (for now)
-		
-		PC_Write <= 1'b1;
-		if_id_Write <= 1'b1;
-		if_id_flush <= 0;
-		id_ex_flush <= 0;
-
-    end      
     else begin
 		// otherwise we operate normally
 		PC_Write <= 1'b1; // we update the PC

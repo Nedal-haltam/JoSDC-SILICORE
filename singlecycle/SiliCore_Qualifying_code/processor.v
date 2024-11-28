@@ -53,7 +53,6 @@ end
 
 BranchController branchcontroller(.opcode(opcode), .funct(funct), .operand1(readData1), .operand2(ALUin2), .excep_flag(excep_flag), .PCsrc(PCsrc), .rst(rst));
 
-exception_detect_unit EDU(PC, opcode, funct, excep_flag, clk, rst);
 
 assign PCPlus1 = PC + 32'd1;
 assign adderResult = (opcode == jal || opcode == j) ? address : 

@@ -1,5 +1,5 @@
 
-module control_unit(opcode, regwrite, memread, memwrite, is_oper2_immed, is_beq, is_bne, is_blt, is_ble, is_bgt, is_bge);
+module control_unit(opcode, regwrite, memread, memwrite, is_oper2_immed, is_beq, is_bne);
 
    input [6:0] 	opcode;
 	
@@ -18,12 +18,13 @@ assign is_oper2_immed = (opcode == addi || opcode == andi || opcode == ori ||
 
 assign is_beq = opcode == beq;
 assign is_bne = opcode == bne;
-assign is_blt = opcode == blt;
-assign is_ble = opcode == ble;
-assign is_bgt = opcode == bgt;
-assign is_bge = opcode == bge;
+// assign is_blt = opcode == blt;
+// assign is_ble = opcode == ble;
+// assign is_bgt = opcode == bgt;
+// assign is_bge = opcode == bge;
 
-assign regwrite = (!(opcode == jr || opcode == sw || opcode == beq || opcode == bne || opcode == blt || opcode == ble || opcode == bgt || opcode == bge || opcode == j));
+assign regwrite = (!(opcode == jr || opcode == sw || opcode == beq || opcode == bne || 
+				    /*opcode == blt || opcode == ble || opcode == bgt || opcode == bge ||*/ opcode == j));
 assign memread = opcode == lw;
 assign memwrite = opcode == sw;
 
