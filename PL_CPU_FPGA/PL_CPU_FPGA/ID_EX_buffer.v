@@ -15,7 +15,7 @@ module ID_EX_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 	input [4:0] ID_rs1_ind, ID_rs2_ind, ID_rd_ind;
 	input [31:0] ID_PC, ID_INST, ID_Immed, ID_rs1, ID_rs2, ID_PFC;
 	input ID_regwrite, ID_memread, ID_memwrite, clk;
-	input ID_FLUSH, rst, ID_predicted, ID_is_oper2_immed, ID_is_beq, ID_is_bne, ID_is_blt, ID_is_ble, ID_is_bgt, ID_is_bge;
+	input ID_FLUSH, rst, ID_predicted, ID_is_oper2_immed, ID_is_beq, ID_is_bne;
 	
 	output reg [6:0] EX_opcode;
 	output reg [4:0] EX_rs1_ind, EX_rs2_ind, EX_rd_ind;

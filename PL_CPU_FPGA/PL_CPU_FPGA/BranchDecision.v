@@ -4,12 +4,13 @@ module BranchDecision(
     );
 
 input [31:0] oper1, oper2;
-input is_beq, is_bne, is_blt, is_ble, is_bgt, is_bge;
+input is_beq, is_bne;
 
 output BranchDecision;
 
-wire is_beq_taken, is_bne_taken, is_blt_taken, is_ble_taken, is_bgt_taken, is_bge_taken;
-wire is_eq, is_lt;
+
+wire is_beq_taken, is_bne_taken;
+wire is_eq;
 
 compare_equal cmp1(is_eq, oper1, oper2);
 // assign is_eq = oper1 == oper2;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Authentication;
 using System.Windows.Forms;
@@ -18,10 +19,13 @@ public static class ASSEMBLERMIPS
     public static Label lblnumofinst = new Label();
     public static Label lblinvinst = new Label();
     public static RichTextBox input = new RichTextBox();
+    static List<string> REG_LIST = new List<string>()
+    { "zero", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",
+      "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra"};
     // The instruction type is the main token in a given instruction and should be known the first token in an instruction (first word)
     // the opcodes is a dictionary the you give it a certain opcode (in words) and get beack the binaries (or machine code) corresponding to that opcode
     // take a look to know what to expect because the binary might be different depending on the opcode some of them only opcode or with func3 or even with func7
-    public static Dictionary<string, string> opcodes = new Dictionary<string, string>()//{ "inst"     , "opcode/funct" },
+    static Dictionary<string, string> opcodes = new Dictionary<string, string>()//{ "inst"     , "opcode/funct" },
     {
         { "nop"  , "000000" },
         { "hlt"  , "111111" },
@@ -120,22 +124,24 @@ public static class ASSEMBLERMIPS
     // it takes as input the register name and extracts the index form it
     static string getregindex(string reg)
     {
-        string index = invinst;
-        if (reg.StartsWith("x") || reg.StartsWith("$"))
+        if (reg.StartsWith("x"))
         {
-            index = reg.Substring(1);
-            if (index == "zero")
-                index = "0";
+            string index = reg.Substring(1);
+            if (byte.TryParse(index, out byte usb) && usb >= 0 && usb <= 31)
+            {
+                return Convert.ToString(usb, 2).PadLeft(5, '0');
+            }
+            else
+                return invinst;
         }
-        else
-            return index;
-
-        if (byte.TryParse(index, out byte usb) && usb >= 0 && usb <= 31)
+        else if (reg.StartsWith("$"))
         {
-            return Convert.ToString(usb, 2).PadLeft(5, '0');
+            string name = reg.Substring(1);
+            return Convert.ToString(REG_LIST.IndexOf(name), 2).PadLeft(5, '0');
         }
         else
             return invinst;
+
     }
 
     // the following functions are used to tokenize, parse, and then generate the corresponding machine code for every 
