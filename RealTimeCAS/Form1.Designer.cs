@@ -70,6 +70,7 @@
             this.input.TabIndex = 7;
             this.input.Text = "";
             this.input.TextChanged += new System.EventHandler(this.input_TextChanged);
+            this.input.KeyDown += new System.Windows.Forms.KeyEventHandler(this.input_KeyDown);
             // 
             // timer1
             // 

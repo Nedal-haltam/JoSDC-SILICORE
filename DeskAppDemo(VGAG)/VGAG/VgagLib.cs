@@ -581,11 +581,12 @@ namespace VGAG
                     }
                     if (IsKeyPressed(KeyboardKey.S))
                     {
-                        OpenFileDialog fileDialog = new OpenFileDialog();
+                        SaveFileDialog fileDialog = new SaveFileDialog();
+                        fileDialog.AddExtension = true;
                         DialogResult dialogResult = fileDialog.ShowDialog();
                         if (dialogResult == DialogResult.OK)
                         {
-                            string filepath = fileDialog.FileName;
+                            string filepath = fileDialog.FileName + ".mif";
                             List<List<Color>> gridc = GetGridColor(ref grid);
                             VGAG(ref gridc, filepath, 12);
                         }

@@ -50,12 +50,12 @@ public static class ASSEMBLERMIPS
         { "lw"   , "100011" },
         { "sw"   , "101011" },
         { "beq"  , "000100" },
-        { "bne"  , "000101" },
-
-        { "blt"  , "000110" },
-        { "ble"  , "000111" },
-        { "bgt"  , "001001" },
-        { "bge"  , "001010" }, 
+        { "bne"  , "000101" }, 
+        
+        //{ "blt"  , "000110" }, 
+        //{ "ble"  , "000111" }, 
+        //{ "bgt"  , "001001" }, 
+        //{ "bge"  , "001010" }, 
 
         // J-format
         { "j"    , "000010" },
@@ -104,10 +104,10 @@ public static class ASSEMBLERMIPS
             case "sw":
             case "beq":
             case "bne":
-            case "blt":
-            case "ble":
-            case "bgt":
-            case "bge":
+                //case "blt":
+                //case "ble":
+                //case "bgt":
+                //case "bge":
                 return InstType.itype;
             case "j":
             case "jal":
@@ -203,7 +203,7 @@ public static class ASSEMBLERMIPS
     }
     public static bool isbranch(string mnem)
     {
-        return mnem == "beq" || mnem == "bne" || mnem == "blt" || mnem == "ble" || mnem == "bgt" || mnem == "bge";
+        return mnem == "beq" || mnem == "bne";
     }
     static string getitypeinst(List<string> inst)
     {

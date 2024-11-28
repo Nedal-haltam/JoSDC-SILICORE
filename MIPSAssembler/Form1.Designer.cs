@@ -54,6 +54,7 @@
             this.input.TabIndex = 0;
             this.input.Text = "";
             this.input.TextChanged += new System.EventHandler(this.Input_TextChanged);
+            this.input.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Assembler_KeyDown);
             // 
             // timer1
             // 

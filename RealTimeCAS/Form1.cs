@@ -396,6 +396,24 @@ namespace Real_Time_CAS_ASSEM
                 MIFdatadepth = val;
             }
         }
+
+        private void input_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.S)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                DialogResult dialogResult = saveFileDialog.ShowDialog();
+                if (dialogResult == DialogResult.OK)
+                {
+                    string file_path = saveFileDialog.FileName;
+
+                    List<string> saved = new List<string>();
+                    saved.Add("# CODE");
+                    saved.AddRange(input.Lines.ToList());
+                    File.WriteAllLines(file_path, saved.ToArray());
+                }
+            }
+        }
     }
 }
 

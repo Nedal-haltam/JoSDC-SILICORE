@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Windows.Forms;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
@@ -24,12 +26,12 @@ namespace Assembler
         List<string> curr_data_dir = new List<string>();
         List<string> curr_mc = new List<string>();
         List<List<string>> curr_insts = new List<List<string>>();
-        List<string> hlt_seq = new List<string>() {
+        List<string> excep_mc = new List<string>() {
                     "11111100000000000000000000000000", // hlt
                     "00100000000111111111111111111111", // addi x31 x0 -1
                     "11111100000000000000000000000000", // hlt
                 };
-        List<List<string>> hlt_seq_insts = new List<List<string>>()
+        List<List<string>> excep_insts = new List<List<string>>()
                 {
                     new List<string>(){ "hlt" },
                     new List<string>(){ "addi", "x31", "x0", "-1" },
@@ -48,7 +50,7 @@ namespace Assembler
             lblErrMultlabels.Visible = ASSEMBLERMIPS.lblmultlabels.Visible;
 
 
-            curr_insts.AddRange(hlt_seq_insts);
+            curr_insts.AddRange(excep_insts);
 
             lblNoErr.Visible = !(lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible);
         }
@@ -256,37 +258,79 @@ SW $4, $0, 0
                 IM_INIT.Add(get_entry_IM_INIT(mc[i], inst, i));
             }
             int HANDLER_ADDR = 1000;
-            for (int i = 0; i < hlt_seq.Count; i++)
+            for (int i = 0; i < excep_mc.Count; i++)
             {
                 string inst = "";
-                foreach (string tt in curr_insts[i])
+                foreach (string tt in curr_insts[mc.Count + i])
                     inst += tt + " ";
-                IM_INIT.Add(get_entry_IM_INIT(hlt_seq[i], inst, HANDLER_ADDR - 1 + i));
+                IM_INIT.Add(get_entry_IM_INIT(excep_mc[i], inst, HANDLER_ADDR - 1 + i));
             }
 
 
             return IM_INIT;
         }
 
+        string GetMIFentry(string addr, string value)
+        {
+            return $"{addr} : {value};";
+        }
+        StringBuilder ToMIFentries(int start_address, List<string> list, int width, int from_base)
+        {
+            StringBuilder sb = new StringBuilder();
 
-        StringBuilder GetMIF(List<string> list, int width, int depth, int from_base)
+            for (int i = 0; i < list.Count; i++)
+            {
+                string address = (start_address + i).ToString("X");
+                string value = Convert.ToInt32(list[i], from_base).ToString("X").PadLeft(width / 4, '0');
+                string entry = GetMIFentry(address, value);
+                sb.Append(entry + '\n');
+            }
+
+            return sb;
+        }
+
+        StringBuilder GetMIFHeader(int width, int depth, string address_radix, string data_radix)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"WIDTH={width};\n");
             sb.Append($"DEPTH={depth};\n");
-            sb.Append("ADDRESS_RADIX=HEX;\n");
-            sb.Append("DATA_RADIX=HEX;\n");
+            sb.Append($"ADDRESS_RADIX={address_radix};\n");
+            sb.Append($"DATA_RADIX={data_radix};\n");
             sb.Append("CONTENT BEGIN\n");
-            int i;
-            for (i = 0; i < list.Count; i++)
-            {
-                string index = i.ToString("X").PadLeft(2, '0');
-                string val = Convert.ToInt32(list[i], from_base).ToString("X").PadLeft(8, '0');
-                sb.Append($"{index} : {val};\n");
-            }
 
-            sb.Append($"[{i}..{depth - 1}] : 0;\n");
-            sb.Append("END;\n");
+            return sb;
+        }
+
+        StringBuilder GetMIFTail()
+        {
+            return new StringBuilder("END;\n");
+        }
+
+        StringBuilder GetIMMIF()
+        {
+            int width = 32;
+            int depth = 1024;
+            int from_base = 2;
+            StringBuilder sb = new StringBuilder();
+            sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
+            sb.Append(ToMIFentries(0, curr_mc, width, from_base));
+            sb.Append($"[{curr_mc.Count}..{depth - excep_mc.Count - 1}] : 0;\n");
+            sb.Append(ToMIFentries(depth - excep_mc.Count, excep_mc, width, from_base));
+            sb.Append(GetMIFTail());
+
+            return sb;
+        }
+
+        StringBuilder GetDMMIF(List<string> DM)
+        {
+            int width = 32;
+            int depth = 1024;
+            int from_base = 10;
+            StringBuilder sb = new StringBuilder();
+            sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
+            sb.Append(ToMIFentries(0, DM, width, from_base));
+            sb.Append($"[{DM.Count}..{depth - 1}] : 0;\n");
+            sb.Append(GetMIFTail());
 
             return sb;
         }
@@ -329,22 +373,16 @@ SW $4, $0, 0
                 File.WriteAllLines(DM_filepath, DM);
                 File.WriteAllLines(DM_INIT_filepath, DM_INIT);
 
-                
-                StringBuilder sb = GetMIF(curr_mc, 32, 1024, 2);
-                File.WriteAllText(IM_MIF_filepath, sb.ToString());
 
-
-
-                sb.Clear();
-                sb = GetMIF(DM, 32, 1024, 10);
-                File.WriteAllText(DM_MIF_filepath, sb.ToString());
+                File.WriteAllText(IM_MIF_filepath, GetIMMIF().ToString());
+                File.WriteAllText(DM_MIF_filepath, GetDMMIF(DM).ToString());
                 
 
                 Close(); // for now we will close and not parse any other commands
             }
             else
             {
-                assert($"Invalid argument {arg}");
+                assert($"Invalid argument: {arg}");
             }
         }
 
@@ -391,26 +429,25 @@ SW $4, $0, 0
 
             /*
             Bin: "00100000000000010000000000000001", Hex: 0x20010001; // addi x1 x0 1
+            */
+        }
 
-             */
+        private void Assembler_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.S)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                DialogResult dialogResult = saveFileDialog.ShowDialog();
+                if (dialogResult == DialogResult.OK)
+                {
+                    string file_path = saveFileDialog.FileName;
+
+                    List<string> saved = new List<string>();
+                    saved.Add("# CODE");
+                    saved.AddRange(input.Lines.ToList());
+                    File.WriteAllLines(file_path, saved.ToArray());
+                }
+            }
         }
     }
 }
-/*
-
-.data
-array: .word 1, 2, 3, 4, 5
-
-.text
-main:
-
-addi x1, x1, 3
-
-beq x1, x0, LABEL
-
-add x2, x1, x1
-sub x3, x0, x2
-
-LABEL:
-
-*/
