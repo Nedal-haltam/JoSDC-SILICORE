@@ -1,14 +1,10 @@
-﻿using ProjectCPUCL;
+﻿
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using static ProjectCPUCL.MIPS;
 
 
 namespace Real_Time_CAS_ASSEM
@@ -28,7 +24,7 @@ namespace Real_Time_CAS_ASSEM
         int MIFinstdepth = 0;
         int MIFdatawidth = 0;
         int MIFdatadepth = 0;
-        CPU_type curr_cpu = CPU_type.SingleCycle;
+        LibCPU.CPU_type curr_cpu = LibCPU.CPU_type.SingleCycle;
         System.Drawing.Point[] locations = new System.Drawing.Point[0];
         Label[] errors = new Label[0];
         enum CopyType
@@ -79,14 +75,14 @@ namespace Real_Time_CAS_ASSEM
         }
         List<string> assemble(string[] input)
         {
-            ASSEMBLERMIPS.input.Lines = input;
-            (List<string> mc, List<List<string>> insts) = ASSEMBLERMIPS.TOP_MAIN();
+            MIPSASSEMBLER.MIPSASSEMBLER.input = input;
+            (List<string> mc, List<List<string>> insts) = MIPSASSEMBLER.MIPSASSEMBLER.TOP_MAIN();
             curr_mc = mc;
             curr_insts = insts;
-            lblErrInvinst.Visible = ASSEMBLERMIPS.lblinvinst.Visible;
-            lblErrInvlabel.Visible = ASSEMBLERMIPS.lblinvlabel.Visible;
-            lblErrMultlabels.Visible = ASSEMBLERMIPS.lblmultlabels.Visible;
-            lblnumofinst.Text = ASSEMBLERMIPS.lblnumofinst.Text;
+            lblErrInvinst.Visible = MIPSASSEMBLER.MIPSASSEMBLER.lblinvinst;
+            lblErrInvlabel.Visible = MIPSASSEMBLER.MIPSASSEMBLER.lblinvlabel;
+            lblErrMultlabels.Visible = MIPSASSEMBLER.MIPSASSEMBLER.lblmultlabels;
+            lblnumofinst.Text = MIPSASSEMBLER.MIPSASSEMBLER.lblnumofinst;
             return mc;
         }
         (List<string>, List<string>) assemble_data_dir(List<string> data_dir)
@@ -133,49 +129,49 @@ namespace Real_Time_CAS_ASSEM
 
             return (DM_INIT, DM_vals);
         }
-        (int, Exceptions, CPU) SimulateCPU(List<string> mc)
+        (int, LibCPU.MIPS.Exceptions, LibCPU.MIPS.CPU) SimulateCPU(List<string> mc)
         {
             (_, List<string> dm_vals) = assemble_data_dir(curr_data_dir);
-            CPU cpu = new CPU().Init();
-            if (curr_cpu == CPU_type.SingleCycle)
+            LibCPU.MIPS.CPU cpu = new LibCPU.MIPS.CPU().Init();
+            if (curr_cpu == LibCPU.CPU_type.SingleCycle)
             {
-                SingleCycle sc = new SingleCycle(mc, dm_vals);
-                (int cycles, Exceptions excep) = sc.Run();
+                LibCPU.SingleCycle sc = new LibCPU.SingleCycle(mc, dm_vals);
+                (int cycles, LibCPU.MIPS.Exceptions excep) = sc.Run();
                 cpu.regs = sc.regs;
                 cpu.DM = sc.DM;
                 return (cycles, excep, cpu);
             }
-            else if (curr_cpu == CPU_type.PipeLined)
+            else if (curr_cpu == LibCPU.CPU_type.PipeLined)
             {
-                CPU5STAGE pl = new CPU5STAGE(mc, dm_vals);
-                (int cycles, Exceptions excep) = pl.Run();
+                LibCPU.CPU5STAGE pl = new LibCPU.CPU5STAGE(mc, dm_vals);
+                (int cycles, LibCPU.MIPS.Exceptions excep) = pl.Run();
                 cpu.regs = pl.regs;
                 cpu.DM = pl.DM;
                 return (cycles, excep, cpu);
             }
             else
-                return (0, Exceptions.EXCEPTION, new CPU());
+                return (0, LibCPU.MIPS.Exceptions.EXCEPTION, new LibCPU.MIPS.CPU());
         }
 
         StringBuilder get_regs_DM(List<int> regs, List<string> DM)
         {
             //List<string> toout = new List<string>();
             StringBuilder toout = new StringBuilder();
-            toout.Append(get_regs(regs));
-            toout.Append(get_DM(DM));
+            toout.Append(LibCPU.MIPS.get_regs(regs));
+            toout.Append(LibCPU.MIPS.get_DM(DM));
             return toout;
         }
-        void update(List<string> mc, int cycles, Exceptions excep, List<int> regs, List<string> DM)
+        void update(List<string> mc, int cycles, LibCPU.MIPS.Exceptions excep, List<int> regs, List<string> DM)
         {
-            if (excep == Exceptions.INVALID_INST)
+            if (excep == LibCPU.MIPS.Exceptions.INVALID_INST)
             {
                 lblcycles.Text = "0";
             }
-            else if (excep == Exceptions.INF_LOOP)
+            else if (excep == LibCPU.MIPS.Exceptions.INF_LOOP)
             {   
                 lblErrInfloop.Visible = true;
             }
-            else if (excep == Exceptions.NONE && cycles != 0)
+            else if (excep == LibCPU.MIPS.Exceptions.NONE && cycles != 0)
             {
                 lblcycles.Text = cycles.ToString();
                 StringBuilder toout = get_regs_DM(regs, DM);
@@ -262,7 +258,7 @@ namespace Real_Time_CAS_ASSEM
         private void Form1_Load(object sender, EventArgs e)
         {
             layout_size();
-            curr_cpu = (CPU_type)cmbcpulist.SelectedIndex;
+            curr_cpu = (LibCPU.CPU_type)cmbcpulist.SelectedIndex;
             errors = new Label[] {
                 lblErrInfloop,
                 lblErrInvinst,
@@ -360,7 +356,7 @@ namespace Real_Time_CAS_ASSEM
 
         private void cmbcpulist_SelectedIndexChanged(object sender, EventArgs e)
         {
-            curr_cpu = (CPU_type)cmbcpulist.SelectedIndex;
+            curr_cpu = (LibCPU.CPU_type)cmbcpulist.SelectedIndex;
             input_TextChanged(input, e);
         }
 
@@ -401,9 +397,9 @@ namespace Real_Time_CAS_ASSEM
             (_ , List<string> temp) = assemble_data_dir(curr_data_dir);
             curr_data = temp;
 
-            (int cycles, Exceptions excep, CPU cpu) = SimulateCPU(mc);
+            (int cycles, LibCPU.MIPS.Exceptions excep, LibCPU.MIPS.CPU cpu) = SimulateCPU(mc);
 
-            lblexception.Visible = excep != Exceptions.NONE;
+            lblexception.Visible = excep != LibCPU.MIPS.Exceptions.NONE;
 
             update(mc, cycles, excep, cpu.regs, cpu.DM);
 

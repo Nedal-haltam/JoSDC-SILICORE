@@ -1,6 +1,5 @@
-﻿using ProjectCPUCL;
+﻿
 using System.Text;
-using static ProjectCPUCL.MIPS;
 
 namespace main
 {
@@ -25,7 +24,7 @@ namespace main
         static string dm_filepath = "";
         static List<string> data_mem_init = [];
         static string output_filepath = "";
-        static CPU_type cpu_type = CPU_type.SingleCycle;
+        static LibCPU.CPU_type cpu_type = LibCPU.CPU_type.SingleCycle;
         static void HandleCommand(List<string> args)
         {
             popF(ref args);
@@ -46,11 +45,11 @@ namespace main
                 data_mem_init = File.ReadAllLines(dm_filepath).ToList();
                 if (cputype == "singlecycle")
                 {
-                    cpu_type = CPU_type.SingleCycle;
+                    cpu_type = LibCPU.CPU_type.SingleCycle;
                 }
                 else if (cputype == "pipeline")
                 {
-                    cpu_type = CPU_type.PipeLined;
+                    cpu_type = LibCPU.CPU_type.PipeLined;
                 }
                 else
                 {
@@ -83,21 +82,21 @@ namespace main
             }
             
             StringBuilder sb = new StringBuilder();
-            if (cpu_type == CPU_type.SingleCycle)
+            if (cpu_type == LibCPU.CPU_type.SingleCycle)
             {
-                SingleCycle cpu = new(mcs, data_mem_init);
-                (int cycles, Exceptions excep) = cpu.Run();
-                sb.Append(get_regs(cpu.regs).ToString());
-                sb.Append(get_DM(cpu.DM).ToString());
+                LibCPU.SingleCycle cpu = new(mcs, data_mem_init);
+                (int cycles, LibCPU.MIPS.Exceptions excep) = cpu.Run();
+                sb.Append(LibCPU.MIPS.get_regs(cpu.regs));
+                sb.Append(LibCPU.MIPS.get_DM(cpu.DM));
                 //sb.Append($"Exception Type : {excep.ToString()}");
                 sb.Append($"Number of cycles consumed : {cycles,10}\n");
             }
-            else if (cpu_type == CPU_type.PipeLined)
+            else if (cpu_type == LibCPU.CPU_type.PipeLined)
             {
-                CPU5STAGE cpu = new(mcs, data_mem_init);
-                (int cycles, Exceptions excep) = cpu.Run();
-                sb.Append(get_regs(cpu.regs).ToString());
-                sb.Append(get_DM(cpu.DM).ToString());
+                LibCPU.CPU5STAGE cpu = new(mcs, data_mem_init);
+                (int cycles, LibCPU.MIPS.Exceptions excep) = cpu.Run();
+                sb.Append(LibCPU.MIPS.get_regs(cpu.regs));
+                sb.Append(LibCPU.MIPS.get_DM(cpu.DM));
                 //sb.Append($"Exception Type : {excep.ToString()}");
                 sb.Append($"Number of cycles consumed : {cycles,10}\n");
             }
