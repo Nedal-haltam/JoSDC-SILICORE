@@ -3,14 +3,20 @@
 
 
 		  // R-Format
-parameter add = 7'h20, addu = 7'h21, sub = 7'h22,  subu = 7'h23, and_ = 7'h24, or_ = 7'h25, 
-		  xor_ = 7'h26, nor_ = 7'h27, sll = 7'h00, srl = 7'h02, 
-		  slt = 7'h2a, sgt = 7'h2b, jr = 7'h08,
+parameter add = 12'h020, addu = 12'h021, sub = 12'h022,  subu = 12'h023, and_ = 12'h024, or_ = 12'h025, 
+		  xor_ = 12'h026, nor_ = 12'h027, sll = 12'h000, srl = 12'h002, 
+		  slt = 12'h02A, sgt = 12'h02B, jr = 12'h008,
+
 		  // I-Format
-		  addi = 7'h48, andi = 7'h4c, ori = 7'h4d, xori = 7'h4e, lw = 7'h63, sw = 7'h6b, slti = 7'h6a,
+		  addi = 12'h200, andi = 12'h300,
+		  ori = 12'h340, xori = 12'h380,
+		  lw = 12'h8C0, sw = 12'hAC0,
+		  slti = 12'h280,
 		  // branching
-		  beq = 7'h44, bne = 7'h45,/* blt = 7'h46, ble = 7'h47, bgt = 7'h49, bge = 7'h4A,*/
+		  beq = 12'h100, bne = 12'h140,
+
           // J-Format
-		  j = 7'h42, jal = 7'h43,
+		  j = 12'h080, jal = 12'h0C0,
+		  
 		  // other
-		  hlt_inst = 7'b1111111;
+		  hlt_inst = 12'hFC0;

@@ -277,24 +277,68 @@ namespace Real_Time_CAS_ASSEM
             cmbdatadepth.SelectedIndex = 0;
         }
 
-        StringBuilder GetMIF(List<string> list, int width, int depth, int from_base)
+        string GetMIFentry(string addr, string value)
+        {
+            return $"{addr} : {value};";
+        }
+
+        StringBuilder ToMIFentries(int start_address, List<string> list, int width, int from_base)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                string address = (start_address + i).ToString("X");
+                string value = Convert.ToInt32(list[i], from_base).ToString("X").PadLeft(width / 4, '0');
+                string entry = GetMIFentry(address, value);
+                sb.Append(entry + '\n');
+            }
+
+            return sb;
+        }
+
+        StringBuilder GetMIFHeader(int width, int depth, string address_radix, string data_radix)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"WIDTH={width};\n");
             sb.Append($"DEPTH={depth};\n");
-            sb.Append("ADDRESS_RADIX=HEX;\n");
-            sb.Append("DATA_RADIX=HEX;\n");
+            sb.Append($"ADDRESS_RADIX={address_radix};\n");
+            sb.Append($"DATA_RADIX={data_radix};\n");
             sb.Append("CONTENT BEGIN\n");
-            int i;
-            for (i = 0; i < list.Count; i++)
-            {
-                string index = i.ToString("X").PadLeft(2, '0');
-                string val = Convert.ToInt32(list[i], from_base).ToString("X").PadLeft(8, '0');
-                sb.Append($"{index} : {val};\n");
-            }
 
-            sb.Append($"[{i}..{depth - 1}] : 0;\n");
-            sb.Append("END;\n");
+            return sb;
+        }
+
+        StringBuilder GetMIFTail()
+        {
+            return new StringBuilder("END;\n");
+        }
+
+        StringBuilder GetIMMIF()
+        {
+            int width = 32;
+            int depth = 1024;
+            int from_base = 2;
+            StringBuilder sb = new StringBuilder();
+            sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
+            sb.Append(ToMIFentries(0, curr_mc, width, from_base));
+            sb.Append($"[{curr_mc.Count:X}..{(depth /*- excep_mc.Count*/ - 1):X}] : 0;\n");
+            //sb.Append(ToMIFentries(depth - excep_mc.Count, excep_mc, width, from_base));
+            sb.Append(GetMIFTail());
+
+            return sb;
+        }
+
+        StringBuilder GetDMMIF(List<string> DM)
+        {
+            int width = 32;
+            int depth = 1024;
+            int from_base = 10;
+            StringBuilder sb = new StringBuilder();
+            sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
+            sb.Append(ToMIFentries(0, DM, width, from_base));
+            sb.Append($"[{DM.Count:X}..{(depth - 1):X}] : 0;\n");
+            sb.Append(GetMIFTail());
 
             return sb;
         }
@@ -310,11 +354,9 @@ namespace Real_Time_CAS_ASSEM
             else
                 Clipboard.SetText(" ");
 
-            StringBuilder inst_mif = GetMIF(curr_mc, MIFinstwidth, MIFinstdepth, 2);
-            File.WriteAllText("./INSTRUCTION_MIF_FILE.mif", inst_mif.ToString());
+            File.WriteAllText("./INSTRUCTION_MIF_FILE.mif", GetIMMIF().ToString());
 
-            StringBuilder data_mif = GetMIF(curr_data, MIFdatawidth, MIFdatadepth, 10);
-            File.WriteAllText("./DATA_MIF_FILE.mif", data_mif.ToString());
+            File.WriteAllText("./DATA_MIF_FILE.mif", GetDMMIF(curr_data).ToString());
         }
 
         private void cmbcpulist_SelectedIndexChanged(object sender, EventArgs e)

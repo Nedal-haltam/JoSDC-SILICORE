@@ -4,7 +4,7 @@
 
 module StallDetectionUnit(Wrong_prediction, if_id_opcode, EX_memread, if_id_rs1, if_id_rs2, id_ex_rd, PC_Write, if_id_Write, if_id_flush, id_ex_flush);
   
-input [6:0] if_id_opcode; // to tell us if it is a branch instruction
+input [11:0] if_id_opcode; // to tell us if it is a branch instruction
 input [4:0] if_id_rs1, if_id_rs2; // the required rs1, rs2 to be used to know if there is a dependencies or not
 input EX_memread;
 input Wrong_prediction; // Memread signal from the ID_EX buffer to detect if it is a load inst

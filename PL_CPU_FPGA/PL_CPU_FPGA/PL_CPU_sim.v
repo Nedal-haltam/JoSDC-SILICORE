@@ -33,6 +33,7 @@
 `include "Immed_Gen_unit.v"
 `include "CompareEqual.v"
 `include "BranchDecision.v"
+`include "BranchResolver_2Bit_Predictor.v"
 `include "CPU5STAGE.v"
 
 
@@ -46,8 +47,10 @@ CPU5STAGE cpu(PC, input_clk, rst, cycles_consumed);
 
 always #1 input_clk <= ~input_clk;
 initial begin
+`ifdef VCD_OUT
 $dumpfile(`VCD_OUT);
 $dumpvars;
+`endif
 input_clk <= 0;
 
 rst <= 1; #(`reset) rst = 0;

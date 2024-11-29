@@ -6,13 +6,13 @@ module EX_MEM_buffer(EX_ALU_OUT, EX_rs2, EX_rs1_ind, EX_rs2_ind, EX_rd_indzero, 
 	
 	input [31:0] EX_ALU_OUT, EX_rs2, EX_PC, EX_INST;
 	input [4:0] EX_rs1_ind, EX_rs2_ind, EX_rd_ind;
-	input [6:0] EX_opcode;
+	input [11:0] EX_opcode;
 	input EX_memread, EX_memwrite, EX_regwrite, EX_FLUSH, clk, rst, EX_rd_indzero;
 	
 	
 	output reg [31:0] MEM_ALU_OUT, MEM_rs2, MEM_PC, MEM_INST;
 	output reg [4:0] MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind;
-	output reg [6:0] MEM_opcode;
+	output reg [11:0] MEM_opcode;
 	output reg MEM_regwrite, MEM_memread, MEM_memwrite, MEM_rd_indzero;
 	
 	

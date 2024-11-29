@@ -19,7 +19,7 @@ public static class ASSEMBLERMIPS
     public static Label lblnumofinst = new Label();
     public static Label lblinvinst = new Label();
     public static RichTextBox input = new RichTextBox();
-    static List<string> REG_LIST = new List<string>()
+    static readonly List<string> REG_LIST = new List<string>()
     { "zero", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",
       "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra"};
     // The instruction type is the main token in a given instruction and should be known the first token in an instruction (first word)
@@ -30,7 +30,7 @@ public static class ASSEMBLERMIPS
         { "nop"  , "000000" },
         { "hlt"  , "111111" },
 
-        // R-format , opcode = 0 // 11 + 1
+        // R-format , opcode = 0
         { "add"  , "100000" },
         { "addu" , "100001" },
         { "sub"  , "100010" },
@@ -45,7 +45,7 @@ public static class ASSEMBLERMIPS
         { "srl"  , "000010" },
         { "jr"   , "001000" },
             
-        // I-format // 4 + 2 + 4
+        // I-format
         { "addi" , "001000" },
         { "andi" , "001100" },
         { "ori"  , "001101" },
@@ -136,8 +136,20 @@ public static class ASSEMBLERMIPS
         }
         else if (reg.StartsWith("$"))
         {
+
             string name = reg.Substring(1);
-            return Convert.ToString(REG_LIST.IndexOf(name), 2).PadLeft(5, '0');
+            if (byte.TryParse(name, out byte usb) && usb >= 0 && usb <= 31)
+            {
+                return Convert.ToString(usb, 2).PadLeft(5, '0');
+            }
+            else
+            {
+                if (!REG_LIST.Contains(name))
+                {
+                    return invinst;
+                }
+                return Convert.ToString(REG_LIST.IndexOf(name), 2).PadLeft(5, '0');
+            }
         }
         else
             return invinst;
@@ -318,7 +330,7 @@ public static class ASSEMBLERMIPS
             InstType type = GetInstType(inst[0]); // addi x1, x0, 123
             string curr_mc = GetMcOfInst(type, inst);
             mcs.Add(curr_mc);
-            curr_inst_index++;
+            curr_inst_index++; 
         }
 
         return mcs;

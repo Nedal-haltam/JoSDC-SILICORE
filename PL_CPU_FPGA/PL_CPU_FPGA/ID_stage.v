@@ -9,7 +9,7 @@ module ID_stage(pc, inst, opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_da
 
 	input rst;
 	input [31:0] pc, inst, id_haz, ex_haz, mem_haz, wr_reg_data;
-	input [6:0] opcode;
+	input [11:0] opcode;
 	input [4:0] rs1_ind, rs2_ind,id_ex_rd_ind, wr_reg_from_wb;
 	input id_flush, Wrong_prediction, exception_flag, clk, reg_write_from_wb, EX_memread;
 	

@@ -7,7 +7,7 @@ parameter bit_width = 32;
 
 `include "opcodes.txt"
 // these might containg the funct for the I-format but we will stick the opcode just for naming simplicity
-input [6:0] id_ex_opcode;
+input [11:0] id_ex_opcode;
 
 // forward to 2 places (aka stages)
 input [4:0] id_ex_rs1, id_ex_rs2;				

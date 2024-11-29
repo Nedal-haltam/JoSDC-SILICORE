@@ -2,7 +2,7 @@
 module Immed_Gen_unit(Inst, opcode, Immed);
 	
 	input [31:0] Inst;
-	input [6:0] opcode;
+	input [11:0] opcode;
 	
 	output reg [31:0] Immed;
 	
@@ -27,7 +27,7 @@ module Immed_Gen_unit(Inst, opcode, Immed);
 		if (opcode == sll || opcode == srl) // zero extend
 			Immed <= {32'd0 , Inst[10:6]};
 		
-		else if (opcode[6] == 1'b1) begin // if it is an I-fromat or J-format
+		else if (opcode[11:6] != 1'b1) begin // if it is an I-fromat or J-format
 		
 			if (opcode == andi || opcode == ori || opcode == xori) // zero extend
 				Immed <= {32'd0 , Inst[15:0]};

@@ -4,7 +4,7 @@ module exception_detect_unit(ID_PC, ID_opcode, excep_flag, id_flush, EX_FLUSH, M
 	
 input clk, rst;
 input [31:0] ID_PC;
-input [6:0] ID_opcode;
+input [11:0] ID_opcode;
 
 output excep_flag, id_flush, EX_FLUSH, MEM_FLUSH;
 

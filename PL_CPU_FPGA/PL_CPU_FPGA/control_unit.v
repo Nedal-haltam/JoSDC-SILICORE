@@ -1,7 +1,7 @@
 
 module control_unit(opcode, regwrite, memread, memwrite, is_oper2_immed, is_beq, is_bne);
 
-   input [6:0] 	opcode;
+   input [11:0] 	opcode;
 	
 	output regwrite; 																
 	output memread; 								

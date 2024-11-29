@@ -14,7 +14,7 @@
 
 module ALU_OPER(opcode, ALU_OP);
 	
-	input [6:0] opcode;
+	input [11:0] opcode;
 	
 	output reg [3:0] ALU_OP;
 	

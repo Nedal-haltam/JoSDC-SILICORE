@@ -314,7 +314,7 @@ SW $4, $0, 0
             StringBuilder sb = new StringBuilder();
             sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
             sb.Append(ToMIFentries(0, curr_mc, width, from_base));
-            sb.Append($"[{curr_mc.Count}..{depth - excep_mc.Count - 1}] : 0;\n");
+            sb.Append($"[{curr_mc.Count:X}..{(depth - excep_mc.Count - 1):X}] : 0;\n");
             sb.Append(ToMIFentries(depth - excep_mc.Count, excep_mc, width, from_base));
             sb.Append(GetMIFTail());
 
@@ -329,7 +329,7 @@ SW $4, $0, 0
             StringBuilder sb = new StringBuilder();
             sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
             sb.Append(ToMIFentries(0, DM, width, from_base));
-            sb.Append($"[{DM.Count}..{depth - 1}] : 0;\n");
+            sb.Append($"[{DM.Count:X}..{(depth - 1):X}] : 0;\n");
             sb.Append(GetMIFTail());
 
             return sb;

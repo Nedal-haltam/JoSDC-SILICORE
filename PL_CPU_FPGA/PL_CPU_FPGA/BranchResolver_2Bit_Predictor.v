@@ -1,4 +1,4 @@
-module BranchResolver(opcode, predicted, Wrong_prediction, rst, state);
+module BranchResolver_(opcode, predicted, Wrong_prediction, rst, state);
 	input [6:0] opcode;
 	input rst, Wrong_prediction;
 	

@@ -143,32 +143,32 @@ namespace ProjectCPUCL
                 // the nop is not mentioned here to not conflict with sll
                 // R-format depends on the funct field, if opcode = "000000" then it is R-format else (it is an I-format or J-format either way it depends on distinct opcodes)
                 // rd = rd, rs1 = rs, rs2 = rt
-                { "0100000" , Mnemonic.add  }, // R[rd] = R[rs] op R[rt] , 0x20
-                { "0100001" , Mnemonic.addu }, // R[rd] = R[rs] op R[rt] , 0x21
-                { "0100010" , Mnemonic.sub  }, // R[rd] = R[rs] op R[rt] , 0x22
-                { "0100011" , Mnemonic.subu }, // R[rd] = R[rs] op R[rt] , 0x23
-                { "0100100" , Mnemonic.and  }, // R[rd] = R[rs] op R[rt] , 0x24
-                { "0100101" , Mnemonic.or   }, // R[rd] = R[rs] op R[rt] , 0x25
-                { "0100110" , Mnemonic.xor  }, // R[rd] = R[rs] op R[rt] , 0x26
-                { "0100111" , Mnemonic.nor  }, // R[rd] = R[rs] op R[rt] , 0x27
-                { "0101010" , Mnemonic.slt  }, // R[rd] = R[rs] op R[rt] , 0x2a
-                { "0101011" , Mnemonic.sgt  }, // R[rd] = R[rs] op R[rt] , 0x2b
-                { "0000000" , Mnemonic.sll  }, // R[rd] = R[rt] op shamt , 0x00
-                { "0000010" , Mnemonic.srl  }, // R[rd] = R[rt] op shamt , 0x02
-                { "0001000" , Mnemonic.jr   }, // PC = R[rs] (here we jump to the instruciont in the IM addressed by R[rs]) , 0x08
+                { "000000100000" , Mnemonic.add  }, // R[rd] = R[rs] op R[rt]
+                { "000000100001" , Mnemonic.addu }, // R[rd] = R[rs] op R[rt]
+                { "000000100010" , Mnemonic.sub  }, // R[rd] = R[rs] op R[rt]
+                { "000000100011" , Mnemonic.subu }, // R[rd] = R[rs] op R[rt]
+                { "000000100100" , Mnemonic.and  }, // R[rd] = R[rs] op R[rt]
+                { "000000100101" , Mnemonic.or   }, // R[rd] = R[rs] op R[rt]
+                { "000000100110" , Mnemonic.xor  }, // R[rd] = R[rs] op R[rt]
+                { "000000100111" , Mnemonic.nor  }, // R[rd] = R[rs] op R[rt]
+                { "000000101010" , Mnemonic.slt  }, // R[rd] = R[rs] op R[rt]
+                { "000000101011" , Mnemonic.sgt  }, // R[rd] = R[rs] op R[rt]
+                { "000000000000" , Mnemonic.sll  }, // R[rd] = R[rt] op shamt
+                { "000000000010" , Mnemonic.srl  }, // R[rd] = R[rt] op shamt
+                { "000000001000" , Mnemonic.jr   }, // PC = R[rs] (here we jump to the instruciont in the IM addressed by R[rs])
 
                 // I-format depends on the opcode field
                 // rd = rt, rs1 = rs, rs2 = rt, immed = immed or addr
-                { "1001000" , Mnemonic.addi }, // R[rt] = R[rs] op sx(immed)   , 0x48
-                { "1001100" , Mnemonic.andi }, // R[rt] = R[rs] op zx(immed)   , 0x4c
-                { "1001101" , Mnemonic.ori  }, // R[rt] = R[rs] op zx(immed)   , 0x4d
-                { "1001110" , Mnemonic.xori }, // R[rt] = R[rs] op zx(immed)   , 0x4e
-                { "1101010" , Mnemonic.slti }, // R[rt] = R[rs] op sx(immed)   , 0x6a
-                { "1100011" , Mnemonic.lw   }, // R[rt] = Mem[R[rs]+sx(immed)] , 0x63
-                { "1101011" , Mnemonic.sw   }, // Mem[R[rs]+sx(immed)]=R[rt]   , 0x6b
+                { "001000000000" , Mnemonic.addi }, // R[rt] = R[rs] op sx(immed)  
+                { "001100000000" , Mnemonic.andi }, // R[rt] = R[rs] op zx(immed)  
+                { "001101000000" , Mnemonic.ori  }, // R[rt] = R[rs] op zx(immed)  
+                { "001110000000" , Mnemonic.xori }, // R[rt] = R[rs] op zx(immed)  
+                { "101010000000" , Mnemonic.slti }, // R[rt] = R[rs] op sx(immed)  
+                { "100011000000" , Mnemonic.lw   }, // R[rt] = Mem[R[rs]+sx(immed)]
+                { "101011000000" , Mnemonic.sw   }, // Mem[R[rs]+sx(immed)]=R[rt]  
                 // rs1 = rs, rs2 = rt
-                { "1000100" , Mnemonic.beq  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x44
-                { "1000101" , Mnemonic.bne  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1 , 0x45
+                { "000100000000" , Mnemonic.beq  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1
+                { "000101000000" , Mnemonic.bne  }, // if (R[rs] op R[rt]) -> PC += sx(offset) << 2  , note.1
 
                 //{ "1000110", Mnemonic.blt },
                 //{ "1000111", Mnemonic.ble },
@@ -177,11 +177,11 @@ namespace ProjectCPUCL
 
 
                 // J-format depends on opcode field
-                { "1000010" , Mnemonic.j    }, // PC = zx(addr) << 2  , note.1 , 0x42
-                { "1000011" , Mnemonic.jal  }, // R[31] = PC+1, PC = zx(addr) << 2  , note.1 , 0x43
+                { "000010000000" , Mnemonic.j    }, // PC = zx(addr) << 2  , note.1
+                { "000011000000" , Mnemonic.jal  }, // R[31] = PC+1, PC = zx(addr) << 2  , note.1
 
 
-                { "1111111" , Mnemonic.hlt  },
+                { "111111000000" , Mnemonic.hlt  },
             };
         // note.1 : apparently the shift left by 2 is optional because because the IM may be word addressable rather than byte addressable.
         // in other words if the IM was byte addressable each location holds one of four bytes of an instruction and when we do a branch for example the offset by it self
@@ -452,7 +452,7 @@ namespace ProjectCPUCL
         }
         public static bool isvalid_opcode_funct(Instruction inst)
         {
-            return (inst.format == "R") ? mnemonicmap.ContainsKey("0" + inst.funct) : mnemonicmap.ContainsKey("1" + inst.opcode);
+            return mnemonicmap.ContainsKey(inst.opcode + inst.funct);
         }
 
 
@@ -554,12 +554,9 @@ namespace ProjectCPUCL
             inst.rt = regs[inst.rtind];
 
 
-            string opcode;
-            if (inst.opcode == "000000")
-                opcode = "0" + inst.funct;
-            else
-                opcode = "1" + inst.opcode;
-            if (!mnemonicmap.TryGetValue(opcode, out Mnemonic value))
+            if (inst.opcode != "000000")
+                inst.funct = "000000";
+            if (!mnemonicmap.TryGetValue(inst.opcode + inst.funct, out Mnemonic value))
             {
                 Exception e = new Exception(EXCEPTION)
                 {
@@ -957,12 +954,9 @@ namespace ProjectCPUCL
             inst.rt = regs[inst.rtind];
 
 
-            string opcode;
-            if (inst.opcode == "000000")
-                opcode = "0" + inst.funct;
-            else
-                opcode = "1" + inst.opcode;
-            if (!mnemonicmap.TryGetValue(opcode, out Mnemonic value))
+            if (inst.opcode != "000000")
+                inst.funct = "000000";
+            if (!mnemonicmap.TryGetValue(inst.opcode + inst.funct, out Mnemonic value))
             {
                 Exception e = new Exception(EXCEPTION)
                 {

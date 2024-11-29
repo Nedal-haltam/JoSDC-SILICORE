@@ -4,7 +4,7 @@ module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1
 `include "opcodes.txt"
 
 	input [31:0] pc, EX_PFC, ex_haz, mem_haz, rs1, imm;
-	input [6:0] opcode;
+	input [11:0] opcode;
 	input [4:0] rs1_ind, rs2_ind, EX_rd_ind;
     input [1:0] alu_selA, store_rs2_forward;
 	input [2:0] alu_selB;

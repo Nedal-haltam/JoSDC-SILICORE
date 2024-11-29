@@ -13,7 +13,7 @@ wire IF_FLUSH;
 wire clk, hlt;
 wire [31:0] ID_PFC, EX_PFC, IF_pc, IF_INST, ID_PC, ID_INST, alu_out, forwarded_data, wdata_to_reg_file, ID_rs1, ID_rs2, ID_Immed, EX_PC, EX_INST, EX_Immed, EX_PFC_to_IF;
 wire [31:0] EX_rs1, EX_rs2, MEM_PC, MEM_INST, WB_PC, WB_INST, MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, WB_ALU_OUT, WB_rs2, WB_Data_mem_out, ID_rs1_ind_test, MEM_ALU_OUT_test, rs2_out;
-wire [6:0]  ID_opcode, EX_opcode, MEM_opcode, WB_opcode;
+wire [11:0]  ID_opcode, EX_opcode, MEM_opcode, WB_opcode;
 wire [4:0]  ID_rs1_ind, ID_rs2_ind, ID_rd_ind, EX_rd_ind, EX_rs1_ind, EX_rs2_ind, MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind, WB_rs1_ind, WB_rs2_ind, WB_rd_ind;
 wire [2:0]  pc_src, target_addr_adder_mux_sel, alu_selB;
 wire [1:0]  comp_selA, comp_selB, alu_selA, store_rs2_forward;

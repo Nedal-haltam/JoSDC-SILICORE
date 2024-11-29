@@ -1,7 +1,7 @@
 
 module BranchResolver(PC_src, exception_flag, opcode, predicted, Wrong_prediction, rst);
 	
-	input [6:0] opcode;
+	input [11:0] opcode;
 	input exception_flag, rst, Wrong_prediction;
 	
 	output [2:0] PC_src;
