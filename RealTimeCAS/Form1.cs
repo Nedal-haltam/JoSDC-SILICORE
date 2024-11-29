@@ -322,8 +322,7 @@ namespace Real_Time_CAS_ASSEM
             StringBuilder sb = new StringBuilder();
             sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
             sb.Append(ToMIFentries(0, curr_mc, width, from_base));
-            sb.Append($"[{curr_mc.Count:X}..{(depth /*- excep_mc.Count*/ - 1):X}] : 0;\n");
-            //sb.Append(ToMIFentries(depth - excep_mc.Count, excep_mc, width, from_base));
+            sb.Append($"[{curr_mc.Count:X}..{(depth - 1):X}] : 0;\n");
             sb.Append(GetMIFTail());
 
             return sb;
