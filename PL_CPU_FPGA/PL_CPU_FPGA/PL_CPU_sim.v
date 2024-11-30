@@ -33,7 +33,7 @@
 `include "Immed_Gen_unit.v"
 `include "CompareEqual.v"
 `include "BranchDecision.v"
-`include "BranchResolver_2Bit_Predictor.v"
+`include "BranchPredictor.v"
 `include "CPU5STAGE.v"
 
 

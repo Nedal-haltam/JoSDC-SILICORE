@@ -24,7 +24,7 @@ namespace MIPSAssembler
                 ];
         private readonly List<string> excep_insts = [
                     "hlt",
-                    "addi x31, x0, -1",
+                    "addi x31 x0 -1",
                     "hlt",
                 ];
         // this is the entry point of the entire process because we want to process the input only if the input is changed
@@ -351,7 +351,7 @@ namespace MIPSAssembler
                 clean_comments(ref src);
                 Get_directives(src.ToList());
 
-                Assemble(curr_text_dir.ToArray());
+                Assemble([.. curr_text_dir]);
 
                 List<string> mc = [];
 
