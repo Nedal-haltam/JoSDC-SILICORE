@@ -1,6 +1,6 @@
-module BranchResolver_(opcode, predicted, Wrong_prediction, rst, state);
+module BranchResolver(opcode, predicted, Wrong_prediction, rst, state, clk);
 	input [6:0] opcode;
-	input rst, Wrong_prediction;
+	input rst, Wrong_prediction, clk;
 	
 	output reg predicted; // prediction (1 = taken, 0 = not taken)
 
@@ -8,7 +8,7 @@ module BranchResolver_(opcode, predicted, Wrong_prediction, rst, state);
 
 	`include "opcodes.txt"
 
-	always @ (opcode or rst or Wrong_prediction) begin
+	always @ (rst or posedge clk) begin
 		// active high reset to 00
 		if (rst) begin
 			state <= 2'b0;
