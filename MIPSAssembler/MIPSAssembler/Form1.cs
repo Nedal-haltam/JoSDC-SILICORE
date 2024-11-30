@@ -1,6 +1,6 @@
-using MIPSASSEMBLER;
-using System.Text;
 
+
+using System.Text;
 namespace MIPSAssembler
 {
     public partial class Form1 : Form
@@ -31,9 +31,8 @@ namespace MIPSAssembler
 
         void Assemble(string[] input)
         {
-            m_prog = new();
-            MIPSASSEMBLER.MIPSASSEMBLER assembler = new MIPSASSEMBLER.MIPSASSEMBLER();
-            MIPSASSEMBLER.Program? program = assembler.ASSEMBLE(input.ToList());
+            MIPSASSEMBLER.MIPSASSEMBLER assembler = new();
+            MIPSASSEMBLER.Program? program = assembler.ASSEMBLE([.. input]);
             if (program.HasValue)
             {
                 m_prog = program.Value;
@@ -42,12 +41,15 @@ namespace MIPSAssembler
             }
             else
             {
+                m_prog.instructions.Clear();
+                m_prog.mc.Clear();
                 curr_mc.Clear();
                 curr_insts.Clear();
             }
             lblErrInvinst.Visible = assembler.lblINVINST;
             lblErrInvlabel.Visible = assembler.lblinvlabel;
             lblErrMultlabels.Visible = assembler.lblmultlabels;
+            lblnumofinst.Text = curr_mc.Count.ToString();
 
 
             curr_insts.AddRange(excep_insts);
@@ -167,41 +169,15 @@ namespace MIPSAssembler
             {
                 if (code[i].Contains("//"))
                 {
-                    code[i] = code[i].Substring(0, code[i].IndexOf('/'));
+                    code[i] = code[i][..code[i].IndexOf('/')];
                 }
                 else if (code[i].Contains('#'))
                 {
-                    code[i] = code[i].Substring(0, code[i].IndexOf('#'));
+                    code[i] = code[i][..code[i].IndexOf('#')];
                 }
 
             }
         }
-        /*
-        .data
-        value: .word 0X5 # sample data for loading
-        .text
-        main:
-        # Immediate instructions to initialize registers
-        ADDI $1, $0, 0xA
-        ORI $2, $0, 0xB
-        XORI $3, $0, 0xC
-        # Basic ALU operations
-        ADD $4, $1, $2
-        SUB $5, $4, $3
-        AND $6, $1, $3
-        OR $7, $2, $3
-        NOR $8, $2, $3
-        XOR $9, $1, $2
-        # Comparison operations
-        SLT $10, $1, $2
-        SGT $11, $3, $1
-        # Shift operations
-        SLL $12, $1, 2
-        SRL $13, $2, 1
-        # Load and store word instructions
-        LW $14, $0, 0
-        SW $4, $0, 0
-        */
         (List<string>, List<string>) assemble_data_dir(List<string> data_dir)
         {
             List<string> data = [];
@@ -301,11 +277,8 @@ namespace MIPSAssembler
             return new StringBuilder("END;\n");
         }
 
-        StringBuilder GetIMMIF()
+        StringBuilder GetIMMIF(int width, int depth, int from_base)
         {
-            int width = 32;
-            int depth = 1024;
-            int from_base = 2;
             StringBuilder sb = new StringBuilder();
             sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
             sb.Append(ToMIFentries(0, curr_mc, width, from_base));
@@ -316,12 +289,9 @@ namespace MIPSAssembler
             return sb;
         }
 
-        StringBuilder GetDMMIF(List<string> DM)
+        StringBuilder GetDMMIF(List<string> DM, int width, int depth, int from_base)
         {
-            int width = 32;
-            int depth = 1024;
-            int from_base = 10;
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
             sb.Append(ToMIFentries(0, DM, width, from_base));
             sb.Append($"[{DM.Count:X}..{(depth - 1):X}] : 0;\n");
@@ -349,7 +319,7 @@ namespace MIPSAssembler
             {
                 List<string> src = File.ReadAllLines(source_filepath).ToList();
                 clean_comments(ref src);
-                Get_directives(src.ToList());
+                Get_directives([.. src]);
 
                 Assemble([.. curr_text_dir]);
 
@@ -369,8 +339,8 @@ namespace MIPSAssembler
                 File.WriteAllLines(DM_INIT_filepath, DM_INIT);
 
 
-                File.WriteAllText(IM_MIF_filepath, GetIMMIF().ToString());
-                File.WriteAllText(DM_MIF_filepath, GetDMMIF(DM).ToString());
+                File.WriteAllText(IM_MIF_filepath, GetIMMIF(32, 1024, 2).ToString());
+                File.WriteAllText(DM_MIF_filepath, GetDMMIF(DM, 32, 1024, 10).ToString());
 
 
                 Close(); // for now we will close and not parse any other commands
@@ -388,11 +358,11 @@ namespace MIPSAssembler
                 HandleCommand(args);
 
             Layout_size();
-            errors = new Label[] {
+            errors = [
                 lblErrInvinst,
                 lblErrInvlabel,
                 lblErrMultlabels,
-            };
+            ];
         }
 
         private void Assembler_Resize(object sender, EventArgs e)
@@ -413,15 +383,13 @@ namespace MIPSAssembler
                 Clipboard.SetText(tb_tocopy);
             else
                 Clipboard.SetText(" ");
-
-            //Bin: "00100000000000010000000000000001", Hex: 0x20010001; // addi x1 x0 1
         }
 
         private void Assembler_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.S)
             {
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                SaveFileDialog saveFileDialog = new();
                 DialogResult dialogResult = saveFileDialog.ShowDialog();
                 if (dialogResult == DialogResult.OK)
                 {
@@ -429,8 +397,8 @@ namespace MIPSAssembler
 
                     List<string> saved = [];
                     saved.Add("# CODE");
-                    saved.AddRange(input.Lines.ToList());
-                    File.WriteAllLines(file_path, saved.ToArray());
+                    saved.AddRange([.. input.Lines]);
+                    File.WriteAllLines(file_path, [.. saved]);
                 }
             }
         }
