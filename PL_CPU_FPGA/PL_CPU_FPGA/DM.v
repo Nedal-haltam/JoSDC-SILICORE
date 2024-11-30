@@ -58,7 +58,6 @@ always@ (posedge clk)
 
 initial begin
 
-`include "DM_INIT.INIT"
 
 end
 

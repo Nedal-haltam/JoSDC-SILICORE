@@ -2,7 +2,7 @@
 
 # for a given bench mark their will be a folder with the name of the benchmark
 # and inside that folder their will be a file named with the same name for simplicity and because simplicity favours regularity
-
+# and this file will contain the program or the source code of the benchmark
 
 SWFILE=""
 HWFILE=""
@@ -32,7 +32,8 @@ Run_BenchMark_SW()
     ASSEMBLER_OUT_IM_MIF=$ProgFolder"InstMem_MIF.mif"
     ASSEMBLER_OUT_DM_MIF=$ProgFolder"DataMem_MIF.mif"
     # define the program and its arguments
-    ASSEMBLER="../MIPSAssembler/bin/Debug/Assembler.exe"
+    
+    ASSEMBLER="../MIPSAssembler/MIPSAssembler/bin/Debug/net8.0-windows/MIPSAssemblerapp.exe"
     ASSEMBLER_ARGS="gen $ASSEMBLER_IN $ASSEMBLER_OUT_TO_CAS_IM $ASSEMBLER_OUT_TO_CAS_DM $ASSEMBLER_OUT_IM_INIT $ASSEMBLER_OUT_DM_INIT $ASSEMBLER_OUT_IM_MIF $ASSEMBLER_OUT_DM_MIF"
     # run the the assembler
     printf "[INFO]: Assembling "$ProgName"...\n"

@@ -1,138 +1,141 @@
 ﻿
 
+
+using System.ComponentModel.Design;
+using System.Text;
+
 namespace MIPSASSEMBLER
 {
-    public enum InstType
+    public enum InstructionType
     {
-        rtype, itype, jtype, invalid_Inst
+        rtype, itype, jtype
     }
 
-    public static class MIPSASSEMBLER
+    public struct Token
     {
-        public static bool lblinvlabel = false;
-        public static bool lblmultlabels = false;
-        public static string lblnumofinst = "";
-        public static bool lblinvinst = false;
-        public static string[] input = [];
-        static readonly List<string> REG_LIST = new List<string>()
-    { "zero", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",
-      "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra"};
+        public string value;
+        public Token(string value)
+        {
+            this.value = value;
+        }
+    }
+
+    public struct Instruction
+    {
+        public List<Token> tokens;
+        public InstructionType type;
+        public Instruction()
+        {
+            tokens = [];
+        }
+        public Instruction(List<Token> tokens)
+        {
+            this.tokens = tokens;
+        }
+    }
+
+    public struct Program
+    {
+        public List<Instruction> instructions;
+        public List<string> mc;
+
+        public Program()
+        {
+            instructions = [];
+            mc = [];
+        }
+    }
+
+    public class MIPSASSEMBLER
+    {
+        public bool lblinvlabel = false;
+        public bool lblmultlabels = false;
+        public bool lblINVINST = false;
+        readonly Dictionary<string, int> labels = [];
+        List<string> m_prog = [];
+        string m_curr_inst = "";
+        int m_curr_index = 0;
+        readonly List<string> REG_LIST =
+        [ "zero", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",
+          "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra"];
         // The instruction type is the main token in a given instruction and should be known the first token in an instruction (first word)
         // the opcodes is a dictionary the you give it a certain opcode (in words) and get beack the binaries (or machine code) corresponding to that opcode
         // take a look to know what to expect because the binary might be different depending on the opcode some of them only opcode or with func3 or even with func7
-        static Dictionary<string, string> opcodes = new Dictionary<string, string>()//{ "inst"     , "opcode/funct" },
-    {
-        { "nop"  , "000000" },
-        { "hlt"  , "111111" },
+        readonly Dictionary<string, string> opcodes = new()//{ "inst"     , "opcode/funct" },
+        {
+            { "nop"  , "000000" },
+            { "hlt"  , "111111" },
 
-        // R-format , opcode = 0
-        { "add"  , "100000" },
-        { "addu" , "100001" },
-        { "sub"  , "100010" },
-        { "subu" , "100011" },
-        { "and"  , "100100" },
-        { "or"   , "100101" },
-        { "xor"  , "100110" },
-        { "nor"  , "100111" },
-        { "slt"  , "101010" },
-        { "sgt"  , "101011" },
-        { "sll"  , "000000" },
-        { "srl"  , "000010" },
-        { "jr"   , "001000" },
+            // R-format , opcode = 0
+            { "add"  , "100000" },
+            { "addu" , "100001" },
+            { "sub"  , "100010" },
+            { "subu" , "100011" },
+            { "and"  , "100100" },
+            { "or"   , "100101" },
+            { "xor"  , "100110" },
+            { "nor"  , "100111" },
+            { "slt"  , "101010" },
+            { "sgt"  , "101011" },
+            { "sll"  , "000000" },
+            { "srl"  , "000010" },
+            { "jr"   , "001000" },
             
-        // I-format
-        { "addi" , "001000" },
-        { "andi" , "001100" },
-        { "ori"  , "001101" },
-        { "xori" , "001110" },
-        { "slti" , "101010" },
-        { "lw"   , "100011" },
-        { "sw"   , "101011" },
-        { "beq"  , "000100" },
-        { "bne"  , "000101" }, 
+            // I-format
+            { "addi" , "001000" },
+            { "andi" , "001100" },
+            { "ori"  , "001101" },
+            { "xori" , "001110" },
+            { "slti" , "101010" },
+            { "lw"   , "100011" },
+            { "sw"   , "101011" },
+            { "beq"  , "000100" },
+            { "bne"  , "000101" }, 
         
-        //{ "blt"  , "000110" }, 
-        //{ "ble"  , "000111" }, 
-        //{ "bgt"  , "001001" }, 
-        //{ "bge"  , "001010" }, 
+            // J-format
+            { "j"    , "000010" },
+            { "jal"  , "000011" },
 
-        // J-format
-        { "j"    , "000010" },
-        { "jal"  , "000011" },
-
-    };
-        public static Dictionary<string, int> labels = new Dictionary<string, int>();
-        // the invInst is a string that come up when an invalid instruction is entered from the user
-        public static string invinst = "Invalid Instruction";
-        public static string invlbl = "Invalid Label";
+        };
 
         // checks for impty instruction that dont need to be tokenized or converted to machine code
-        public static bool EmptyLine(string instruction)
+        public bool EmptyLine(string instruction)
         {
             return string.IsNullOrEmpty(instruction) || string.IsNullOrWhiteSpace(instruction);
         }
 
         // input : the opcode (string : in words)
         // return the Instruction type
-        static InstType GetInstType(string name)
+        InstructionType? GetInstType(string name)
         {
-            switch (name)
+            return name switch
             {
-                case "add":
-                case "addu":
-                case "sub":
-                case "subu":
-                case "and":
-                case "or":
-                case "xor":
-                case "nor":
-                case "slt":
-                case "sgt":
-                case "sll":
-                case "srl":
-                case "jr":
-                case "nop":
-                case "hlt":
-                    return InstType.rtype;
-                case "addi":
-                case "andi":
-                case "ori":
-                case "xori":
-                case "slti":
-                case "lw":
-                case "sw":
-                case "beq":
-                case "bne":
-                    //case "blt":
-                    //case "ble":
-                    //case "bgt":
-                    //case "bge":
-                    return InstType.itype;
-                case "j":
-                case "jal":
-                    return InstType.jtype;
-                default:
-                    return InstType.invalid_Inst;
-            }
+                "add" or "addu" or "sub" or "subu" or "and" or "or" or "xor" or "nor" or "slt" or 
+                "sgt" or "sll" or "srl" or "jr" or "nop" => InstructionType.rtype,
+                "addi" or "andi" or "ori" or "xori" or "slti" or "lw" or "sw" or "beq" or "bne" or "hlt" => InstructionType.itype,
+                                                                                                                  
+                "j" or "jal" => InstructionType.jtype,
+                _ => null,
+            };
         }
 
         // it takes as input the register name and extracts the index form it
-        static string getregindex(string reg)
+        string? Getregindex(string reg)
         {
-            if (reg.StartsWith("x"))
+            if (reg.StartsWith('x'))
             {
-                string index = reg.Substring(1);
+                string index = reg[1..];
                 if (byte.TryParse(index, out byte usb) && usb >= 0 && usb <= 31)
                 {
                     return Convert.ToString(usb, 2).PadLeft(5, '0');
                 }
                 else
-                    return invinst;
+                    return null;
             }
-            else if (reg.StartsWith("$"))
+            else if (reg.StartsWith('$'))
             {
 
-                string name = reg.Substring(1);
+                string name = reg[1..];
                 if (byte.TryParse(name, out byte usb) && usb >= 0 && usb <= 31)
                 {
                     return Convert.ToString(usb, 2).PadLeft(5, '0');
@@ -141,43 +144,43 @@ namespace MIPSASSEMBLER
                 {
                     if (!REG_LIST.Contains(name))
                     {
-                        return invinst;
+                        return null;
                     }
                     return Convert.ToString(REG_LIST.IndexOf(name), 2).PadLeft(5, '0');
                 }
             }
             else
-                return invinst;
+                return null;
 
         }
 
         // the following functions are used to tokenize, parse, and then generate the corresponding machine code for every 
         // token of the instruction
-        static string getrtypeinst(List<string> inst)
+        string? Getrtypeinst(Instruction inst)
         {
-            string mc = "";
-            if (inst[0] == "jr") // jr x12
+            string mc;
+
+            if (inst.tokens[0].value == "jr") // jr x12
             {
-                if (inst.Count != 2)
-                    return invinst;
-                string rs1 = getregindex(inst[1]);
-                if (rs1 == invinst) return invinst;
-                mc = "000000" + rs1 + "000000000000000" + opcodes[inst[0]];
+                if (inst.tokens.Count != 2)
+                    return null;
+                string? rs1 = Getregindex(inst.tokens[1].value);
+                if (rs1 == null) return null;
+                mc = "000000" + rs1 + "000000000000000" + opcodes[inst.tokens[0].value];
             }
             else
             {
-                if (inst.Count != 4)
-                    return invinst;
-                string rd = getregindex(inst[1]);
-                string rs1 = getregindex(inst[2]);
-                string funct = opcodes[inst[0]];
+                if (inst.tokens.Count != 4)
+                    return null;
+                string? rd = Getregindex(inst.tokens[1].value);
+                string? rs1 = Getregindex(inst.tokens[2].value);
+                string funct = opcodes[inst.tokens[0].value];
 
-                if (rd == invinst || rs1 == invinst)
-                    return invinst;
+                if (rd == null || rs1 == null) return null;
 
-                if (inst[0] == "sll" || inst[0] == "srl") // sll x1, x2, 2
+                if (inst.tokens[0].value == "sll" || inst.tokens[0].value == "srl") // sll x1, x2, 2
                 {
-                    string shamt = inst[3];
+                    string shamt = inst.tokens[3].value;
                     if (byte.TryParse(shamt, out byte usb))
                     {
                         shamt = Convert.ToString(usb, 2);
@@ -191,7 +194,7 @@ namespace MIPSASSEMBLER
                         shamt = shamt.PadLeft(5, '0');
                     }
                     else
-                        return invinst;
+                        return null;
                     mc = "000000"
                         + "00000"
                         + rs1
@@ -201,9 +204,9 @@ namespace MIPSASSEMBLER
                 }
                 else
                 {
-                    string rs2 = getregindex(inst[3]);
-                    if (rs2 == invinst)
-                        return invinst;
+                    string? rs2 = Getregindex(inst.tokens[3].value);
+                    if (rs2 == null)
+                        return null;
                     mc = "000000"
                         + rs1
                         + rs2
@@ -214,28 +217,28 @@ namespace MIPSASSEMBLER
             }
             return mc;
         }
-        public static bool isbranch(string mnem)
+        public bool Isbranch(string mnem)
         {
             return mnem == "beq" || mnem == "bne";
         }
-        static string getitypeinst(List<string> inst)
+        string? Getitypeinst(Instruction inst)
         {
-            if (inst.Count != 4)
-                return invinst;
+            if (inst.tokens.Count != 4)
+                return null;
             string mc;
-            string opcode = opcodes[inst[0]];
+            string opcode = opcodes[inst.tokens[0].value];
 
 
-            string reg1 = getregindex(inst[1]);
-            string reg2 = getregindex(inst[2]);
-            if (reg1 == invinst || reg2 == invinst)
-                return invinst;
+            string? reg1 = Getregindex(inst.tokens[1].value);
+            string? reg2 = Getregindex(inst.tokens[2].value);
+            if (reg1 == null || reg2 == null)
+                return null;
 
-            if (isbranch(inst[0]))
+            if (Isbranch(inst.tokens[0].value))
             {
-                if (!labels.ContainsKey(inst[3]))
-                    return invinst;
-                string immed = inst[3];
+                if (!labels.ContainsKey(inst.tokens[3].value))
+                    return null;
+                string immed = inst.tokens[3].value;
                 immed = (labels[immed] - curr_inst_index).ToString();
                 if (ushort.TryParse(immed, out ushort usb))
                     immed = Convert.ToString(usb, 2).PadLeft(16, '0');
@@ -245,7 +248,7 @@ namespace MIPSASSEMBLER
                     immed = immed.PadLeft(16, immed[0]);
                 }
                 else
-                    return invinst;
+                    return null;
                 string rs1 = reg1;
                 string rs2 = reg2;
                 mc = opcode + rs1 + rs2 + immed;
@@ -253,12 +256,12 @@ namespace MIPSASSEMBLER
             else
             {
                 // andi, ori, xori (they do zero extend)
-                string immed = inst[3];
+                string immed = inst.tokens[3].value;
                 if ((immed.StartsWith("0x") || immed.StartsWith("0X")))
                 {
                     short temp;
                     try { temp = Convert.ToInt16(immed, 16); }
-                    catch { return invinst; }
+                    catch { return null; }
 
                     immed = Convert.ToString(temp, 2).PadLeft(16, '0');
                 }
@@ -273,7 +276,7 @@ namespace MIPSASSEMBLER
                     immed = immed.PadLeft(16, immed[0]); // 1010101000
                 }
                 else
-                    return invinst;
+                    return null;
                 string rd = reg1;
                 string rs1 = reg2;
                 mc = opcode + rs1 + rd + immed;
@@ -281,226 +284,296 @@ namespace MIPSASSEMBLER
 
             return mc;
         }
-        static string getjtypeinst(List<string> inst)
+        string? Getjtypeinst(Instruction inst)
         {
-            string mc = "";
-
-            if (inst.Count != 2 || !labels.ContainsKey(inst[1]))
-                return invinst;
-            int lbl = labels[inst[1]];
+            if (inst.tokens.Count != 2 || !labels.TryGetValue(inst.tokens[1].value, out int lbl))
+                return null;
             string immed = Convert.ToString(lbl, 2);
             immed = immed.PadLeft(26, '0');
-            mc = opcodes[inst[0]] + immed;
-
+            string mc = opcodes[inst.tokens[0].value] + immed;
             return mc;
         }
         // this function takes the instructio and it's type and based on it, it passes it to the suitable fucntion to generate the machine code
-        static string GetMcOfInst(InstType type, List<string> inst)
+        string? GetMcOfInst(Instruction inst)
         {
-            if (inst.Count > 0 && (inst[0] == "hlt" || inst[0] == "nop"))
-                return opcodes[inst[0]].PadRight(32, '0');
+            if (inst.tokens.Count > 0 && (inst.tokens[0].value == "hlt" || inst.tokens[0].value == "nop"))
+                return opcodes[inst.tokens[0].value].PadRight(32, '0');
             // here we construct the binaries of a given instruction
-            switch (type)
+            return inst.type switch
             {
-                case InstType.rtype:
-                    return getrtypeinst(inst);
-                case InstType.itype:
-                    return getitypeinst(inst);
-                case InstType.jtype:
-                    return getjtypeinst(inst);
-                case InstType.invalid_Inst:
-                    return invinst;
-                default: return invinst;
-            }
+                InstructionType.rtype => Getrtypeinst(inst),
+                InstructionType.itype => Getitypeinst(inst),
+                InstructionType.jtype => Getjtypeinst(inst),
+                _ => null,
+            };
         }
-        static int curr_inst_index;
+        int curr_inst_index;
         // this fucntion iterates through the whole list of instruction and returns a list of the machine code for each valid instruction
         // and keep track of it's index for substituting the values of the labels
-        static List<string> GetMachineCode(List<List<string>> insts)
+        List<string>? GetMachineCode(ref List<Instruction> insts)
         {
-            List<string> mcs = new List<string>();
+            List<string> mcs = [];
             curr_inst_index = 0;
-            foreach (List<string> inst in insts)
+            for (int i = 0; i < insts.Count; i++)
             {
-                InstType type = GetInstType(inst[0]); // addi x1, x0, 123
-                string curr_mc = GetMcOfInst(type, inst);
-                mcs.Add(curr_mc);
-                curr_inst_index++;
+                InstructionType? type = GetInstType(insts[i].tokens[0].value);
+                if (type.HasValue)
+                {
+                    Instruction temp = insts[i];
+                    temp.type = type.Value;
+                    insts[i] = temp;
+                    string? mc = GetMcOfInst(insts[i]);
+                    if (mc == null)
+                    {
+                        return null;
+                    }
+                    mcs.Add(mc);
+                    curr_inst_index++;
+                }
+                else
+                {
+                    return null;
+                }
             }
 
             return mcs;
         }
 
-        static bool is_pseudo_branch(string mnem)
+        bool Is_pseudo_branch(string mnem)
         {
             return mnem == "bltz" || mnem == "bgez";
         }
 
 
-        static bool is_pseudo(string mnem)
+        bool Is_pseudo(string mnem)
         {
-            return is_pseudo_branch(mnem)/* || other pseudo insts*/;
+            return Is_pseudo_branch(mnem)/* || other pseudo insts*/;
         }
 
-        static List<List<string>> pseudo_to_inst(List<string> pseudo)
+        List<Instruction>? Pseudo_to_inst(List<Token> pseudo)
         {
-            if (is_pseudo_branch(pseudo[0]) && pseudo.Count == 3)
+            if (Is_pseudo_branch(pseudo[0].value) && pseudo.Count == 3)
             {
-                if (pseudo[0] == "bltz")
+                string branch;
+                if (pseudo[0].value == "bltz")
                 {
-                    return new List<List<string>>() {
-                new List<string>() {"slt", "x31", {pseudo[1]}, "x0" },
-                new List<string>() {"bne", "x31", "x0", {pseudo[2]} },
-            };
-
+                    branch = "bne";
                 }
-                else if (pseudo[0] == "bgez")
+                else if (pseudo[0].value == "bgez")
                 {
-                    return new List<List<string>>() {
-                new List<string>() {"slt", "x31", {pseudo[1]}, "x0" },
-                new List<string>() {"beq", "x31", "x0", {pseudo[2]} },
-            };
-
+                    branch = "beq";
                 }
+                else
+                {
+                    return null;
+                }
+                return [
+                    new Instruction([new Token("slt"), new Token("x31"), new Token($"{pseudo[1].value}"), new Token("x0") ]),
+                    new Instruction([new Token(branch), new Token("x31"), new Token("x0"), new Token($"{pseudo[2].value}") ]),
+                ];
             }
-            return new List<List<string>>() { new List<string>() { invinst } };
+            return null;
         }
 
 
-        static void substitute_pseudo_insts(ref List<List<string>> insts)
+        void Substitute_pseudo_insts(ref Program program)
         {
-            for (int i = 0; i < insts.Count; i++)
+            for (int i = 0; i < program.instructions.Count; i++)
             {
-                List<string> inst = insts[i];
-                if (inst.Count > 0 && is_pseudo(inst[0]))
+                List<Token> inst = program.instructions[i].tokens;
+                if (inst.Count > 0 && Is_pseudo(inst[0].value))
                 {
-                    List<List<string>> replace = pseudo_to_inst(inst);
-                    insts.RemoveAt(i);
-                    insts.InsertRange(i, replace);
+                    List<Instruction> replace = Pseudo_to_inst(inst);
+                    program.instructions.RemoveAt(i);
+                    program.instructions.InsertRange(i, replace);
                     i = 0;
                 }
             }
-
         }
 
 
+        char? peek(int offset = 0)
+        {
+            if (m_curr_index + offset < m_curr_inst.Length)
+            {
+                return m_curr_inst[m_curr_index + offset];
+            }
+            return null;
+        }
+        char? peek(char type, int offset = 0)
+        {
+            char? token = peek(offset);
+            if (token.HasValue && token.Value == type)
+            {
+                return token;
+            }
+            return null;
+        }
+        char consume()
+        {
+            return m_curr_inst.ElementAt(m_curr_index++);
+        }
+
+        bool IsComment()
+        {
+            return (peek('/').HasValue && peek('/', 1).HasValue) || peek('#').HasValue;
+        }
+
+
+        Instruction? TokenizeInst()
+        {
+            StringBuilder buffer = new StringBuilder();
+            Instruction instruction = new Instruction();
+            while (peek().HasValue)
+            {
+                char c = peek().Value;
+
+                if (char.IsWhiteSpace(c) || c == ',')
+                {
+                    if (buffer.Length > 0)
+                    {
+                        instruction.tokens.Add(new Token(buffer.ToString()));
+                        buffer.Clear();
+                    }
+                    consume();
+                }
+                else if (IsComment())
+                {
+                    if (buffer.Length > 0)
+                    {
+                        instruction.tokens.Add(new Token(buffer.ToString()));
+                        buffer.Clear();
+                    }
+                    break;
+                }
+                else
+                {
+                    buffer.Append(char.ToLower(c));
+                    consume();
+                }
+            }
+            if (buffer.Length > 0)
+            {
+                instruction.tokens.Add(new Token(buffer.ToString()));
+                buffer.Clear();
+            }
+            m_curr_index = 0;
+            return instruction;
+        }
 
         // assmebling the program starts form here 
         // it tokenizes each non empty instruction and returns a list of parsable instruction each one of them is a list of tokens
-        static private List<List<string>> Tokenize(List<string> thecode)
-        {
-            List<List<string>> insts = new List<List<string>>();
-            for (int j = 0; j < thecode.Count; j++)
-            {
-                string line = thecode[j];
-                // curr_inst is a list of tokens (strings)
-                List<string> curr_inst = new List<string>();
-                int i = 0;
-            contin:
-                string token = ""; // addi     x1, x0, 123   
-                while (i < line.Length && line[i] != ' ' && line[i] != ',') // we consume letters
-                    token += line[i++];
 
-
-                if (!EmptyLine(token))
-                {
-                    curr_inst.Add(token.ToLower());
-                }
-                while (i < line.Length && (line[i] == ' ' || line[i] == ',')) i++; // consume all unwanted delimiters
-
-                if (i < line.Length) goto contin;
-
-                if (curr_inst.Count != 0) insts.Add(curr_inst);
-            }
-            substitute_pseudo_insts(ref insts);
-            subtitute_labels(insts);
-
-            return insts;
-        }
         // it checks if a given label is valid or not
-        static string Is_valid_label(List<string> label)
+        string? Is_valid_label(Instruction label)
         {
-            // valid label (sdf:)
-            if (label.Count == 1 && label[0].Count(x => x == ':') == 1)
-                return label[0].Remove(label[0].IndexOf(':'));
-
-            // valid label (sdf :)
-            else if (label.Count == 2 && !label[0].Contains(":") && label[1] == ":")
-                return label[0];
-
-            // it is invalid
-            return invlbl;
-        }
-        // this funciton saves each label and it's value (address) so it can be used when computing the offset address in the jump and branch instructions
-        static private void subtitute_labels(List<List<string>> insts)
-        {
-            int index = 0;
-            for (int i = 0; i < insts.Count; i++)
+            if (label.tokens.Count == 1)
             {
-                if (insts[i].Any(str => str.Contains(":")))
-                {
-                    string label = Is_valid_label(insts[i]);
-                    lblinvlabel |= label == invlbl;
-                    if (label != invlbl)
-                    {
-                        if (labels.ContainsKey(label))
-                            lblmultlabels |= true;
-                        else
-                        {
-                            labels.Add(label, index);
-                        }
-                    }
-                }
-                else // if the current insts is not a label so it is an instruction
-                    index++;
+                return label.tokens[0].value[..^1];
             }
-
-            // it removes any label from the list of instructions
-            insts.RemoveAll(x => x.Any(y => y.Contains(':')));
-        }
-
-
-        public static void assert(string msg)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine(msg);
-            Console.ResetColor();
-            Environment.Exit(1);
-        }
-        public static (List<string>, List<List<string>>) TOP_MAIN()
-        {
-            lblinvinst = false;
-            lblinvlabel = false;
-            lblmultlabels = false;
-            lblnumofinst = "0";
-            labels.Clear();
-
-            List<string> thecode = input.ToList();
-            thecode.Add("HLT");
-            List<List<string>> insts = new List<List<string>>();
-
-            thecode.RemoveAll(x => (string.Empty == x || string.IsNullOrEmpty(x) || string.IsNullOrWhiteSpace(x)));
-
-            insts = Tokenize(thecode); // example: addi x1, x9, 213
-                                       // here we have a list of instructions that we can genrate machine code for
-            if (insts.Count != 0)
+            else if (label.tokens.Count == 2 && label.tokens[1].value == ":")
             {
-                List<string> mc = GetMachineCode(insts);
-                if (insts.Count != mc.Count)
-                    throw new Exception("Instruction Count doesn't match MC Count");
-
-                lblinvinst = mc.Any(x => x.Contains(invinst)) || lblinvlabel || lblmultlabels;
-                if (lblinvinst)
-                    return (new List<string>(), new List<List<string>>());
-
-                lblnumofinst = mc.Count.ToString();
-                return (mc, insts);
+                return label.tokens[0].value;
             }
             else
             {
-                lblinvinst |= lblinvlabel || lblmultlabels;
-                return (new List<string>(), new List<List<string>>());
+                return null;
             }
+        }
+        // this funciton saves each label and it's value (address) so it can be used when computing the offset address in the jump and branch instructions
+        private void Subtitute_labels(ref Program program)
+        {
+            int index = 0;
+            for (int i = 0; i < program.instructions.Count; i++)
+            {
+                Instruction inst = program.instructions[i];
+                if (inst.tokens.Any(token => token.value.Contains(':')))
+                {
+                    string? label = Is_valid_label(program.instructions[i]);
+                    lblinvlabel |= label == null;
+                    if (label != null)
+                    {
+                        if (!labels.TryAdd(label, index))
+                            lblmultlabels |= true;
+                    }
+                }
+                else
+                    index++;
+            }
+            program.instructions.RemoveAll(inst => inst.tokens.Any(token => token.value.Contains(':')));
+        }
+
+        Program? TokenizeProg(List<string> thecode)
+        {
+            Program program = new Program();
+            for (int i = 0; i < thecode.Count; i++)
+            {
+                m_curr_inst = thecode[i];
+                Instruction? instruction = TokenizeInst();
+                if (instruction.HasValue)
+                {
+                    program.instructions.Add(instruction.Value);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            return program;
+        }
+        public Program? ASSEMBLE(List<string> in_prog)
+        {
+            lblINVINST = false;
+            lblinvlabel = false;
+            lblmultlabels = false;
+            labels.Clear();
+
+            in_prog.RemoveAll(line => string.IsNullOrEmpty(line) || string.IsNullOrWhiteSpace(line));
+            m_prog = in_prog;
+            m_prog.Add("HLT");
+            Program? prog = TokenizeProg(m_prog);
+
+            if (prog.HasValue)
+            {
+                Program program = prog.Value;
+                Substitute_pseudo_insts(ref program);
+                Subtitute_labels(ref program);
+                List<string>? mc = GetMachineCode(ref program.instructions);
+                if (mc != null)
+                {
+                    program.mc = mc;
+                }
+                else
+                {
+                    lblINVINST = true;
+                    return null;
+                }
+                return program;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public List<string> GetInstsAsText(Program program)
+        {
+            List<string> ret = [];
+            for (int i = 0; i < program.instructions.Count; i++)
+            {
+                Instruction instruction = program.instructions[i];
+                string mnem = instruction.tokens[0].value;
+                if (mnem == "beq" || mnem == "bne")
+                {
+                    string LabelValue = Convert.ToInt16(program.mc[i].Substring(16), 2).ToString();
+                    instruction.tokens[^1] = new Token(LabelValue);
+                }
+                string inst = "";
+                instruction.tokens.ForEach(token => inst += token.value + " ");
+                ret.Add(inst);
+            }
+            return ret;
         }
     }
 

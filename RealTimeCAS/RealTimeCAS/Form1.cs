@@ -10,9 +10,9 @@ namespace RealTimeCAS
         }
         List<List<string>> curr_insts = new List<List<string>>();
         List<string> curr_mc = new List<string>();
+        List<string> curr_text_dir = new List<string>();
         List<string> curr_data = new List<string>();
         List<string> curr_data_dir = new List<string>();
-        List<string> curr_text_dir = new List<string>();
         int MIFinstwidth = 0;
         int MIFinstdepth = 0;
         int MIFdatawidth = 0;

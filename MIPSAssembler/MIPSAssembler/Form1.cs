@@ -1,3 +1,4 @@
+using MIPSASSEMBLER;
 using System.Text;
 
 namespace MIPSAssembler
@@ -14,28 +15,39 @@ namespace MIPSAssembler
         List<string> curr_text_dir = [];
         List<string> curr_data_dir = [];
         List<string> curr_mc = [];
-        List<List<string>> curr_insts = [];
+        List<string> curr_insts = [];
+        MIPSASSEMBLER.Program m_prog = new();
         private readonly List<string> excep_mc = [
                     "11111100000000000000000000000000", // hlt
                     "00100000000111111111111111111111", // addi x31 x0 -1
                     "11111100000000000000000000000000", // hlt
                 ];
-        private readonly List<List<string>> excep_insts = [
-                    ["hlt"],
-                    ["addi", "x31", "x0", "-1"],
-                    ["hlt"],
+        private readonly List<string> excep_insts = [
+                    "hlt",
+                    "addi x31, x0, -1",
+                    "hlt",
                 ];
         // this is the entry point of the entire process because we want to process the input only if the input is changed
 
         void Assemble(string[] input)
         {
-            MIPSASSEMBLER.MIPSASSEMBLER.input = input;
-            (List<string> mc, List<List<string>> insts) = MIPSASSEMBLER.MIPSASSEMBLER.TOP_MAIN();
-            curr_mc = mc;
-            curr_insts = insts;
-            lblErrInvinst.Visible = MIPSASSEMBLER.MIPSASSEMBLER.lblinvinst;
-            lblErrInvlabel.Visible = MIPSASSEMBLER.MIPSASSEMBLER.lblinvlabel;
-            lblErrMultlabels.Visible = MIPSASSEMBLER.MIPSASSEMBLER.lblmultlabels;
+            m_prog = new();
+            MIPSASSEMBLER.MIPSASSEMBLER assembler = new MIPSASSEMBLER.MIPSASSEMBLER();
+            MIPSASSEMBLER.Program? program = assembler.ASSEMBLE(input.ToList());
+            if (program.HasValue)
+            {
+                m_prog = program.Value;
+                curr_mc = program.Value.mc;
+                curr_insts = assembler.GetInstsAsText(m_prog);
+            }
+            else
+            {
+                curr_mc.Clear();
+                curr_insts.Clear();
+            }
+            lblErrInvinst.Visible = assembler.lblINVINST;
+            lblErrInvlabel.Visible = assembler.lblinvlabel;
+            lblErrMultlabels.Visible = assembler.lblmultlabels;
 
 
             curr_insts.AddRange(excep_insts);
@@ -241,17 +253,12 @@ namespace MIPSAssembler
             List<string> IM_INIT = [];
             for (int i = 0; i < mc.Count; i++)
             {
-                string inst = "";
-                curr_insts[i].ForEach(x => { inst += x + " "; });
-                IM_INIT.Add(get_entry_IM_INIT(mc[i], inst, i));
+                IM_INIT.Add(get_entry_IM_INIT(mc[i], curr_insts[i], i));
             }
             int HANDLER_ADDR = 1000;
             for (int i = 0; i < excep_mc.Count; i++)
             {
-                string inst = "";
-                foreach (string tt in curr_insts[mc.Count + i])
-                    inst += tt + " ";
-                IM_INIT.Add(get_entry_IM_INIT(excep_mc[i], inst, HANDLER_ADDR - 1 + i));
+                IM_INIT.Add(get_entry_IM_INIT(excep_mc[i], curr_insts[mc.Count + i], HANDLER_ADDR - 1 + i));
             }
 
 
@@ -399,15 +406,7 @@ namespace MIPSAssembler
             for (int i = 0; i < curr_mc.Count; i++)
             {
                 string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
-                List<string> inst = [];
-                curr_insts[i].ForEach(x => { inst.Add(x + " "); });
-                if (MIPSASSEMBLER.MIPSASSEMBLER.isbranch(curr_insts[i][0]))
-                {
-                    inst[inst.Count - 1] = Convert.ToInt16(curr_mc[i].Substring(16), 2).ToString();
-                }
-                string string_inst = "";
-                inst.ForEach(x => string_inst += x);
-                string temp = ($"Bin: \"{curr_mc[i]}\", Hex: 0x{hex}; // {string_inst,-20}").Trim() + '\n';
+                string temp = ($"Bin: \"{curr_mc[i]}\", Hex: 0x{hex}; // {curr_insts[i],-20}").Trim() + '\n';
                 tb_tocopy += temp;
             }
             if (tb_tocopy.Length > 0)
@@ -415,9 +414,7 @@ namespace MIPSAssembler
             else
                 Clipboard.SetText(" ");
 
-            /*
-            Bin: "00100000000000010000000000000001", Hex: 0x20010001; // addi x1 x0 1
-            */
+            //Bin: "00100000000000010000000000000001", Hex: 0x20010001; // addi x1 x0 1
         }
 
         private void Assembler_KeyDown(object sender, KeyEventArgs e)
