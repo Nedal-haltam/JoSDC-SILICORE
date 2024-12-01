@@ -16,15 +16,7 @@
 
 # create_clock -name {input_clk} -period 20.000 -waveform { 0.000 10.000 } [get_ports {input_clk}]
 
-create_clock -name {input_clk} -period 15.2 -waveform { 0.000 10.511 } [get_ports {input_clk}]
-
-
-
-
-# create_clock -name {input_clk} -period 15.1 -waveform { 0.000 10.311 } [get_ports {input_clk}]
-# Fmax = 66.35
-# setup slack: +0.02
-
+create_clock -name {input_clk} -period 15.2 -waveform { 0.000 10.611 } [get_ports {input_clk}]
 
 
 # create_clock -name {input_clk} -period 15.2 -waveform { 0.000 10.511 } [get_ports {input_clk}]

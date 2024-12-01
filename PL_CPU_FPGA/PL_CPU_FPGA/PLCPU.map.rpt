@@ -1,5 +1,5 @@
 Analysis & Synthesis report for PLCPU
-Fri Nov 29 23:38:14 2024
+Sun Dec  1 12:44:23 2024
 Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
 
 
@@ -83,13 +83,13 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                        ;
 +------------------------------------+------------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Fri Nov 29 23:38:14 2024          ;
+; Analysis & Synthesis Status        ; Successful - Sun Dec  1 12:44:23 2024          ;
 ; Quartus Prime Version              ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
 ; Revision Name                      ; PLCPU                                          ;
 ; Top-level Entity Name              ; CPU5STAGE                                      ;
 ; Family                             ; Cyclone IV E                                   ;
-; Total logic elements               ; 4,181                                          ;
-;     Total combinational functions  ; 3,129                                          ;
+; Total logic elements               ; 4,190                                          ;
+;     Total combinational functions  ; 3,138                                          ;
 ;     Dedicated logic registers      ; 1,545                                          ;
 ; Total registers                    ; 1545                                           ;
 ; Total pins                         ; 66                                             ;
@@ -259,16 +259,16 @@ https://fpgasoftware.intel.com/eula.
 +---------------------------------------------+-----------+
 ; Resource                                    ; Usage     ;
 +---------------------------------------------+-----------+
-; Estimated Total logic elements              ; 4,181     ;
+; Estimated Total logic elements              ; 4,190     ;
 ;                                             ;           ;
-; Total combinational functions               ; 3129      ;
+; Total combinational functions               ; 3138      ;
 ; Logic element usage by number of LUT inputs ;           ;
-;     -- 4 input functions                    ; 2213      ;
-;     -- 3 input functions                    ; 554       ;
-;     -- <=2 input functions                  ; 362       ;
+;     -- 4 input functions                    ; 2215      ;
+;     -- 3 input functions                    ; 559       ;
+;     -- <=2 input functions                  ; 364       ;
 ;                                             ;           ;
 ; Logic elements by mode                      ;           ;
-;     -- normal mode                          ; 2914      ;
+;     -- normal mode                          ; 2923      ;
 ;     -- arithmetic mode                      ; 215       ;
 ;                                             ;           ;
 ; Total registers                             ; 1545      ;
@@ -282,7 +282,7 @@ https://fpgasoftware.intel.com/eula.
 ;                                             ;           ;
 ; Maximum fan-out node                        ; hlt_logic ;
 ; Maximum fan-out                             ; 1577      ;
-; Total fan-out                               ; 17447     ;
+; Total fan-out                               ; 17474     ;
 ; Average fan-out                             ; 3.61      ;
 +---------------------------------------------+-----------+
 
@@ -292,15 +292,15 @@ https://fpgasoftware.intel.com/eula.
 +----------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+----------------------------------------------------------------------------------------------------+-----------------------+--------------+
 ; Compilation Hierarchy Node                   ; Combinational ALUTs ; Dedicated Logic Registers ; Memory Bits ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                                ; Entity Name           ; Library Name ;
 +----------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+----------------------------------------------------------------------------------------------------+-----------------------+--------------+
-; |CPU5STAGE                                   ; 3129 (33)           ; 1545 (32)                 ; 32768       ; 0            ; 0       ; 0         ; 66   ; 0            ; |CPU5STAGE                                                                                         ; CPU5STAGE             ; work         ;
+; |CPU5STAGE                                   ; 3138 (33)           ; 1545 (32)                 ; 32768       ; 0            ; 0       ; 0         ; 66   ; 0            ; |CPU5STAGE                                                                                         ; CPU5STAGE             ; work         ;
 ;    |EX_MEM_buffer:ex_mem_buffer|             ; 32 (32)             ; 85 (85)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_MEM_buffer:ex_mem_buffer                                                             ; EX_MEM_buffer         ; work         ;
-;    |EX_stage:ex_stage|                       ; 915 (3)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage                                                                       ; EX_stage              ; work         ;
+;    |EX_stage:ex_stage|                       ; 918 (3)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage                                                                       ; EX_stage              ; work         ;
 ;       |ALU:alu|                              ; 634 (634)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu                                                               ; ALU                   ; work         ;
 ;       |ALU_OPER:alu_oper|                    ; 34 (34)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|ALU_OPER:alu_oper                                                     ; ALU_OPER              ; work         ;
 ;       |BranchDecision:BDU|                   ; 29 (1)              ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|BranchDecision:BDU                                                    ; BranchDecision        ; work         ;
 ;          |compare_equal:cmp1|                ; 28 (28)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|BranchDecision:BDU|compare_equal:cmp1                                 ; compare_equal         ; work         ;
 ;       |MUX_4x1:alu_oper1|                    ; 97 (97)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|MUX_4x1:alu_oper1                                                     ; MUX_4x1               ; work         ;
-;       |MUX_8x1:alu_oper2|                    ; 118 (118)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|MUX_8x1:alu_oper2                                                     ; MUX_8x1               ; work         ;
+;       |MUX_8x1:alu_oper2|                    ; 121 (121)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|MUX_8x1:alu_oper2                                                     ; MUX_8x1               ; work         ;
 ;    |ID_EX_buffer:id_ex_buffer|               ; 186 (186)           ; 188 (188)                 ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_EX_buffer:id_ex_buffer                                                               ; ID_EX_buffer          ; work         ;
 ;    |ID_stage:id_stage|                       ; 1495 (33)           ; 1056 (0)                  ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage                                                                       ; ID_stage              ; work         ;
 ;       |BranchResolver:BR|                    ; 6 (6)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|BranchResolver:BR                                                     ; BranchResolver        ; work         ;
@@ -308,10 +308,10 @@ https://fpgasoftware.intel.com/eula.
 ;       |REG_FILE:reg_file|                    ; 1403 (1403)         ; 1056 (1056)               ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|REG_FILE:reg_file                                                     ; REG_FILE              ; work         ;
 ;       |StallDetectionUnit:SDU|               ; 12 (12)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|StallDetectionUnit:SDU                                                ; StallDetectionUnit    ; work         ;
 ;       |control_unit:cu|                      ; 4 (4)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|control_unit:cu                                                       ; control_unit          ; work         ;
-;    |IF_ID_buffer:if_id_buffer|               ; 98 (98)             ; 79 (79)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_ID_buffer:if_id_buffer                                                               ; IF_ID_buffer          ; work         ;
-;    |IF_stage:if_stage|                       ; 286 (31)            ; 32 (0)                    ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage                                                                       ; IF_stage              ; work         ;
-;       |IM:inst_mem|                          ; 117 (117)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage|IM:inst_mem                                                           ; IM                    ; work         ;
-;       |MUX_8x1:pc_src_mux|                   ; 138 (137)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage|MUX_8x1:pc_src_mux                                                    ; MUX_8x1               ; work         ;
+;    |IF_ID_buffer:if_id_buffer|               ; 100 (100)           ; 79 (79)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_ID_buffer:if_id_buffer                                                               ; IF_ID_buffer          ; work         ;
+;    |IF_stage:if_stage|                       ; 289 (31)            ; 32 (0)                    ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage                                                                       ; IF_stage              ; work         ;
+;       |IM:inst_mem|                          ; 116 (116)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage|IM:inst_mem                                                           ; IM                    ; work         ;
+;       |MUX_8x1:pc_src_mux|                   ; 142 (141)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage|MUX_8x1:pc_src_mux                                                    ; MUX_8x1               ; work         ;
 ;          |BITWISEand3:sel4|                  ; 1 (1)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage|MUX_8x1:pc_src_mux|BITWISEand3:sel4                                   ; BITWISEand3           ; work         ;
 ;       |PC_register:pc_reg|                   ; 0 (0)               ; 32 (32)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage|PC_register:pc_reg                                                    ; PC_register           ; work         ;
 ;    |MEM_WB_buffer:mem_wb_buffer|             ; 4 (4)               ; 73 (73)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|MEM_WB_buffer:mem_wb_buffer                                                             ; MEM_WB_buffer         ; work         ;
@@ -320,7 +320,7 @@ https://fpgasoftware.intel.com/eula.
 ;          |altsyncram:DataMem_rtl_0|          ; 0 (0)               ; 0 (0)                     ; 32768       ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|MEM_stage:mem_stage|DM:data_mem|altsyncram:DataMem_rtl_0                                ; altsyncram            ; work         ;
 ;             |altsyncram_eg81:auto_generated| ; 0 (0)               ; 0 (0)                     ; 32768       ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|MEM_stage:mem_stage|DM:data_mem|altsyncram:DataMem_rtl_0|altsyncram_eg81:auto_generated ; altsyncram_eg81       ; work         ;
 ;    |WB_stage:wb_stage|                       ; 32 (32)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|WB_stage:wb_stage                                                                       ; WB_stage              ; work         ;
-;    |exception_detect_unit:EDU|               ; 25 (25)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|exception_detect_unit:EDU                                                               ; exception_detect_unit ; work         ;
+;    |exception_detect_unit:EDU|               ; 26 (26)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|exception_detect_unit:EDU                                                               ; exception_detect_unit ; work         ;
 ;    |forwardA:FA|                             ; 13 (13)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|forwardA:FA                                                                             ; forwardA              ; work         ;
 ;    |forwardB:FB|                             ; 6 (6)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|forwardB:FB                                                                             ; forwardB              ; work         ;
 ;    |forwardC:FC|                             ; 4 (4)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|forwardC:FC                                                                             ; forwardC              ; work         ;
@@ -453,11 +453,11 @@ Note: All latches listed above may not be present at the end of synthesis due to
 ; Inverted Register                                ; Fan out ;
 +--------------------------------------------------+---------+
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[0]  ; 71      ;
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[1]  ; 67      ;
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[2]  ; 71      ;
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[3]  ; 68      ;
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[4]  ; 57      ;
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[5]  ; 57      ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[1]  ; 66      ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[2]  ; 69      ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[3]  ; 70      ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[4]  ; 59      ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[5]  ; 58      ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[6]  ; 5       ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[7]  ; 5       ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[8]  ; 5       ;
@@ -483,7 +483,7 @@ Note: All latches listed above may not be present at the end of synthesis due to
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[28] ; 4       ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[29] ; 4       ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[30] ; 4       ;
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[31] ; 4       ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[31] ; 5       ;
 ; Total number of inverted registers = 32          ;         ;
 +--------------------------------------------------+---------+
 
@@ -1274,19 +1274,19 @@ Note: In order to hide this table in the UI and the text report file, please set
 ;     ENA               ; 32                          ;
 ;     ENA CLR           ; 1103                        ;
 ;     plain             ; 137                         ;
-; cycloneiii_lcell_comb ; 3161                        ;
+; cycloneiii_lcell_comb ; 3170                        ;
 ;     arith             ; 215                         ;
 ;         2 data inputs ; 88                          ;
 ;         3 data inputs ; 127                         ;
-;     normal            ; 2946                        ;
+;     normal            ; 2955                        ;
 ;         1 data inputs ; 37                          ;
-;         2 data inputs ; 269                         ;
-;         3 data inputs ; 427                         ;
-;         4 data inputs ; 2213                        ;
+;         2 data inputs ; 271                         ;
+;         3 data inputs ; 432                         ;
+;         4 data inputs ; 2215                        ;
 ; cycloneiii_ram_block  ; 32                          ;
 ;                       ;                             ;
-; Max LUT depth         ; 17.00                       ;
-; Average LUT depth     ; 8.16                        ;
+; Max LUT depth         ; 16.00                       ;
+; Average LUT depth     ; 8.14                        ;
 +-----------------------+-----------------------------+
 
 
@@ -1295,7 +1295,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 +----------------+--------------+
 ; Partition Name ; Elapsed Time ;
 +----------------+--------------+
-; Top            ; 00:00:06     ;
+; Top            ; 00:00:10     ;
 +----------------+--------------+
 
 
@@ -1305,7 +1305,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
-    Info: Processing started: Fri Nov 29 23:37:58 2024
+    Info: Processing started: Sun Dec  1 12:44:02 2024
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off PLCPU -c PLCPU
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 6 of the 6 processors detected
@@ -1574,16 +1574,16 @@ Info (286030): Timing-Driven Synthesis is running
 Info (144001): Generated suppressed messages file D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/PLCPU.map.smsg
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
-Info (21057): Implemented 4344 device resources after synthesis - the final resource count might be different
+Info (21057): Implemented 4353 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 2 input pins
     Info (21059): Implemented 64 output pins
-    Info (21061): Implemented 4246 logic cells
+    Info (21061): Implemented 4255 logic cells
     Info (21064): Implemented 32 RAM segments
 Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 107 warnings
-    Info: Peak virtual memory: 4831 megabytes
-    Info: Processing ended: Fri Nov 29 23:38:14 2024
-    Info: Elapsed time: 00:00:16
-    Info: Total CPU time (on all processors): 00:00:21
+    Info: Peak virtual memory: 4823 megabytes
+    Info: Processing ended: Sun Dec  1 12:44:23 2024
+    Info: Elapsed time: 00:00:21
+    Info: Total CPU time (on all processors): 00:00:25
 
 
 +------------------------------------------+
