@@ -11,7 +11,7 @@ parameter handler_addr = 32'd1000;
 
 wire IF_FLUSH;
 wire clk, hlt;
-wire [31:0] ID_PFC, EX_PFC, IF_pc, IF_INST, ID_PC, ID_INST, alu_out, forwarded_data, wdata_to_reg_file, ID_rs1, ID_rs2, ID_Immed, EX_PC, EX_INST, EX_Immed, EX_PFC_to_IF;
+wire [31:0] ID_PFC_to_IF, ID_PFC_to_EX, EX_PFC, IF_pc, IF_INST, ID_PC, ID_INST, alu_out, forwarded_data, wdata_to_reg_file, ID_rs1, ID_rs2, ID_Immed, EX_PC, EX_INST, EX_Immed, EX_PFC_to_IF;
 wire [31:0] EX_rs1, EX_rs2, MEM_PC, MEM_INST, WB_PC, WB_INST, MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, WB_ALU_OUT, WB_rs2, WB_Data_mem_out, ID_rs1_ind_test, MEM_ALU_OUT_test, rs2_out;
 wire [11:0]  ID_opcode, EX_opcode, MEM_opcode, WB_opcode;
 wire [4:0]  ID_rs1_ind, ID_rs2_ind, ID_rd_ind, EX_rd_ind, EX_rs1_ind, EX_rs2_ind, MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind, WB_rs1_ind, WB_rs2_ind, WB_rd_ind;
@@ -50,7 +50,7 @@ forwardC FC(EX_opcode, EX_rs1_ind, EX_rs2_ind, MEM_rd_indzero, MEM_rd_ind, MEM_r
 
 
 
-IF_stage #(.handler_addr(handler_addr))if_stage(ID_PFC, EX_PFC_to_IF, pc_src, IF_pc, pc_write, clk, IF_INST, rst);
+IF_stage #(.handler_addr(handler_addr))if_stage(ID_PFC_to_IF, EX_PFC_to_IF, pc_src, IF_pc, pc_write, clk, IF_INST, rst);
 
 
 
@@ -60,7 +60,7 @@ IF_ID_buffer if_id_buffer(IF_pc, IF_INST, IF_FLUSH, if_id_write, ~clk, ID_opcode
 
 ID_stage id_stage(ID_PC, ID_INST, ID_opcode, EX_memread, alu_out, forwarded_data, wdata_to_reg_file, wdata_to_reg_file, ID_rs1_ind, ID_rs2_ind,
 	EX_rd_ind, WB_rd_ind,
-	id_flush, ID_FLUSH_buf, Wrong_prediction, exception_flag, clk, ID_PFC, ID_predicted, ID_rs1, ID_rs2, pc_src,
+	id_flush, ID_FLUSH_buf, Wrong_prediction, exception_flag, clk, ID_PFC_to_IF, ID_PFC_to_EX, ID_predicted, ID_rs1, ID_rs2, pc_src,
 	pc_write, if_id_write, IF_FLUSH, ID_Immed, WB_regwrite, ID_regwrite, ID_memread, ID_memwrite, rst, ID_is_oper2_immed, 
 	ID_is_beq, ID_is_bne);
 
@@ -73,7 +73,7 @@ ID_stage id_stage(ID_PC, ID_INST, ID_opcode, EX_memread, alu_out, forwarded_data
 
 ID_EX_buffer id_ex_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 			ID_PC, ID_INST, ID_Immed, ID_rs1, ID_rs2, ID_regwrite,
-			ID_memread, ID_memwrite, ~clk, ID_FLUSH_buf, ID_PFC, ID_predicted, ID_is_oper2_immed, ID_is_beq, ID_is_bne,
+			ID_memread, ID_memwrite, ~clk, ID_FLUSH_buf, ID_PFC_to_EX, ID_predicted, ID_is_oper2_immed, ID_is_beq, ID_is_bne,
 			EX_opcode, EX_rs1_ind,
 			EX_rs2_ind, EX_rd_ind, EX_PC,
 			EX_INST, EX_Immed, EX_rs1,

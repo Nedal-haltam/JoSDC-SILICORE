@@ -43,7 +43,7 @@ module ID_EX_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 		EX_regwrite <= ID_regwrite;
 		EX_memread <= ID_memread;
 		EX_memwrite <= ID_memwrite;
-		EX_PFC <= ID_PC + 32'd1;
+		EX_PFC <= ID_PFC;
 		EX_predicted <= ID_predicted;
 		EX_is_oper2_immed <= ID_is_oper2_immed;
 		EX_is_beq <= ID_is_beq; 

@@ -1,5 +1,5 @@
 module BranchPredictor(opcode, predicted, Wrong_prediction, rst, state, clk);
-	input [6:0] opcode;
+	input [11:0] opcode;
 	input rst, Wrong_prediction, clk;
 	
 	output reg predicted; // prediction (1 = taken, 0 = not taken)

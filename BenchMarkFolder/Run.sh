@@ -147,7 +147,7 @@ Run_BenchMark()
 
 
 
-# the mentors insertion sort is accessing invalid memory address (which is -1). when running it in the hardware design (verilog)
+# the mentors insertion sort is accessing an invalid memory address (which is -1). when running it in the hardware design (verilog)
 # it will output 0 by default so it will work but in software (the cycle accurate simulator) it will throw an exception and terminate the program
 # because this cause an index out of bound exception 
 # Run_BenchMark "InsertionSort" 

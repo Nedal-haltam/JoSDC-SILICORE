@@ -40,6 +40,6 @@ module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1
 
 	BranchDecision BDU(oper1, oper2, BranchDecision, is_beq, is_bne);
 
-	assign Wrong_prediction = (rst || BranchDecision ^ predicted);
+	assign Wrong_prediction = ~(rst || ~(BranchDecision ^ predicted)) || opcode == jr;
 
 endmodule

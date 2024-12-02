@@ -1,6 +1,6 @@
 
 module ID_stage(pc, inst, opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_data, rs1_ind, rs2_ind,id_ex_rd_ind, wr_reg_from_wb,
-			    id_flush,id_flush_mux_sel, Wrong_prediction, exception_flag, clk, pfc, predicted, rs1, rs2, pc_src, 
+			    id_flush,id_flush_mux_sel, Wrong_prediction, exception_flag, clk, PFC_to_IF, PFC_to_EX, predicted, rs1, rs2, pc_src, 
 				pc_write, if_id_write, if_id_flush, imm,reg_write_from_wb, reg_write, mem_read, mem_write, rst, is_oper2_immed, 
 				ID_is_beq, ID_is_bne);
 	
@@ -13,7 +13,7 @@ module ID_stage(pc, inst, opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_da
 	input [4:0] rs1_ind, rs2_ind,id_ex_rd_ind, wr_reg_from_wb;
 	input id_flush, Wrong_prediction, exception_flag, clk, reg_write_from_wb, EX_memread;
 	
-	output [31:0] pfc, rs1, rs2;
+	output [31:0] PFC_to_IF, PFC_to_EX, rs1, rs2;
 	output [2:0] pc_src;
 	output pc_write, if_id_write, reg_write, mem_read, mem_write, if_id_flush, predicted, is_oper2_immed,
 		   ID_is_beq, ID_is_bne;
@@ -28,10 +28,12 @@ module ID_stage(pc, inst, opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_da
 	
 	Immed_Gen_unit immed_gen(inst, opcode, imm);
 	
-	assign pfc = (ID_is_beq || ID_is_bne) ? pc + imm : imm;
+	wire is_branch_and_taken;
+	assign is_branch_and_taken = (ID_is_beq || ID_is_bne) && predicted;
+	assign PFC_to_IF = (is_branch_and_taken) ? pc + imm : imm;
+	assign PFC_to_EX = (is_branch_and_taken) ? pc : pc + imm;
 
-	
-    BranchResolver BR(pc_src, exception_flag, opcode, predicted, Wrong_prediction, rst);
+    BranchResolver BR(pc_src, exception_flag, opcode, predicted, Wrong_prediction, rst, clk);
 	
 	// control section
     control_unit cu(opcode, reg_write_wire, mem_read_wire, mem_write_wire, is_oper2_immed, ID_is_beq, ID_is_bne);
