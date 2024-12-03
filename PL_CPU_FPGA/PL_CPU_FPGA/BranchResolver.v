@@ -1,7 +1,7 @@
 
-module BranchResolver(PC_src, exception_flag, opcode, predicted, Wrong_prediction, rst, clk);
+module BranchResolver(PC_src, exception_flag, ID_opcode, EX_opcode, predicted, Wrong_prediction, rst, clk);
 	
-	input [11:0] opcode;
+	input [11:0] ID_opcode, EX_opcode;
 	input exception_flag, rst, Wrong_prediction, clk;
 	
 	output [2:0] PC_src;
@@ -15,17 +15,16 @@ module BranchResolver(PC_src, exception_flag, opcode, predicted, Wrong_predictio
 //			if there is no dependency : then we immediately jump without introducing bubbles
 
 
-// assign predicted = (opcode == beq || opcode == bne || opcode == jr) ? 1'b1 : 0;
-output [1:0] state;
-BranchPredictor BPU(opcode, predicted, Wrong_prediction, rst, state, clk);
+wire [1:0] state;
+BranchPredictor BPU(ID_opcode, EX_opcode, predicted, Wrong_prediction, rst, state, clk);
 
 assign PC_src = (exception_flag) ? 3'b001 : 
 (
 	(Wrong_prediction) ? 3'b100 : 
 		(
-			(opcode == hlt_inst) ? 3'b011 : 
+			(ID_opcode == hlt_inst) ? 3'b011 : 
 				(
-					(predicted || opcode == j || opcode == jal) ? 3'b010 : 0
+					(predicted || ID_opcode == j || ID_opcode == jal) ? 3'b010 : 0
 				)
 		)
 );

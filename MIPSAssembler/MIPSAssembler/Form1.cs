@@ -1,6 +1,7 @@
 
 
 using System.Text;
+using static LibAN.LibAN;
 namespace MIPSAssembler
 {
     public partial class Form1 : Form
@@ -14,7 +15,6 @@ namespace MIPSAssembler
         Label[] errors = [];
         List<string> curr_text_dir = [];
         List<string> curr_data_dir = [];
-        List<string> curr_mc = [];
         List<string> curr_insts = [];
         MIPSASSEMBLER.Program m_prog = new();
         private readonly List<string> excep_mc = [
@@ -36,78 +36,43 @@ namespace MIPSAssembler
             if (program.HasValue)
             {
                 m_prog = program.Value;
-                curr_mc = program.Value.mc;
                 curr_insts = assembler.GetInstsAsText(m_prog);
             }
             else
             {
                 m_prog.instructions.Clear();
                 m_prog.mc.Clear();
-                curr_mc.Clear();
                 curr_insts.Clear();
             }
             lblErrInvinst.Visible = assembler.lblINVINST;
             lblErrInvlabel.Visible = assembler.lblinvlabel;
             lblErrMultlabels.Visible = assembler.lblmultlabels;
-            lblnumofinst.Text = curr_mc.Count.ToString();
+            lblnumofinst.Text = m_prog.mc.Count.ToString();
 
 
             curr_insts.AddRange(excep_insts);
 
             lblNoErr.Visible = !(lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible);
         }
-
-
-        void Get_directives(List<string> src)
-        {
-            src.ForEach(x => x = x.ToString().Trim(' '));
-
-            int data_index = src.IndexOf(".data");
-            int text_index = src.IndexOf(".text");
-
-            curr_data_dir.Clear();
-            curr_text_dir.Clear();
-
-            if (data_index != -1 && text_index != -1)
-            {
-                curr_data_dir = src.GetRange(data_index, text_index - data_index);
-            }
-            if (text_index != -1)
-            {
-                curr_text_dir = src.GetRange(text_index + 1, src.Count - text_index - 1);
-            }
-        }
-
-
-
         private void Input_TextChanged(object sender, EventArgs e)
         {
             List<string> code = [.. input.Lines];
             clean_comments(ref code);
-            Get_directives(code);
-            List<string> to_out = [];
+            (List<string> data_dir, List<string> text_dir) = Get_directives(code);
+            curr_data_dir = data_dir;
+            curr_text_dir = text_dir;
 
+
+            List<string> to_out = [];
             //(to_out, _ ) = assemble_data_dir(curr_data_dir);
             Assemble([.. curr_text_dir]);
 
-            to_out.AddRange(curr_mc);
+            to_out.AddRange(m_prog.mc);
             output.Lines = [.. to_out];
-            lblnumofinst.Text = curr_mc.Count.ToString();
+            lblnumofinst.Text = m_prog.mc.Count.ToString();
 
             Update_error_locations();
         }
-
-        void Update_error_locations()
-        {
-            int j = 0;
-            for (int i = 0; i < errors.Length; i++)
-            {
-                if (errors[i].Visible)
-                    errors[i].Location = locations[j++];
-            }
-        }
-
-
         private void Layout_size()
         {
             int w = 1100;
@@ -139,91 +104,119 @@ namespace MIPSAssembler
 
             Update_error_locations();
         }
-
-        private static T PopF<T>(ref List<T> vals)
+        private static string? PopF(ref List<string> vals)
         {
-            T val = vals.First();
+            if (vals.Count == 0)
+            {
+                return null;
+            }
+            string val = vals.First();
             vals.RemoveAt(0);
             return val;
         }
-
-
-        void assert(string msg)
+        void HandleCommand(List<string> args)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine(msg);
-            Console.ResetColor();
-            Environment.Exit(1);
-        }
+            PopF(ref args); // pop the default argument which is the path of the current program
+            if (args.Count == 0)
+            {
+                MIPSASSEMBLER.MIPSASSEMBLER.Assert("Missing arguments");
+            }
+            string? arg = PopF(ref args);
+            if (arg == null)
+            {
+                MIPSASSEMBLER.MIPSASSEMBLER.Assert($"No argumnets provided");
+            }
+            else if (arg.ToLower() != "gen")
+            {
+                MIPSASSEMBLER.MIPSASSEMBLER.Assert($"Invalid argument: {arg}");
+            }
+            string? source_filepath = PopF(ref args);
+            string? MC_filepath = PopF(ref args);
+            string? DM_filepath = PopF(ref args);
+            string? IM_INIT_filepath = PopF(ref args);
+            string? DM_INIT_filepath = PopF(ref args);
+            string? IM_MIF_filepath = PopF(ref args);
+            string? DM_MIF_filepath = PopF(ref args);
 
+            if (source_filepath != null)
+            {
+                List<string> src = File.ReadAllLines(source_filepath).ToList();
+                clean_comments(ref src);
+                (List<string> data_dir, List<string> text_dir) = Get_directives(src);
+                curr_data_dir = data_dir;
+                curr_text_dir = text_dir;
+                Assemble([.. curr_text_dir]);
+            }
+
+            List<string> mc = [];
+            (List<string> DM_INIT, List<string> DM) = assemble_data_dir(curr_data_dir);
+            if (lblNoErr.Visible)
+            {
+                mc.AddRange(m_prog.mc);
+            }
+            if (MC_filepath != null)
+                File.WriteAllLines(MC_filepath, mc);
+            if (DM_filepath != null)
+                File.WriteAllLines(DM_filepath, DM);
+
+            if (IM_INIT_filepath != null)
+            {
+                List<string> IM_INIT = get_IM_INIT(mc);
+                File.WriteAllLines(IM_INIT_filepath, IM_INIT);
+            }
+            if (DM_INIT_filepath != null)
+                File.WriteAllLines(DM_INIT_filepath, DM_INIT);
+
+            if (IM_MIF_filepath != null)
+                File.WriteAllText(IM_MIF_filepath, GetIMMIF(32, 1024, 2).ToString());
+            if (DM_MIF_filepath != null)
+                File.WriteAllText(DM_MIF_filepath, GetDMMIF(DM, 32, 1024, 10).ToString());
+
+
+            Close(); // for now we will close and not parse any other commands
+        }
+        private void Assembler_Load(object sender, EventArgs e)
+        {
+            List<string> args = Environment.GetCommandLineArgs().ToList();
+            if (args.Count > 1)
+                HandleCommand(args);
+
+            Layout_size();
+            errors = [
+                lblErrInvinst,
+                lblErrInvlabel,
+                lblErrMultlabels,
+            ];
+        }
+        void Update_error_locations()
+        {
+            int j = 0;
+            for (int i = 0; i < errors.Length; i++)
+            {
+                if (errors[i].Visible)
+                    errors[i].Location = locations[j++];
+            }
+        }
+        private void Assembler_Resize(object sender, EventArgs e)
+        {
+            Layout_size();
+        }
+        StringBuilder GetIMMIF(int width, int depth, int from_base)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
+            sb.Append(ToMIFentries(0, m_prog.mc, width, from_base));
+            sb.Append($"[{m_prog.mc.Count:X}..{(depth - excep_mc.Count - 1):X}] : 0;\n");
+            sb.Append(ToMIFentries(depth - excep_mc.Count, excep_mc, width, from_base));
+            sb.Append(GetMIFTail());
+
+            return sb;
+        }
         string get_entry_IM_INIT(string mc, string inst, int i)
         {
             string hex = Convert.ToInt32(mc, 2).ToString("X").PadLeft(8, '0');
             return ($"InstMem[{i,2}] <= 32'h{hex};// {inst,-20}").Trim();
         }
-
-
-        void clean_comments(ref List<string> code)
-        {
-            for (int i = 0; i < code.Count; i++)
-            {
-                if (code[i].Contains("//"))
-                {
-                    code[i] = code[i][..code[i].IndexOf('/')];
-                }
-                else if (code[i].Contains('#'))
-                {
-                    code[i] = code[i][..code[i].IndexOf('#')];
-                }
-
-            }
-        }
-        (List<string>, List<string>) assemble_data_dir(List<string> data_dir)
-        {
-            List<string> data = [];
-            for (int i = 0; i < data_dir.Count; i++)
-            {
-                int index = data_dir[i].IndexOf(':');
-                if (index != -1)
-                {
-                    string line = data_dir[i].Substring(index + 1);
-                    line = line.Trim();
-                    line = line.Replace(".word", "");
-                    List<string> vals = line.Split(',').ToList();
-                    foreach (string val in vals)
-                    {
-                        int number = 0;
-                        string snum = val.ToLower().Trim();
-                        try
-                        {
-                            if (snum.StartsWith("0x"))
-                                number = Convert.ToInt32(snum, 16);
-                            else
-                                number = Convert.ToInt32(snum);
-                        }
-                        catch (Exception)
-                        {
-                            number = 0;
-                        }
-                        data.Add(number.ToString());
-                    }
-
-                }
-
-            }
-            List<string> DM_INIT = [];
-            List<string> DM_vals = [];
-            for (int i = 0; i < data.Count; i++)
-            {
-                DM_vals.Add(data[i].ToString());
-                string temp = $"DataMem[{i,2}] <= 32'd{data[i]};";
-                DM_INIT.Add(temp);
-            }
-
-            return (DM_INIT, DM_vals);
-        }
-
-
         List<string> get_IM_INIT(List<string> mc)
         {
             List<string> IM_INIT = [];
@@ -241,142 +234,14 @@ namespace MIPSAssembler
             return IM_INIT;
         }
 
-        string GetMIFentry(string addr, string value)
-        {
-            return $"{addr} : {value};";
-        }
-        StringBuilder ToMIFentries(int start_address, List<string> list, int width, int from_base)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                string address = (start_address + i).ToString("X");
-                string value = Convert.ToInt32(list[i], from_base).ToString("X").PadLeft(width / 4, '0');
-                string entry = GetMIFentry(address, value);
-                sb.Append(entry + '\n');
-            }
-
-            return sb;
-        }
-
-        StringBuilder GetMIFHeader(int width, int depth, string address_radix, string data_radix)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append($"WIDTH={width};\n");
-            sb.Append($"DEPTH={depth};\n");
-            sb.Append($"ADDRESS_RADIX={address_radix};\n");
-            sb.Append($"DATA_RADIX={data_radix};\n");
-            sb.Append("CONTENT BEGIN\n");
-
-            return sb;
-        }
-
-        StringBuilder GetMIFTail()
-        {
-            return new StringBuilder("END;\n");
-        }
-
-        StringBuilder GetIMMIF(int width, int depth, int from_base)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
-            sb.Append(ToMIFentries(0, curr_mc, width, from_base));
-            sb.Append($"[{curr_mc.Count:X}..{(depth - excep_mc.Count - 1):X}] : 0;\n");
-            sb.Append(ToMIFentries(depth - excep_mc.Count, excep_mc, width, from_base));
-            sb.Append(GetMIFTail());
-
-            return sb;
-        }
-
-        StringBuilder GetDMMIF(List<string> DM, int width, int depth, int from_base)
-        {
-            StringBuilder sb = new();
-            sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
-            sb.Append(ToMIFentries(0, DM, width, from_base));
-            sb.Append($"[{DM.Count:X}..{(depth - 1):X}] : 0;\n");
-            sb.Append(GetMIFTail());
-
-            return sb;
-        }
-
-        void HandleCommand(List<string> args)
-        {
-            PopF(ref args);
-            if (args.Count != 8)
-            {
-                assert("Missing arguments");
-            }
-            string arg = PopF(ref args).ToLower();
-            string source_filepath = PopF(ref args);
-            string MC_filepath = PopF(ref args);
-            string DM_filepath = PopF(ref args);
-            string IM_INIT_filepath = PopF(ref args);
-            string DM_INIT_filepath = PopF(ref args);
-            string IM_MIF_filepath = PopF(ref args);
-            string DM_MIF_filepath = PopF(ref args);
-            if (arg == "gen")
-            {
-                List<string> src = File.ReadAllLines(source_filepath).ToList();
-                clean_comments(ref src);
-                Get_directives([.. src]);
-
-                Assemble([.. curr_text_dir]);
-
-                List<string> mc = [];
-
-                if (lblNoErr.Visible)
-                {
-                    mc.AddRange(curr_mc);
-                }
-                File.WriteAllLines(MC_filepath, mc);
-
-                List<string> IM_INIT = get_IM_INIT(mc);
-                File.WriteAllLines(IM_INIT_filepath, IM_INIT);
-
-                (List<string> DM_INIT, List<string> DM) = assemble_data_dir(curr_data_dir);
-                File.WriteAllLines(DM_filepath, DM);
-                File.WriteAllLines(DM_INIT_filepath, DM_INIT);
-
-
-                File.WriteAllText(IM_MIF_filepath, GetIMMIF(32, 1024, 2).ToString());
-                File.WriteAllText(DM_MIF_filepath, GetDMMIF(DM, 32, 1024, 10).ToString());
-
-
-                Close(); // for now we will close and not parse any other commands
-            }
-            else
-            {
-                assert($"Invalid argument: {arg}");
-            }
-        }
-
-        private void Assembler_Load(object sender, EventArgs e)
-        {
-            List<string> args = Environment.GetCommandLineArgs().ToList();
-            if (args.Count > 1)
-                HandleCommand(args);
-
-            Layout_size();
-            errors = [
-                lblErrInvinst,
-                lblErrInvlabel,
-                lblErrMultlabels,
-            ];
-        }
-
-        private void Assembler_Resize(object sender, EventArgs e)
-        {
-            Layout_size();
-        }
 
         private void btncopymc_Click(object sender, EventArgs e)
         {
             string tb_tocopy = "";
-            for (int i = 0; i < curr_mc.Count; i++)
+            for (int i = 0; i < m_prog.mc.Count; i++)
             {
-                string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
-                string temp = ($"Bin: \"{curr_mc[i]}\", Hex: 0x{hex}; // {curr_insts[i],-20}").Trim() + '\n';
+                string hex = Convert.ToInt32(m_prog.mc[i], 2).ToString("X").PadLeft(8, '0');
+                string temp = ($"Bin: \"{m_prog.mc[i]}\", Hex: 0x{hex}; // {curr_insts[i],-20}").Trim() + '\n';
                 tb_tocopy += temp;
             }
             if (tb_tocopy.Length > 0)
@@ -384,7 +249,6 @@ namespace MIPSAssembler
             else
                 Clipboard.SetText(" ");
         }
-
         private void Assembler_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.S)

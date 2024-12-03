@@ -35,9 +35,16 @@ Run_BenchMark_SW()
     
     ASSEMBLER="../MIPSAssembler/MIPSAssembler/bin/Debug/net8.0-windows/MIPSAssemblerapp.exe"
     ASSEMBLER_ARGS="gen $ASSEMBLER_IN $ASSEMBLER_OUT_TO_CAS_IM $ASSEMBLER_OUT_TO_CAS_DM $ASSEMBLER_OUT_IM_INIT $ASSEMBLER_OUT_DM_INIT $ASSEMBLER_OUT_IM_MIF $ASSEMBLER_OUT_DM_MIF"
+
     # run the the assembler
     printf "[INFO]: Assembling "$ProgName"...\n"
     $ASSEMBLER $ASSEMBLER_ARGS
+
+    if [ $? -ne 0 ]; then
+        printf "\033[31mAssembler failed to assemble the program:\033[0m\nUsage: [path to assembler] gen [input (program)] [IM to CAS] [DM to CAS]\n[IM INIT] [DM INIT] [IM MIF] [DM MIF]\n"
+        read -p "Press Enter to exit"
+        exit 1
+    fi
 
     printf "[INFO]: "$ProgName" Assembled Successfully\n"
 
@@ -54,12 +61,24 @@ Run_BenchMark_SW()
     printf "[INFO]: Simulating "$ProgName" on the Single Cycle\n"
     $CAS $CAS_ARGS
 
+    if [ $? -ne 0 ]; then
+        printf "\033[31mCycle Accurate Simulator failed to run the program:\033[0m\nUsage: [path to CAS] sim [singlecycle/pipline] [IM input (machine code)] [DM input] [CAS output]\n"
+        read -p "Press Enter to exit"
+        exit 1
+    fi
+
     printf "[INFO]: "$ProgName" simulated successfully on the Single Cycle\n"
 
     CAS_ARGS="sim pipeline $CAS_IN_IM $CAS_IN_DM $CAS_PL_OUT"
     # run the CAS on the PipeLine
     printf "[INFO]: Simulating "$ProgName" on the PipeLine\n"
     $CAS $CAS_ARGS
+
+    if [ $? -ne 0 ]; then
+        printf "\033[31mCycle Accurate Simulator failed to run the program:\033[0m\nUsage: [path to CAS] sim [singlecycle/pipline] [IM input (machine code)] [DM input] [CAS output]\n"
+        read -p "Press Enter to exit"
+        exit 1
+    fi
 
     printf "[INFO]: "$ProgName" simulated successfully on the PipeLine\n"
 
@@ -157,9 +176,10 @@ Run_BenchMark()
 Run_BenchMark "BinarySearch"
 Run_BenchMark "ControlFlowInstructions"
 Run_BenchMark "DataManipulation"
-Run_BenchMark "InsertionSort(SiliCore_version)"
 Run_BenchMark "Max&MinArray"
 Run_BenchMark "SumOfNumbers"
+Run_BenchMark "InsertionSort(SiliCore_version)"
+Run_BenchMark "BubbleSort(Silicor_BenchMark)"
 
 read -p "Press Enter to exit"
 

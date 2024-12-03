@@ -13,24 +13,28 @@ namespace MIPSASSEMBLER
 
     public struct Token
     {
-        public string value;
+        public string m_value;
+        public Token()
+        {
+            m_value = "";
+        }
         public Token(string value)
         {
-            this.value = value;
+            m_value = value;
         }
     }
 
     public struct Instruction
     {
-        public List<Token> tokens;
-        public InstructionType type;
+        public List<Token> m_tokens;
+        public InstructionType m_type;
         public Instruction()
         {
-            tokens = [];
+            m_tokens = [];
         }
         public Instruction(List<Token> tokens)
         {
-            this.tokens = tokens;
+            m_tokens = tokens;
         }
     }
 
@@ -48,6 +52,14 @@ namespace MIPSASSEMBLER
 
     public class MIPSASSEMBLER
     {
+        public static void Assert(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine(msg);
+            Console.ResetColor();
+            Environment.Exit(1);
+        }
+
         public bool lblinvlabel = false;
         public bool lblmultlabels = false;
         public bool lblINVINST = false;
@@ -55,6 +67,7 @@ namespace MIPSASSEMBLER
         List<string> m_prog = [];
         string m_curr_inst = "";
         int m_curr_index = 0;
+        int curr_inst_index;
         readonly List<string> REG_LIST =
         [ "zero", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",
           "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra"];
@@ -97,15 +110,6 @@ namespace MIPSASSEMBLER
             { "jal"  , "000011" },
 
         };
-
-        // checks for impty instruction that dont need to be tokenized or converted to machine code
-        public bool EmptyLine(string instruction)
-        {
-            return string.IsNullOrEmpty(instruction) || string.IsNullOrWhiteSpace(instruction);
-        }
-
-        // input : the opcode (string : in words)
-        // return the Instruction type
         InstructionType? GetInstType(string name)
         {
             return name switch
@@ -119,7 +123,6 @@ namespace MIPSASSEMBLER
             };
         }
 
-        // it takes as input the register name and extracts the index form it
         string? Getregindex(string reg)
         {
             if (reg.StartsWith('x'))
@@ -153,34 +156,31 @@ namespace MIPSASSEMBLER
                 return null;
 
         }
-
-        // the following functions are used to tokenize, parse, and then generate the corresponding machine code for every 
-        // token of the instruction
         string? Getrtypeinst(Instruction inst)
         {
             string mc;
 
-            if (inst.tokens[0].value == "jr") // jr x12
+            if (inst.m_tokens[0].m_value == "jr") // jr x12
             {
-                if (inst.tokens.Count != 2)
+                if (inst.m_tokens.Count != 2)
                     return null;
-                string? rs1 = Getregindex(inst.tokens[1].value);
+                string? rs1 = Getregindex(inst.m_tokens[1].m_value);
                 if (rs1 == null) return null;
-                mc = "000000" + rs1 + "000000000000000" + opcodes[inst.tokens[0].value];
+                mc = "000000" + rs1 + "000000000000000" + opcodes[inst.m_tokens[0].m_value];
             }
             else
             {
-                if (inst.tokens.Count != 4)
+                if (inst.m_tokens.Count != 4)
                     return null;
-                string? rd = Getregindex(inst.tokens[1].value);
-                string? rs1 = Getregindex(inst.tokens[2].value);
-                string funct = opcodes[inst.tokens[0].value];
+                string? rd = Getregindex(inst.m_tokens[1].m_value);
+                string? rs1 = Getregindex(inst.m_tokens[2].m_value);
+                string funct = opcodes[inst.m_tokens[0].m_value];
 
                 if (rd == null || rs1 == null) return null;
 
-                if (inst.tokens[0].value == "sll" || inst.tokens[0].value == "srl") // sll x1, x2, 2
+                if (inst.m_tokens[0].m_value == "sll" || inst.m_tokens[0].m_value == "srl") // sll x1, x2, 2
                 {
-                    string shamt = inst.tokens[3].value;
+                    string shamt = inst.m_tokens[3].m_value;
                     if (byte.TryParse(shamt, out byte usb))
                     {
                         shamt = Convert.ToString(usb, 2);
@@ -204,7 +204,7 @@ namespace MIPSASSEMBLER
                 }
                 else
                 {
-                    string? rs2 = Getregindex(inst.tokens[3].value);
+                    string? rs2 = Getregindex(inst.m_tokens[3].m_value);
                     if (rs2 == null)
                         return null;
                     mc = "000000"
@@ -217,28 +217,24 @@ namespace MIPSASSEMBLER
             }
             return mc;
         }
-        public bool Isbranch(string mnem)
-        {
-            return mnem == "beq" || mnem == "bne";
-        }
         string? Getitypeinst(Instruction inst)
         {
-            if (inst.tokens.Count != 4)
+            if (inst.m_tokens.Count != 4)
                 return null;
             string mc;
-            string opcode = opcodes[inst.tokens[0].value];
+            string opcode = opcodes[inst.m_tokens[0].m_value];
 
 
-            string? reg1 = Getregindex(inst.tokens[1].value);
-            string? reg2 = Getregindex(inst.tokens[2].value);
+            string? reg1 = Getregindex(inst.m_tokens[1].m_value);
+            string? reg2 = Getregindex(inst.m_tokens[2].m_value);
             if (reg1 == null || reg2 == null)
                 return null;
 
-            if (Isbranch(inst.tokens[0].value))
+            if (Isbranch(inst.m_tokens[0].m_value))
             {
-                if (!labels.ContainsKey(inst.tokens[3].value))
+                if (!labels.ContainsKey(inst.m_tokens[3].m_value))
                     return null;
-                string immed = inst.tokens[3].value;
+                string immed = inst.m_tokens[3].m_value;
                 immed = (labels[immed] - curr_inst_index).ToString();
                 if (ushort.TryParse(immed, out ushort usb))
                     immed = Convert.ToString(usb, 2).PadLeft(16, '0');
@@ -256,7 +252,7 @@ namespace MIPSASSEMBLER
             else
             {
                 // andi, ori, xori (they do zero extend)
-                string immed = inst.tokens[3].value;
+                string immed = inst.m_tokens[3].m_value;
                 if ((immed.StartsWith("0x") || immed.StartsWith("0X")))
                 {
                     short temp;
@@ -286,43 +282,26 @@ namespace MIPSASSEMBLER
         }
         string? Getjtypeinst(Instruction inst)
         {
-            if (inst.tokens.Count != 2 || !labels.TryGetValue(inst.tokens[1].value, out int lbl))
+            if (inst.m_tokens.Count != 2 || !labels.TryGetValue(inst.m_tokens[1].m_value, out int lbl))
                 return null;
             string immed = Convert.ToString(lbl, 2);
             immed = immed.PadLeft(26, '0');
-            string mc = opcodes[inst.tokens[0].value] + immed;
+            string mc = opcodes[inst.m_tokens[0].m_value] + immed;
             return mc;
         }
-        // this function takes the instructio and it's type and based on it, it passes it to the suitable fucntion to generate the machine code
-        string? GetMcOfInst(Instruction inst)
-        {
-            if (inst.tokens.Count > 0 && (inst.tokens[0].value == "hlt" || inst.tokens[0].value == "nop"))
-                return opcodes[inst.tokens[0].value].PadRight(32, '0');
-            // here we construct the binaries of a given instruction
-            return inst.type switch
-            {
-                InstructionType.rtype => Getrtypeinst(inst),
-                InstructionType.itype => Getitypeinst(inst),
-                InstructionType.jtype => Getjtypeinst(inst),
-                _ => null,
-            };
-        }
-        int curr_inst_index;
-        // this fucntion iterates through the whole list of instruction and returns a list of the machine code for each valid instruction
-        // and keep track of it's index for substituting the values of the labels
-        List<string>? GetMachineCode(ref List<Instruction> insts)
+        List<string>? GetMachineCodeOfProg(ref Program program)
         {
             List<string> mcs = [];
             curr_inst_index = 0;
-            for (int i = 0; i < insts.Count; i++)
+            for (int i = 0; i < program.instructions.Count; i++)
             {
-                InstructionType? type = GetInstType(insts[i].tokens[0].value);
+                InstructionType? type = GetInstType(program.instructions[i].m_tokens[0].m_value);
                 if (type.HasValue)
                 {
-                    Instruction temp = insts[i];
-                    temp.type = type.Value;
-                    insts[i] = temp;
-                    string? mc = GetMcOfInst(insts[i]);
+                    Instruction temp = program.instructions[i];
+                    temp.m_type = type.Value;
+                    program.instructions[i] = temp;
+                    string? mc = GetMcOfInst(program.instructions[i]);
                     if (mc == null)
                     {
                         return null;
@@ -338,52 +317,59 @@ namespace MIPSASSEMBLER
 
             return mcs;
         }
-
+        string? GetMcOfInst(Instruction inst)
+        {
+            if (inst.m_tokens.Count > 0 && (inst.m_tokens[0].m_value == "hlt" || inst.m_tokens[0].m_value == "nop"))
+                return opcodes[inst.m_tokens[0].m_value].PadRight(32, '0');
+            // here we construct the binaries of a given instruction
+            return inst.m_type switch
+            {
+                InstructionType.rtype => Getrtypeinst(inst),
+                InstructionType.itype => Getitypeinst(inst),
+                InstructionType.jtype => Getjtypeinst(inst),
+                _ => null,
+            };
+        }
+        public bool Isbranch(string mnem)
+        {
+            return mnem == "beq" || mnem == "bne";
+        }
         bool Is_pseudo_branch(string mnem)
         {
             return mnem == "bltz" || mnem == "bgez";
         }
-
-
-        bool Is_pseudo(string mnem)
+        bool Is_pseudo(Instruction inst)
         {
-            return Is_pseudo_branch(mnem)/* || other pseudo insts*/;
+            return Is_pseudo_branch(inst.m_tokens[0].m_value)/* || other pseudo insts*/;
         }
-
-        List<Instruction>? Pseudo_to_inst(List<Token> pseudo)
+        List<Instruction> GetPseudo(Instruction inst)
         {
-            if (Is_pseudo_branch(pseudo[0].value) && pseudo.Count == 3)
+            if (Is_pseudo_branch(inst.m_tokens[0].m_value) && inst.m_tokens.Count == 3)
             {
-                string branch;
-                if (pseudo[0].value == "bltz")
+                string branch = "";
+                if (inst.m_tokens[0].m_value == "bltz")
                 {
                     branch = "bne";
                 }
-                else if (pseudo[0].value == "bgez")
+                else if (inst.m_tokens[0].m_value == "bgez")
                 {
                     branch = "beq";
                 }
-                else
-                {
-                    return null;
-                }
                 return [
-                    new Instruction([new Token("slt"), new Token("x31"), new Token($"{pseudo[1].value}"), new Token("x0") ]),
-                    new Instruction([new Token(branch), new Token("x31"), new Token("x0"), new Token($"{pseudo[2].value}") ]),
+                    new Instruction([new Token("slt"), new Token("x31"), new Token($"{inst.m_tokens[1].m_value}"), new Token("x0") ]),
+                    new Instruction([new Token(branch), new Token("x31"), new Token("x0"), new Token($"{inst.m_tokens[2].m_value}") ]),
                 ];
             }
-            return null;
+            Assert($"Invalid Pseudo Instruction : {inst.m_tokens[0].m_value}");
+            return [];
         }
-
-
-        void Substitute_pseudo_insts(ref Program program)
+        void SubstitutePseudoInProg(ref Program program)
         {
             for (int i = 0; i < program.instructions.Count; i++)
             {
-                List<Token> inst = program.instructions[i].tokens;
-                if (inst.Count > 0 && Is_pseudo(inst[0].value))
+                if (Is_pseudo(program.instructions[i]))
                 {
-                    List<Instruction> replace = Pseudo_to_inst(inst);
+                    List<Instruction> replace = GetPseudo(program.instructions[i]);
                     program.instructions.RemoveAt(i);
                     program.instructions.InsertRange(i, replace);
                     i = 0;
@@ -413,81 +399,33 @@ namespace MIPSASSEMBLER
         {
             return m_curr_inst.ElementAt(m_curr_index++);
         }
-
         bool IsComment()
         {
             return (peek('/').HasValue && peek('/', 1).HasValue) || peek('#').HasValue;
         }
 
-
-        Instruction? TokenizeInst()
-        {
-            StringBuilder buffer = new StringBuilder();
-            Instruction instruction = new Instruction();
-            while (peek().HasValue)
-            {
-                char c = peek().Value;
-
-                if (char.IsWhiteSpace(c) || c == ',')
-                {
-                    if (buffer.Length > 0)
-                    {
-                        instruction.tokens.Add(new Token(buffer.ToString()));
-                        buffer.Clear();
-                    }
-                    consume();
-                }
-                else if (IsComment())
-                {
-                    if (buffer.Length > 0)
-                    {
-                        instruction.tokens.Add(new Token(buffer.ToString()));
-                        buffer.Clear();
-                    }
-                    break;
-                }
-                else
-                {
-                    buffer.Append(char.ToLower(c));
-                    consume();
-                }
-            }
-            if (buffer.Length > 0)
-            {
-                instruction.tokens.Add(new Token(buffer.ToString()));
-                buffer.Clear();
-            }
-            m_curr_index = 0;
-            return instruction;
-        }
-
-        // assmebling the program starts form here 
-        // it tokenizes each non empty instruction and returns a list of parsable instruction each one of them is a list of tokens
-
-        // it checks if a given label is valid or not
         string? Is_valid_label(Instruction label)
         {
-            if (label.tokens.Count == 1)
+            if (label.m_tokens.Count == 1)
             {
-                return label.tokens[0].value[..^1];
+                return label.m_tokens[0].m_value[..^1];
             }
-            else if (label.tokens.Count == 2 && label.tokens[1].value == ":")
+            else if (label.m_tokens.Count == 2 && label.m_tokens[1].m_value == ":")
             {
-                return label.tokens[0].value;
+                return label.m_tokens[0].m_value;
             }
             else
             {
                 return null;
             }
         }
-        // this funciton saves each label and it's value (address) so it can be used when computing the offset address in the jump and branch instructions
         private void Subtitute_labels(ref Program program)
         {
             int index = 0;
             for (int i = 0; i < program.instructions.Count; i++)
             {
                 Instruction inst = program.instructions[i];
-                if (inst.tokens.Any(token => token.value.Contains(':')))
+                if (inst.m_tokens.Any(token => token.m_value.Contains(':')))
                 {
                     string? label = Is_valid_label(program.instructions[i]);
                     lblinvlabel |= label == null;
@@ -500,9 +438,49 @@ namespace MIPSASSEMBLER
                 else
                     index++;
             }
-            program.instructions.RemoveAll(inst => inst.tokens.Any(token => token.value.Contains(':')));
+            program.instructions.RemoveAll(inst => inst.m_tokens.Any(token => token.m_value.Contains(':')));
         }
+        
+        Instruction? TokenizeInst()
+        {
+            StringBuilder buffer = new StringBuilder();
+            Instruction instruction = new Instruction();
+            while (peek().HasValue)
+            {
+                char c = peek().Value;
 
+                if (char.IsWhiteSpace(c) || c == ',')
+                {
+                    if (buffer.Length > 0)
+                    {
+                        instruction.m_tokens.Add(new Token(buffer.ToString()));
+                        buffer.Clear();
+                    }
+                    consume();
+                }
+                else if (IsComment())
+                {
+                    if (buffer.Length > 0)
+                    {
+                        instruction.m_tokens.Add(new Token(buffer.ToString()));
+                        buffer.Clear();
+                    }
+                    break;
+                }
+                else
+                {
+                    buffer.Append(char.ToLower(c));
+                    consume();
+                }
+            }
+            if (buffer.Length > 0)
+            {
+                instruction.m_tokens.Add(new Token(buffer.ToString()));
+                buffer.Clear();
+            }
+            m_curr_index = 0;
+            return instruction;
+        }
         Program? TokenizeProg(List<string> thecode)
         {
             Program program = new Program();
@@ -537,9 +515,9 @@ namespace MIPSASSEMBLER
             if (prog.HasValue)
             {
                 Program program = prog.Value;
-                Substitute_pseudo_insts(ref program);
+                SubstitutePseudoInProg(ref program);
                 Subtitute_labels(ref program);
-                List<string>? mc = GetMachineCode(ref program.instructions);
+                List<string>? mc = GetMachineCodeOfProg(ref program);
                 if (mc != null)
                 {
                     program.mc = mc;
@@ -563,20 +541,17 @@ namespace MIPSASSEMBLER
             for (int i = 0; i < program.instructions.Count; i++)
             {
                 Instruction instruction = program.instructions[i];
-                string mnem = instruction.tokens[0].value;
+                string mnem = instruction.m_tokens[0].m_value;
                 if (mnem == "beq" || mnem == "bne")
                 {
                     string LabelValue = Convert.ToInt16(program.mc[i].Substring(16), 2).ToString();
-                    instruction.tokens[^1] = new Token(LabelValue);
+                    instruction.m_tokens[^1] = new Token(LabelValue);
                 }
                 string inst = "";
-                instruction.tokens.ForEach(token => inst += token.value + " ");
+                instruction.m_tokens.ForEach(token => inst += token.m_value + " ");
                 ret.Add(inst);
             }
             return ret;
         }
     }
-
-
-
 }

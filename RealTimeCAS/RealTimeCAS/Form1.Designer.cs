@@ -175,7 +175,7 @@
             btntbcopy.TabIndex = 17;
             btntbcopy.Text = "TB_copy";
             btntbcopy.UseVisualStyleBackColor = true;
-            btntbcopy.Click += btntbcopy_Click;
+            btntbcopy.Click += btn_TB_copy;
             // 
             // cmbcpulist
             // 

@@ -1,5 +1,5 @@
 module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1_ind, rs2_ind, alu_selA, alu_selB, store_rs2_forward, 
-			    reg_write, mem_read, mem_write, rs2_in, rs2_out, alu_out, predicted, Wrong_prediction, rst, is_beq, is_bne, EX_rd_indzero, EX_rd_ind);
+			    reg_write, mem_read, mem_write, rs2_in, rs2_out, alu_out, predicted, Wrong_prediction, rst, is_beq, is_bne, is_jr, EX_rd_indzero, EX_rd_ind);
 	
 `include "opcodes.txt"
 
@@ -9,7 +9,7 @@ module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1
     input [1:0] alu_selA, store_rs2_forward;
 	input [2:0] alu_selB;
 	
-	input reg_write, mem_read, mem_write, predicted, rst, is_beq, is_bne;
+	input reg_write, mem_read, mem_write, predicted, rst, is_beq, is_bne, is_jr;
     input [31:0] rs2_in;
 	
     output [31:0] alu_out, rs2_out, EX_PFC_to_IF; 
@@ -40,6 +40,6 @@ module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1
 
 	BranchDecision BDU(oper1, oper2, BranchDecision, is_beq, is_bne);
 
-	assign Wrong_prediction = ~(rst || ~(BranchDecision ^ predicted)) || opcode == jr;
+	assign Wrong_prediction = ~(rst || ~(BranchDecision ^ predicted)) || is_jr;
 
 endmodule

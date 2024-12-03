@@ -409,7 +409,7 @@ namespace LibCPU
             int i = 0;
             foreach (string mem in DM)
             {
-                if (i == 20) break;
+                if (i == 51) break;
                 string temp;
 
                 temp = $"Mem[{i++,2}] = {mem,11}\n";

@@ -11,12 +11,12 @@
 #derive_pll_clocks
 #derive_clock_uncertainty
 
-#set_time_format -unit ns -decimal_places 10
+set_time_format -unit ns -decimal_places 10
 
 
 # create_clock -name {input_clk} -period 20.000 -waveform { 0.000 10.000 } [get_ports {input_clk}]
 
-create_clock -name {input_clk} -period 15.2 -waveform { 0.000 10.611 } [get_ports {input_clk}]
+create_clock -name {input_clk} -period 16.0 -waveform { 0.000 11.2 } [get_ports {input_clk}]
 
 
 # create_clock -name {input_clk} -period 15.2 -waveform { 0.000 10.511 } [get_ports {input_clk}]

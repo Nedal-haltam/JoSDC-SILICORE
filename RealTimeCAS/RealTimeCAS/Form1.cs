@@ -1,5 +1,5 @@
 using System.Text;
-
+using static LibAN.LibAN;
 namespace RealTimeCAS
 {
     public partial class Form1 : Form
@@ -9,7 +9,6 @@ namespace RealTimeCAS
             InitializeComponent();
         }
         List<string> curr_insts = [];
-        List<string> curr_mc = [];
         List<string> curr_text_dir = [];
         List<string> curr_data = [];
         List<string> curr_data_dir = [];
@@ -26,108 +25,27 @@ namespace RealTimeCAS
             CAS, TB_copy
         }
 
-        StringBuilder get_insts_string(CopyType copyType)
-        {
-            StringBuilder to_copy = new StringBuilder();
-            if (copyType == CopyType.TB_copy)
-            {
-                for (int i = 0; i < curr_mc.Count; i++)
-                {
-                    string hex = Convert.ToInt32(curr_mc[i], 2).ToString("X").PadLeft(8, '0');
-                    string temp = ($"InstMem[{i,3}] <= 32'h{hex}; // {curr_insts[i],-20}").Trim() + '\n';
-                    to_copy.Append(temp);
-                }
-            }
-            else if (copyType == CopyType.CAS)
-            {
-                for (int i = 0; i < curr_mc.Count; i++)
-                {
-                    string temp = ($"\"{curr_mc[i]}\", // {curr_insts[i],-20}").Trim() + '\n';
-                    to_copy.Append(temp);
-                }
-            }
-            return to_copy;
-        }
-        void clean_comments(ref List<string> code)
-        {
-            for (int i = 0; i < code.Count; i++)
-            {
-                if (code[i].Contains("//"))
-                {
-                    code[i] = code[i].Substring(0, code[i].IndexOf('/'));
-                }
-                else if (code[i].Contains("#"))
-                {
-                    code[i] = code[i].Substring(0, code[i].IndexOf('#'));
-                }
-
-            }
-        }
-        void assemble(string[] input)
+        void Assemble(string[] input)
         {
             MIPSASSEMBLER.MIPSASSEMBLER assembler = new();
             MIPSASSEMBLER.Program? program = assembler.ASSEMBLE([.. input]);
             if (program.HasValue)
             {
                 m_prog = program.Value;
-                curr_mc = program.Value.mc;
+                m_prog.mc = program.Value.mc;
                 curr_insts = assembler.GetInstsAsText(m_prog);
             }
             else
             {
                 m_prog.instructions.Clear();
                 m_prog.mc.Clear();
-                curr_mc.Clear();
+                m_prog.mc.Clear();
                 curr_insts.Clear();
             }
             lblErrInvinst.Visible = assembler.lblINVINST;
             lblErrInvlabel.Visible = assembler.lblinvlabel;
             lblErrMultlabels.Visible = assembler.lblmultlabels;
-            lblnumofinst.Text = curr_mc.Count.ToString();
-        }
-        (List<string>, List<string>) assemble_data_dir(List<string> data_dir)
-        {
-            List<string> data = [];
-            for (int i = 0; i < data_dir.Count; i++)
-            {
-                int index = data_dir[i].IndexOf(':');
-                if (index != -1)
-                {
-                    string line = data_dir[i].Substring(index + 1);
-                    line = line.Trim();
-                    line = line.Replace(".word", "");
-                    List<string> vals = line.Split(',').ToList();
-                    foreach (string val in vals)
-                    {
-                        int number = 0;
-                        string snum = val.ToLower().Trim();
-                        try
-                        {
-                            if (snum.StartsWith("0x"))
-                                number = Convert.ToInt32(snum, 16);
-                            else
-                                number = Convert.ToInt32(snum);
-                        }
-                        catch (Exception)
-                        {
-                            number = 0;
-                        }
-                        data.Add(number.ToString());
-                    }
-
-                }
-
-            }
-            List<string> DM_INIT = [];
-            List<string> DM_vals = [];
-            for (int i = 0; i < data.Count; i++)
-            {
-                DM_vals.Add(data[i].ToString());
-                string temp = $"DataMem[{i,2}] <= 32'd{data[i]};";
-                DM_INIT.Add(temp);
-            }
-
-            return (DM_INIT, DM_vals);
+            lblnumofinst.Text = m_prog.mc.Count.ToString();
         }
         (int, LibCPU.MIPS.Exceptions, LibCPU.MIPS.CPU) SimulateCPU(List<string> mc)
         {
@@ -152,8 +70,7 @@ namespace RealTimeCAS
             else
                 return (0, LibCPU.MIPS.Exceptions.EXCEPTION, new LibCPU.MIPS.CPU());
         }
-
-        StringBuilder get_regs_DM(List<int> regs, List<string> DM)
+        StringBuilder GetRegsAndDM(List<int> regs, List<string> DM)
         {
             //List<string> toout = [];
             StringBuilder toout = new StringBuilder();
@@ -174,7 +91,7 @@ namespace RealTimeCAS
             else if (excep == LibCPU.MIPS.Exceptions.NONE && cycles != 0)
             {
                 lblcycles.Text = cycles.ToString();
-                StringBuilder toout = get_regs_DM(regs, DM);
+                StringBuilder toout = GetRegsAndDM(regs, DM);
                 output.Lines = toout.ToString().Split('\n');
             }
             else
@@ -189,10 +106,6 @@ namespace RealTimeCAS
             }
 
         }
-
-
-
-
         private void layout_size()
         {
             int w = 1350;
@@ -249,12 +162,10 @@ namespace RealTimeCAS
 
 
         }
-
         private void Form1_Resize(object sender, EventArgs e)
         {
             layout_size();
         }
-
         private void Form1_Load(object sender, EventArgs e)
         {
             layout_size();
@@ -272,90 +183,11 @@ namespace RealTimeCAS
             cmbdatawidth.SelectedIndex = 0;
             cmbdatadepth.SelectedIndex = 0;
         }
-
-        string GetMIFentry(string addr, string value)
-        {
-            return $"{addr} : {value};";
-        }
-
-        StringBuilder ToMIFentries(int start_address, List<string> list, int width, int from_base)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                string address = (start_address + i).ToString("X");
-                string value = Convert.ToInt32(list[i], from_base).ToString("X").PadLeft(width / 4, '0');
-                string entry = GetMIFentry(address, value);
-                sb.Append(entry + '\n');
-            }
-
-            return sb;
-        }
-
-        StringBuilder GetMIFHeader(int width, int depth, string address_radix, string data_radix)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append($"WIDTH={width};\n");
-            sb.Append($"DEPTH={depth};\n");
-            sb.Append($"ADDRESS_RADIX={address_radix};\n");
-            sb.Append($"DATA_RADIX={data_radix};\n");
-            sb.Append("CONTENT BEGIN\n");
-
-            return sb;
-        }
-
-        StringBuilder GetMIFTail()
-        {
-            return new StringBuilder("END;\n");
-        }
-
-        StringBuilder GetIMMIF(int width, int depth, int from_base)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
-            sb.Append(ToMIFentries(0, curr_mc, width, from_base));
-            sb.Append($"[{curr_mc.Count:X}..{(depth - 1):X}] : 0;\n");
-            sb.Append(GetMIFTail());
-
-            return sb;
-        }
-
-        StringBuilder GetDMMIF(List<string> DM, int width, int depth, int from_base)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
-            sb.Append(ToMIFentries(0, DM, width, from_base));
-            sb.Append($"[{DM.Count:X}..{(depth - 1):X}] : 0;\n");
-            sb.Append(GetMIFTail());
-
-            return sb;
-        }
-
-        private void btntbcopy_Click(object sender, EventArgs e)
-        {
-            StringBuilder to_copy = get_insts_string(CopyType.TB_copy);
-            int i = 0;
-            to_copy.Append("\n\n");
-            curr_data.ForEach(x => to_copy.Append($"DataMem[{i++}] = 32'd{x};\n"));
-            if (to_copy.Length > 0)
-                Clipboard.SetText(to_copy.ToString());
-            else
-                Clipboard.SetText(" ");
-
-            StringBuilder sb = GetIMMIF(MIFinstwidth, MIFinstdepth, 2);
-            File.WriteAllText("./INSTRUCTION_MIF_FILE.mif", sb.ToString());
-
-            StringBuilder sb2 = GetDMMIF(curr_data, MIFdatawidth, MIFdatadepth, 10);
-            File.WriteAllText("./DATA_MIF_FILE.mif", sb2.ToString());
-        }
-
         private void cmbcpulist_SelectedIndexChanged(object sender, EventArgs e)
         {
             curr_cpu = (LibCPU.CPU_type)cmbcpulist.SelectedIndex;
             input_TextChanged(input, e);
         }
-
         private void btncascopy_Click(object sender, EventArgs e)
         {
             StringBuilder to_copy = get_insts_string(CopyType.CAS);
@@ -364,32 +196,16 @@ namespace RealTimeCAS
             else
                 Clipboard.SetText(" ");
         }
-        void get_directives(List<string> src)
-        {
-            src.ForEach(x => x = x.ToString().Trim(' '));
-
-            int data_index = src.IndexOf(".data");
-            int text_index = src.IndexOf(".text");
-
-            curr_data_dir.Clear();
-            curr_text_dir.Clear();
-
-            if (data_index != -1 && text_index != -1)
-            {
-                curr_data_dir = src.GetRange(data_index, text_index - data_index);
-            }
-            if (text_index != -1)
-            {
-                curr_text_dir = src.GetRange(text_index + 1, src.Count - text_index - 1);
-            }
-        }
         private void input_TextChanged(object sender, EventArgs e)
         {
             lblErrInfloop.Visible = false;
             List<string> code = input.Lines.ToList();
             clean_comments(ref code);
-            get_directives(code);
-            assemble([.. curr_text_dir]);
+            (List<string> data_dir, List<string> text_dir) = Get_directives(code);
+            curr_data_dir = data_dir;
+            curr_text_dir = text_dir;
+
+            Assemble([.. curr_text_dir]);
             (_, List<string> temp) = assemble_data_dir(curr_data_dir);
             curr_data = temp;
 
@@ -408,7 +224,6 @@ namespace RealTimeCAS
                     errors[i].Location = locations[j++];
             }
         }
-
         private void MIF_COMBO_BOX_CHANGED_INDEX(object sender, EventArgs e)
         {
             int val = (int)Math.Pow(2, ((ComboBox)sender).SelectedIndex);
@@ -429,12 +244,67 @@ namespace RealTimeCAS
                 MIFdatadepth = val;
             }
         }
+        StringBuilder GetIMMIF(int width, int depth, int from_base)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
+            sb.Append(ToMIFentries(0, m_prog.mc, width, from_base));
+            sb.Append($"[{m_prog.mc.Count:X}..{(depth - 1):X}] : 0;\n");
+            sb.Append(GetMIFTail());
 
+            return sb;
+        }
+
+
+
+
+
+
+
+        StringBuilder get_insts_string(CopyType copyType)
+        {
+            StringBuilder to_copy = new StringBuilder();
+            if (copyType == CopyType.TB_copy)
+            {
+                for (int i = 0; i < m_prog.mc.Count; i++)
+                {
+                    string hex = Convert.ToInt32(m_prog.mc[i], 2).ToString("X").PadLeft(8, '0');
+                    string temp = ($"InstMem[{i,3}] <= 32'h{hex}; // {curr_insts[i],-20}").Trim() + '\n';
+                    to_copy.Append(temp);
+                }
+            }
+            else if (copyType == CopyType.CAS)
+            {
+                for (int i = 0; i < m_prog.mc.Count; i++)
+                {
+                    string temp = ($"\"{m_prog.mc[i]}\", // {curr_insts[i],-20}").Trim() + '\n';
+                    to_copy.Append(temp);
+                }
+            }
+            return to_copy;
+        }
+        private void btn_TB_copy(object sender, EventArgs e)
+        {
+            StringBuilder to_copy = get_insts_string(CopyType.TB_copy);
+            int i = 0;
+            to_copy.Append("\n\n");
+            curr_data.ForEach(x => to_copy.Append($"DataMem[{i++}] = 32'd{x};\n"));
+            if (to_copy.Length > 0)
+                Clipboard.SetText(to_copy.ToString());
+            else
+                Clipboard.SetText(" ");
+
+            StringBuilder sb = GetIMMIF(MIFinstwidth, MIFinstdepth, 2);
+            File.WriteAllText("./INSTRUCTION_MIF_FILE.mif", sb.ToString());
+
+            StringBuilder sb2 = GetDMMIF(curr_data, MIFdatawidth, MIFdatadepth, 10);
+            File.WriteAllText("./DATA_MIF_FILE.mif", sb2.ToString());
+        }
         private void input_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.S)
             {
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                SaveFileDialog saveFileDialog = new();
                 DialogResult dialogResult = saveFileDialog.ShowDialog();
                 if (dialogResult == DialogResult.OK)
                 {
@@ -442,8 +312,8 @@ namespace RealTimeCAS
 
                     List<string> saved = [];
                     saved.Add("# CODE");
-                    saved.AddRange(input.Lines.ToList());
-                    File.WriteAllLines(file_path, saved.ToArray());
+                    saved.AddRange([.. input.Lines]);
+                    File.WriteAllLines(file_path, [.. saved]);
                 }
             }
         }

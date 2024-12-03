@@ -1,5 +1,5 @@
 Analysis & Synthesis report for PLCPU
-Sun Dec  1 12:44:23 2024
+Tue Dec  3 17:39:16 2024
 Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
 
 
@@ -35,28 +35,30 @@ Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
  27. Parameter Settings for User Entity Instance: ID_stage:id_stage|REG_FILE:reg_file
  28. Parameter Settings for User Entity Instance: ID_stage:id_stage|Immed_Gen_unit:immed_gen
  29. Parameter Settings for User Entity Instance: ID_stage:id_stage|BranchResolver:BR
- 30. Parameter Settings for User Entity Instance: ID_stage:id_stage|control_unit:cu
- 31. Parameter Settings for User Entity Instance: ID_stage:id_stage|StallDetectionUnit:SDU
- 32. Parameter Settings for User Entity Instance: ID_EX_buffer:id_ex_buffer
- 33. Parameter Settings for User Entity Instance: EX_stage:ex_stage
- 34. Parameter Settings for User Entity Instance: EX_stage:ex_stage|MUX_4x1:alu_oper1
- 35. Parameter Settings for User Entity Instance: EX_stage:ex_stage|MUX_8x1:alu_oper2
- 36. Parameter Settings for User Entity Instance: EX_stage:ex_stage|ALU:alu
- 37. Parameter Settings for User Entity Instance: EX_stage:ex_stage|ALU_OPER:alu_oper
- 38. Parameter Settings for User Entity Instance: EX_stage:ex_stage|MUX_4x1:store_rs2_mux
- 39. Parameter Settings for User Entity Instance: MEM_stage:mem_stage|DM:data_mem
- 40. Parameter Settings for User Entity Instance: MEM_WB_buffer:mem_wb_buffer
- 41. Parameter Settings for Inferred Entity Instance: MEM_stage:mem_stage|DM:data_mem|altsyncram:DataMem_rtl_0
- 42. altsyncram Parameter Settings by Entity Instance
- 43. Port Connectivity Checks: "MEM_WB_buffer:mem_wb_buffer"
- 44. Port Connectivity Checks: "EX_stage:ex_stage|MUX_4x1:store_rs2_mux"
- 45. Port Connectivity Checks: "EX_stage:ex_stage|ALU:alu"
- 46. Port Connectivity Checks: "EX_stage:ex_stage|MUX_8x1:alu_oper2"
- 47. Port Connectivity Checks: "IF_stage:if_stage|MUX_8x1:pc_src_mux"
- 48. Post-Synthesis Netlist Statistics for Top Partition
- 49. Elapsed Time Per Partition
- 50. Analysis & Synthesis Messages
- 51. Analysis & Synthesis Suppressed Messages
+ 30. Parameter Settings for User Entity Instance: ID_stage:id_stage|BranchResolver:BR|BranchPredictor:BPU
+ 31. Parameter Settings for User Entity Instance: ID_stage:id_stage|control_unit:cu
+ 32. Parameter Settings for User Entity Instance: ID_stage:id_stage|StallDetectionUnit:SDU
+ 33. Parameter Settings for User Entity Instance: ID_EX_buffer:id_ex_buffer
+ 34. Parameter Settings for User Entity Instance: EX_stage:ex_stage
+ 35. Parameter Settings for User Entity Instance: EX_stage:ex_stage|MUX_4x1:alu_oper1
+ 36. Parameter Settings for User Entity Instance: EX_stage:ex_stage|MUX_8x1:alu_oper2
+ 37. Parameter Settings for User Entity Instance: EX_stage:ex_stage|ALU:alu
+ 38. Parameter Settings for User Entity Instance: EX_stage:ex_stage|ALU_OPER:alu_oper
+ 39. Parameter Settings for User Entity Instance: EX_stage:ex_stage|MUX_4x1:store_rs2_mux
+ 40. Parameter Settings for User Entity Instance: MEM_stage:mem_stage|DM:data_mem
+ 41. Parameter Settings for User Entity Instance: MEM_WB_buffer:mem_wb_buffer
+ 42. Parameter Settings for Inferred Entity Instance: MEM_stage:mem_stage|DM:data_mem|altsyncram:DataMem_rtl_0
+ 43. altsyncram Parameter Settings by Entity Instance
+ 44. Port Connectivity Checks: "MEM_WB_buffer:mem_wb_buffer"
+ 45. Port Connectivity Checks: "EX_stage:ex_stage|MUX_4x1:store_rs2_mux"
+ 46. Port Connectivity Checks: "EX_stage:ex_stage|ALU:alu"
+ 47. Port Connectivity Checks: "EX_stage:ex_stage|MUX_8x1:alu_oper2"
+ 48. Port Connectivity Checks: "ID_stage:id_stage|BranchResolver:BR|BranchPredictor:BPU"
+ 49. Port Connectivity Checks: "IF_stage:if_stage|MUX_8x1:pc_src_mux"
+ 50. Post-Synthesis Netlist Statistics for Top Partition
+ 51. Elapsed Time Per Partition
+ 52. Analysis & Synthesis Messages
+ 53. Analysis & Synthesis Suppressed Messages
 
 
 
@@ -83,15 +85,15 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                        ;
 +------------------------------------+------------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Sun Dec  1 12:44:23 2024          ;
+; Analysis & Synthesis Status        ; Successful - Tue Dec  3 17:39:16 2024          ;
 ; Quartus Prime Version              ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
 ; Revision Name                      ; PLCPU                                          ;
 ; Top-level Entity Name              ; CPU5STAGE                                      ;
 ; Family                             ; Cyclone IV E                                   ;
-; Total logic elements               ; 4,190                                          ;
-;     Total combinational functions  ; 3,138                                          ;
-;     Dedicated logic registers      ; 1,545                                          ;
-; Total registers                    ; 1545                                           ;
+; Total logic elements               ; 4,197                                          ;
+;     Total combinational functions  ; 3,145                                          ;
+;     Dedicated logic registers      ; 1,548                                          ;
+; Total registers                    ; 1548                                           ;
 ; Total pins                         ; 66                                             ;
 ; Total virtual pins                 ; 0                                              ;
 ; Total memory bits                  ; 32,768                                         ;
@@ -239,6 +241,7 @@ https://fpgasoftware.intel.com/eula.
 ; forwardb.v                       ; yes             ; Auto-Found Verilog HDL File  ; D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/forwardb.v               ;         ;
 ; forwardc.v                       ; yes             ; Auto-Found Verilog HDL File  ; D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/forwardc.v               ;         ;
 ; branchresolver.v                 ; yes             ; Auto-Found Verilog HDL File  ; D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchresolver.v         ;         ;
+; branchpredictor.v                ; yes             ; Auto-Found Verilog HDL File  ; D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchpredictor.v        ;         ;
 ; stalldetectionunit.v             ; yes             ; Auto-Found Verilog HDL File  ; D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/stalldetectionunit.v     ;         ;
 ; branchdecision.v                 ; yes             ; Auto-Found Verilog HDL File  ; D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchdecision.v         ;         ;
 ; altsyncram.tdf                   ; yes             ; Megafunction                 ; d:/quartus/devices_support/quartus/libraries/megafunctions/altsyncram.tdf        ;         ;
@@ -259,20 +262,20 @@ https://fpgasoftware.intel.com/eula.
 +---------------------------------------------+-----------+
 ; Resource                                    ; Usage     ;
 +---------------------------------------------+-----------+
-; Estimated Total logic elements              ; 4,190     ;
+; Estimated Total logic elements              ; 4,197     ;
 ;                                             ;           ;
-; Total combinational functions               ; 3138      ;
+; Total combinational functions               ; 3145      ;
 ; Logic element usage by number of LUT inputs ;           ;
-;     -- 4 input functions                    ; 2215      ;
-;     -- 3 input functions                    ; 559       ;
-;     -- <=2 input functions                  ; 364       ;
+;     -- 4 input functions                    ; 2375      ;
+;     -- 3 input functions                    ; 614       ;
+;     -- <=2 input functions                  ; 156       ;
 ;                                             ;           ;
 ; Logic elements by mode                      ;           ;
-;     -- normal mode                          ; 2923      ;
-;     -- arithmetic mode                      ; 215       ;
+;     -- normal mode                          ; 2960      ;
+;     -- arithmetic mode                      ; 185       ;
 ;                                             ;           ;
-; Total registers                             ; 1545      ;
-;     -- Dedicated logic registers            ; 1545      ;
+; Total registers                             ; 1548      ;
+;     -- Dedicated logic registers            ; 1548      ;
 ;     -- I/O registers                        ; 0         ;
 ;                                             ;           ;
 ; I/O pins                                    ; 66        ;
@@ -281,9 +284,9 @@ https://fpgasoftware.intel.com/eula.
 ; Embedded Multiplier 9-bit elements          ; 0         ;
 ;                                             ;           ;
 ; Maximum fan-out node                        ; hlt_logic ;
-; Maximum fan-out                             ; 1577      ;
-; Total fan-out                               ; 17474     ;
-; Average fan-out                             ; 3.61      ;
+; Maximum fan-out                             ; 1580      ;
+; Total fan-out                               ; 17875     ;
+; Average fan-out                             ; 3.68      ;
 +---------------------------------------------+-----------+
 
 
@@ -292,26 +295,27 @@ https://fpgasoftware.intel.com/eula.
 +----------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+----------------------------------------------------------------------------------------------------+-----------------------+--------------+
 ; Compilation Hierarchy Node                   ; Combinational ALUTs ; Dedicated Logic Registers ; Memory Bits ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                                ; Entity Name           ; Library Name ;
 +----------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+----------------------------------------------------------------------------------------------------+-----------------------+--------------+
-; |CPU5STAGE                                   ; 3138 (33)           ; 1545 (32)                 ; 32768       ; 0            ; 0       ; 0         ; 66   ; 0            ; |CPU5STAGE                                                                                         ; CPU5STAGE             ; work         ;
+; |CPU5STAGE                                   ; 3145 (33)           ; 1548 (32)                 ; 32768       ; 0            ; 0       ; 0         ; 66   ; 0            ; |CPU5STAGE                                                                                         ; CPU5STAGE             ; work         ;
 ;    |EX_MEM_buffer:ex_mem_buffer|             ; 32 (32)             ; 85 (85)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_MEM_buffer:ex_mem_buffer                                                             ; EX_MEM_buffer         ; work         ;
-;    |EX_stage:ex_stage|                       ; 918 (3)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage                                                                       ; EX_stage              ; work         ;
-;       |ALU:alu|                              ; 634 (634)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu                                                               ; ALU                   ; work         ;
-;       |ALU_OPER:alu_oper|                    ; 34 (34)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|ALU_OPER:alu_oper                                                     ; ALU_OPER              ; work         ;
-;       |BranchDecision:BDU|                   ; 29 (1)              ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|BranchDecision:BDU                                                    ; BranchDecision        ; work         ;
-;          |compare_equal:cmp1|                ; 28 (28)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|BranchDecision:BDU|compare_equal:cmp1                                 ; compare_equal         ; work         ;
+;    |EX_stage:ex_stage|                       ; 923 (6)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage                                                                       ; EX_stage              ; work         ;
+;       |ALU:alu|                              ; 635 (635)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu                                                               ; ALU                   ; work         ;
+;       |ALU_OPER:alu_oper|                    ; 37 (37)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|ALU_OPER:alu_oper                                                     ; ALU_OPER              ; work         ;
+;       |BranchDecision:BDU|                   ; 27 (0)              ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|BranchDecision:BDU                                                    ; BranchDecision        ; work         ;
+;          |compare_equal:cmp1|                ; 27 (27)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|BranchDecision:BDU|compare_equal:cmp1                                 ; compare_equal         ; work         ;
 ;       |MUX_4x1:alu_oper1|                    ; 97 (97)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|MUX_4x1:alu_oper1                                                     ; MUX_4x1               ; work         ;
 ;       |MUX_8x1:alu_oper2|                    ; 121 (121)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|EX_stage:ex_stage|MUX_8x1:alu_oper2                                                     ; MUX_8x1               ; work         ;
-;    |ID_EX_buffer:id_ex_buffer|               ; 186 (186)           ; 188 (188)                 ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_EX_buffer:id_ex_buffer                                                               ; ID_EX_buffer          ; work         ;
-;    |ID_stage:id_stage|                       ; 1495 (33)           ; 1056 (0)                  ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage                                                                       ; ID_stage              ; work         ;
-;       |BranchResolver:BR|                    ; 6 (6)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|BranchResolver:BR                                                     ; BranchResolver        ; work         ;
+;    |ID_EX_buffer:id_ex_buffer|               ; 157 (157)           ; 189 (189)                 ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_EX_buffer:id_ex_buffer                                                               ; ID_EX_buffer          ; work         ;
+;    |ID_stage:id_stage|                       ; 1527 (65)           ; 1058 (0)                  ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage                                                                       ; ID_stage              ; work         ;
+;       |BranchResolver:BR|                    ; 8 (3)               ; 2 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|BranchResolver:BR                                                     ; BranchResolver        ; work         ;
+;          |BranchPredictor:BPU|               ; 5 (5)               ; 2 (2)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|BranchResolver:BR|BranchPredictor:BPU                                 ; BranchPredictor       ; work         ;
 ;       |Immed_Gen_unit:immed_gen|             ; 37 (37)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|Immed_Gen_unit:immed_gen                                              ; Immed_Gen_unit        ; work         ;
 ;       |REG_FILE:reg_file|                    ; 1403 (1403)         ; 1056 (1056)               ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|REG_FILE:reg_file                                                     ; REG_FILE              ; work         ;
-;       |StallDetectionUnit:SDU|               ; 12 (12)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|StallDetectionUnit:SDU                                                ; StallDetectionUnit    ; work         ;
-;       |control_unit:cu|                      ; 4 (4)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|control_unit:cu                                                       ; control_unit          ; work         ;
-;    |IF_ID_buffer:if_id_buffer|               ; 100 (100)           ; 79 (79)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_ID_buffer:if_id_buffer                                                               ; IF_ID_buffer          ; work         ;
-;    |IF_stage:if_stage|                       ; 289 (31)            ; 32 (0)                    ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage                                                                       ; IF_stage              ; work         ;
+;       |StallDetectionUnit:SDU|               ; 13 (13)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|StallDetectionUnit:SDU                                                ; StallDetectionUnit    ; work         ;
+;       |control_unit:cu|                      ; 1 (1)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|ID_stage:id_stage|control_unit:cu                                                       ; control_unit          ; work         ;
+;    |IF_ID_buffer:if_id_buffer|               ; 101 (101)           ; 79 (79)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_ID_buffer:if_id_buffer                                                               ; IF_ID_buffer          ; work         ;
+;    |IF_stage:if_stage|                       ; 284 (31)            ; 32 (0)                    ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage                                                                       ; IF_stage              ; work         ;
 ;       |IM:inst_mem|                          ; 116 (116)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage|IM:inst_mem                                                           ; IM                    ; work         ;
-;       |MUX_8x1:pc_src_mux|                   ; 142 (141)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage|MUX_8x1:pc_src_mux                                                    ; MUX_8x1               ; work         ;
+;       |MUX_8x1:pc_src_mux|                   ; 137 (136)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage|MUX_8x1:pc_src_mux                                                    ; MUX_8x1               ; work         ;
 ;          |BITWISEand3:sel4|                  ; 1 (1)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage|MUX_8x1:pc_src_mux|BITWISEand3:sel4                                   ; BITWISEand3           ; work         ;
 ;       |PC_register:pc_reg|                   ; 0 (0)               ; 32 (32)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|IF_stage:if_stage|PC_register:pc_reg                                                    ; PC_register           ; work         ;
 ;    |MEM_WB_buffer:mem_wb_buffer|             ; 4 (4)               ; 73 (73)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|MEM_WB_buffer:mem_wb_buffer                                                             ; MEM_WB_buffer         ; work         ;
@@ -320,9 +324,9 @@ https://fpgasoftware.intel.com/eula.
 ;          |altsyncram:DataMem_rtl_0|          ; 0 (0)               ; 0 (0)                     ; 32768       ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|MEM_stage:mem_stage|DM:data_mem|altsyncram:DataMem_rtl_0                                ; altsyncram            ; work         ;
 ;             |altsyncram_eg81:auto_generated| ; 0 (0)               ; 0 (0)                     ; 32768       ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|MEM_stage:mem_stage|DM:data_mem|altsyncram:DataMem_rtl_0|altsyncram_eg81:auto_generated ; altsyncram_eg81       ; work         ;
 ;    |WB_stage:wb_stage|                       ; 32 (32)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|WB_stage:wb_stage                                                                       ; WB_stage              ; work         ;
-;    |exception_detect_unit:EDU|               ; 26 (26)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|exception_detect_unit:EDU                                                               ; exception_detect_unit ; work         ;
-;    |forwardA:FA|                             ; 13 (13)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|forwardA:FA                                                                             ; forwardA              ; work         ;
-;    |forwardB:FB|                             ; 6 (6)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|forwardB:FB                                                                             ; forwardB              ; work         ;
+;    |exception_detect_unit:EDU|               ; 31 (31)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|exception_detect_unit:EDU                                                               ; exception_detect_unit ; work         ;
+;    |forwardA:FA|                             ; 12 (12)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|forwardA:FA                                                                             ; forwardA              ; work         ;
+;    |forwardB:FB|                             ; 5 (5)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|forwardB:FB                                                                             ; forwardB              ; work         ;
 ;    |forwardC:FC|                             ; 4 (4)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |CPU5STAGE|forwardC:FC                                                                             ; forwardC              ; work         ;
 +----------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+----------------------------------------------------------------------------------------------------+-----------------------+--------------+
 Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
@@ -437,12 +441,12 @@ Note: All latches listed above may not be present at the end of synthesis due to
 +----------------------------------------------+-------+
 ; Statistic                                    ; Value ;
 +----------------------------------------------+-------+
-; Total registers                              ; 1545  ;
-; Number of registers using Synchronous Clear  ; 3     ;
+; Total registers                              ; 1548  ;
+; Number of registers using Synchronous Clear  ; 2     ;
 ; Number of registers using Synchronous Load   ; 32    ;
-; Number of registers using Asynchronous Clear ; 1376  ;
+; Number of registers using Asynchronous Clear ; 1379  ;
 ; Number of registers using Asynchronous Load  ; 0     ;
-; Number of registers using Clock Enable       ; 1135  ;
+; Number of registers using Clock Enable       ; 1137  ;
 ; Number of registers using Preset             ; 0     ;
 +----------------------------------------------+-------+
 
@@ -452,12 +456,12 @@ Note: All latches listed above may not be present at the end of synthesis due to
 +--------------------------------------------------+---------+
 ; Inverted Register                                ; Fan out ;
 +--------------------------------------------------+---------+
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[0]  ; 71      ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[0]  ; 70      ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[1]  ; 66      ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[2]  ; 69      ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[3]  ; 70      ;
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[4]  ; 59      ;
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[5]  ; 58      ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[4]  ; 60      ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[5]  ; 60      ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[6]  ; 5       ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[7]  ; 5       ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[8]  ; 5       ;
@@ -483,7 +487,7 @@ Note: All latches listed above may not be present at the end of synthesis due to
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[28] ; 4       ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[29] ; 4       ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[30] ; 4       ;
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[31] ; 5       ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[31] ; 4       ;
 ; Total number of inverted registers = 32          ;         ;
 +--------------------------------------------------+---------+
 
@@ -502,22 +506,22 @@ Note: All latches listed above may not be present at the end of synthesis due to
 +--------------------+-----------+---------------+----------------------+------------------------+------------+-----------------------------------------------------------------+
 ; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                                      ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+-----------------------------------------------------------------+
-; 3:1                ; 6 bits    ; 12 LEs        ; 6 LEs                ; 6 LEs                  ; Yes        ; |CPU5STAGE|IF_ID_buffer:if_id_buffer|ID_opcode[1]               ;
-; 3:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; Yes        ; |CPU5STAGE|IF_ID_buffer:if_id_buffer|ID_rs1_ind[0]              ;
-; 4:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; Yes        ; |CPU5STAGE|IF_ID_buffer:if_id_buffer|ID_rd_ind[0]               ;
-; 33:1               ; 32 bits   ; 704 LEs       ; 704 LEs              ; 0 LEs                  ; Yes        ; |CPU5STAGE|ID_stage:id_stage|REG_FILE:reg_file|rd_data2[14]     ;
-; 33:1               ; 32 bits   ; 704 LEs       ; 704 LEs              ; 0 LEs                  ; Yes        ; |CPU5STAGE|ID_stage:id_stage|REG_FILE:reg_file|rd_data1[10]     ;
-; 3:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |CPU5STAGE|ID_stage:id_stage|StallDetectionUnit:SDU|PC_Write    ;
-; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; No         ; |CPU5STAGE|ID_stage:id_stage|Immed_Gen_unit:immed_gen|Immed[7]  ;
-; 4:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; No         ; |CPU5STAGE|ID_stage:id_stage|Immed_Gen_unit:immed_gen|Immed[1]  ;
+; 3:1                ; 6 bits    ; 12 LEs        ; 6 LEs                ; 6 LEs                  ; Yes        ; |CPU5STAGE|IF_ID_buffer:if_id_buffer|ID_opcode[4]               ;
+; 3:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; Yes        ; |CPU5STAGE|IF_ID_buffer:if_id_buffer|ID_rs1_ind[4]              ;
+; 4:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; Yes        ; |CPU5STAGE|IF_ID_buffer:if_id_buffer|ID_rd_ind[4]               ;
+; 33:1               ; 32 bits   ; 704 LEs       ; 704 LEs              ; 0 LEs                  ; Yes        ; |CPU5STAGE|ID_stage:id_stage|REG_FILE:reg_file|rd_data2[23]     ;
+; 33:1               ; 32 bits   ; 704 LEs       ; 704 LEs              ; 0 LEs                  ; Yes        ; |CPU5STAGE|ID_stage:id_stage|REG_FILE:reg_file|rd_data1[29]     ;
+; 3:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |CPU5STAGE|ID_stage:id_stage|StallDetectionUnit:SDU|if_id_flush ;
+; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; No         ; |CPU5STAGE|ID_stage:id_stage|Immed_Gen_unit:immed_gen|Immed[8]  ;
+; 4:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; No         ; |CPU5STAGE|ID_stage:id_stage|Immed_Gen_unit:immed_gen|Immed[0]  ;
 ; 5:1                ; 10 bits   ; 30 LEs        ; 20 LEs               ; 10 LEs                 ; No         ; |CPU5STAGE|ID_stage:id_stage|Immed_Gen_unit:immed_gen|Immed[17] ;
-; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu|Mux25                      ;
+; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu|Mux19                      ;
 ; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu|Mux10                      ;
-; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu|Mux29                      ;
+; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu|Mux26                      ;
 ; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu|Mux9                       ;
 ; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu|Mux31                      ;
 ; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu|Mux5                       ;
-; 18:1               ; 2 bits    ; 24 LEs        ; 18 LEs               ; 6 LEs                  ; No         ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu|Mux32                      ;
+; 18:1               ; 2 bits    ; 24 LEs        ; 18 LEs               ; 6 LEs                  ; No         ; |CPU5STAGE|EX_stage:ex_stage|ALU:alu|Mux33                      ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+-----------------------------------------------------------------+
 
 
@@ -862,6 +866,40 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; jal            ; 000011000000 ; Unsigned Binary                                  ;
 ; hlt_inst       ; 111111000000 ; Unsigned Binary                                  ;
 +----------------+--------------+--------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: ID_stage:id_stage|BranchResolver:BR|BranchPredictor:BPU ;
++----------------+--------------+----------------------------------------------------------------------+
+; Parameter Name ; Value        ; Type                                                                 ;
++----------------+--------------+----------------------------------------------------------------------+
+; add            ; 000000100000 ; Unsigned Binary                                                      ;
+; addu           ; 000000100001 ; Unsigned Binary                                                      ;
+; sub            ; 000000100010 ; Unsigned Binary                                                      ;
+; subu           ; 000000100011 ; Unsigned Binary                                                      ;
+; and_           ; 000000100100 ; Unsigned Binary                                                      ;
+; or_            ; 000000100101 ; Unsigned Binary                                                      ;
+; xor_           ; 000000100110 ; Unsigned Binary                                                      ;
+; nor_           ; 000000100111 ; Unsigned Binary                                                      ;
+; sll            ; 000000000000 ; Unsigned Binary                                                      ;
+; srl            ; 000000000010 ; Unsigned Binary                                                      ;
+; slt            ; 000000101010 ; Unsigned Binary                                                      ;
+; sgt            ; 000000101011 ; Unsigned Binary                                                      ;
+; jr             ; 000000001000 ; Unsigned Binary                                                      ;
+; addi           ; 001000000000 ; Unsigned Binary                                                      ;
+; andi           ; 001100000000 ; Unsigned Binary                                                      ;
+; ori            ; 001101000000 ; Unsigned Binary                                                      ;
+; xori           ; 001110000000 ; Unsigned Binary                                                      ;
+; lw             ; 100011000000 ; Unsigned Binary                                                      ;
+; sw             ; 101011000000 ; Unsigned Binary                                                      ;
+; slti           ; 001010000000 ; Unsigned Binary                                                      ;
+; beq            ; 000100000000 ; Unsigned Binary                                                      ;
+; bne            ; 000101000000 ; Unsigned Binary                                                      ;
+; j              ; 000010000000 ; Unsigned Binary                                                      ;
+; jal            ; 000011000000 ; Unsigned Binary                                                      ;
+; hlt_inst       ; 111111000000 ; Unsigned Binary                                                      ;
++----------------+--------------+----------------------------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
@@ -1245,6 +1283,15 @@ Note: In order to hide this table in the UI and the text report file, please set
 +------------+-------+----------+---------------------------------+
 
 
++-----------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "ID_stage:id_stage|BranchResolver:BR|BranchPredictor:BPU"                             ;
++-------+--------+----------+-------------------------------------------------------------------------------------+
+; Port  ; Type   ; Severity ; Details                                                                             ;
++-------+--------+----------+-------------------------------------------------------------------------------------+
+; state ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++-------+--------+----------+-------------------------------------------------------------------------------------+
+
+
 +------------------------------------------------------------------+
 ; Port Connectivity Checks: "IF_stage:if_stage|MUX_8x1:pc_src_mux" ;
 +-------------+-------+----------+---------------------------------+
@@ -1267,26 +1314,26 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; Type                  ; Count                       ;
 +-----------------------+-----------------------------+
 ; boundary_port         ; 66                          ;
-; cycloneiii_ff         ; 1545                        ;
-;     CLR               ; 238                         ;
-;     CLR SCLR          ; 3                           ;
+; cycloneiii_ff         ; 1548                        ;
+;     CLR               ; 240                         ;
+;     CLR SCLR          ; 2                           ;
 ;     CLR SLD           ; 32                          ;
 ;     ENA               ; 32                          ;
-;     ENA CLR           ; 1103                        ;
+;     ENA CLR           ; 1105                        ;
 ;     plain             ; 137                         ;
-; cycloneiii_lcell_comb ; 3170                        ;
-;     arith             ; 215                         ;
-;         2 data inputs ; 88                          ;
-;         3 data inputs ; 127                         ;
-;     normal            ; 2955                        ;
-;         1 data inputs ; 37                          ;
-;         2 data inputs ; 271                         ;
-;         3 data inputs ; 432                         ;
-;         4 data inputs ; 2215                        ;
+; cycloneiii_lcell_comb ; 3177                        ;
+;     arith             ; 185                         ;
+;         2 data inputs ; 59                          ;
+;         3 data inputs ; 126                         ;
+;     normal            ; 2992                        ;
+;         1 data inputs ; 35                          ;
+;         2 data inputs ; 94                          ;
+;         3 data inputs ; 488                         ;
+;         4 data inputs ; 2375                        ;
 ; cycloneiii_ram_block  ; 32                          ;
 ;                       ;                             ;
-; Max LUT depth         ; 16.00                       ;
-; Average LUT depth     ; 8.14                        ;
+; Max LUT depth         ; 15.00                       ;
+; Average LUT depth     ; 7.85                        ;
 +-----------------------+-----------------------------+
 
 
@@ -1295,7 +1342,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 +----------------+--------------+
 ; Partition Name ; Elapsed Time ;
 +----------------+--------------+
-; Top            ; 00:00:10     ;
+; Top            ; 00:00:13     ;
 +----------------+--------------+
 
 
@@ -1305,7 +1352,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
-    Info: Processing started: Sun Dec  1 12:44:02 2024
+    Info: Processing started: Tue Dec  3 17:38:44 2024
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off PLCPU -c PLCPU
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 6 of the 6 processors detected
@@ -1392,7 +1439,7 @@ Warning (10030): Net "InstMem.waddr_a" at IM.v(34) has no driver or initial valu
 Warning (10030): Net "InstMem.we_a" at IM.v(34) has no driver or initial value, using a default initial value '0' File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/IM.v Line: 34
 Info (12128): Elaborating entity "IF_ID_buffer" for hierarchy "IF_ID_buffer:if_id_buffer" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/CPU5STAGE.v Line: 58
 Info (12128): Elaborating entity "ID_stage" for hierarchy "ID_stage:id_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/CPU5STAGE.v Line: 65
-Warning (10230): Verilog HDL assignment warning at ID_stage.v(42): truncated value with size 32 to match size of target (3) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ID_stage.v Line: 42
+Warning (10230): Verilog HDL assignment warning at ID_stage.v(44): truncated value with size 32 to match size of target (3) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ID_stage.v Line: 44
 Info (12128): Elaborating entity "REG_FILE" for hierarchy "ID_stage:id_stage|REG_FILE:reg_file" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ID_stage.v Line: 27
 Warning (10240): Verilog HDL Always Construct warning at REG_FILE.v(19): inferring latch(es) for variable "i", which holds its previous value in one or more paths through the always construct File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/REG_FILE.v Line: 19
 Info (12128): Elaborating entity "Immed_Gen_unit" for hierarchy "ID_stage:id_stage|Immed_Gen_unit:immed_gen" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ID_stage.v Line: 29
@@ -1402,13 +1449,16 @@ Warning (10230): Verilog HDL assignment warning at Immed_Gen_unit.v(36): truncat
 Warning (10230): Verilog HDL assignment warning at Immed_Gen_unit.v(40): truncated value with size 48 to match size of target (32) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/Immed_Gen_unit.v Line: 40
 Warning (12125): Using design file branchresolver.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: BranchResolver File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchresolver.v Line: 2
-Info (12128): Elaborating entity "BranchResolver" for hierarchy "ID_stage:id_stage|BranchResolver:BR" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ID_stage.v Line: 34
-Warning (10230): Verilog HDL assignment warning at branchresolver.v(17): truncated value with size 32 to match size of target (1) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchresolver.v Line: 17
-Warning (10230): Verilog HDL assignment warning at branchresolver.v(20): truncated value with size 32 to match size of target (3) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchresolver.v Line: 20
-Info (12128): Elaborating entity "control_unit" for hierarchy "ID_stage:id_stage|control_unit:cu" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ID_stage.v Line: 37
+Info (12128): Elaborating entity "BranchResolver" for hierarchy "ID_stage:id_stage|BranchResolver:BR" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ID_stage.v Line: 36
+Warning (10230): Verilog HDL assignment warning at branchresolver.v(21): truncated value with size 32 to match size of target (3) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchresolver.v Line: 21
+Warning (12125): Using design file branchpredictor.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: BranchPredictor File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchpredictor.v Line: 1
+Info (12128): Elaborating entity "BranchPredictor" for hierarchy "ID_stage:id_stage|BranchResolver:BR|BranchPredictor:BPU" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchresolver.v Line: 19
+Warning (10230): Verilog HDL assignment warning at branchpredictor.v(46): truncated value with size 32 to match size of target (1) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchpredictor.v Line: 46
+Info (12128): Elaborating entity "control_unit" for hierarchy "ID_stage:id_stage|control_unit:cu" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ID_stage.v Line: 39
 Warning (12125): Using design file stalldetectionunit.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: StallDetectionUnit File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/stalldetectionunit.v Line: 5
-Info (12128): Elaborating entity "StallDetectionUnit" for hierarchy "ID_stage:id_stage|StallDetectionUnit:SDU" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ID_stage.v Line: 38
+Info (12128): Elaborating entity "StallDetectionUnit" for hierarchy "ID_stage:id_stage|StallDetectionUnit:SDU" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ID_stage.v Line: 40
 Info (12128): Elaborating entity "ID_EX_buffer" for hierarchy "ID_EX_buffer:id_ex_buffer" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/CPU5STAGE.v Line: 80
 Info (12128): Elaborating entity "EX_stage" for hierarchy "EX_stage:ex_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/CPU5STAGE.v Line: 84
 Info (12128): Elaborating entity "MUX_4x1" for hierarchy "EX_stage:ex_stage|MUX_4x1:alu_oper1" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/EX_stage.v Line: 23
@@ -1574,16 +1624,16 @@ Info (286030): Timing-Driven Synthesis is running
 Info (144001): Generated suppressed messages file D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/PLCPU.map.smsg
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
-Info (21057): Implemented 4353 device resources after synthesis - the final resource count might be different
+Info (21057): Implemented 4361 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 2 input pins
     Info (21059): Implemented 64 output pins
-    Info (21061): Implemented 4255 logic cells
+    Info (21061): Implemented 4263 logic cells
     Info (21064): Implemented 32 RAM segments
-Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 107 warnings
-    Info: Peak virtual memory: 4823 megabytes
-    Info: Processing ended: Sun Dec  1 12:44:23 2024
-    Info: Elapsed time: 00:00:21
-    Info: Total CPU time (on all processors): 00:00:25
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 108 warnings
+    Info: Peak virtual memory: 4848 megabytes
+    Info: Processing ended: Tue Dec  3 17:39:16 2024
+    Info: Elapsed time: 00:00:32
+    Info: Total CPU time (on all processors): 00:00:26
 
 
 +------------------------------------------+
