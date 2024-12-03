@@ -179,7 +179,7 @@ Run_BenchMark "DataManipulation"
 Run_BenchMark "Max&MinArray"
 Run_BenchMark "SumOfNumbers"
 Run_BenchMark "InsertionSort(SiliCore_version)"
-Run_BenchMark "BubbleSort(Silicor_BenchMark)"
+Run_BenchMark "BubbleSort(Silicore_BenchMark)"
 
 read -p "Press Enter to exit"
 
