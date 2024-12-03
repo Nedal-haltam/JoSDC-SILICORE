@@ -19,7 +19,7 @@ wire [2:0]  pc_src, target_addr_adder_mux_sel, alu_selB;
 wire [1:0]  comp_selA, comp_selB, alu_selA, store_rs2_forward;
 wire pc_write, if_id_write, ID_FLUSH_buf, EX_memread, ID_regwrite, ID_memread, ID_memwrite, EX_regwrite, EX_memwrite, MEM_memread, Wrong_prediction, predicted;
 wire MEM_memwrite, MEM_regwrite, WB_memread, WB_memwrite, WB_regwrite, exception_flag, id_flush, EX_FLUSH, MEM_FLUSH, ID_is_oper2_immed, EX_is_oper2_immed; 
-wire ID_is_beq, ID_is_bne, ID_is_jr, EX_is_jr, EX_is_beq, EX_is_bne, MEM_rd_indzero, WB_rd_indzero;
+wire ID_is_beq, ID_is_bne, ID_is_jr, EX_is_jr, EX_is_beq, EX_is_bne, ID_is_jal, EX_is_jal, MEM_rd_indzero, WB_rd_indzero;
 
 
 
@@ -37,10 +37,10 @@ nor hlt_logic(clk, input_clk, hlt);
 exception_detect_unit EDU(ID_PC, ID_opcode, exception_flag, id_flush, EX_FLUSH, MEM_FLUSH, clk, rst);
 
 forwardA FA(EX_opcode, EX_rs1_ind, EX_rs2_ind, MEM_rd_indzero, MEM_rd_ind, MEM_regwrite, WB_rd_indzero, WB_rd_ind, WB_regwrite,
-		 	    alu_selA, clk);
+		 	    alu_selA, clk, EX_is_jal);
 		
 forwardB FB(EX_opcode, EX_rs1_ind, EX_rs2_ind, MEM_rd_indzero, MEM_rd_ind, MEM_regwrite, WB_rd_indzero, WB_rd_ind, WB_regwrite,
-		 	    alu_selB, EX_is_oper2_immed, clk);
+		 	    alu_selB, EX_is_oper2_immed, clk, EX_is_jal);
 		
 forwardC FC(EX_opcode, EX_rs1_ind, EX_rs2_ind, MEM_rd_indzero, MEM_rd_ind, MEM_regwrite, WB_rd_indzero, WB_rd_ind, WB_regwrite,
 		 	    store_rs2_forward, clk);
@@ -62,7 +62,7 @@ ID_stage id_stage(ID_PC, ID_INST, ID_opcode, EX_opcode, EX_memread, alu_out, for
 	EX_rd_ind, WB_rd_ind,
 	id_flush, ID_FLUSH_buf, Wrong_prediction, exception_flag, clk, ID_PFC_to_IF, ID_PFC_to_EX, ID_predicted, ID_rs1, ID_rs2, pc_src,
 	pc_write, if_id_write, IF_FLUSH, ID_Immed, WB_regwrite, ID_regwrite, ID_memread, ID_memwrite, rst, ID_is_oper2_immed, 
-	ID_is_beq, ID_is_bne, ID_is_jr);
+	ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal);
 
 
  
@@ -73,11 +73,11 @@ ID_stage id_stage(ID_PC, ID_INST, ID_opcode, EX_opcode, EX_memread, alu_out, for
 
 ID_EX_buffer id_ex_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 			ID_PC, ID_INST, ID_Immed, ID_rs1, ID_rs2, ID_regwrite,
-			ID_memread, ID_memwrite, ~clk, ID_FLUSH_buf, ID_PFC_to_EX, ID_predicted, ID_is_oper2_immed, ID_is_beq, ID_is_bne, ID_is_jr,
+			ID_memread, ID_memwrite, ~clk, ID_FLUSH_buf, ID_PFC_to_EX, ID_predicted, ID_is_oper2_immed, ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal,
 			EX_opcode, EX_rs1_ind,
 			EX_rs2_ind, EX_rd_ind, EX_PC,
 			EX_INST, EX_Immed, EX_rs1,
-			EX_rs2, EX_regwrite, EX_memread, EX_memwrite, EX_PFC, EX_predicted, EX_is_oper2_immed, rst, EX_is_beq, EX_is_bne, EX_is_jr);
+			EX_rs2, EX_regwrite, EX_memread, EX_memwrite, EX_PFC, EX_predicted, EX_is_oper2_immed, rst, EX_is_beq, EX_is_bne, EX_is_jr, EX_is_jal);
 
 EX_stage ex_stage(EX_PC, EX_PFC, EX_PFC_to_IF, EX_opcode, MEM_ALU_OUT, wdata_to_reg_file, EX_rs1, EX_Immed, EX_rs1_ind, EX_rs2_ind, 
 	alu_selA, alu_selB, store_rs2_forward, EX_regwrite, EX_memread, EX_memwrite, EX_rs2, rs2_out, alu_out, EX_predicted, Wrong_prediction, rst, 

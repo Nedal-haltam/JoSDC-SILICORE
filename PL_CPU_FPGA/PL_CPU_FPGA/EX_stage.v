@@ -29,14 +29,9 @@ module EX_stage(pc, EX_PFC, EX_PFC_to_IF, opcode, ex_haz, mem_haz, rs1, imm, rs1
 
     ALU_OPER alu_oper(opcode, alu_op);
 
-	assign EX_PFC_to_IF = (opcode == jr) ? oper1 : EX_PFC;
+	assign EX_PFC_to_IF = (is_jr) ? oper1 : EX_PFC;
 
     MUX_4x1 store_rs2_mux(rs2_in, ex_haz, mem_haz, 0, store_rs2_forward, rs2_out);
-
-	// here we assume branch is alyaws taken so we check if our prediction is wrong or not.
-	// so the Wrong_prediction will be high if we are wrong
-
-	
 
 	BranchDecision BDU(oper1, oper2, BranchDecision, is_beq, is_bne);
 

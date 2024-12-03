@@ -39,8 +39,6 @@ module Immed_Gen_unit(Inst, opcode, Immed);
 			         opcode == beq || opcode == bne || opcode == slti)
 				Immed <= {{32{Inst[15]}} , Inst[15:0]};
 				
-				
-				
 		end
 		
 		

@@ -1,5 +1,5 @@
 
-module control_unit(opcode, regwrite, memread, memwrite, is_oper2_immed, is_beq, is_bne, is_jr);
+module control_unit(opcode, regwrite, memread, memwrite, is_oper2_immed, is_beq, is_bne, is_jr, is_jal);
 
    input [11:0] 	opcode;
 	
@@ -7,7 +7,7 @@ module control_unit(opcode, regwrite, memread, memwrite, is_oper2_immed, is_beq,
 	output memread; 								
 	output memwrite;
 	output is_oper2_immed;
-	output is_beq, is_bne, is_jr;
+	output is_beq, is_bne, is_jr, is_jal;
 
 `include "opcodes.txt"
 	
@@ -19,6 +19,7 @@ assign is_oper2_immed = (opcode == addi || opcode == andi || opcode == ori ||
 assign is_beq = opcode == beq;
 assign is_bne = opcode == bne;
 assign is_jr = opcode == jr;
+assign is_jal = opcode == jal;
 assign regwrite = (!(opcode == jr || opcode == sw || opcode == beq || opcode == bne || opcode == j));
 assign memread = opcode == lw;
 assign memwrite = opcode == sw;
