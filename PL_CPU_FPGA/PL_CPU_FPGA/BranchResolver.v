@@ -10,11 +10,6 @@ module BranchResolver(PC_src, exception_flag, ID_opcode, EX_opcode, predicted, W
 	
 `include "opcodes.txt"
 
-// TODO: make the JR check if there is dependency
-//		 	if there is : then we introduce a bubble and not forward it to the decode stage (because forwarding make the performace (clk) worse)
-//			if there is no dependency : then we immediately jump without introducing bubbles
-
-
 wire [1:0] state;
 BranchPredictor BPU(ID_opcode, EX_opcode, predicted, Wrong_prediction, rst, state, clk);
 

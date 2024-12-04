@@ -1,10 +1,7 @@
 
-module ID_stage(pc, inst, ID_opcode, EX_opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_data, rs1_ind, 
-				rs2_ind, id_ex_rd_ind, ex_mem_rd_ind, mem_wb_rd_ind,
-			    id_flush,id_flush_mux_sel, Wrong_prediction, exception_flag, clk, PFC_to_IF, PFC_to_EX, 
-				predicted, rs1, rs2, pc_src, 
-				pc_write, if_id_write, if_id_flush, imm,reg_write_from_wb, reg_write, 
-				mem_read, mem_write, rst, is_oper2_immed, 
+module ID_stage(pc, inst, ID_opcode, EX_opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_data, rs1_ind, rs2_ind,id_ex_rd_ind, wr_reg_from_wb,
+			    id_flush,id_flush_mux_sel, Wrong_prediction, exception_flag, clk, PFC_to_IF, PFC_to_EX, predicted, rs1, rs2, pc_src, 
+				pc_write, if_id_write, if_id_flush, imm,reg_write_from_wb, reg_write, mem_read, mem_write, rst, is_oper2_immed, 
 				ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal);
 	
 	`include "opcodes.txt"
@@ -13,7 +10,7 @@ module ID_stage(pc, inst, ID_opcode, EX_opcode, EX_memread, id_haz, ex_haz, mem_
 	input rst;
 	input [31:0] pc, inst, id_haz, ex_haz, mem_haz, wr_reg_data;
 	input [11:0] ID_opcode, EX_opcode;
-	input [4:0] rs1_ind, rs2_ind, id_ex_rd_ind, ex_mem_rd_ind, mem_wb_rd_ind, wr_reg_from_wb;
+	input [4:0] rs1_ind, rs2_ind,id_ex_rd_ind, wr_reg_from_wb;
 	input id_flush, Wrong_prediction, exception_flag, clk, reg_write_from_wb, EX_memread;
 	
 	output [31:0] PFC_to_IF, PFC_to_EX, rs1, rs2;
@@ -41,8 +38,8 @@ module ID_stage(pc, inst, ID_opcode, EX_opcode, EX_memread, id_haz, ex_haz, mem_
 	// control section
     control_unit cu(ID_opcode, reg_write_wire, mem_read_wire, mem_write_wire, is_oper2_immed, ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal);
 
-	assign JR_Depenedent = is_jr && (rs1_ind == id_ex_rd_ind || rs1_ind == MEM_rd_ind || rs1_ind == WB_rd_ind);
-	StallDetectionUnit SDU(Wrong_prediction, ID_opcode, EX_memread, JR_Depenedent, rs1_ind, rs2_ind, id_ex_rd_ind, pc_write, if_id_write, if_id_flush, id_ex_stall);
+	
+	StallDetectionUnit SDU(Wrong_prediction, ID_opcode, EX_memread, rs1_ind, rs2_ind, id_ex_rd_ind, pc_write, if_id_write, if_id_flush, id_ex_stall);
 	
 	// control unit mux
 	or flush(id_flush_mux_sel, id_flush, id_ex_stall);

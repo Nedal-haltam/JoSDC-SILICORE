@@ -59,7 +59,7 @@ IF_ID_buffer if_id_buffer(IF_pc, IF_INST, IF_FLUSH, if_id_write, ~clk, ID_opcode
 
 
 ID_stage id_stage(ID_PC, ID_INST, ID_opcode, EX_opcode, EX_memread, alu_out, forwarded_data, wdata_to_reg_file, wdata_to_reg_file, ID_rs1_ind, ID_rs2_ind,
-	EX_rd_ind, MEM_rd_ind, WB_rd_ind,
+	EX_rd_ind, WB_rd_ind,
 	id_flush, ID_FLUSH_buf, Wrong_prediction, exception_flag, clk, ID_PFC_to_IF, ID_PFC_to_EX, ID_predicted, ID_rs1, ID_rs2, pc_src,
 	pc_write, if_id_write, IF_FLUSH, ID_Immed, WB_regwrite, ID_regwrite, ID_memread, ID_memwrite, rst, ID_is_oper2_immed, 
 	ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal);

@@ -182,4 +182,3 @@ Run_BenchMark "InsertionSort(SiliCore_version)"
 Run_BenchMark "BubbleSort(Silicore_BenchMark)"
 
 read -p "Press Enter to exit"
-
