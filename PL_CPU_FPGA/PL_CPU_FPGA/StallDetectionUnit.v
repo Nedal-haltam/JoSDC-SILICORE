@@ -2,7 +2,8 @@
 // and if it's the case then it inserts one nop starting from the execute stage (activate the ID_FLUSH). 
 // because we can't forward the load result from the execute stage but we can from the memory stage
 
-module StallDetectionUnit(Wrong_prediction, if_id_opcode, EX_memread, if_id_rs1, if_id_rs2, id_ex_rd, PC_Write, if_id_Write, if_id_flush, id_ex_flush);
+module StallDetectionUnit(Wrong_prediction, if_id_opcode, EX_memread, if_id_rs1, if_id_rs2, id_ex_rd, 
+						  PC_Write, if_id_Write, if_id_flush, id_ex_flush);
   
 input [11:0] if_id_opcode; // to tell us if it is a branch instruction
 input [4:0] if_id_rs1, if_id_rs2; // the required rs1, rs2 to be used to know if there is a dependencies or not
