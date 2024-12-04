@@ -71,7 +71,7 @@ assign nextPC = (PCsrc == 2'b00) ? PCPlus1 :
 programCounter pc(.clk(clk), .rst(rst), .PCin(nextPC), .PCout(PC));	
 
 
-IM InstMem(.address(PC), .q(wire_instruction));
+IM InstMem(.addr(PC), .Data_Out(wire_instruction));
 
 assign instruction = (~rst) ? 0 : wire_instruction;
 
@@ -100,7 +100,7 @@ ALU alu(.operand1(readData1_w), .operand2(ALUin2), .opSel(ALUOp), .result(ALURes
 
 
 
-DM dataMem(.address(ALUResult[31:0]), .clock(clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
+DM dataMem(.address(ALUResult[31:0]), .clock(~clk), .data(readData2), .rden(MemReadEn), .wren(MemWriteEn), .q(memoryReadData));
 
 mux2x1 #(32) WBMux(.in1(ALUResult), .in2(memoryReadData), .s(MemtoReg), .out(writeData));
 

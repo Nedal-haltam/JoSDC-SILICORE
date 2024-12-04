@@ -30,7 +30,6 @@ namespace Epsilon
 
         void GenPush(string reg)
         {
-            // TODO: check for stack overflow
             m_outputcode.Append($"sw {reg}, x29, 0\n");
             m_outputcode.Append("addi x29, x29, -1\n");
             StackSize++;

@@ -113,7 +113,7 @@ RunBenchMark_HW()
     VERILOG_EXT_SC_OUT="VERILOG_SC_OUT.txt"
     VERILOG_SC=$ProgFolder""$VERILOG_EXT_SC
     VERILOG_SC_OUT=$ProgFolder""$VERILOG_EXT_SC_OUT
-    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SC -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" $BASE_PATH"SingleCycle_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SC -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" $BASE_PATH"SingleCycle_vscode_sim.v"
     vvp $VERILOG_SC > $VERILOG_SC_OUT
 
     printf "[INFO]: simulating on pipeline hardware\n"
@@ -122,7 +122,7 @@ RunBenchMark_HW()
     VERILOG_EXT_PL_OUT="VERILOG_PL_OUT.txt"
     VERILOG_PL=$ProgFolder""$VERILOG_EXT_PL
     VERILOG_PL_OUT=$ProgFolder""$VERILOG_EXT_PL_OUT
-    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_PL -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" $BASE_PATH"PL_CPU_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_PL -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" $BASE_PATH"PL_CPU_vscode_sim.v"
     vvp $VERILOG_PL > $VERILOG_PL_OUT
 
 
@@ -167,8 +167,8 @@ Run_BenchMark()
 
 
 # the mentors insertion sort is accessing an invalid memory address (which is -1). when running it in the hardware design (verilog)
-# it will output 0 by default so it will work but in software (the cycle accurate simulator) it will throw an exception and terminate the program
-# because this cause an index out of bound exception 
+# it will output 0 by default so it will work but in software (the cycle accurate simulator) it will throw an exception 
+# and terminate the program because this cause an index out of bound exception 
 # Run_BenchMark "InsertionSort" 
 
 

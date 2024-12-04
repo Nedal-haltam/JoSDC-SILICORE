@@ -30,5 +30,3 @@ assign PC_src = (exception_flag) ? 3'b001 :
 );
 
 endmodule
-
-

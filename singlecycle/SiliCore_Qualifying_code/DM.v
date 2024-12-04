@@ -1,26 +1,23 @@
-`ifdef vscode
 module DM(address, clock,  data,  rden,  wren,  q);
 
-    input clock, rden, wren;
-    input [31 : 0] address;
-    input [31 : 0] data;
+input clock, rden, wren;
+input [31 : 0] address;
+input [31 : 0] data;
+output reg [31 : 0] q;
+reg [31 : 0] DataMem [1023 : 0];
 
-    output reg [31 : 0] q;
-
-    reg [31 : 0] DataMem [1023 : 0];
-
-    always @(negedge clock) begin
-        if (rden)
-            q <= DataMem[address[9:0]];
-        if (wren)
-            DataMem[address] <= data;
-    end
-
-initial begin
-
-`include "DM_INIT.INIT"
-
+// TODO: replace it with the ram IP block for modelsim simulation and FPGA prototyping
+`ifdef vscode
+always @(posedge clock) begin
+    if (rden)
+        q <= DataMem[address[9:0]];
+    if (wren)
+        DataMem[address] <= data;
 end
+initial begin
+`include "DM_INIT.INIT"
+end
+`endif
 
 
 `ifdef vscode
@@ -34,4 +31,3 @@ initial begin
 end 
 `endif
 endmodule
-`endif

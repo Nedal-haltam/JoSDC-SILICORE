@@ -1,49 +1,26 @@
+module IM(addr , Data_Out);
+
+parameter bit_width = 32;
+input [bit_width - 1:0] addr;
+output [bit_width - 1:0] Data_Out;
+
+reg [bit_width - 1:0] InstMem [1023 : 0];
+
+assign Data_Out = InstMem[addr[9:0]];
+
+
+
+integer i;
+initial begin
+// here we initialize the instruction memory
+
+for (i = 0; i < 1024; i = i + 1)
+    InstMem[i] <= 0;
+
 `ifdef vscode
-module IM(addr , Data_Out);
-
-parameter bit_width = 32;
-input [bit_width - 1:0] addr;
-output [bit_width - 1:0] Data_Out;
-
-reg [bit_width - 1:0] InstMem [1023 : 0];
-
-assign Data_Out = InstMem[addr[9:0]];
-
-
-
-integer i;
-initial begin
-// here we initialize the instruction memory
-
-for (i = 0; i < 1024; i = i + 1)
-    InstMem[i] <= 0;
-
-// TODO: it will be changed to a MIF file in the modelsim simulation and FPGA prototyping
 `include "IM_INIT.INIT"
-
-
-end      
-endmodule
 `else
-module IM(addr , Data_Out);
-
-parameter bit_width = 32;
-input [bit_width - 1:0] addr;
-output [bit_width - 1:0] Data_Out;
-
-reg [bit_width - 1:0] InstMem [1023 : 0];
-
-assign Data_Out = InstMem[addr[9:0]];
-
-
-
-integer i;
-initial begin
-// here we initialize the instruction memory
-
-for (i = 0; i < 1024; i = i + 1)
-    InstMem[i] <= 0;
-
+// TODO: it will be changed to a MIF file in the modelsim simulation and FPGA prototyping
 InstMem[  0] <= 32'h20010064; // addi x1 x0 100
 InstMem[  1] <= 32'hAC010001; // sw x1 x0 1
 InstMem[  2] <= 32'h2020007B; // addi x0 x1 123
@@ -90,7 +67,8 @@ InstMem[ 42] <= 32'h20180018; // addi x24 x0 24
 InstMem[ 43] <= 32'h03E00008; // jr x31
 InstMem[ 44] <= 32'hFC000000; // hlt
 
+`endif
 
 end      
 endmodule
-`endif
+
