@@ -2,7 +2,7 @@
 module ID_stage(pc, inst, ID_opcode, EX_opcode, EX_memread, id_haz, ex_haz, mem_haz, wr_reg_data, rs1_ind, rs2_ind,id_ex_rd_ind, wr_reg_from_wb,
 			    id_ex_flush, Wrong_prediction, exception_flag, clk, PFC_to_IF, PFC_to_EX, predicted, rs1, rs2, pc_src, 
 				pc_write, if_id_write, if_id_flush, imm,reg_write_from_wb, reg_write, mem_read, mem_write, rst, is_oper2_immed, 
-				ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal);
+				ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal, ID_is_j, is_branch_and_taken);
 	
 	`include "opcodes.txt"
 
@@ -16,7 +16,7 @@ module ID_stage(pc, inst, ID_opcode, EX_opcode, EX_memread, id_haz, ex_haz, mem_
 	output [31:0] PFC_to_IF, PFC_to_EX, rs1, rs2;
 	output [2:0] pc_src;
 	output pc_write, if_id_write, reg_write, mem_read, mem_write, if_id_flush, predicted, is_oper2_immed,
-		   ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal;
+		   ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal, ID_is_j;
 	
 	wire [31:0] mux_out, comp_oper1, comp_oper2;
 	output id_ex_flush;
@@ -27,7 +27,7 @@ module ID_stage(pc, inst, ID_opcode, EX_opcode, EX_memread, id_haz, ex_haz, mem_
 	
 	Immed_Gen_unit immed_gen(inst, ID_opcode, imm);
 	
-	wire is_branch_and_taken;
+	output wire is_branch_and_taken;
 	assign is_branch_and_taken = (ID_is_beq || ID_is_bne) && predicted;
 	assign PFC_to_IF = (is_branch_and_taken) ? pc + imm : imm;
 	assign PFC_to_EX = (is_branch_and_taken) ? pc : pc + imm;
@@ -35,7 +35,7 @@ module ID_stage(pc, inst, ID_opcode, EX_opcode, EX_memread, id_haz, ex_haz, mem_
     BranchResolver BR(pc_src, exception_flag, ID_opcode, EX_opcode, predicted, Wrong_prediction, rst, clk);
 	
 	// control section
-    control_unit cu(ID_opcode, reg_write, mem_read, mem_write, is_oper2_immed, ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal);
+    control_unit cu(ID_opcode, reg_write, mem_read, mem_write, is_oper2_immed, ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal, ID_is_j);
 
 	
 	StallDetectionUnit SDU(Wrong_prediction, ID_opcode, EX_memread, rs1_ind, rs2_ind, id_ex_rd_ind, 

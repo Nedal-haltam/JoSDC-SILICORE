@@ -18,7 +18,7 @@ wire [2:0]  pc_src, target_addr_adder_mux_sel, alu_selB;
 wire [1:0]  comp_selA, comp_selB, alu_selA, store_rs2_forward;
 wire pc_write, if_id_write, EX_memread, ID_regwrite, ID_memread, ID_memwrite, EX_regwrite, EX_memwrite, MEM_memread, Wrong_prediction, predicted;
 wire MEM_memwrite, MEM_regwrite, WB_memread, WB_memwrite, WB_regwrite, exception_flag, ID_is_oper2_immed, EX_is_oper2_immed; 
-wire ID_is_beq, ID_is_bne, ID_is_jr, EX_is_jr, EX_is_beq, EX_is_bne, ID_is_jal, EX_is_jal, MEM_rd_indzero, WB_rd_indzero;
+wire ID_is_beq, ID_is_bne, ID_is_jr, EX_is_jr, EX_is_beq, EX_is_bne, ID_is_jal, EX_is_jal, ID_is_j, is_branch_and_taken, MEM_rd_indzero, WB_rd_indzero;
 
 wire STALL_IF_FLUSH, STALL_ID_FLUSH;
 wire EXCEP_IF_FLUSH, EXCEP_ID_FLUSH, EXCEP_EX_FLUSH, EXCEP_MEM_FLUSH;
@@ -35,7 +35,7 @@ end
  
 nor hlt_logic(clk, input_clk, hlt);
 
-exception_detect_unit EDU(exception_flag, EXCEP_IF_FLUSH, EXCEP_ID_FLUSH, EXCEP_EX_FLUSH, EXCEP_MEM_FLUSH, clk, rst);
+exception_detect_unit EDU(is_branch_and_taken, ID_is_j, ID_is_jal, ID_PFC_to_IF, EX_PFC_to_IF, exception_flag, EXCEP_IF_FLUSH, EXCEP_ID_FLUSH, EXCEP_EX_FLUSH, EXCEP_MEM_FLUSH, clk, rst);
 
 forwardA FA(EX_opcode, EX_rs1_ind, EX_rs2_ind, MEM_rd_indzero, MEM_rd_ind, MEM_regwrite, WB_rd_indzero, WB_rd_ind, WB_regwrite,
 		 	    alu_selA, clk, EX_is_jal);
@@ -63,7 +63,7 @@ ID_stage id_stage(ID_PC, ID_INST, ID_opcode, EX_opcode, EX_memread, alu_out, for
 	EX_rd_ind, WB_rd_ind,
 	STALL_ID_FLUSH, Wrong_prediction, exception_flag, clk, ID_PFC_to_IF, ID_PFC_to_EX, ID_predicted, ID_rs1, ID_rs2, pc_src,
 	pc_write, if_id_write, STALL_IF_FLUSH, ID_Immed, WB_regwrite, ID_regwrite, ID_memread, ID_memwrite, rst, ID_is_oper2_immed, 
-	ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal);
+	ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal, ID_is_j, is_branch_and_taken);
 
 
 
