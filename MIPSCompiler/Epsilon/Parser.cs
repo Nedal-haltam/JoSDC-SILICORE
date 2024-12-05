@@ -244,10 +244,10 @@ namespace Epsilon
                 stmt.assign = assign;
                 return stmt;
             }   
-            else if (peek(TokenType.Return).HasValue)
+            else if (peek(TokenType.Exit).HasValue)
             {
                 consume();
-                NodeStmtReturn Return = new NodeStmtReturn();
+                NodeStmtExit Return = new NodeStmtExit();
                 NodeExpr? expr = ParseExpr();
                 if (expr.HasValue)
                 {
@@ -255,12 +255,12 @@ namespace Epsilon
                 }
                 else
                 {
-                    ErrorExpected("expression ");
+                    ErrorExpected("expression");
                 }
                 try_consume_err(TokenType.SemiColon);
                 NodeStmt stmt = new NodeStmt();
                 stmt.type = NodeStmt.NodeStmtType.Return;
-                stmt.Return = Return;
+                stmt.Exit = Return;
                 return stmt;
             }
 

@@ -27,7 +27,7 @@ module ID_stage(pc, inst, ID_opcode, EX_opcode, EX_memread, id_haz, ex_haz, mem_
 	REG_FILE reg_file(rs1_ind, rs2_ind, wr_reg_from_wb, wr_reg_data, rs1, rs2, reg_write_from_wb, clk, rst);
 	
 	Immed_Gen_unit immed_gen(inst, ID_opcode, imm);
-	// TODO: choose between the immediate and the rs2 here
+	
 	assign forward_to_B = (is_oper2_immed) ? imm : rs2;
 
 	output wire is_branch_and_taken;

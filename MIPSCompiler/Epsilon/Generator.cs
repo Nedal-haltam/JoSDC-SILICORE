@@ -117,9 +117,9 @@ namespace Epsilon
             m_outputcode.Append($"sw {reg}, x29, {rel_loc}\n");
         }
 
-        void GenStmtReturn(NodeStmtReturn Return)
+        void GenStmtExit(NodeStmtExit Exit)
         {
-            GenExpr(Return.expr);
+            GenExpr(Exit.expr);
             GenPop("x1");
             m_outputcode.Append("HLT");
         }
@@ -135,7 +135,7 @@ namespace Epsilon
             }
             else if (stmt.type == NodeStmt.NodeStmtType.Return)
             {
-                GenStmtReturn(stmt.Return);
+                GenStmtExit(stmt.Exit);
             }
         }
 

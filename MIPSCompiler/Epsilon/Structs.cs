@@ -70,7 +70,7 @@ namespace Epsilon
     //    public NodeScope scope;
     //}
 
-    struct NodeStmtReturn
+    struct NodeStmtExit
     {
         public NodeExpr expr;
     }
@@ -102,7 +102,7 @@ namespace Epsilon
         public NodeStmtType type;
         public NodeStmtDeclare declare;
         public NodeStmtAssign assign;
-        public NodeStmtReturn Return;
+        public NodeStmtExit Exit;
     }
     struct NodeProg
     {

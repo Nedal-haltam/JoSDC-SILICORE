@@ -16,7 +16,7 @@ namespace Epsilon
         // `(` , `)` , `[` , `]` , `,` , (+, -, <, >, &, |, ^, ~|, <<, >>) , `=` , `;` , `\n` (for line increament) , else invalid token
         OpenParen, CloseParen, OpenSquare, CloseSquare, OpenCurly, CloseCurly, Comma, Plus,
         Minus, And, Or, Xor, Nor, Sll, Srl, Equal, SemiColon, NewLine,
-        Int, Ident, For, Iff, Elif, Else, IntLit, Return, fslash, star
+        Int, Ident, For, Iff, Elif, Else, IntLit, Exit, fslash, star
     }
     class Tokenizer
     {
@@ -95,7 +95,7 @@ namespace Epsilon
                     }
                     else if (word == "return")
                     {
-                        tokens.Add(new() { Value = word, Type = TokenType.Return, Line = line });
+                        tokens.Add(new() { Value = word, Type = TokenType.Exit, Line = line });
                     }
                     else // else it is a variables (identifier)
                     {
