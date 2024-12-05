@@ -22,11 +22,12 @@ output [1:0] store_rs2_forward; // the selection lines for the register that is 
 // output reg [1:0] store_rs2_forward; // the selection lines for the register that is going to be stored in the data memory
 
 	
-
-assign store_rs2_forward = (ex_mem_wr && ex_mem_rdzero && ex_mem_rd == id_ex_rs2) ? 2'b01 : 
-(
-	(mem_wb_wr && mem_wb_rdzero && mem_wb_rd == id_ex_rs2) ? 2'b10 : 2'b00
-);
+assign store_rs2_forward[0] = ex_mem_wr && ex_mem_rdzero && ex_mem_rd == id_ex_rs2;
+assign store_rs2_forward[1] = mem_wb_wr && mem_wb_rdzero && mem_wb_rd == id_ex_rs2;
+// assign store_rs2_forward = (ex_mem_wr && ex_mem_rdzero && ex_mem_rd == id_ex_rs2) ? 2'b01 : 
+// (
+// 	(mem_wb_wr && mem_wb_rdzero && mem_wb_rd == id_ex_rs2) ? 2'b10 : 2'b00
+// );
 
 
 // always@(posedge clk) begin

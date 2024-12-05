@@ -3,12 +3,11 @@ module DM(addr , Data_In , Data_Out , WR , clk);
 parameter bit_width = 32;
 input [bit_width - 1:0] addr , Data_In;
 input WR , clk;
-output reg [bit_width - 1:0] Data_Out;
+
+
 reg [bit_width - 1:0] DataMem [1023 : 0];
 
-
-// TODO: replace it with the ram IP block for modelsim simulation and FPGA prototyping
-`ifdef vscode
+output reg [bit_width - 1:0] Data_Out;
 always@ (posedge clk)  
     if (WR == 1'b1)
         DataMem[addr[9:0]] <= Data_In;
@@ -17,7 +16,30 @@ always@ (posedge clk)
 initial begin
 `include "DM_INIT.INIT"
 end
-`endif
+//
+//`ifdef vscode
+//output reg [bit_width - 1:0] Data_Out;
+//always@ (posedge clk)  
+//    if (WR == 1'b1)
+//        DataMem[addr[9:0]] <= Data_In;
+//always@ (posedge clk) 
+//    Data_Out <= DataMem[addr[9:0]];
+//initial begin
+//`include "DM_INIT.INIT"
+//end
+//
+//`else
+//output [bit_width - 1:0] Data_Out;
+//DataMemory_IP DataMemory
+//(
+//	addr[9:0],
+//	clk,
+//	Data_In,
+//	WR,
+//	Data_Out
+//);
+//	
+//`endif
 
 
 `ifdef vscode

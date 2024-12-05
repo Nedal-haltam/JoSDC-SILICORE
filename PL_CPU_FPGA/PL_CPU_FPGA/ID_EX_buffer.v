@@ -2,24 +2,24 @@
 module ID_EX_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 					ID_PC, ID_INST, ID_Immed, ID_rs1, ID_rs2, ID_regwrite,
 					ID_memread, ID_memwrite, clk, ID_FLUSH, ID_PFC, ID_predicted, ID_is_oper2_immed,
-					ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal,
+					ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal, ID_forward_to_B,
 					EX_opcode, EX_rs1_ind,
 					EX_rs2_ind, EX_rd_ind, EX_PC,
 					EX_INST, EX_Immed, EX_rs1,
 					EX_rs2, EX_regwrite, EX_memread, EX_memwrite, EX_PFC, EX_predicted, EX_is_oper2_immed, rst, 
-					EX_is_beq, EX_is_bne, EX_is_jr, EX_is_jal);
+					EX_is_beq, EX_is_bne, EX_is_jr, EX_is_jal, EX_forward_to_B);
 					
 `include "opcodes.txt"
 	
 	input [11:0] ID_opcode;
 	input [4:0] ID_rs1_ind, ID_rs2_ind, ID_rd_ind;
-	input [31:0] ID_PC, ID_INST, ID_Immed, ID_rs1, ID_rs2, ID_PFC;
+	input [31:0] ID_PC, ID_INST, ID_Immed, ID_rs1, ID_rs2, ID_PFC, ID_forward_to_B;
 	input ID_regwrite, ID_memread, ID_memwrite, clk;
 	input ID_FLUSH, rst, ID_predicted, ID_is_oper2_immed, ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal;
 	
 	output reg [11:0] EX_opcode;
 	output reg [4:0] EX_rs1_ind, EX_rs2_ind, EX_rd_ind;
-	output reg [31:0] EX_PC, EX_INST, EX_Immed, EX_rs1, EX_rs2, EX_PFC;
+	output reg [31:0] EX_PC, EX_INST, EX_Immed, EX_rs1, EX_rs2, EX_PFC, EX_forward_to_B;
 	output reg EX_regwrite, EX_memread, EX_memwrite, EX_predicted, EX_is_oper2_immed, 
 			   EX_is_beq, EX_is_bne, EX_is_jr, EX_is_jal;
 	
@@ -27,7 +27,7 @@ module ID_EX_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 		
 	if (rst) begin
 		{EX_opcode, EX_rs1_ind, EX_rs2_ind, EX_rd_ind, EX_PC, EX_INST, EX_Immed, EX_rs1, EX_rs2, EX_regwrite, EX_memread, 
-		EX_memwrite, EX_predicted, EX_is_oper2_immed, EX_is_beq, EX_is_bne, EX_is_jr, EX_is_jal} <= 0;
+		EX_memwrite, EX_predicted, EX_is_oper2_immed, EX_is_beq, EX_is_bne, EX_is_jr, EX_is_jal, EX_forward_to_B} <= 0;
 	end
 	else if (!ID_FLUSH) begin
 		
@@ -50,10 +50,11 @@ module ID_EX_buffer(ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind,
 		EX_is_bne <= ID_is_bne; 
 		EX_is_jr <= ID_is_jr;
 		EX_is_jal <= ID_is_jal;
+		EX_forward_to_B <= ID_forward_to_B;
 		end 
 		else
 		{EX_opcode, EX_rs1_ind, EX_rs2_ind, EX_rd_ind, EX_PC, EX_INST, EX_Immed, EX_rs1, EX_rs2, EX_regwrite, EX_memread, 
-		EX_memwrite, EX_predicted, EX_is_oper2_immed, EX_is_beq, EX_is_bne, EX_is_jr, EX_is_jal} <= 0;
+		EX_memwrite, EX_predicted, EX_is_oper2_immed, EX_is_beq, EX_is_bne, EX_is_jr, EX_is_jal, EX_forward_to_B} <= 0;
 		
 	end
 	

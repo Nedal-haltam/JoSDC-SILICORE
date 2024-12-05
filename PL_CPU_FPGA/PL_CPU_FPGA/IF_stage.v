@@ -17,7 +17,7 @@ MUX_8x1 pc_src_mux(pc_next, handler_addr, ID_PFC, inst_mem_in, EX_PFC, 0, 0, 0, 
 
 PC_register pc_reg(pc_reg_in, inst_mem_in, pc_write, clk, rst); 
 
-IM inst_mem(inst_mem_in , inst);
+IM inst_mem(pc_reg_in, inst_mem_in , inst, clk);
 
 assign pc_next = inst_mem_in + 1'b1;
 	

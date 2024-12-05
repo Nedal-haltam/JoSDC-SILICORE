@@ -18,9 +18,7 @@ input [4:0] ex_mem_rd, mem_wb_rd;
 
 input ex_mem_wr, mem_wb_wr, is_oper2_immed, ex_mem_rdzero, mem_wb_rdzero, clk, is_jal;
 
-output [2:0] forwardB; // the selection lines for the ALU oprands mux
-// output reg [2:0] forwardB; // the selection lines for the ALU oprands mux
-
+output [1:0] forwardB; // the selection lines for the ALU oprands mux
 
 wire exhaz, memhaz;
 assign exhaz = ex_mem_wr && ex_mem_rdzero && ex_mem_rd == id_ex_rs2;
@@ -28,8 +26,7 @@ assign memhaz = mem_wb_wr && mem_wb_rdzero && mem_wb_rd == id_ex_rs2;
 
 // MUX_8x1 alu_oper2(rs2_in, mem_haz, ex_haz, 0, imm, imm, imm, 32'b1, alu_selB, oper2);
 assign forwardB[0] = is_jal || (memhaz && ~exhaz);
-assign forwardB[1] = is_jal ||  exhaz;
-assign forwardB[2] = is_jal ||  is_oper2_immed;
+assign forwardB[1] = (is_jal ||  exhaz) && ~is_oper2_immed;
 
 // always@(posedge clk) begin
 

@@ -16,19 +16,8 @@ set_time_format -unit ns -decimal_places 10
 
 # create_clock -name {input_clk} -period 20.000 -waveform { 0.000 10.000 } [get_ports {input_clk}]
 
-create_clock -name {input_clk} -period 16.0 -waveform { 0.000 11.5 } [get_ports {input_clk}]
+create_clock -name {input_clk} -period 15.45 -waveform { 0.000 10.7 } [get_ports {input_clk}]
 
 
-# create_clock -name {input_clk} -period 15.2 -waveform { 0.000 10.511 } [get_ports {input_clk}]
-# Fmax = 67.63
-# setup slack: +0.159
+#create_clock -name {input_clk} -period 15.9 -waveform { 0.000 11.3 } [get_ports {input_clk}]
 
-
-
-# create_clock -name {input_clk} -period 15.4 -waveform { 0.000 10.311 } [get_ports {input_clk}]
-# Fmax = 66.93
-# setup slack: +0.307
-
-# create_clock -name {input_clk} -period 15.6 -waveform { 0.000 10.111 } [get_ports {input_clk}]
-# Fmax = 65.33
-# setup slack : +0.191
