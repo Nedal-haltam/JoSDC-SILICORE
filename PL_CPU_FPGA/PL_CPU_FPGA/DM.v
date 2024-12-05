@@ -5,7 +5,9 @@ input [bit_width - 1:0] addr , Data_In;
 input WR , clk;
 
 
-reg [bit_width - 1:0] DataMem [1023 : 0];
+
+
+`ifdef vscode
 
 output reg [bit_width - 1:0] Data_Out;
 always@ (posedge clk)  
@@ -16,30 +18,20 @@ always@ (posedge clk)
 initial begin
 `include "DM_INIT.INIT"
 end
-//
-//`ifdef vscode
-//output reg [bit_width - 1:0] Data_Out;
-//always@ (posedge clk)  
-//    if (WR == 1'b1)
-//        DataMem[addr[9:0]] <= Data_In;
-//always@ (posedge clk) 
-//    Data_Out <= DataMem[addr[9:0]];
-//initial begin
-//`include "DM_INIT.INIT"
-//end
-//
-//`else
-//output [bit_width - 1:0] Data_Out;
-//DataMemory_IP DataMemory
-//(
-//	addr[9:0],
-//	clk,
-//	Data_In,
-//	WR,
-//	Data_Out
-//);
-//	
-//`endif
+
+`else
+
+output [bit_width - 1:0] Data_Out;
+DataMemory_IP DataMemory
+(
+	addr[9:0],
+	clk,
+	Data_In,
+	WR,
+	Data_Out
+);
+	
+`endif
 
 
 `ifdef vscode

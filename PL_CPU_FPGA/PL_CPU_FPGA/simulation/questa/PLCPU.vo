@@ -17,7 +17,7 @@
 // PROGRAM "Quartus Prime"
 // VERSION "Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition"
 
-// DATE "12/05/2024 18:32:14"
+// DATE "12/05/2024 18:48:35"
 
 // 
 // Device: Altera EP4CE115F29C7 Package FBGA780
@@ -4328,16 +4328,15 @@ wire \cycles_consumed[30]~reg0_q ;
 wire \cycles_consumed[30]~90 ;
 wire \cycles_consumed[31]~91_combout ;
 wire \cycles_consumed[31]~reg0_q ;
+wire [4:0] \mem_wb_buffer|WB_rd_ind ;
 wire [3:0] \ex_stage|alu_oper|ALU_OP ;
 wire [31:0] \id_ex_buffer|EX_forward_to_B ;
 wire [31:0] \if_stage|pc_reg|DataOut ;
 wire [31:0] \ex_mem_buffer|MEM_rs2 ;
-wire [31:0] \ex_stage|alu_oper2|sel0|out ;
 wire [31:0] \mem_wb_buffer|WB_Data_mem_out ;
 wire [11:0] \if_id_buffer|ID_opcode ;
 wire [4:0] \id_ex_buffer|EX_rs1_ind ;
 wire [1:0] \id_stage|BR|BPU|state ;
-wire [4:0] \mem_wb_buffer|WB_rd_ind ;
 wire [4:0] \ex_mem_buffer|MEM_rd_ind ;
 wire [31:0] \id_ex_buffer|EX_PC ;
 wire [31:0] \mem_wb_buffer|WB_ALU_OUT ;
@@ -4345,6 +4344,7 @@ wire [31:0] \id_ex_buffer|EX_rs1 ;
 wire [31:0] \ex_mem_buffer|MEM_ALU_OUT ;
 wire [4:0] \id_ex_buffer|EX_rs2_ind ;
 wire [1:0] \FB|forwardB ;
+wire [31:0] \ex_stage|alu_oper2|sel0|out ;
 wire [31:0] \ex_stage|alu_oper2|out ;
 wire [31:0] \if_id_buffer|ID_INST ;
 wire [31:0] \if_id_buffer|ID_PC ;
@@ -4359,46 +4359,46 @@ wire [11:0] \ex_mem_buffer|MEM_opcode ;
 wire [31:0] \id_ex_buffer|EX_rs2 ;
 wire [31:0] \ex_stage|alu|res ;
 
-wire [8:0] \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0_PORTADATAOUT_bus ;
-wire [8:0] \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9_PORTADATAOUT_bus ;
-wire [8:0] \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18_PORTADATAOUT_bus ;
-wire [8:0] \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24_PORTADATAOUT_bus ;
+wire [8:0] \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0_PORTADATAOUT_bus ;
+wire [8:0] \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9_PORTADATAOUT_bus ;
+wire [8:0] \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18_PORTADATAOUT_bus ;
+wire [8:0] \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24_PORTADATAOUT_bus ;
 
-assign \mem_wb_buffer|WB_Data_mem_out [0] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0_PORTADATAOUT_bus [0];
-assign \mem_wb_buffer|WB_Data_mem_out [1] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0_PORTADATAOUT_bus [1];
-assign \mem_wb_buffer|WB_Data_mem_out [2] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0_PORTADATAOUT_bus [2];
-assign \mem_wb_buffer|WB_Data_mem_out [3] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0_PORTADATAOUT_bus [3];
-assign \mem_wb_buffer|WB_Data_mem_out [4] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0_PORTADATAOUT_bus [4];
-assign \mem_wb_buffer|WB_Data_mem_out [5] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0_PORTADATAOUT_bus [5];
-assign \mem_wb_buffer|WB_Data_mem_out [6] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0_PORTADATAOUT_bus [6];
-assign \mem_wb_buffer|WB_Data_mem_out [7] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0_PORTADATAOUT_bus [7];
-assign \mem_wb_buffer|WB_Data_mem_out [8] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0_PORTADATAOUT_bus [8];
+assign \mem_wb_buffer|WB_Data_mem_out [0] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0_PORTADATAOUT_bus [0];
+assign \mem_wb_buffer|WB_Data_mem_out [1] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0_PORTADATAOUT_bus [1];
+assign \mem_wb_buffer|WB_Data_mem_out [2] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0_PORTADATAOUT_bus [2];
+assign \mem_wb_buffer|WB_Data_mem_out [3] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0_PORTADATAOUT_bus [3];
+assign \mem_wb_buffer|WB_Data_mem_out [4] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0_PORTADATAOUT_bus [4];
+assign \mem_wb_buffer|WB_Data_mem_out [5] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0_PORTADATAOUT_bus [5];
+assign \mem_wb_buffer|WB_Data_mem_out [6] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0_PORTADATAOUT_bus [6];
+assign \mem_wb_buffer|WB_Data_mem_out [7] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0_PORTADATAOUT_bus [7];
+assign \mem_wb_buffer|WB_Data_mem_out [8] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0_PORTADATAOUT_bus [8];
 
-assign \mem_wb_buffer|WB_Data_mem_out [9] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9_PORTADATAOUT_bus [0];
-assign \mem_wb_buffer|WB_Data_mem_out [10] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9_PORTADATAOUT_bus [1];
-assign \mem_wb_buffer|WB_Data_mem_out [11] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9_PORTADATAOUT_bus [2];
-assign \mem_wb_buffer|WB_Data_mem_out [12] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9_PORTADATAOUT_bus [3];
-assign \mem_wb_buffer|WB_Data_mem_out [13] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9_PORTADATAOUT_bus [4];
-assign \mem_wb_buffer|WB_Data_mem_out [14] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9_PORTADATAOUT_bus [5];
-assign \mem_wb_buffer|WB_Data_mem_out [15] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9_PORTADATAOUT_bus [6];
-assign \mem_wb_buffer|WB_Data_mem_out [16] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9_PORTADATAOUT_bus [7];
-assign \mem_wb_buffer|WB_Data_mem_out [17] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9_PORTADATAOUT_bus [8];
+assign \mem_wb_buffer|WB_Data_mem_out [9] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9_PORTADATAOUT_bus [0];
+assign \mem_wb_buffer|WB_Data_mem_out [10] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9_PORTADATAOUT_bus [1];
+assign \mem_wb_buffer|WB_Data_mem_out [11] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9_PORTADATAOUT_bus [2];
+assign \mem_wb_buffer|WB_Data_mem_out [12] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9_PORTADATAOUT_bus [3];
+assign \mem_wb_buffer|WB_Data_mem_out [13] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9_PORTADATAOUT_bus [4];
+assign \mem_wb_buffer|WB_Data_mem_out [14] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9_PORTADATAOUT_bus [5];
+assign \mem_wb_buffer|WB_Data_mem_out [15] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9_PORTADATAOUT_bus [6];
+assign \mem_wb_buffer|WB_Data_mem_out [16] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9_PORTADATAOUT_bus [7];
+assign \mem_wb_buffer|WB_Data_mem_out [17] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9_PORTADATAOUT_bus [8];
 
-assign \mem_wb_buffer|WB_Data_mem_out [18] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18_PORTADATAOUT_bus [0];
-assign \mem_wb_buffer|WB_Data_mem_out [19] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18_PORTADATAOUT_bus [1];
-assign \mem_wb_buffer|WB_Data_mem_out [20] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18_PORTADATAOUT_bus [2];
-assign \mem_wb_buffer|WB_Data_mem_out [21] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18_PORTADATAOUT_bus [3];
-assign \mem_wb_buffer|WB_Data_mem_out [22] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18_PORTADATAOUT_bus [4];
-assign \mem_wb_buffer|WB_Data_mem_out [23] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18_PORTADATAOUT_bus [5];
-assign \mem_wb_buffer|WB_Data_mem_out [26] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18_PORTADATAOUT_bus [6];
-assign \mem_wb_buffer|WB_Data_mem_out [27] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18_PORTADATAOUT_bus [7];
-assign \mem_wb_buffer|WB_Data_mem_out [28] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18_PORTADATAOUT_bus [8];
+assign \mem_wb_buffer|WB_Data_mem_out [18] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18_PORTADATAOUT_bus [0];
+assign \mem_wb_buffer|WB_Data_mem_out [19] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18_PORTADATAOUT_bus [1];
+assign \mem_wb_buffer|WB_Data_mem_out [20] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18_PORTADATAOUT_bus [2];
+assign \mem_wb_buffer|WB_Data_mem_out [21] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18_PORTADATAOUT_bus [3];
+assign \mem_wb_buffer|WB_Data_mem_out [22] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18_PORTADATAOUT_bus [4];
+assign \mem_wb_buffer|WB_Data_mem_out [23] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18_PORTADATAOUT_bus [5];
+assign \mem_wb_buffer|WB_Data_mem_out [26] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18_PORTADATAOUT_bus [6];
+assign \mem_wb_buffer|WB_Data_mem_out [27] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18_PORTADATAOUT_bus [7];
+assign \mem_wb_buffer|WB_Data_mem_out [28] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18_PORTADATAOUT_bus [8];
 
-assign \mem_wb_buffer|WB_Data_mem_out [24] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24_PORTADATAOUT_bus [0];
-assign \mem_wb_buffer|WB_Data_mem_out [25] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24_PORTADATAOUT_bus [1];
-assign \mem_wb_buffer|WB_Data_mem_out [29] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24_PORTADATAOUT_bus [2];
-assign \mem_wb_buffer|WB_Data_mem_out [30] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24_PORTADATAOUT_bus [3];
-assign \mem_wb_buffer|WB_Data_mem_out [31] = \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24_PORTADATAOUT_bus [4];
+assign \mem_wb_buffer|WB_Data_mem_out [24] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24_PORTADATAOUT_bus [0];
+assign \mem_wb_buffer|WB_Data_mem_out [25] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24_PORTADATAOUT_bus [1];
+assign \mem_wb_buffer|WB_Data_mem_out [29] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24_PORTADATAOUT_bus [2];
+assign \mem_wb_buffer|WB_Data_mem_out [30] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24_PORTADATAOUT_bus [3];
+assign \mem_wb_buffer|WB_Data_mem_out [31] = \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24_PORTADATAOUT_bus [4];
 
 hard_block auto_generated_inst(
 	.devpor(devpor),
@@ -45754,7 +45754,7 @@ defparam \ex_mem_buffer|MEM_rs2[28] .power_up = "low";
 // synopsys translate_on
 
 // Location: M9K_X37_Y12_N0
-cycloneive_ram_block \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 (
+cycloneive_ram_block \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 (
 	.portawe(\ex_mem_buffer|MEM_memwrite~q ),
 	.portare(vcc),
 	.portaaddrstall(gnd),
@@ -45778,35 +45778,35 @@ cycloneive_ram_block \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1
 	.portbbyteenamasks(1'b1),
 	.devclrn(devclrn),
 	.devpor(devpor),
-	.portadataout(\mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18_PORTADATAOUT_bus ),
+	.portadataout(\mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18_PORTADATAOUT_bus ),
 	.portbdataout());
 // synopsys translate_off
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .data_interleave_offset_in_bits = 1;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .data_interleave_width_in_bits = 1;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .init_file = "db/PLCPU.ram0_DM_89a.hdl.mif";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .init_file_layout = "port_a";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .logical_ram_name = "MEM_stage:mem_stage|DM:data_mem|altsyncram:DataMem_rtl_0|altsyncram_a2c1:auto_generated|ALTSYNCRAM";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .operation_mode = "single_port";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_a_address_clear = "none";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_a_address_width = 10;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_a_byte_enable_clock = "none";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_a_data_out_clear = "none";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_a_data_out_clock = "clock1";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_a_data_width = 9;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_a_first_address = 0;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_a_first_bit_number = 18;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_a_last_address = 1023;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_a_logical_ram_depth = 1024;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_a_logical_ram_width = 32;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_a_read_during_write_mode = "old_data";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_b_address_width = 10;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .port_b_data_width = 9;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .ram_block_type = "M9K";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .mem_init4 = 1024'h0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .mem_init3 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .mem_init2 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .mem_init1 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a18 .mem_init0 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .data_interleave_offset_in_bits = 1;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .data_interleave_width_in_bits = 1;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .init_file = "DataMem_MIF.mif";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .init_file_layout = "port_a";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .logical_ram_name = "MEM_stage:mem_stage|DM:data_mem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component|altsyncram_mmk1:auto_generated|ALTSYNCRAM";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .operation_mode = "single_port";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_a_address_clear = "none";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_a_address_width = 10;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_a_byte_enable_clock = "none";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_a_data_out_clear = "none";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_a_data_out_clock = "clock1";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_a_data_width = 9;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_a_first_address = 0;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_a_first_bit_number = 18;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_a_last_address = 1023;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_a_logical_ram_depth = 1024;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_a_logical_ram_width = 32;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_a_read_during_write_mode = "new_data_with_nbe_read";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_b_address_width = 10;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .port_b_data_width = 9;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .ram_block_type = "M9K";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .mem_init4 = 1024'h0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .mem_init3 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .mem_init2 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .mem_init1 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a18 .mem_init0 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 // synopsys translate_on
 
 // Location: LCCOMB_X38_Y13_N24
@@ -53544,7 +53544,7 @@ defparam \ex_mem_buffer|MEM_rs2[31] .power_up = "low";
 // synopsys translate_on
 
 // Location: M9K_X37_Y11_N0
-cycloneive_ram_block \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 (
+cycloneive_ram_block \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 (
 	.portawe(\ex_mem_buffer|MEM_memwrite~q ),
 	.portare(vcc),
 	.portaaddrstall(gnd),
@@ -53568,35 +53568,35 @@ cycloneive_ram_block \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1
 	.portbbyteenamasks(1'b1),
 	.devclrn(devclrn),
 	.devpor(devpor),
-	.portadataout(\mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24_PORTADATAOUT_bus ),
+	.portadataout(\mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24_PORTADATAOUT_bus ),
 	.portbdataout());
 // synopsys translate_off
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .data_interleave_offset_in_bits = 1;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .data_interleave_width_in_bits = 1;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .init_file = "db/PLCPU.ram0_DM_89a.hdl.mif";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .init_file_layout = "port_a";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .logical_ram_name = "MEM_stage:mem_stage|DM:data_mem|altsyncram:DataMem_rtl_0|altsyncram_a2c1:auto_generated|ALTSYNCRAM";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .operation_mode = "single_port";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_a_address_clear = "none";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_a_address_width = 10;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_a_byte_enable_clock = "none";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_a_data_out_clear = "none";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_a_data_out_clock = "clock1";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_a_data_width = 9;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_a_first_address = 0;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_a_first_bit_number = 24;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_a_last_address = 1023;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_a_logical_ram_depth = 1024;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_a_logical_ram_width = 32;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_a_read_during_write_mode = "old_data";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_b_address_width = 10;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .port_b_data_width = 9;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .ram_block_type = "M9K";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .mem_init4 = 1024'h0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .mem_init3 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .mem_init2 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .mem_init1 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a24 .mem_init0 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .data_interleave_offset_in_bits = 1;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .data_interleave_width_in_bits = 1;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .init_file = "DataMem_MIF.mif";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .init_file_layout = "port_a";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .logical_ram_name = "MEM_stage:mem_stage|DM:data_mem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component|altsyncram_mmk1:auto_generated|ALTSYNCRAM";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .operation_mode = "single_port";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_a_address_clear = "none";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_a_address_width = 10;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_a_byte_enable_clock = "none";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_a_data_out_clear = "none";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_a_data_out_clock = "clock1";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_a_data_width = 9;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_a_first_address = 0;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_a_first_bit_number = 24;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_a_last_address = 1023;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_a_logical_ram_depth = 1024;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_a_logical_ram_width = 32;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_a_read_during_write_mode = "new_data_with_nbe_read";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_b_address_width = 10;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .port_b_data_width = 9;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .ram_block_type = "M9K";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .mem_init4 = 1024'h0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .mem_init3 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .mem_init2 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .mem_init1 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a24 .mem_init0 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 // synopsys translate_on
 
 // Location: LCCOMB_X39_Y11_N2
@@ -59982,7 +59982,7 @@ defparam \ex_mem_buffer|MEM_rs2[17] .power_up = "low";
 // synopsys translate_on
 
 // Location: M9K_X37_Y14_N0
-cycloneive_ram_block \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 (
+cycloneive_ram_block \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 (
 	.portawe(\ex_mem_buffer|MEM_memwrite~q ),
 	.portare(vcc),
 	.portaaddrstall(gnd),
@@ -60006,35 +60006,35 @@ cycloneive_ram_block \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1
 	.portbbyteenamasks(1'b1),
 	.devclrn(devclrn),
 	.devpor(devpor),
-	.portadataout(\mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9_PORTADATAOUT_bus ),
+	.portadataout(\mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9_PORTADATAOUT_bus ),
 	.portbdataout());
 // synopsys translate_off
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .data_interleave_offset_in_bits = 1;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .data_interleave_width_in_bits = 1;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .init_file = "db/PLCPU.ram0_DM_89a.hdl.mif";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .init_file_layout = "port_a";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .logical_ram_name = "MEM_stage:mem_stage|DM:data_mem|altsyncram:DataMem_rtl_0|altsyncram_a2c1:auto_generated|ALTSYNCRAM";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .operation_mode = "single_port";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_a_address_clear = "none";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_a_address_width = 10;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_a_byte_enable_clock = "none";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_a_data_out_clear = "none";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_a_data_out_clock = "clock1";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_a_data_width = 9;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_a_first_address = 0;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_a_first_bit_number = 9;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_a_last_address = 1023;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_a_logical_ram_depth = 1024;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_a_logical_ram_width = 32;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_a_read_during_write_mode = "old_data";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_b_address_width = 10;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .port_b_data_width = 9;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .ram_block_type = "M9K";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .mem_init4 = 1024'h0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .mem_init3 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .mem_init2 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .mem_init1 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a9 .mem_init0 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .data_interleave_offset_in_bits = 1;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .data_interleave_width_in_bits = 1;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .init_file = "DataMem_MIF.mif";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .init_file_layout = "port_a";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .logical_ram_name = "MEM_stage:mem_stage|DM:data_mem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component|altsyncram_mmk1:auto_generated|ALTSYNCRAM";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .operation_mode = "single_port";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_a_address_clear = "none";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_a_address_width = 10;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_a_byte_enable_clock = "none";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_a_data_out_clear = "none";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_a_data_out_clock = "clock1";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_a_data_width = 9;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_a_first_address = 0;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_a_first_bit_number = 9;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_a_last_address = 1023;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_a_logical_ram_depth = 1024;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_a_logical_ram_width = 32;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_a_read_during_write_mode = "new_data_with_nbe_read";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_b_address_width = 10;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .port_b_data_width = 9;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .ram_block_type = "M9K";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .mem_init4 = 1024'h0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .mem_init3 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .mem_init2 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .mem_init1 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a9 .mem_init0 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 // synopsys translate_on
 
 // Location: LCCOMB_X41_Y10_N12
@@ -73560,7 +73560,7 @@ defparam \ex_mem_buffer|MEM_rs2[8] .power_up = "low";
 // synopsys translate_on
 
 // Location: M9K_X37_Y13_N0
-cycloneive_ram_block \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 (
+cycloneive_ram_block \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 (
 	.portawe(\ex_mem_buffer|MEM_memwrite~q ),
 	.portare(vcc),
 	.portaaddrstall(gnd),
@@ -73584,35 +73584,35 @@ cycloneive_ram_block \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1
 	.portbbyteenamasks(1'b1),
 	.devclrn(devclrn),
 	.devpor(devpor),
-	.portadataout(\mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0_PORTADATAOUT_bus ),
+	.portadataout(\mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0_PORTADATAOUT_bus ),
 	.portbdataout());
 // synopsys translate_off
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .data_interleave_offset_in_bits = 1;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .data_interleave_width_in_bits = 1;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .init_file = "db/PLCPU.ram0_DM_89a.hdl.mif";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .init_file_layout = "port_a";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .logical_ram_name = "MEM_stage:mem_stage|DM:data_mem|altsyncram:DataMem_rtl_0|altsyncram_a2c1:auto_generated|ALTSYNCRAM";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .operation_mode = "single_port";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_a_address_clear = "none";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_a_address_width = 10;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_a_byte_enable_clock = "none";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_a_data_out_clear = "none";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_a_data_out_clock = "clock1";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_a_data_width = 9;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_a_first_address = 0;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_a_first_bit_number = 0;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_a_last_address = 1023;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_a_logical_ram_depth = 1024;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_a_logical_ram_width = 32;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_a_read_during_write_mode = "old_data";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_b_address_width = 10;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .port_b_data_width = 9;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .ram_block_type = "M9K";
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .mem_init4 = 1024'h0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .mem_init3 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .mem_init2 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .mem_init1 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-defparam \mem_stage|data_mem|DataMem_rtl_0|auto_generated|ram_block1a0 .mem_init0 = 2048'h0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000F67B3D9ECF67B3D9ECF67B;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .data_interleave_offset_in_bits = 1;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .data_interleave_width_in_bits = 1;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .init_file = "DataMem_MIF.mif";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .init_file_layout = "port_a";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .logical_ram_name = "MEM_stage:mem_stage|DM:data_mem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component|altsyncram_mmk1:auto_generated|ALTSYNCRAM";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .operation_mode = "single_port";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_a_address_clear = "none";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_a_address_width = 10;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_a_byte_enable_clock = "none";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_a_data_out_clear = "none";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_a_data_out_clock = "clock1";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_a_data_width = 9;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_a_first_address = 0;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_a_first_bit_number = 0;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_a_last_address = 1023;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_a_logical_ram_depth = 1024;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_a_logical_ram_width = 32;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_a_read_during_write_mode = "new_data_with_nbe_read";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_b_address_width = 10;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .port_b_data_width = 9;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .ram_block_type = "M9K";
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .mem_init4 = 1024'h0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .mem_init3 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .mem_init2 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .mem_init1 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+defparam \mem_stage|data_mem|DataMemory|altsyncram_component|auto_generated|ram_block1a0 .mem_init0 = 2048'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 // synopsys translate_on
 
 // Location: LCCOMB_X38_Y13_N16
