@@ -6,9 +6,9 @@ input WR , clk;
 
 
 
-
 `ifdef vscode
 
+reg [31:0] DataMem [0:1023];
 output reg [bit_width - 1:0] Data_Out;
 always@ (posedge clk)  
     if (WR == 1'b1)

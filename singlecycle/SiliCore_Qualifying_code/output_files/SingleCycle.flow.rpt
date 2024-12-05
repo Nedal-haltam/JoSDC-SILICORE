@@ -1,5 +1,5 @@
 Flow report for SingleCycle
-Sun Nov 17 11:28:24 2024
+Thu Dec  5 19:29:08 2024
 Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
 
 
@@ -41,24 +41,24 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------------+
 ; Flow Summary                                                                        ;
 +------------------------------------+------------------------------------------------+
-; Flow Status                        ; Successful - Sun Nov 17 11:28:24 2024          ;
+; Flow Status                        ; Successful - Thu Dec  5 19:29:08 2024          ;
 ; Quartus Prime Version              ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
 ; Revision Name                      ; SingleCycle                                    ;
-; Top-level Entity Name              ; SingleCycle_sim                                ;
+; Top-level Entity Name              ; processor                                      ;
 ; Family                             ; MAX 10                                         ;
 ; Device                             ; 10M50DAF484C7G                                 ;
 ; Timing Models                      ; Final                                          ;
-; Total logic elements               ; N/A until Partition Merge                      ;
-;     Total combinational functions  ; N/A until Partition Merge                      ;
-;     Dedicated logic registers      ; N/A until Partition Merge                      ;
-; Total registers                    ; N/A until Partition Merge                      ;
-; Total pins                         ; N/A until Partition Merge                      ;
-; Total virtual pins                 ; N/A until Partition Merge                      ;
-; Total memory bits                  ; N/A until Partition Merge                      ;
-; Embedded Multiplier 9-bit elements ; N/A until Partition Merge                      ;
-; Total PLLs                         ; N/A until Partition Merge                      ;
-; UFM blocks                         ; N/A until Partition Merge                      ;
-; ADC blocks                         ; N/A until Partition Merge                      ;
+; Total logic elements               ; 2,694 / 49,760 ( 5 % )                         ;
+;     Total combinational functions  ; 2,526 / 49,760 ( 5 % )                         ;
+;     Dedicated logic registers      ; 1,056 / 49,760 ( 2 % )                         ;
+; Total registers                    ; 1056                                           ;
+; Total pins                         ; 259 / 360 ( 72 % )                             ;
+; Total virtual pins                 ; 0                                              ;
+; Total memory bits                  ; 32,768 / 1,677,312 ( 2 % )                     ;
+; Embedded Multiplier 9-bit elements ; 0 / 288 ( 0 % )                                ;
+; Total PLLs                         ; 0 / 4 ( 0 % )                                  ;
+; UFM blocks                         ; 0 / 1 ( 0 % )                                  ;
+; ADC blocks                         ; 0 / 2 ( 0 % )                                  ;
 +------------------------------------+------------------------------------------------+
 
 
@@ -67,72 +67,81 @@ https://fpgasoftware.intel.com/eula.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 11/17/2024 11:28:15 ;
+; Start date & time ; 12/05/2024 19:26:56 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; SingleCycle         ;
 +-------------------+---------------------+
 
 
-+-----------------------------------------------------------------------------------------------------------------------------------+
-; Flow Non-Default Global Settings                                                                                                  ;
-+--------------------------------------+----------------------------------------+---------------+-----------------+-----------------+
-; Assignment Name                      ; Value                                  ; Default Value ; Entity Name     ; Section Id      ;
-+--------------------------------------+----------------------------------------+---------------+-----------------+-----------------+
-; COMPILER_SIGNATURE_ID                ; 92384138571169.173183209512664         ; --            ; --              ; --              ;
-; EDA_DESIGN_INSTANCE_NAME             ; NA                                     ; --            ; --              ; SingleCycle_sim ;
-; EDA_NATIVELINK_SIMULATION_TEST_BENCH ; SingleCycle_sim                        ; --            ; --              ; eda_simulation  ;
-; EDA_OUTPUT_DATA_FORMAT               ; Verilog Hdl                            ; --            ; --              ; eda_simulation  ;
-; EDA_SIMULATION_TOOL                  ; Questa Intel FPGA (Verilog)            ; <None>        ; --              ; --              ;
-; EDA_TEST_BENCH_ENABLE_STATUS         ; TEST_BENCH_MODE                        ; --            ; --              ; eda_simulation  ;
-; EDA_TEST_BENCH_FILE                  ; SingleCycle_sim.v                      ; --            ; --              ; SingleCycle_sim ;
-; EDA_TEST_BENCH_MODULE_NAME           ; SingleCycle_sim                        ; --            ; --              ; SingleCycle_sim ;
-; EDA_TEST_BENCH_NAME                  ; SingleCycle_sim                        ; --            ; --              ; eda_simulation  ;
-; EDA_TIME_SCALE                       ; 1 ps                                   ; --            ; --              ; eda_simulation  ;
-; MAX_CORE_JUNCTION_TEMP               ; 85                                     ; --            ; --              ; --              ;
-; MIN_CORE_JUNCTION_TEMP               ; 0                                      ; --            ; --              ; --              ;
-; MISC_FILE                            ; instructionMemory_inst.v               ; --            ; --              ; --              ;
-; MISC_FILE                            ; instructionMemory_bb.v                 ; --            ; --              ; --              ;
-; MISC_FILE                            ; dataMemory_inst.v                      ; --            ; --              ; --              ;
-; MISC_FILE                            ; dataMemory_bb.v                        ; --            ; --              ; --              ;
-; NUM_PARALLEL_PROCESSORS              ; All                                    ; --            ; --              ; --              ;
-; OUTPUT_IO_TIMING_FAR_END_VMEAS       ; Half Signal Swing                      ; --            ; --              ; --              ;
-; OUTPUT_IO_TIMING_FAR_END_VMEAS       ; Half Signal Swing                      ; --            ; --              ; --              ;
-; OUTPUT_IO_TIMING_NEAR_END_VMEAS      ; Half Vccio                             ; --            ; --              ; --              ;
-; OUTPUT_IO_TIMING_NEAR_END_VMEAS      ; Half Vccio                             ; --            ; --              ; --              ;
-; PARTITION_COLOR                      ; -- (Not supported for targeted family) ; --            ; SingleCycle_sim ; Top             ;
-; PARTITION_FITTER_PRESERVATION_LEVEL  ; -- (Not supported for targeted family) ; --            ; SingleCycle_sim ; Top             ;
-; PARTITION_NETLIST_TYPE               ; -- (Not supported for targeted family) ; --            ; SingleCycle_sim ; Top             ;
-; POWER_BOARD_THERMAL_MODEL            ; None (CONSERVATIVE)                    ; --            ; --              ; --              ;
-; POWER_PRESET_COOLING_SOLUTION        ; 23 MM HEAT SINK WITH 200 LFPM AIRFLOW  ; --            ; --              ; --              ;
-; PROJECT_OUTPUT_DIRECTORY             ; output_files                           ; --            ; --              ; --              ;
-; TOP_LEVEL_ENTITY                     ; SingleCycle_sim                        ; SingleCycle   ; --              ; --              ;
-; USE_GENERATED_PHYSICAL_CONSTRAINTS   ; Off                                    ; --            ; --              ; eda_blast_fpga  ;
-+--------------------------------------+----------------------------------------+---------------+-----------------+-----------------+
++-------------------------------------------------------------------------------------------------------------------------------+
+; Flow Non-Default Global Settings                                                                                              ;
++--------------------------------------+----------------------------------------+---------------+-------------+-----------------+
+; Assignment Name                      ; Value                                  ; Default Value ; Entity Name ; Section Id      ;
++--------------------------------------+----------------------------------------+---------------+-------------+-----------------+
+; COMPILER_SIGNATURE_ID                ; 92384138571169.173341601614708         ; --            ; --          ; --              ;
+; EDA_DESIGN_INSTANCE_NAME             ; NA                                     ; --            ; --          ; SingleCycle_sim ;
+; EDA_NATIVELINK_SIMULATION_TEST_BENCH ; SingleCycle_sim                        ; --            ; --          ; eda_simulation  ;
+; EDA_OUTPUT_DATA_FORMAT               ; Verilog Hdl                            ; --            ; --          ; eda_simulation  ;
+; EDA_SIMULATION_TOOL                  ; Questa Intel FPGA (Verilog)            ; <None>        ; --          ; --              ;
+; EDA_TEST_BENCH_ENABLE_STATUS         ; TEST_BENCH_MODE                        ; --            ; --          ; eda_simulation  ;
+; EDA_TEST_BENCH_FILE                  ; SingleCycle_sim.v                      ; --            ; --          ; SingleCycle_sim ;
+; EDA_TEST_BENCH_MODULE_NAME           ; SingleCycle_sim                        ; --            ; --          ; SingleCycle_sim ;
+; EDA_TEST_BENCH_NAME                  ; SingleCycle_sim                        ; --            ; --          ; eda_simulation  ;
+; EDA_TIME_SCALE                       ; 1 ps                                   ; --            ; --          ; eda_simulation  ;
+; MAX_CORE_JUNCTION_TEMP               ; 85                                     ; --            ; --          ; --              ;
+; MIN_CORE_JUNCTION_TEMP               ; 0                                      ; --            ; --          ; --              ;
+; MISC_FILE                            ; DataMemory_IP_bb.v                     ; --            ; --          ; --              ;
+; NUM_PARALLEL_PROCESSORS              ; All                                    ; --            ; --          ; --              ;
+; OUTPUT_IO_TIMING_FAR_END_VMEAS       ; Half Signal Swing                      ; --            ; --          ; --              ;
+; OUTPUT_IO_TIMING_FAR_END_VMEAS       ; Half Signal Swing                      ; --            ; --          ; --              ;
+; OUTPUT_IO_TIMING_NEAR_END_VMEAS      ; Half Vccio                             ; --            ; --          ; --              ;
+; OUTPUT_IO_TIMING_NEAR_END_VMEAS      ; Half Vccio                             ; --            ; --          ; --              ;
+; PARTITION_COLOR                      ; -- (Not supported for targeted family) ; --            ; processor   ; Top             ;
+; PARTITION_FITTER_PRESERVATION_LEVEL  ; -- (Not supported for targeted family) ; --            ; processor   ; Top             ;
+; PARTITION_NETLIST_TYPE               ; -- (Not supported for targeted family) ; --            ; processor   ; Top             ;
+; POWER_BOARD_THERMAL_MODEL            ; None (CONSERVATIVE)                    ; --            ; --          ; --              ;
+; POWER_PRESET_COOLING_SOLUTION        ; 23 MM HEAT SINK WITH 200 LFPM AIRFLOW  ; --            ; --          ; --              ;
+; PROJECT_OUTPUT_DIRECTORY             ; output_files                           ; --            ; --          ; --              ;
+; TOP_LEVEL_ENTITY                     ; processor                              ; SingleCycle   ; --          ; --              ;
+; USE_GENERATED_PHYSICAL_CONSTRAINTS   ; Off                                    ; --            ; --          ; eda_blast_fpga  ;
++--------------------------------------+----------------------------------------+---------------+-------------+-----------------+
 
 
-+----------------------------------------------------------------------------------------------------------------------------+
-; Flow Elapsed Time                                                                                                          ;
-+------------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Module Name            ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
-+------------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Elaboration ; 00:00:09     ; 1.0                     ; 4743 MB             ; 00:00:14                           ;
-; Total                  ; 00:00:09     ; --                      ; --                  ; 00:00:14                           ;
-+------------------------+--------------+-------------------------+---------------------+------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------+
+; Flow Elapsed Time                                                                                                        ;
++----------------------+--------------+-------------------------+---------------------+------------------------------------+
+; Module Name          ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
++----------------------+--------------+-------------------------+---------------------+------------------------------------+
+; Analysis & Synthesis ; 00:00:17     ; 1.0                     ; 4832 MB             ; 00:00:28                           ;
+; Fitter               ; 00:01:42     ; 1.1                     ; 5781 MB             ; 00:02:11                           ;
+; Assembler            ; 00:00:03     ; 1.0                     ; 4819 MB             ; 00:00:03                           ;
+; Timing Analyzer      ; 00:00:05     ; 2.0                     ; 4951 MB             ; 00:00:10                           ;
+; EDA Netlist Writer   ; 00:00:00     ; 1.0                     ; 4688 MB             ; 00:00:01                           ;
+; Total                ; 00:02:07     ; --                      ; --                  ; 00:02:53                           ;
++----------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
-+--------------------------------------------------------------------------------------+
-; Flow OS Summary                                                                      ;
-+------------------------+------------------+------------+------------+----------------+
-; Module Name            ; Machine Hostname ; OS Name    ; OS Version ; Processor type ;
-+------------------------+------------------+------------+------------+----------------+
-; Analysis & Elaboration ; DESKTOP-E5177QH  ; Windows 10 ; 10.0       ; x86_64         ;
-+------------------------+------------------+------------+------------+----------------+
++------------------------------------------------------------------------------------+
+; Flow OS Summary                                                                    ;
++----------------------+------------------+------------+------------+----------------+
+; Module Name          ; Machine Hostname ; OS Name    ; OS Version ; Processor type ;
++----------------------+------------------+------------+------------+----------------+
+; Analysis & Synthesis ; DESKTOP-E5177QH  ; Windows 10 ; 10.0       ; x86_64         ;
+; Fitter               ; DESKTOP-E5177QH  ; Windows 10 ; 10.0       ; x86_64         ;
+; Assembler            ; DESKTOP-E5177QH  ; Windows 10 ; 10.0       ; x86_64         ;
+; Timing Analyzer      ; DESKTOP-E5177QH  ; Windows 10 ; 10.0       ; x86_64         ;
+; EDA Netlist Writer   ; DESKTOP-E5177QH  ; Windows 10 ; 10.0       ; x86_64         ;
++----------------------+------------------+------------+------------+----------------+
 
 
 ------------
 ; Flow Log ;
 ------------
-quartus_map --read_settings_files=on --write_settings_files=off SingleCycle -c SingleCycle --analysis_and_elaboration
+quartus_map --read_settings_files=on --write_settings_files=off SingleCycle -c SingleCycle
+quartus_fit --read_settings_files=off --write_settings_files=off SingleCycle -c SingleCycle
+quartus_asm --read_settings_files=off --write_settings_files=off SingleCycle -c SingleCycle
+quartus_sta SingleCycle -c SingleCycle
+quartus_eda --read_settings_files=off --write_settings_files=off SingleCycle -c SingleCycle
 
 
 
