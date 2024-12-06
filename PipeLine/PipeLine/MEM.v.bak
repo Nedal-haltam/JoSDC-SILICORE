@@ -1,0 +1,70 @@
+
+
+module MEM(addr , Data_In , Data_Out , WR , clk, func3);//
+
+input [31:0] addr , Data_In;
+input [2:0] func3;
+input WR , clk;
+output reg [31:0] Data_Out;
+
+  reg [7:0] data_mem [8191: 0];
+
+  always@ (*) begin
+    
+    if (func3 == 3'b000) begin
+      
+      Data_Out[7:0]   = data_mem[addr + 0];
+      Data_Out[15:8]  = data_mem[addr + 1];
+      Data_Out[23:16] = data_mem[addr + 2];
+      Data_Out[31:24] = data_mem[addr + 3];
+      
+    // $display("%d , mem[addr + 0] : %h = Data_In[7 :0 ] : %h",addr,data_mem[addr + 0], Data_In[7:0]);
+    // $display("%d , mem[addr + 1] : %h = Data_In[15:8 ] : %h",addr,data_mem[addr + 1], Data_In[15:8]);
+    // $display("%d , mem[addr + 2] : %h = Data_In[23:16] : %h",addr,data_mem[addr + 2], Data_In[23:16]);
+    // $display("%d , mem[addr + 3] : %h = Data_In[31:24] : %h",addr,data_mem[addr + 3], Data_In[31:24]);
+
+    end
+      	
+    
+    else if (func3 == 3'b010)
+      Data_Out <= { {24{data_mem[addr][7]}} , data_mem[addr]};
+    
+    else begin
+      
+      Data_Out[7:0]   = data_mem[addr + 0];
+      
+    end
+    
+  end
+    
+
+   
+  always@ (posedge clk)  
+    if (WR == 1'b1) begin
+      
+      if (func3 == 3'b000) begin
+        
+      data_mem[addr + 0] = Data_In[7:0];
+      data_mem[addr + 1] = Data_In[15:8];
+      data_mem[addr + 2] = Data_In[23:16];
+      data_mem[addr + 3] = Data_In[31:24];
+        
+   //   $display("%d , mem[addr + 0] : %h = Data_In[7 :0 ] : %h",addr,data_mem[addr + 0], Data_In[7:0]);
+   //   $display("%d , mem[addr + 1] : %h = Data_In[15:8 ] : %h",addr,data_mem[addr + 1], Data_In[15:8]);
+   //   $display("%d , mem[addr + 2] : %h = Data_In[23:16] : %h",addr,data_mem[addr + 2], Data_In[23:16]);
+   //   $display("%d , mem[addr + 3] : %h = Data_In[31:24] : %h",addr,data_mem[addr + 3], Data_In[31:24]);
+        
+        
+        
+      end
+      
+      else if (func3 == 3'b010) begin
+        
+      data_mem[addr + 0] <= Data_In[7:0];
+        
+      end
+      
+    end
+    	
+      
+endmodule

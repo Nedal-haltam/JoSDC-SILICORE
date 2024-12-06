@@ -1,0 +1,30 @@
+
+module Immed_Gen_unit(Inst, Immed);
+	
+	input [31:0] Inst;
+	
+	output reg [31:0] Immed;
+	
+	
+	always@(*) begin
+		
+		if (Inst[6:0] == 7'h38) // if it is U-format -> LUI
+			Immed <= {Inst[31:12] , 12'd0};
+			
+		else if (Inst[6:0] == 7'h6f) // if it is UJ-format -> jal then we sign extend it and shift left once
+            Immed <= {{11{Inst[31]}}, Inst[31:12] , 1'b0};
+		
+		else if (Inst[6:0] == 7'h23) // if it is S-format
+			Immed <= {{20{Inst[31]}}, Inst[31:25], Inst[11:7]};
+		
+		else if (Inst[6:0] == 7'h63) // if it is SB-format
+            Immed <= {{18{Inst[31]}},  Inst[31:25], Inst[11:7], 2'b0};
+		
+		else if (Inst[6:0] == 7'h1b) // it is an I-format
+			Immed <= {{20{Inst[31]}}, Inst[31:20]}; // signe extend
+		
+		else // it is an I-format and logical instruciton
+            Immed <= {20'b0, Inst[31:20]}; 
+	end
+	
+endmodule

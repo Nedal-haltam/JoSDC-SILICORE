@@ -117,12 +117,12 @@ RunBenchMark_HW()
     vvp $VERILOG_SC > $VERILOG_SC_OUT
 
     printf "[INFO]: simulating on pipeline hardware\n"
-    BASE_PATH="../PL_CPU_FPGA/PL_CPU_FPGA/"
+    BASE_PATH="../PipeLine/PipeLine/"
     VERILOG_EXT_PL="VERILOG_PL.vvp"
     VERILOG_EXT_PL_OUT="VERILOG_PL_OUT.txt"
     VERILOG_PL=$ProgFolder""$VERILOG_EXT_PL
     VERILOG_PL_OUT=$ProgFolder""$VERILOG_EXT_PL_OUT
-    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_PL -D vscode -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" $BASE_PATH"PL_CPU_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_PL -D vscode -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" $BASE_PATH"PipeLine_sim.v"
     vvp $VERILOG_PL > $VERILOG_PL_OUT
 
 

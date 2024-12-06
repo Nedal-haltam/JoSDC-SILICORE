@@ -1,0 +1,63 @@
+
+
+module ALU(A, B, res, ZF, CF, ALUOP);
+
+parameter BW = 32; // BIT WIDTH
+input [31:0] A,B;
+input [3:0] ALUOP;
+output reg [31:0] res;
+output reg ZF, CF;
+  
+  // ALUOP -> OP 
+  // 0000   -> add
+  // 0001   -> sub
+  // 0010   -> and
+  // 0011   -> or
+  // 0100   -> xor
+  // 0101   -> shift left here we shift A, B times
+  // 0110   -> shift right
+  // 0111   -> set less than
+  // 1000	-> LUI -> res = 0 + the second operand (rs2) which is the immed in the LUI case
+  always @(*) begin
+
+case (ALUOP)
+
+    4'b0000: begin
+    {CF , res} = A + B;
+    end
+    4'b0001: begin
+    {CF , res} = A - B;
+    end   
+    4'b0010: begin
+    {CF , res} = A & B;
+    end   
+    4'b0011: begin
+    {CF , res} = A | B;
+    end   
+    4'b0100: begin
+    {CF , res} = A ^ B;
+    end
+    4'b0101: begin // I shift A (B times)
+    // if B (the shift amount) is greater than 64(BW) we let it zero else we take the last bit shifted to the left of A
+    CF = (B > BW) ? 0 : CF&(B == 0) | (A[BW - B])&(B != 0);
+    res = A << B;
+    end
+    4'b0110: begin
+      // when shifting to the right I let the carry equal to the last bit shifted to the right (opposite of shift left)
+    CF = (B > BW) ? 0 : CF&(B == 0) | (A[B - 1])&(B != 0);
+    res = A >> B;
+    end
+  	4'b0111: begin
+    res = ($signed(A) < $signed(B)) ? 32'd1 : 32'd0;
+    CF = 1'b0;
+    end
+	4'b1000: begin
+	res = B;
+	CF = 1'b0;
+	end
+endcase
+    // the zero flag is high if and only if all bits are low so I did an or gate first (as a reduction operator) 
+    // and then invert it
+    ZF = ~|res;
+end
+endmodule

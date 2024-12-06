@@ -1,0 +1,61 @@
+
+module control_unit(Op_Code, funct3,  RegWrite, MemRead, MemWrite, BEQ, BNE, hlt);
+
+    input [6:0] 	Op_Code;
+	input [2:0]		funct3;
+  // First 6 bits of the instructions these 6-bits determine what happens in EXE, MEM, WB stages by the use of control signals (funct is used to diffrentiate between R-type instructions)
+		
+//	output reg			RegDst; 									// 0 register destination will be rt (source register 2), 1 register destination will be rd
+	output reg			RegWrite; 								// 0 don't write to register, 1 write to register (R-type or Load)
+								// 0 ALU B comes from register file, 1 ALU B comes from Immediate Extended (Load, store)
+	output reg			MemRead; 								//	1 for load only as all other instructions dont have permission to read from data memory
+	output reg			MemWrite; 								//	1 for store only as all other instructions dont have permission to write to data memory
+									//	00 write data from  ALU to register (R-Type), 01 write data from data memory to register (Load), 10 write PC_next on register file (Jal)
+	output reg			BEQ, BNE;		//	1 for branches to change PC reigster to equal PC + offset else PC = PC + 1
+//	output reg 			Jump;										// 1 for unconditional jumps , 0 otherwise
+									//	00 for load/store, 01 branch, 10 for R-type, for R-Type Funct field is used to determine desired ALU action
+	
+	output reg hlt; // this signal is to stop the clk from runing 
+	
+	
+  always @(Op_Code or funct3) begin
+		{RegWrite, MemRead, MemWrite, BEQ, BNE, hlt} <= 0; //By Default all Control Signals are equal to zero
+		
+		case (Op_Code)
+			7'h33: begin	// R-type
+             RegWrite <= 1;
+            end
+          
+          7'h1B: RegWrite <= 1; // AddI
+          
+          7'h13: RegWrite <= 1;   // AndI ORI
+          
+          7'h63: begin
+            case (funct3)
+             3'h1: BEQ <= 1;	//BEQ
+             3'h0: BNE <= 1;	//BNE
+            endcase
+          end
+          
+          7'h6F: RegWrite <= 1;	// JAL
+            
+          7'h67: RegWrite <= 1; // JALR
+          
+          7'h03: begin		// lb lw
+            MemRead <= 1; 
+            RegWrite <= 1;
+         		 end
+          
+          7'h38: RegWrite <= 1;	// LUI
+          
+          7'h23: MemWrite <= 1; // sw sb
+		   
+		  7'h7f: hlt <= 1'b1; // hlt instruction
+                    
+        endcase		
+// 		if(control_MUX_select == 1'b1) begin
+// 			{RegDst, RegWrite, ALUSrc, MemRead, MemWrite, MemtoReg, ALUOp, BEQ, BNE, BLT, BGT, BLE, BGE, Jump} <= 0;
+// 		end
+	end	
+	
+endmodule

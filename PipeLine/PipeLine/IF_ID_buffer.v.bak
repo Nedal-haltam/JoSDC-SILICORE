@@ -1,0 +1,68 @@
+module IF_ID_buffer(IF_PC, IF_INST, IF_FLUSH, if_id_Write, clk,
+					ID_opcode, ID_func7, ID_func3,
+					ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_PC, ID_INST);
+
+	input [31:0] IF_PC, IF_INST;
+	input IF_FLUSH, if_id_Write, clk;
+	
+	// in this buffer we want to break down the instruction into valid little pieces that can be used in the next stages
+	output reg [6:0] ID_opcode, ID_func7;
+	output reg [2:0] ID_func3;
+	output reg [4:0] ID_rs1_ind, ID_rs2_ind, ID_rd_ind;
+	output reg [31:0] ID_PC, ID_INST;
+
+always @ (negedge clk) begin
+	
+	if (if_id_Write) begin
+		
+		// we flush only whenever there is an exception
+		if (!IF_FLUSH) begin
+			
+			ID_opcode  <= IF_INST[6:0];
+			ID_func3  <= IF_INST[14:12];
+			ID_func7 <= IF_INST[31:25]; 
+			ID_INST <= IF_INST;
+			ID_PC  <= IF_PC;
+			
+			// we will force the unused places to be zero
+			
+			// if the instruction is U or UJ we don't consider rs1 from the begining
+			if (IF_INST[6:0] == 7'h6f || IF_INST[6:0] == 7'h38)
+				ID_rs1_ind <= 0;
+			else
+				ID_rs1_ind <= IF_INST[19:15];
+				 
+			// if the instruction is U or UJ or I-type we don't consider rs2 from the begining
+			if (IF_INST[6:0] == 7'h38 || IF_INST[6:0] == 7'h67 || IF_INST[6:0] == 7'h6f || IF_INST[6:0] == 7'h03 || IF_INST[6:0] == 7'h1b || IF_INST[6:0] == 7'h13)
+				ID_rs2_ind <= 0;
+			else
+				ID_rs2_ind <= IF_INST[24:20];
+				
+				
+			// if the instruction is S or SB we don't consider rd from the begining			
+			if (IF_INST[6:0] == 7'h23 || IF_INST[6:0] == 7'h63)
+				ID_rd_ind <= 0;
+			else
+				ID_rd_ind <= IF_INST[11:7];
+			
+		end
+			
+		else begin
+		
+			ID_opcode     <= 0;
+			ID_rs1_ind   <= 0;
+			ID_rs2_ind  <= 0;
+			ID_rd_ind  <= 0;
+			ID_func3  <= 0;
+			ID_func7 <= 0;
+			ID_INST <= 0;
+			ID_PC  <= 0;
+			
+		end
+		
+	end	
+
+	
+end
+
+endmodule
