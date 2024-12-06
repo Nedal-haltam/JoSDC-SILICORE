@@ -113,7 +113,7 @@ RunBenchMark_HW()
     VERILOG_EXT_SC_OUT="VERILOG_SC_OUT.txt"
     VERILOG_SC=$ProgFolder""$VERILOG_EXT_SC
     VERILOG_SC_OUT=$ProgFolder""$VERILOG_EXT_SC_OUT
-    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SC -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" $BASE_PATH"SingleCycle_vscode_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SC -D vscode -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" $BASE_PATH"SingleCycle_sim.v"
     vvp $VERILOG_SC > $VERILOG_SC_OUT
 
     printf "[INFO]: simulating on pipeline hardware\n"
@@ -122,7 +122,7 @@ RunBenchMark_HW()
     VERILOG_EXT_PL_OUT="VERILOG_PL_OUT.txt"
     VERILOG_PL=$ProgFolder""$VERILOG_EXT_PL
     VERILOG_PL_OUT=$ProgFolder""$VERILOG_EXT_PL_OUT
-    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_PL -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" $BASE_PATH"PL_CPU_vscode_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_PL -D vscode -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" $BASE_PATH"PL_CPU_sim.v"
     vvp $VERILOG_PL > $VERILOG_PL_OUT
 
 

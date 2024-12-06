@@ -1,20 +1,11 @@
 module registerFile (clk, rst, we, 
 					 readRegister1, readRegister2, writeRegister,
-					 writeData, readData1, readData2, regs0, regs1, regs2, regs3, regs4, regs5);
+					 writeData, readData1, readData2);
 	// inputs
 	input wire clk, rst, we;
 	input wire [4:0] readRegister1, readRegister2, writeRegister;
 	input wire [31:0] writeData;
 	
-
-	
-	
-	output [31 : 0] regs0;
-	output [31 : 0] regs1;
-	output [31 : 0] regs2;
-	output [31 : 0] regs3;
-	output [31 : 0] regs4;
-	output [31 : 0] regs5;
 	// outputs
 	output wire [31:0] readData1, readData2;
 	
@@ -43,15 +34,6 @@ module registerFile (clk, rst, we,
 		
 	end
 
-	
-	
-	assign regs0 = registers[1];
-	assign regs1 = registers[2];
-	assign regs2 = registers[3];
-	assign regs3 = registers[4];
-	assign regs4 = registers[5];
-	assign regs5 = registers[6];
-	
 	
 	
 `ifdef vscode

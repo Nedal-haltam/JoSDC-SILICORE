@@ -1,7 +1,7 @@
 
 // module processor(clk, rst, PC);
 
-module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, cycles_consumed, clk);
+module processor(input_clk, rst, PC, cycles_consumed, clk);
 
 	`include "opcodes.txt"
 	parameter handler_addr = 32'd1000;
@@ -20,13 +20,6 @@ module processor(input_clk, rst, PC, regs0, regs1, regs2, regs3, regs4, regs5, c
 	wire [3:0] ALUOp;
 	wire RegDst, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, zero, hlt, excep_flag;
 	wire [1:0] PCsrc;
-	
-	output [31 : 0] regs0;
-	output [31 : 0] regs1;
-	output [31 : 0] regs2;
-	output [31 : 0] regs3;
-	output [31 : 0] regs4;
-	output [31 : 0] regs5;	
 	
 	
 	assign opcode  = (~rst) ? 0 : instruction[31:26];
@@ -83,8 +76,7 @@ mux2x1 #(5) RFMux(.in1(rt), .in2(rd), .s(RegDst), .out(WriteRegister));
 	
 registerFile RF(.clk(clk), .rst(rst), .we(RegWriteEn), 					
 			    .readRegister1(rs), .readRegister2(rt), .writeRegister(WriteRegister),
-			    .writeData(writeData), .readData1(readData1), .readData2(readData2),.regs0(regs0), .regs1(regs1), 
-				.regs2(regs2), .regs3(regs3), .regs4(regs4), .regs5(regs5));
+			    .writeData(writeData), .readData1(readData1), .readData2(readData2));
 
 
 assign extImm = (opcode == andi || opcode == ori || opcode == xori) ? {16'd0, imm} : {{16{imm[15]}}, imm};

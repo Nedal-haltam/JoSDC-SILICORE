@@ -9,12 +9,13 @@ vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecyc
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/ALU.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/programCounter.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/mux2x1.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/instructionMemory.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/dataMemory.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/opcodes.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/controlUnit.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/DataMemory_IP.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/dm.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/processor.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/controlUnit.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/branchcontroller.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/im.v}
 
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code {D:/GitHub Repos/JoSDC-SSOOO-CPU/singlecycle/SiliCore_Qualifying_code/SingleCycle_sim.v}
 

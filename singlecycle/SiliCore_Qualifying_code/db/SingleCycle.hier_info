@@ -1,266 +1,77 @@
-|processor
+|SingleCycle_sim
+
+
+|SingleCycle_sim|processor:cpu
 input_clk => hlt_logic.IN1
 rst => rst.IN4
-PC[0] << PC[0].DB_MAX_OUTPUT_PORT_TYPE
-PC[1] << PC[1].DB_MAX_OUTPUT_PORT_TYPE
-PC[2] << PC[2].DB_MAX_OUTPUT_PORT_TYPE
-PC[3] << PC[3].DB_MAX_OUTPUT_PORT_TYPE
-PC[4] << PC[4].DB_MAX_OUTPUT_PORT_TYPE
-PC[5] << PC[5].DB_MAX_OUTPUT_PORT_TYPE
-PC[6] << PC[6].DB_MAX_OUTPUT_PORT_TYPE
-PC[7] << PC[7].DB_MAX_OUTPUT_PORT_TYPE
-PC[8] << PC[8].DB_MAX_OUTPUT_PORT_TYPE
-PC[9] << PC[9].DB_MAX_OUTPUT_PORT_TYPE
-PC[10] << PC[10].DB_MAX_OUTPUT_PORT_TYPE
-PC[11] << PC[11].DB_MAX_OUTPUT_PORT_TYPE
-PC[12] << PC[12].DB_MAX_OUTPUT_PORT_TYPE
-PC[13] << PC[13].DB_MAX_OUTPUT_PORT_TYPE
-PC[14] << PC[14].DB_MAX_OUTPUT_PORT_TYPE
-PC[15] << PC[15].DB_MAX_OUTPUT_PORT_TYPE
-PC[16] << PC[16].DB_MAX_OUTPUT_PORT_TYPE
-PC[17] << PC[17].DB_MAX_OUTPUT_PORT_TYPE
-PC[18] << PC[18].DB_MAX_OUTPUT_PORT_TYPE
-PC[19] << PC[19].DB_MAX_OUTPUT_PORT_TYPE
-PC[20] << PC[20].DB_MAX_OUTPUT_PORT_TYPE
-PC[21] << PC[21].DB_MAX_OUTPUT_PORT_TYPE
-PC[22] << PC[22].DB_MAX_OUTPUT_PORT_TYPE
-PC[23] << PC[23].DB_MAX_OUTPUT_PORT_TYPE
-PC[24] << PC[24].DB_MAX_OUTPUT_PORT_TYPE
-PC[25] << PC[25].DB_MAX_OUTPUT_PORT_TYPE
-PC[26] << PC[26].DB_MAX_OUTPUT_PORT_TYPE
-PC[27] << PC[27].DB_MAX_OUTPUT_PORT_TYPE
-PC[28] << PC[28].DB_MAX_OUTPUT_PORT_TYPE
-PC[29] << PC[29].DB_MAX_OUTPUT_PORT_TYPE
-PC[30] << PC[30].DB_MAX_OUTPUT_PORT_TYPE
-PC[31] << PC[31].DB_MAX_OUTPUT_PORT_TYPE
-regs0[0] << registerFile:RF.regs0
-regs0[1] << registerFile:RF.regs0
-regs0[2] << registerFile:RF.regs0
-regs0[3] << registerFile:RF.regs0
-regs0[4] << registerFile:RF.regs0
-regs0[5] << registerFile:RF.regs0
-regs0[6] << registerFile:RF.regs0
-regs0[7] << registerFile:RF.regs0
-regs0[8] << registerFile:RF.regs0
-regs0[9] << registerFile:RF.regs0
-regs0[10] << registerFile:RF.regs0
-regs0[11] << registerFile:RF.regs0
-regs0[12] << registerFile:RF.regs0
-regs0[13] << registerFile:RF.regs0
-regs0[14] << registerFile:RF.regs0
-regs0[15] << registerFile:RF.regs0
-regs0[16] << registerFile:RF.regs0
-regs0[17] << registerFile:RF.regs0
-regs0[18] << registerFile:RF.regs0
-regs0[19] << registerFile:RF.regs0
-regs0[20] << registerFile:RF.regs0
-regs0[21] << registerFile:RF.regs0
-regs0[22] << registerFile:RF.regs0
-regs0[23] << registerFile:RF.regs0
-regs0[24] << registerFile:RF.regs0
-regs0[25] << registerFile:RF.regs0
-regs0[26] << registerFile:RF.regs0
-regs0[27] << registerFile:RF.regs0
-regs0[28] << registerFile:RF.regs0
-regs0[29] << registerFile:RF.regs0
-regs0[30] << registerFile:RF.regs0
-regs0[31] << registerFile:RF.regs0
-regs1[0] << registerFile:RF.regs1
-regs1[1] << registerFile:RF.regs1
-regs1[2] << registerFile:RF.regs1
-regs1[3] << registerFile:RF.regs1
-regs1[4] << registerFile:RF.regs1
-regs1[5] << registerFile:RF.regs1
-regs1[6] << registerFile:RF.regs1
-regs1[7] << registerFile:RF.regs1
-regs1[8] << registerFile:RF.regs1
-regs1[9] << registerFile:RF.regs1
-regs1[10] << registerFile:RF.regs1
-regs1[11] << registerFile:RF.regs1
-regs1[12] << registerFile:RF.regs1
-regs1[13] << registerFile:RF.regs1
-regs1[14] << registerFile:RF.regs1
-regs1[15] << registerFile:RF.regs1
-regs1[16] << registerFile:RF.regs1
-regs1[17] << registerFile:RF.regs1
-regs1[18] << registerFile:RF.regs1
-regs1[19] << registerFile:RF.regs1
-regs1[20] << registerFile:RF.regs1
-regs1[21] << registerFile:RF.regs1
-regs1[22] << registerFile:RF.regs1
-regs1[23] << registerFile:RF.regs1
-regs1[24] << registerFile:RF.regs1
-regs1[25] << registerFile:RF.regs1
-regs1[26] << registerFile:RF.regs1
-regs1[27] << registerFile:RF.regs1
-regs1[28] << registerFile:RF.regs1
-regs1[29] << registerFile:RF.regs1
-regs1[30] << registerFile:RF.regs1
-regs1[31] << registerFile:RF.regs1
-regs2[0] << registerFile:RF.regs2
-regs2[1] << registerFile:RF.regs2
-regs2[2] << registerFile:RF.regs2
-regs2[3] << registerFile:RF.regs2
-regs2[4] << registerFile:RF.regs2
-regs2[5] << registerFile:RF.regs2
-regs2[6] << registerFile:RF.regs2
-regs2[7] << registerFile:RF.regs2
-regs2[8] << registerFile:RF.regs2
-regs2[9] << registerFile:RF.regs2
-regs2[10] << registerFile:RF.regs2
-regs2[11] << registerFile:RF.regs2
-regs2[12] << registerFile:RF.regs2
-regs2[13] << registerFile:RF.regs2
-regs2[14] << registerFile:RF.regs2
-regs2[15] << registerFile:RF.regs2
-regs2[16] << registerFile:RF.regs2
-regs2[17] << registerFile:RF.regs2
-regs2[18] << registerFile:RF.regs2
-regs2[19] << registerFile:RF.regs2
-regs2[20] << registerFile:RF.regs2
-regs2[21] << registerFile:RF.regs2
-regs2[22] << registerFile:RF.regs2
-regs2[23] << registerFile:RF.regs2
-regs2[24] << registerFile:RF.regs2
-regs2[25] << registerFile:RF.regs2
-regs2[26] << registerFile:RF.regs2
-regs2[27] << registerFile:RF.regs2
-regs2[28] << registerFile:RF.regs2
-regs2[29] << registerFile:RF.regs2
-regs2[30] << registerFile:RF.regs2
-regs2[31] << registerFile:RF.regs2
-regs3[0] << registerFile:RF.regs3
-regs3[1] << registerFile:RF.regs3
-regs3[2] << registerFile:RF.regs3
-regs3[3] << registerFile:RF.regs3
-regs3[4] << registerFile:RF.regs3
-regs3[5] << registerFile:RF.regs3
-regs3[6] << registerFile:RF.regs3
-regs3[7] << registerFile:RF.regs3
-regs3[8] << registerFile:RF.regs3
-regs3[9] << registerFile:RF.regs3
-regs3[10] << registerFile:RF.regs3
-regs3[11] << registerFile:RF.regs3
-regs3[12] << registerFile:RF.regs3
-regs3[13] << registerFile:RF.regs3
-regs3[14] << registerFile:RF.regs3
-regs3[15] << registerFile:RF.regs3
-regs3[16] << registerFile:RF.regs3
-regs3[17] << registerFile:RF.regs3
-regs3[18] << registerFile:RF.regs3
-regs3[19] << registerFile:RF.regs3
-regs3[20] << registerFile:RF.regs3
-regs3[21] << registerFile:RF.regs3
-regs3[22] << registerFile:RF.regs3
-regs3[23] << registerFile:RF.regs3
-regs3[24] << registerFile:RF.regs3
-regs3[25] << registerFile:RF.regs3
-regs3[26] << registerFile:RF.regs3
-regs3[27] << registerFile:RF.regs3
-regs3[28] << registerFile:RF.regs3
-regs3[29] << registerFile:RF.regs3
-regs3[30] << registerFile:RF.regs3
-regs3[31] << registerFile:RF.regs3
-regs4[0] << registerFile:RF.regs4
-regs4[1] << registerFile:RF.regs4
-regs4[2] << registerFile:RF.regs4
-regs4[3] << registerFile:RF.regs4
-regs4[4] << registerFile:RF.regs4
-regs4[5] << registerFile:RF.regs4
-regs4[6] << registerFile:RF.regs4
-regs4[7] << registerFile:RF.regs4
-regs4[8] << registerFile:RF.regs4
-regs4[9] << registerFile:RF.regs4
-regs4[10] << registerFile:RF.regs4
-regs4[11] << registerFile:RF.regs4
-regs4[12] << registerFile:RF.regs4
-regs4[13] << registerFile:RF.regs4
-regs4[14] << registerFile:RF.regs4
-regs4[15] << registerFile:RF.regs4
-regs4[16] << registerFile:RF.regs4
-regs4[17] << registerFile:RF.regs4
-regs4[18] << registerFile:RF.regs4
-regs4[19] << registerFile:RF.regs4
-regs4[20] << registerFile:RF.regs4
-regs4[21] << registerFile:RF.regs4
-regs4[22] << registerFile:RF.regs4
-regs4[23] << registerFile:RF.regs4
-regs4[24] << registerFile:RF.regs4
-regs4[25] << registerFile:RF.regs4
-regs4[26] << registerFile:RF.regs4
-regs4[27] << registerFile:RF.regs4
-regs4[28] << registerFile:RF.regs4
-regs4[29] << registerFile:RF.regs4
-regs4[30] << registerFile:RF.regs4
-regs4[31] << registerFile:RF.regs4
-regs5[0] << registerFile:RF.regs5
-regs5[1] << registerFile:RF.regs5
-regs5[2] << registerFile:RF.regs5
-regs5[3] << registerFile:RF.regs5
-regs5[4] << registerFile:RF.regs5
-regs5[5] << registerFile:RF.regs5
-regs5[6] << registerFile:RF.regs5
-regs5[7] << registerFile:RF.regs5
-regs5[8] << registerFile:RF.regs5
-regs5[9] << registerFile:RF.regs5
-regs5[10] << registerFile:RF.regs5
-regs5[11] << registerFile:RF.regs5
-regs5[12] << registerFile:RF.regs5
-regs5[13] << registerFile:RF.regs5
-regs5[14] << registerFile:RF.regs5
-regs5[15] << registerFile:RF.regs5
-regs5[16] << registerFile:RF.regs5
-regs5[17] << registerFile:RF.regs5
-regs5[18] << registerFile:RF.regs5
-regs5[19] << registerFile:RF.regs5
-regs5[20] << registerFile:RF.regs5
-regs5[21] << registerFile:RF.regs5
-regs5[22] << registerFile:RF.regs5
-regs5[23] << registerFile:RF.regs5
-regs5[24] << registerFile:RF.regs5
-regs5[25] << registerFile:RF.regs5
-regs5[26] << registerFile:RF.regs5
-regs5[27] << registerFile:RF.regs5
-regs5[28] << registerFile:RF.regs5
-regs5[29] << registerFile:RF.regs5
-regs5[30] << registerFile:RF.regs5
-regs5[31] << registerFile:RF.regs5
-cycles_consumed[0] << cycles_consumed[0]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[1] << cycles_consumed[1]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[2] << cycles_consumed[2]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[3] << cycles_consumed[3]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[4] << cycles_consumed[4]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[5] << cycles_consumed[5]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[6] << cycles_consumed[6]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[7] << cycles_consumed[7]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[8] << cycles_consumed[8]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[9] << cycles_consumed[9]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[10] << cycles_consumed[10]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[11] << cycles_consumed[11]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[12] << cycles_consumed[12]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[13] << cycles_consumed[13]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[14] << cycles_consumed[14]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[15] << cycles_consumed[15]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[16] << cycles_consumed[16]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[17] << cycles_consumed[17]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[18] << cycles_consumed[18]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[19] << cycles_consumed[19]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[20] << cycles_consumed[20]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[21] << cycles_consumed[21]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[22] << cycles_consumed[22]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[23] << cycles_consumed[23]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[24] << cycles_consumed[24]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[25] << cycles_consumed[25]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[26] << cycles_consumed[26]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[27] << cycles_consumed[27]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[28] << cycles_consumed[28]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[29] << cycles_consumed[29]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[30] << cycles_consumed[30]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-cycles_consumed[31] << cycles_consumed[31]~reg0.DB_MAX_OUTPUT_PORT_TYPE
-clk << clk.DB_MAX_OUTPUT_PORT_TYPE
+PC[0] <= PC[0].DB_MAX_OUTPUT_PORT_TYPE
+PC[1] <= PC[1].DB_MAX_OUTPUT_PORT_TYPE
+PC[2] <= PC[2].DB_MAX_OUTPUT_PORT_TYPE
+PC[3] <= PC[3].DB_MAX_OUTPUT_PORT_TYPE
+PC[4] <= PC[4].DB_MAX_OUTPUT_PORT_TYPE
+PC[5] <= PC[5].DB_MAX_OUTPUT_PORT_TYPE
+PC[6] <= PC[6].DB_MAX_OUTPUT_PORT_TYPE
+PC[7] <= PC[7].DB_MAX_OUTPUT_PORT_TYPE
+PC[8] <= PC[8].DB_MAX_OUTPUT_PORT_TYPE
+PC[9] <= PC[9].DB_MAX_OUTPUT_PORT_TYPE
+PC[10] <= PC[10].DB_MAX_OUTPUT_PORT_TYPE
+PC[11] <= PC[11].DB_MAX_OUTPUT_PORT_TYPE
+PC[12] <= PC[12].DB_MAX_OUTPUT_PORT_TYPE
+PC[13] <= PC[13].DB_MAX_OUTPUT_PORT_TYPE
+PC[14] <= PC[14].DB_MAX_OUTPUT_PORT_TYPE
+PC[15] <= PC[15].DB_MAX_OUTPUT_PORT_TYPE
+PC[16] <= PC[16].DB_MAX_OUTPUT_PORT_TYPE
+PC[17] <= PC[17].DB_MAX_OUTPUT_PORT_TYPE
+PC[18] <= PC[18].DB_MAX_OUTPUT_PORT_TYPE
+PC[19] <= PC[19].DB_MAX_OUTPUT_PORT_TYPE
+PC[20] <= PC[20].DB_MAX_OUTPUT_PORT_TYPE
+PC[21] <= PC[21].DB_MAX_OUTPUT_PORT_TYPE
+PC[22] <= PC[22].DB_MAX_OUTPUT_PORT_TYPE
+PC[23] <= PC[23].DB_MAX_OUTPUT_PORT_TYPE
+PC[24] <= PC[24].DB_MAX_OUTPUT_PORT_TYPE
+PC[25] <= PC[25].DB_MAX_OUTPUT_PORT_TYPE
+PC[26] <= PC[26].DB_MAX_OUTPUT_PORT_TYPE
+PC[27] <= PC[27].DB_MAX_OUTPUT_PORT_TYPE
+PC[28] <= PC[28].DB_MAX_OUTPUT_PORT_TYPE
+PC[29] <= PC[29].DB_MAX_OUTPUT_PORT_TYPE
+PC[30] <= PC[30].DB_MAX_OUTPUT_PORT_TYPE
+PC[31] <= PC[31].DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[0] <= cycles_consumed[0]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[1] <= cycles_consumed[1]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[2] <= cycles_consumed[2]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[3] <= cycles_consumed[3]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[4] <= cycles_consumed[4]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[5] <= cycles_consumed[5]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[6] <= cycles_consumed[6]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[7] <= cycles_consumed[7]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[8] <= cycles_consumed[8]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[9] <= cycles_consumed[9]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[10] <= cycles_consumed[10]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[11] <= cycles_consumed[11]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[12] <= cycles_consumed[12]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[13] <= cycles_consumed[13]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[14] <= cycles_consumed[14]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[15] <= cycles_consumed[15]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[16] <= cycles_consumed[16]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[17] <= cycles_consumed[17]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[18] <= cycles_consumed[18]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[19] <= cycles_consumed[19]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[20] <= cycles_consumed[20]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[21] <= cycles_consumed[21]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[22] <= cycles_consumed[22]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[23] <= cycles_consumed[23]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[24] <= cycles_consumed[24]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[25] <= cycles_consumed[25]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[26] <= cycles_consumed[26]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[27] <= cycles_consumed[27]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[28] <= cycles_consumed[28]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[29] <= cycles_consumed[29]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[30] <= cycles_consumed[30]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cycles_consumed[31] <= cycles_consumed[31]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+clk <= clk.DB_MAX_OUTPUT_PORT_TYPE
 
 
-|processor|BranchController:branchcontroller
+|SingleCycle_sim|processor:cpu|BranchController:branchcontroller
 opcode[0] => Equal0.IN5
 opcode[0] => Equal1.IN1
 opcode[0] => Equal3.IN5
@@ -369,7 +180,7 @@ PCsrc[0] <= PCsrc.DB_MAX_OUTPUT_PORT_TYPE
 PCsrc[1] <= PCsrc.DB_MAX_OUTPUT_PORT_TYPE
 
 
-|processor|programCounter:pc
+|SingleCycle_sim|processor:cpu|programCounter:pc
 clk => PCout[0]~reg0.CLK
 clk => PCout[1]~reg0.CLK
 clk => PCout[2]~reg0.CLK
@@ -500,7 +311,7 @@ PCout[30] <= PCout[30]~reg0.DB_MAX_OUTPUT_PORT_TYPE
 PCout[31] <= PCout[31]~reg0.DB_MAX_OUTPUT_PORT_TYPE
 
 
-|processor|IM:InstMem
+|SingleCycle_sim|processor:cpu|IM:InstMem
 addr[0] => InstMem.RADDR
 addr[1] => InstMem.RADDR1
 addr[2] => InstMem.RADDR2
@@ -567,7 +378,7 @@ Data_Out[30] <= InstMem.DATAOUT30
 Data_Out[31] <= InstMem.DATAOUT31
 
 
-|processor|controlUnit:CU
+|SingleCycle_sim|processor:cpu|controlUnit:CU
 opcode[0] => Decoder1.IN5
 opcode[1] => Decoder1.IN4
 opcode[2] => Decoder1.IN3
@@ -604,7 +415,7 @@ ALUSrc <= ALUSrc.DB_MAX_OUTPUT_PORT_TYPE
 hlt <= hlt.DB_MAX_OUTPUT_PORT_TYPE
 
 
-|processor|mux2x1:RFMux
+|SingleCycle_sim|processor:cpu|mux2x1:RFMux
 in1[0] => out.DATAB
 in1[1] => out.DATAB
 in1[2] => out.DATAB
@@ -627,7 +438,7 @@ out[3] <= out.DB_MAX_OUTPUT_PORT_TYPE
 out[4] <= out.DB_MAX_OUTPUT_PORT_TYPE
 
 
-|processor|registerFile:RF
+|SingleCycle_sim|processor:cpu|registerFile:RF
 clk => registers[31][0].CLK
 clk => registers[31][1].CLK
 clk => registers[31][2].CLK
@@ -5081,201 +4892,9 @@ readData2[28] <= Mux35.DB_MAX_OUTPUT_PORT_TYPE
 readData2[29] <= Mux34.DB_MAX_OUTPUT_PORT_TYPE
 readData2[30] <= Mux33.DB_MAX_OUTPUT_PORT_TYPE
 readData2[31] <= Mux32.DB_MAX_OUTPUT_PORT_TYPE
-regs0[0] <= registers[1][0].DB_MAX_OUTPUT_PORT_TYPE
-regs0[1] <= registers[1][1].DB_MAX_OUTPUT_PORT_TYPE
-regs0[2] <= registers[1][2].DB_MAX_OUTPUT_PORT_TYPE
-regs0[3] <= registers[1][3].DB_MAX_OUTPUT_PORT_TYPE
-regs0[4] <= registers[1][4].DB_MAX_OUTPUT_PORT_TYPE
-regs0[5] <= registers[1][5].DB_MAX_OUTPUT_PORT_TYPE
-regs0[6] <= registers[1][6].DB_MAX_OUTPUT_PORT_TYPE
-regs0[7] <= registers[1][7].DB_MAX_OUTPUT_PORT_TYPE
-regs0[8] <= registers[1][8].DB_MAX_OUTPUT_PORT_TYPE
-regs0[9] <= registers[1][9].DB_MAX_OUTPUT_PORT_TYPE
-regs0[10] <= registers[1][10].DB_MAX_OUTPUT_PORT_TYPE
-regs0[11] <= registers[1][11].DB_MAX_OUTPUT_PORT_TYPE
-regs0[12] <= registers[1][12].DB_MAX_OUTPUT_PORT_TYPE
-regs0[13] <= registers[1][13].DB_MAX_OUTPUT_PORT_TYPE
-regs0[14] <= registers[1][14].DB_MAX_OUTPUT_PORT_TYPE
-regs0[15] <= registers[1][15].DB_MAX_OUTPUT_PORT_TYPE
-regs0[16] <= registers[1][16].DB_MAX_OUTPUT_PORT_TYPE
-regs0[17] <= registers[1][17].DB_MAX_OUTPUT_PORT_TYPE
-regs0[18] <= registers[1][18].DB_MAX_OUTPUT_PORT_TYPE
-regs0[19] <= registers[1][19].DB_MAX_OUTPUT_PORT_TYPE
-regs0[20] <= registers[1][20].DB_MAX_OUTPUT_PORT_TYPE
-regs0[21] <= registers[1][21].DB_MAX_OUTPUT_PORT_TYPE
-regs0[22] <= registers[1][22].DB_MAX_OUTPUT_PORT_TYPE
-regs0[23] <= registers[1][23].DB_MAX_OUTPUT_PORT_TYPE
-regs0[24] <= registers[1][24].DB_MAX_OUTPUT_PORT_TYPE
-regs0[25] <= registers[1][25].DB_MAX_OUTPUT_PORT_TYPE
-regs0[26] <= registers[1][26].DB_MAX_OUTPUT_PORT_TYPE
-regs0[27] <= registers[1][27].DB_MAX_OUTPUT_PORT_TYPE
-regs0[28] <= registers[1][28].DB_MAX_OUTPUT_PORT_TYPE
-regs0[29] <= registers[1][29].DB_MAX_OUTPUT_PORT_TYPE
-regs0[30] <= registers[1][30].DB_MAX_OUTPUT_PORT_TYPE
-regs0[31] <= registers[1][31].DB_MAX_OUTPUT_PORT_TYPE
-regs1[0] <= registers[2][0].DB_MAX_OUTPUT_PORT_TYPE
-regs1[1] <= registers[2][1].DB_MAX_OUTPUT_PORT_TYPE
-regs1[2] <= registers[2][2].DB_MAX_OUTPUT_PORT_TYPE
-regs1[3] <= registers[2][3].DB_MAX_OUTPUT_PORT_TYPE
-regs1[4] <= registers[2][4].DB_MAX_OUTPUT_PORT_TYPE
-regs1[5] <= registers[2][5].DB_MAX_OUTPUT_PORT_TYPE
-regs1[6] <= registers[2][6].DB_MAX_OUTPUT_PORT_TYPE
-regs1[7] <= registers[2][7].DB_MAX_OUTPUT_PORT_TYPE
-regs1[8] <= registers[2][8].DB_MAX_OUTPUT_PORT_TYPE
-regs1[9] <= registers[2][9].DB_MAX_OUTPUT_PORT_TYPE
-regs1[10] <= registers[2][10].DB_MAX_OUTPUT_PORT_TYPE
-regs1[11] <= registers[2][11].DB_MAX_OUTPUT_PORT_TYPE
-regs1[12] <= registers[2][12].DB_MAX_OUTPUT_PORT_TYPE
-regs1[13] <= registers[2][13].DB_MAX_OUTPUT_PORT_TYPE
-regs1[14] <= registers[2][14].DB_MAX_OUTPUT_PORT_TYPE
-regs1[15] <= registers[2][15].DB_MAX_OUTPUT_PORT_TYPE
-regs1[16] <= registers[2][16].DB_MAX_OUTPUT_PORT_TYPE
-regs1[17] <= registers[2][17].DB_MAX_OUTPUT_PORT_TYPE
-regs1[18] <= registers[2][18].DB_MAX_OUTPUT_PORT_TYPE
-regs1[19] <= registers[2][19].DB_MAX_OUTPUT_PORT_TYPE
-regs1[20] <= registers[2][20].DB_MAX_OUTPUT_PORT_TYPE
-regs1[21] <= registers[2][21].DB_MAX_OUTPUT_PORT_TYPE
-regs1[22] <= registers[2][22].DB_MAX_OUTPUT_PORT_TYPE
-regs1[23] <= registers[2][23].DB_MAX_OUTPUT_PORT_TYPE
-regs1[24] <= registers[2][24].DB_MAX_OUTPUT_PORT_TYPE
-regs1[25] <= registers[2][25].DB_MAX_OUTPUT_PORT_TYPE
-regs1[26] <= registers[2][26].DB_MAX_OUTPUT_PORT_TYPE
-regs1[27] <= registers[2][27].DB_MAX_OUTPUT_PORT_TYPE
-regs1[28] <= registers[2][28].DB_MAX_OUTPUT_PORT_TYPE
-regs1[29] <= registers[2][29].DB_MAX_OUTPUT_PORT_TYPE
-regs1[30] <= registers[2][30].DB_MAX_OUTPUT_PORT_TYPE
-regs1[31] <= registers[2][31].DB_MAX_OUTPUT_PORT_TYPE
-regs2[0] <= registers[3][0].DB_MAX_OUTPUT_PORT_TYPE
-regs2[1] <= registers[3][1].DB_MAX_OUTPUT_PORT_TYPE
-regs2[2] <= registers[3][2].DB_MAX_OUTPUT_PORT_TYPE
-regs2[3] <= registers[3][3].DB_MAX_OUTPUT_PORT_TYPE
-regs2[4] <= registers[3][4].DB_MAX_OUTPUT_PORT_TYPE
-regs2[5] <= registers[3][5].DB_MAX_OUTPUT_PORT_TYPE
-regs2[6] <= registers[3][6].DB_MAX_OUTPUT_PORT_TYPE
-regs2[7] <= registers[3][7].DB_MAX_OUTPUT_PORT_TYPE
-regs2[8] <= registers[3][8].DB_MAX_OUTPUT_PORT_TYPE
-regs2[9] <= registers[3][9].DB_MAX_OUTPUT_PORT_TYPE
-regs2[10] <= registers[3][10].DB_MAX_OUTPUT_PORT_TYPE
-regs2[11] <= registers[3][11].DB_MAX_OUTPUT_PORT_TYPE
-regs2[12] <= registers[3][12].DB_MAX_OUTPUT_PORT_TYPE
-regs2[13] <= registers[3][13].DB_MAX_OUTPUT_PORT_TYPE
-regs2[14] <= registers[3][14].DB_MAX_OUTPUT_PORT_TYPE
-regs2[15] <= registers[3][15].DB_MAX_OUTPUT_PORT_TYPE
-regs2[16] <= registers[3][16].DB_MAX_OUTPUT_PORT_TYPE
-regs2[17] <= registers[3][17].DB_MAX_OUTPUT_PORT_TYPE
-regs2[18] <= registers[3][18].DB_MAX_OUTPUT_PORT_TYPE
-regs2[19] <= registers[3][19].DB_MAX_OUTPUT_PORT_TYPE
-regs2[20] <= registers[3][20].DB_MAX_OUTPUT_PORT_TYPE
-regs2[21] <= registers[3][21].DB_MAX_OUTPUT_PORT_TYPE
-regs2[22] <= registers[3][22].DB_MAX_OUTPUT_PORT_TYPE
-regs2[23] <= registers[3][23].DB_MAX_OUTPUT_PORT_TYPE
-regs2[24] <= registers[3][24].DB_MAX_OUTPUT_PORT_TYPE
-regs2[25] <= registers[3][25].DB_MAX_OUTPUT_PORT_TYPE
-regs2[26] <= registers[3][26].DB_MAX_OUTPUT_PORT_TYPE
-regs2[27] <= registers[3][27].DB_MAX_OUTPUT_PORT_TYPE
-regs2[28] <= registers[3][28].DB_MAX_OUTPUT_PORT_TYPE
-regs2[29] <= registers[3][29].DB_MAX_OUTPUT_PORT_TYPE
-regs2[30] <= registers[3][30].DB_MAX_OUTPUT_PORT_TYPE
-regs2[31] <= registers[3][31].DB_MAX_OUTPUT_PORT_TYPE
-regs3[0] <= registers[4][0].DB_MAX_OUTPUT_PORT_TYPE
-regs3[1] <= registers[4][1].DB_MAX_OUTPUT_PORT_TYPE
-regs3[2] <= registers[4][2].DB_MAX_OUTPUT_PORT_TYPE
-regs3[3] <= registers[4][3].DB_MAX_OUTPUT_PORT_TYPE
-regs3[4] <= registers[4][4].DB_MAX_OUTPUT_PORT_TYPE
-regs3[5] <= registers[4][5].DB_MAX_OUTPUT_PORT_TYPE
-regs3[6] <= registers[4][6].DB_MAX_OUTPUT_PORT_TYPE
-regs3[7] <= registers[4][7].DB_MAX_OUTPUT_PORT_TYPE
-regs3[8] <= registers[4][8].DB_MAX_OUTPUT_PORT_TYPE
-regs3[9] <= registers[4][9].DB_MAX_OUTPUT_PORT_TYPE
-regs3[10] <= registers[4][10].DB_MAX_OUTPUT_PORT_TYPE
-regs3[11] <= registers[4][11].DB_MAX_OUTPUT_PORT_TYPE
-regs3[12] <= registers[4][12].DB_MAX_OUTPUT_PORT_TYPE
-regs3[13] <= registers[4][13].DB_MAX_OUTPUT_PORT_TYPE
-regs3[14] <= registers[4][14].DB_MAX_OUTPUT_PORT_TYPE
-regs3[15] <= registers[4][15].DB_MAX_OUTPUT_PORT_TYPE
-regs3[16] <= registers[4][16].DB_MAX_OUTPUT_PORT_TYPE
-regs3[17] <= registers[4][17].DB_MAX_OUTPUT_PORT_TYPE
-regs3[18] <= registers[4][18].DB_MAX_OUTPUT_PORT_TYPE
-regs3[19] <= registers[4][19].DB_MAX_OUTPUT_PORT_TYPE
-regs3[20] <= registers[4][20].DB_MAX_OUTPUT_PORT_TYPE
-regs3[21] <= registers[4][21].DB_MAX_OUTPUT_PORT_TYPE
-regs3[22] <= registers[4][22].DB_MAX_OUTPUT_PORT_TYPE
-regs3[23] <= registers[4][23].DB_MAX_OUTPUT_PORT_TYPE
-regs3[24] <= registers[4][24].DB_MAX_OUTPUT_PORT_TYPE
-regs3[25] <= registers[4][25].DB_MAX_OUTPUT_PORT_TYPE
-regs3[26] <= registers[4][26].DB_MAX_OUTPUT_PORT_TYPE
-regs3[27] <= registers[4][27].DB_MAX_OUTPUT_PORT_TYPE
-regs3[28] <= registers[4][28].DB_MAX_OUTPUT_PORT_TYPE
-regs3[29] <= registers[4][29].DB_MAX_OUTPUT_PORT_TYPE
-regs3[30] <= registers[4][30].DB_MAX_OUTPUT_PORT_TYPE
-regs3[31] <= registers[4][31].DB_MAX_OUTPUT_PORT_TYPE
-regs4[0] <= registers[5][0].DB_MAX_OUTPUT_PORT_TYPE
-regs4[1] <= registers[5][1].DB_MAX_OUTPUT_PORT_TYPE
-regs4[2] <= registers[5][2].DB_MAX_OUTPUT_PORT_TYPE
-regs4[3] <= registers[5][3].DB_MAX_OUTPUT_PORT_TYPE
-regs4[4] <= registers[5][4].DB_MAX_OUTPUT_PORT_TYPE
-regs4[5] <= registers[5][5].DB_MAX_OUTPUT_PORT_TYPE
-regs4[6] <= registers[5][6].DB_MAX_OUTPUT_PORT_TYPE
-regs4[7] <= registers[5][7].DB_MAX_OUTPUT_PORT_TYPE
-regs4[8] <= registers[5][8].DB_MAX_OUTPUT_PORT_TYPE
-regs4[9] <= registers[5][9].DB_MAX_OUTPUT_PORT_TYPE
-regs4[10] <= registers[5][10].DB_MAX_OUTPUT_PORT_TYPE
-regs4[11] <= registers[5][11].DB_MAX_OUTPUT_PORT_TYPE
-regs4[12] <= registers[5][12].DB_MAX_OUTPUT_PORT_TYPE
-regs4[13] <= registers[5][13].DB_MAX_OUTPUT_PORT_TYPE
-regs4[14] <= registers[5][14].DB_MAX_OUTPUT_PORT_TYPE
-regs4[15] <= registers[5][15].DB_MAX_OUTPUT_PORT_TYPE
-regs4[16] <= registers[5][16].DB_MAX_OUTPUT_PORT_TYPE
-regs4[17] <= registers[5][17].DB_MAX_OUTPUT_PORT_TYPE
-regs4[18] <= registers[5][18].DB_MAX_OUTPUT_PORT_TYPE
-regs4[19] <= registers[5][19].DB_MAX_OUTPUT_PORT_TYPE
-regs4[20] <= registers[5][20].DB_MAX_OUTPUT_PORT_TYPE
-regs4[21] <= registers[5][21].DB_MAX_OUTPUT_PORT_TYPE
-regs4[22] <= registers[5][22].DB_MAX_OUTPUT_PORT_TYPE
-regs4[23] <= registers[5][23].DB_MAX_OUTPUT_PORT_TYPE
-regs4[24] <= registers[5][24].DB_MAX_OUTPUT_PORT_TYPE
-regs4[25] <= registers[5][25].DB_MAX_OUTPUT_PORT_TYPE
-regs4[26] <= registers[5][26].DB_MAX_OUTPUT_PORT_TYPE
-regs4[27] <= registers[5][27].DB_MAX_OUTPUT_PORT_TYPE
-regs4[28] <= registers[5][28].DB_MAX_OUTPUT_PORT_TYPE
-regs4[29] <= registers[5][29].DB_MAX_OUTPUT_PORT_TYPE
-regs4[30] <= registers[5][30].DB_MAX_OUTPUT_PORT_TYPE
-regs4[31] <= registers[5][31].DB_MAX_OUTPUT_PORT_TYPE
-regs5[0] <= registers[6][0].DB_MAX_OUTPUT_PORT_TYPE
-regs5[1] <= registers[6][1].DB_MAX_OUTPUT_PORT_TYPE
-regs5[2] <= registers[6][2].DB_MAX_OUTPUT_PORT_TYPE
-regs5[3] <= registers[6][3].DB_MAX_OUTPUT_PORT_TYPE
-regs5[4] <= registers[6][4].DB_MAX_OUTPUT_PORT_TYPE
-regs5[5] <= registers[6][5].DB_MAX_OUTPUT_PORT_TYPE
-regs5[6] <= registers[6][6].DB_MAX_OUTPUT_PORT_TYPE
-regs5[7] <= registers[6][7].DB_MAX_OUTPUT_PORT_TYPE
-regs5[8] <= registers[6][8].DB_MAX_OUTPUT_PORT_TYPE
-regs5[9] <= registers[6][9].DB_MAX_OUTPUT_PORT_TYPE
-regs5[10] <= registers[6][10].DB_MAX_OUTPUT_PORT_TYPE
-regs5[11] <= registers[6][11].DB_MAX_OUTPUT_PORT_TYPE
-regs5[12] <= registers[6][12].DB_MAX_OUTPUT_PORT_TYPE
-regs5[13] <= registers[6][13].DB_MAX_OUTPUT_PORT_TYPE
-regs5[14] <= registers[6][14].DB_MAX_OUTPUT_PORT_TYPE
-regs5[15] <= registers[6][15].DB_MAX_OUTPUT_PORT_TYPE
-regs5[16] <= registers[6][16].DB_MAX_OUTPUT_PORT_TYPE
-regs5[17] <= registers[6][17].DB_MAX_OUTPUT_PORT_TYPE
-regs5[18] <= registers[6][18].DB_MAX_OUTPUT_PORT_TYPE
-regs5[19] <= registers[6][19].DB_MAX_OUTPUT_PORT_TYPE
-regs5[20] <= registers[6][20].DB_MAX_OUTPUT_PORT_TYPE
-regs5[21] <= registers[6][21].DB_MAX_OUTPUT_PORT_TYPE
-regs5[22] <= registers[6][22].DB_MAX_OUTPUT_PORT_TYPE
-regs5[23] <= registers[6][23].DB_MAX_OUTPUT_PORT_TYPE
-regs5[24] <= registers[6][24].DB_MAX_OUTPUT_PORT_TYPE
-regs5[25] <= registers[6][25].DB_MAX_OUTPUT_PORT_TYPE
-regs5[26] <= registers[6][26].DB_MAX_OUTPUT_PORT_TYPE
-regs5[27] <= registers[6][27].DB_MAX_OUTPUT_PORT_TYPE
-regs5[28] <= registers[6][28].DB_MAX_OUTPUT_PORT_TYPE
-regs5[29] <= registers[6][29].DB_MAX_OUTPUT_PORT_TYPE
-regs5[30] <= registers[6][30].DB_MAX_OUTPUT_PORT_TYPE
-regs5[31] <= registers[6][31].DB_MAX_OUTPUT_PORT_TYPE
 
 
-|processor|mux2x1:ALUMux
+|SingleCycle_sim|processor:cpu|mux2x1:ALUMux
 in1[0] => out.DATAB
 in1[1] => out.DATAB
 in1[2] => out.DATAB
@@ -5406,7 +5025,7 @@ out[30] <= out.DB_MAX_OUTPUT_PORT_TYPE
 out[31] <= out.DB_MAX_OUTPUT_PORT_TYPE
 
 
-|processor|ALU:alu
+|SingleCycle_sim|processor:cpu|ALU:alu
 operand1[0] => Add0.IN32
 operand1[0] => Add1.IN64
 operand1[0] => result.IN0
@@ -6146,7 +5765,7 @@ result[31] <= Mux0.DB_MAX_OUTPUT_PORT_TYPE
 zero <= Equal0.DB_MAX_OUTPUT_PORT_TYPE
 
 
-|processor|DM:dataMem
+|SingleCycle_sim|processor:cpu|DM:dataMem
 address[0] => address[0].IN1
 address[1] => address[1].IN1
 address[2] => address[2].IN1
@@ -6248,7 +5867,7 @@ q[30] <= DataMemory_IP:DataMemory.port4
 q[31] <= DataMemory_IP:DataMemory.port4
 
 
-|processor|DM:dataMem|DataMemory_IP:DataMemory
+|SingleCycle_sim|processor:cpu|DM:dataMem|DataMemory_IP:DataMemory
 address[0] => address[0].IN1
 address[1] => address[1].IN1
 address[2] => address[2].IN1
@@ -6327,7 +5946,7 @@ q[30] <= altsyncram:altsyncram_component.q_a
 q[31] <= altsyncram:altsyncram_component.q_a
 
 
-|processor|DM:dataMem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component
+|SingleCycle_sim|processor:cpu|DM:dataMem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component
 wren_a => altsyncram_c1k1:auto_generated.wren_a
 rden_a => ~NO_FANOUT~
 wren_b => ~NO_FANOUT~
@@ -6426,7 +6045,7 @@ eccstatus[1] <= <GND>
 eccstatus[2] <= <GND>
 
 
-|processor|DM:dataMem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component|altsyncram_c1k1:auto_generated
+|SingleCycle_sim|processor:cpu|DM:dataMem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component|altsyncram_c1k1:auto_generated
 address_a[0] => ram_block1a0.PORTAADDR
 address_a[0] => ram_block1a1.PORTAADDR
 address_a[0] => ram_block1a2.PORTAADDR
@@ -6877,7 +6496,7 @@ wren_a => ram_block1a30.PORTAWE
 wren_a => ram_block1a31.PORTAWE
 
 
-|processor|mux2x1:WBMux
+|SingleCycle_sim|processor:cpu|mux2x1:WBMux
 in1[0] => out.DATAB
 in1[1] => out.DATAB
 in1[2] => out.DATAB
