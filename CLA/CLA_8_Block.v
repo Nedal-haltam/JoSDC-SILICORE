@@ -89,53 +89,43 @@ module CLA_4_bit (
     output cout
 );
 
-    wire [3:0] op2;
-    wire [3:0] p;
-    wire [3:0] g;
-    wire [3:0] c;
-    wire [9:0] i;
+    wire [3:0] op2, p, g, c;
 
     // computes the two's compelement for subtraction operations
-    xor t1(op2[0], operation, operand2[0]);
-    xor t2(op2[1], operation, operand2[1]);
-    xor t3(op2[2], operation, operand2[2]);
-    xor t4(op2[3], operation, operand2[3]);
+    assign op2[0] = operation ^ operand2[0];
+    assign op2[1] = operation ^ operand2[1];
+    assign op2[2] = operation ^ operand2[2];
+    assign op2[3] = operation ^ operand2[3];
 
-    and g0(g[0], operand1[0], op2[0]); // generate
-    xor p0(p[0], operand1[0], op2[0]); // propagate 
-    and i0(i[0], cin, p[0]); // intermediate logic
-    or  c0(c[0], g[0], i[0]); // carry generation
+    // generates
+    assign g[0] = operand1[0] & op2[0];
+    assign g[1] = operand1[1] & op2[1];
+    assign g[2] = operand1[2] & op2[2];
+    assign g[3] = operand1[3] & op2[3];
 
+    // propagates
+    assign p[0] = operand1[0] ^ op2[0];
+    assign p[1] = operand1[1] ^ op2[1];
+    assign p[2] = operand1[2] ^ op2[2];
+    assign p[3] = operand1[3] ^ op2[3];
+
+    
+    // c0 = g0 + p0cin
+    assign c[0] = g[0] | (p[0] & cin);
     // c1 = g1 + p1g0 + p1p0cin
-    and g1(g[1], operand1[1], op2[1]); // generate
-    xor p1(p[1], operand1[1], op2[1]); // propagate 
-    and i1(i[1], p[1], g[0]); // intermediate logic
-    and i2(i[2], p[1], p[0], cin); // intermediate logic
-    or  c1(c[1], g[1], i[1], i[2]); // carry generation
-
-    // c2 = g2 + p2g1 + p2p1g0 + p2p1p0cin
-    and g2(g[2], operand1[2], op2[2]); // generate
-    xor p2(p[2], operand1[2], op2[2]); // propagate 
-    and i3(i[3], p[2], g[1]); // intermediate logic
-    and i4(i[4], p[2], p[1], g[0]); // intermediate logic
-    and i5(i[5], p[2], p[1], p[0], cin); // intermediate logic
-    or  c2(c[2], g[2], i[3], i[4], i[5]); // carry generation
-
+    assign c[1] = g[1] | (p[1] & c[0]) | (p[1] & p[0] & cin);
+    // c2 = g2 + p2g1 + p2p1g0 + p2p1p0cin 
+    assign c[2] = g[2] | (p[2] & c[1]) | (p[2] & p[1] & c[0]) | (p[2] & p[1] & p[0] & cin);
     // c3 = g3 + p3g2 + p3p2g1 + p3p2p1g0 + p3p2p1p0cin
-    and g3(g[3], operand1[3], op2[3]); // generate
-    xor p3(p[3], operand1[3], op2[3]); // propagate 
-    and i6(i[6], p[3], g[2]); // intermediate logic
-    and i7(i[7], p[3], p[2], g[1]); // intermediate logic
-    and i8(i[8], p[3], p[2], p[1], g[0]); // intermediate logic
-    and i9(i[9], p[3], p[2], p[1], p[0], cin); // intermediate logic
-    or  c3(c[3], g[3], i[6], i[7], i[8], i[9]); // carry generation
+    assign c[3] = g[3] | (p[3] & c[2]) | (p[3] & p[2] & c[1]) | (p[3] & p[2] & p[1] & c[0]) | (p[3] & p[2] & p[1] & p[0] & cin);
 
-    and temp(cout, c[3], 1);
+    // output carry
+    assign cout = c[3];
 
      // computes the sum for each stage
-    xor s0  (result[0], operand1[0], op2[0], c[0]);
-    xor s1  (result[1], operand1[1], op2[1], c[1]);
-    xor s2  (result[2], operand1[2], op2[2], c[2]);
-    xor s3  (result[3], operand1[3], op2[3], c[3]);
+     assign result[0] = operand1[0] ^ op2[0] ^ cin;
+     assign result[1] = operand1[1] ^ op2[1] ^ c[0];
+     assign result[2] = operand1[2] ^ op2[2] ^ c[1];
+     assign result[3] = operand1[3] ^ op2[3] ^ c[2];
 
 endmodule
