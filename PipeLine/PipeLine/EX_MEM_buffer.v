@@ -37,7 +37,8 @@ module EX_MEM_buffer(EX_ALU_OUT, EX_rs2, EX_rs1_ind, EX_rs2_ind, EX_rd_indzero, 
 		MEM_INST <= EX_INST;
 		MEM_rd_indzero <= EX_rd_indzero;
 			
-		end else
+	end
+	else
         {MEM_ALU_OUT, MEM_PC, MEM_INST, MEM_rs2, MEM_rs1_ind, MEM_rs2_ind, MEM_rd_ind, MEM_opcode, MEM_memread, MEM_memwrite, MEM_regwrite, MEM_rd_indzero} <= 0;
 		
 	end

@@ -1,11 +1,11 @@
 
 module PC_register(DataIn, DataOut, PC_Write, clk, rst);
 	
-	input [31:0] DataIn;
-	input clk, rst;
-	input PC_Write;
-	
-  output reg [31:0] DataOut;
+input [31:0] DataIn;
+input clk, rst;
+input PC_Write;
+
+output reg [31:0] DataOut;
 	
 
 parameter initialaddr = -1;

@@ -1,21 +1,17 @@
 
-module REG_FILE(rd_reg1, rd_reg2, wr_reg, wr_data, rd_data1, rd_data2, reg_wr,clk, rst);///
-parameter bit_width = 32;
+module REG_FILE(Read_reg1, Read_reg2, Write_reg, Write_data, Read_data1, Read_data2, Write_en, clk, rst);
 
-input [bit_width-1:0] wr_data;
-input [4:0] rd_reg1, rd_reg2, wr_reg;
-input reg_wr, clk, rst;
+input [31:0] Write_data;
+input [4:0] Read_reg1, Read_reg2, Write_reg;
+input Write_en, clk, rst;
 
-output reg [bit_width-1:0] rd_data1;
-output reg [bit_width-1:0] rd_data2;
+output reg [31:0] Read_data1;
+output reg [31:0] Read_data2;
 
-reg [bit_width-1:0] reg_file [31:0];
+reg [31:0] reg_file [31:0];
 
 
 integer i;
- 
-
-
 always@ (posedge clk , posedge rst) begin
     
 if (rst) begin
@@ -24,8 +20,8 @@ if (rst) begin
 end
 
 else begin
-  if(wr_reg && reg_wr)
-	reg_file[wr_reg] <= wr_data;
+  if(Write_reg && Write_en)
+	reg_file[Write_reg] <= Write_data;
 	
 	reg_file[0] <= 0;
 end
@@ -34,23 +30,24 @@ end
 
 always@(posedge clk) begin
 
-if (wr_reg == rd_reg1 && wr_reg && reg_wr)
-  rd_data1 <= wr_data;
+if (Write_reg == Read_reg1 && Write_reg && Write_en)
+  Read_data1 <= Write_data;
 else
-  rd_data1 <= reg_file[rd_reg1];
+  Read_data1 <= reg_file[Read_reg1];
 
 end
+
 always@(posedge clk) begin
 
-if (wr_reg == rd_reg2 && wr_reg && reg_wr)
-  rd_data2 <= wr_data;
+if (Write_reg == Read_reg2 && Write_reg && Write_en)
+  Read_data2 <= Write_data;
 else
-  rd_data2 <= reg_file[rd_reg2];
+  Read_data2 <= reg_file[Read_reg2];
 
 end
 
-// assign rd_data1 = reg_file[rd_reg1];
-// assign rd_data2 = reg_file[rd_reg2];
+// assign Read_data1 = reg_file[Read_reg1];
+// assign Read_data2 = reg_file[Read_reg2];
 
 
 `ifdef vscode

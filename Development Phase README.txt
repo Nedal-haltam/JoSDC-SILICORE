@@ -10,16 +10,15 @@ Our submission contains the following:
 	- Files:
 		- Development Phase Report
 		- And this README
-		- A recording explains the flow of the system built
-
-
+		- A recording explains the flow of the system built:
+			- TODO: maybe
 
 
 FOR THE HARDWARE PART
 
 The PipeLine folder (or the SingleCycle folder) contains the hardware design of the CPU (Verilog)
 There is two ways of running the design (CPU):
-	- On FPGA
+	- On FPGA: TODO: complete step on how to prototype it on FPGA
 	- Simulation, and for simulation there are two approaches could be taken:
 
 		- Using Visual Studio Code (VS Code)
@@ -41,7 +40,7 @@ There is two ways of running the design (CPU):
 
 FOR THE SOFTWARE PART
 
-In terms of software we have the following Architecture:
+In terms of software we have the following Architecture: TODO: complete steps on how to use these things
 
 Three Application:
 	- MIPSAssembler

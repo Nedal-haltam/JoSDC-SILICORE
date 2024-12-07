@@ -1,33 +1,34 @@
-module DM(addr , Data_In , Data_Out , WR , clk);
+module DM(addr , Data_In , Data_Out , Write_en , clk);
 
-parameter bit_width = 32;
-input [bit_width - 1:0] addr , Data_In;
-input WR , clk;
+input [31:0] addr , Data_In;
+input Write_en , clk;
 
 
 
 `ifdef vscode
 
 reg [31:0] DataMem [0:1023];
-output reg [bit_width - 1:0] Data_Out;
+output reg [31:0] Data_Out;
+
 always@ (posedge clk)  
-    if (WR == 1'b1)
+    if (Write_en == 1'b1)
         DataMem[addr[9:0]] <= Data_In;
 always@ (posedge clk) 
     Data_Out <= DataMem[addr[9:0]];
+
 initial begin
 `include "DM_INIT.INIT"
 end
 
 `else
 
-output [bit_width - 1:0] Data_Out;
+output [31:0] Data_Out;
 DataMemory_IP DataMemory
 (
 	addr[9:0],
 	clk,
 	Data_In,
-	WR,
+	Write_en,
 	Data_Out
 );
 	

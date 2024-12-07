@@ -1,23 +1,16 @@
-// this module detects if there is a load instruction followed by a (branch or jr) instruction.
-// and if it's the case then it inserts one nop starting from the execute stage (activate the ID_FLUSH). 
-// because we can't forward the load result from the execute stage but we can from the memory stage
-
-module StallDetectionUnit(Wrong_prediction, if_id_opcode, EX_memread, if_id_rs1, if_id_rs2, id_ex_rd, 
-						  PC_Write, if_id_Write, if_id_flush, id_ex_flush);
-  
-input [11:0] if_id_opcode; // to tell us if it is a branch instruction
-input [4:0] if_id_rs1, if_id_rs2; // the required rs1, rs2 to be used to know if there is a dependencies or not
-input EX_memread;
-input Wrong_prediction; // Memread signal from the ID_EX buffer to detect if it is a load inst
-input [4:0] id_ex_rd;
-
+module StallDetectionUnit(Wrong_prediction, ID_opcode, EX_memread, ID_rs1_ind, ID_rs2_ind, EX_rd, 
+						  PC_Write, IF_ID_Write, IF_ID_flush, ID_EX_flush);
 
 `include "opcodes.txt"
 
+input [11:0] ID_opcode; // to tell us if it is a branch instruction
+input [4:0] ID_rs1_ind, ID_rs2_ind; // the required rs1, rs2 to be used to know if there is a dependencies or not
+input EX_memread;
+input Wrong_prediction; // Memread signal from the ID_EX buffer to detect if it is a load inst
+input [4:0] EX_rd;
 
-
-output reg PC_Write, if_id_Write, if_id_flush; // control signals to control the updation of the PC, IF_ID buffer
-output reg id_ex_flush; // to select whether to pass the control signal or pass all zeros
+output reg PC_Write, IF_ID_Write, IF_ID_flush; // control signals to control the updation of the PC, ID buffer
+output reg ID_EX_flush; // to select whether to pass the control signal or pass all zeros
 
 
 always@(*) begin
@@ -25,36 +18,36 @@ always@(*) begin
 	if (Wrong_prediction) begin // wrong prediction
 
 		PC_Write <= 1'b1;
-		if_id_Write <= 1'b1;
-		if_id_flush <= 0;
-		id_ex_flush <= 1'b1;
+		IF_ID_Write <= 1'b1;
+		IF_ID_flush <= 0;
+		ID_EX_flush <= 1'b1;
 
 	end
 
-	else if (EX_memread && id_ex_rd != 0 && (if_id_rs1 == id_ex_rd || if_id_rs2 == id_ex_rd)) begin // load use
+	else if (EX_memread && EX_rd != 0 && (ID_rs1_ind == EX_rd || ID_rs2_ind == EX_rd)) begin // load use
 
 		PC_Write <= 0;
-		if_id_Write <= 0;
-		if_id_flush <= 0;
-		id_ex_flush <= 1'b1;
+		IF_ID_Write <= 0;
+		IF_ID_flush <= 0;
+		ID_EX_flush <= 1'b1;
 		
 	end
 
-	else if (if_id_opcode == jr) begin // jr in decode
+	else if (ID_opcode == jr) begin // jr in decode
 
 		PC_Write <= 0;
-		if_id_Write <= 1'b1;
-		if_id_flush <= 1'b1;
-		id_ex_flush <= 0;
+		IF_ID_Write <= 1'b1;
+		IF_ID_flush <= 1'b1;
+		ID_EX_flush <= 0;
 
 	end
 
     else begin
 		// otherwise we operate normally
 		PC_Write <= 1'b1; // we update the PC
-		if_id_Write <= 1'b1; // we update the IF_ID_Buffer
-		if_id_flush <= 0;
-		id_ex_flush <= 0; // and we bypass the current control signals to the next stage
+		IF_ID_Write <= 1'b1; // we update the ID_Buffer
+		IF_ID_flush <= 0;
+		ID_EX_flush <= 0; // and we bypass the current control signals to the next stage
       
     end
 

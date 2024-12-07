@@ -1,9 +1,9 @@
-module BranchPredictor(ID_opcode, EX_opcode, predicted, Wrong_prediction, rst, state, clk);
+module BranchPredictor(ID_opcode, EX_opcode, predicted, predicted_to_EX, Wrong_prediction, rst, state, clk);
 	input [11:0] ID_opcode, EX_opcode;
 	input rst, Wrong_prediction, clk;
 	
 	output predicted; // prediction (1 = taken, 0 = not taken)
-
+	output reg predicted_to_EX;
 	output reg [1:0] state; // 2-bit state (00 NT | 01 NT | 10 T | 11 T)
 
 	`include "opcodes.txt"
@@ -43,7 +43,13 @@ module BranchPredictor(ID_opcode, EX_opcode, predicted, Wrong_prediction, rst, s
 	end
 
 
-assign predicted = (rst || !(ID_opcode == beq || ID_opcode == bne)) ? 0 : (state == 2'b10 || state == 2'b11);
+assign predicted = ~(rst || ~((ID_opcode == beq || ID_opcode == bne) && (state == 2'b10 || state == 2'b11)));
+
+	always@(posedge rst, posedge clk)
+		if (rst)
+			predicted_to_EX <= 0;
+		else
+			predicted_to_EX <= predicted;
 
 
 	// always @ (rst , posedge clk) begin

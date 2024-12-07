@@ -61,6 +61,7 @@ namespace LibCPU
                 oper2 = 0;
                 aluout = 0;
                 memout = 0;
+                prediction = false;
                 return this;
             }
             public string mc;
@@ -84,6 +85,7 @@ namespace LibCPU
             public string format;
             public int aluout;
             public int memout;
+            public bool prediction;
         }
             
 
@@ -443,6 +445,7 @@ namespace LibCPU
     public class CPU5STAGE
     {
         int PC;
+        int state = 0;
         bool hlt;
         bool WrongPrediction;
         int targetaddress;
@@ -566,6 +569,53 @@ namespace LibCPU
             }
             return inst;
         }
+
+        bool BranchPredictor(Mnemonic ID_opcode)
+        {
+            bool prediction = isbranch(ID_opcode) && (state == 2 || state == 3);
+            if (prediction)
+            {
+                pcsrc = PCsrc.pfc;
+            }
+            else
+            {
+                pcsrc = PCsrc.PCplus1;
+            }
+
+            if (isbranch(executed_in_EX_MIPS.mnem))
+            {
+                if (state <= 1)
+                {
+                    if (WrongPrediction)
+                    {
+                        state++;
+                    }
+                    else
+                    {
+                        if (state == 1) state = 0;
+                    }
+                }
+                else
+                {
+                    if (WrongPrediction)
+                    {
+                        state--;
+                    }
+                    else
+                    {
+                        if (state == 2) state = 3;
+                    }
+                }
+            }
+
+            if (state == -1 || state == 4)
+            {
+
+            }
+
+            return prediction;
+        }
+
         void BranchResolver(Instruction decoded)
         {
             if (WrongPrediction)
@@ -599,12 +649,12 @@ namespace LibCPU
             {
                 pcsrc = PCsrc.none;
             }
-            else
+            else // here we handle the branch prediction
             {
                 if (decoded.mnem == Mnemonic.beq || decoded.mnem == Mnemonic.bne)
                 {
-                    pcsrc = PCsrc.pfc;
-                    targetaddress = decoded.PC + decoded.immeds;
+                    if (decoded.prediction)
+                        targetaddress = decoded.PC + decoded.immeds;
                 }
                 else if (decoded.mnem == Mnemonic.j || decoded.mnem == Mnemonic.jal)
                 {
@@ -614,8 +664,6 @@ namespace LibCPU
                 else
                     pcsrc = PCsrc.PCplus1;
             }
-
-            WrongPrediction = false;
         }
         string fetch()
         {
@@ -630,6 +678,7 @@ namespace LibCPU
             try
             {
                 decoded = decodemc(fetched, PC);
+                decoded.prediction = BranchPredictor(decoded.mnem);
                 BranchResolver(decoded);
             }
             catch (Exception e)
@@ -674,9 +723,9 @@ namespace LibCPU
             }
             detect_exception(decoded, Stage.execute);
             temp.aluout = execute_inst(temp);
-            WrongPrediction = (temp.mnem == Mnemonic.beq && temp.oper1 != temp.oper2) ||
-                                (temp.mnem == Mnemonic.bne && temp.oper1 == temp.oper2) ||
-                                (temp.mnem == Mnemonic.jr);
+            bool BranchDecision = temp.mnem == Mnemonic.beq && temp.oper1 == temp.oper2 ||
+                                  temp.mnem == Mnemonic.bne && temp.oper1 != temp.oper2;
+            WrongPrediction = temp.prediction != BranchDecision || temp.mnem == Mnemonic.jr;
             return temp;
         }
         Instruction mem(ref Instruction inst)
@@ -801,9 +850,17 @@ namespace LibCPU
         {
             if (source == WRONG_PRED)
             {
-                pcsrc = PCsrc.PCplus1;
                 if (isbranch(executed_in_EX_MIPS.mnem))
-                    PC = executed_in_EX_MIPS.PC + 1;
+                {
+                    if (executed_in_EX_MIPS.prediction)
+                    {
+                        PC = executed_in_EX_MIPS.PC + 1;
+                    }
+                    else
+                    {
+                        PC = executed_in_EX_MIPS.PC + executed_in_EX_MIPS.immeds;
+                    }
+                }
                 else if (executed_in_EX_MIPS.mnem == Mnemonic.jr)
                     PC = executed_in_EX_MIPS.oper1;
                 fetched_in_IF_MIPS = fetch();

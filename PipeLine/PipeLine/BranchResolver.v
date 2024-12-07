@@ -1,17 +1,17 @@
 
-module BranchResolver(PC_src, exception_flag, ID_opcode, EX_opcode, predicted, Wrong_prediction, rst, clk);
+module BranchResolver(PC_src, exception_flag, ID_opcode, EX_opcode, predicted, predicted_to_EX, Wrong_prediction, rst, clk);
 	
 	input [11:0] ID_opcode, EX_opcode;
 	input exception_flag, rst, Wrong_prediction, clk;
 	
 	output [2:0] PC_src;
-	output predicted;
+	output predicted, predicted_to_EX;
 
 	
 `include "opcodes.txt"
 
 wire [1:0] state;
-BranchPredictor BPU(ID_opcode, EX_opcode, predicted, Wrong_prediction, rst, state, clk);
+BranchPredictor BPU(ID_opcode, EX_opcode, predicted, predicted_to_EX, Wrong_prediction, rst, state, clk);
 
 assign PC_src = (exception_flag) ? 3'b001 : 
 (

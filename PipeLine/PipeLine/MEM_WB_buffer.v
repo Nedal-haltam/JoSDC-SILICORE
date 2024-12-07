@@ -37,9 +37,6 @@ module MEM_WB_buffer(MEM_ALU_OUT, MEM_rs2, MEM_Data_mem_out, MEM_rs1_ind, MEM_rs
 			WB_rd_indzero <= MEM_rd_indzero;
 			hlt <= (MEM_opcode == hlt_inst) ? 1'b1 : 1'b0;
 		end
-				
-
-
 
 	end
 

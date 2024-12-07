@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LibCPU")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1a7d8098c8b1ffb01eca10c33807228c882bdfa3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+799236ade0c97fe26d64526d73a7d9c48cc3c752")]
 [assembly: System.Reflection.AssemblyProductAttribute("LibCPU")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LibCPU")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
