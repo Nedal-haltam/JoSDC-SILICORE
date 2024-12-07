@@ -1,7 +1,4 @@
-
-// module processor(clk, rst, PC);
-
-module processor(input_clk, rst, PC, cycles_consumed, clk);
+module SC_CPU(input_clk, rst, PC, cycles_consumed, clk);
 
 	`include "opcodes.txt"
 	parameter handler_addr = 32'd1000;

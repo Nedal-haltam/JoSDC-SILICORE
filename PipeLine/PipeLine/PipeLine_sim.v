@@ -37,7 +37,7 @@
 `include "CompareEqual.v"
 `include "BranchDecision.v"
 `include "BranchPredictor.v"
-`include "CPU5STAGE.v"
+`include "PL_CPU.v"
 
 `endif
 
@@ -47,7 +47,8 @@ module PipeLine_sim;
 reg input_clk = 0;
 reg rst = 0;
 wire [31:0] PC, cycles_consumed;
-CPU5STAGE cpu(PC, input_clk, rst, cycles_consumed);
+
+PL_CPU cpu(PC, input_clk, rst, cycles_consumed);
 
 always #1 input_clk <= ~input_clk;
 initial begin

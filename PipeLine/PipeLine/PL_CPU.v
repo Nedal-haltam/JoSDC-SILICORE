@@ -1,5 +1,5 @@
 
-module CPU5STAGE(PC, input_clk, rst, cycles_consumed);
+module PL_CPU(PC, input_clk, rst, cycles_consumed);
 
 
 input input_clk, rst;

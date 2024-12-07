@@ -18,7 +18,7 @@
 `include "ALU.v" 
 `include "BranchController.v" 
 `include "DM.v" 
-`include "processor.v"
+`include "SC_CPU.v"
 
 `endif
 
@@ -28,7 +28,7 @@ reg clk = 1, rst = 1;
 wire [31:0] PC;
 wire [31 : 0] cycles_consumed;
 
-processor cpu(clk, rst, PC, cycles_consumed, clkout);
+SC_CPU cpu(clk, rst, PC, cycles_consumed, clkout);
 
 
 always #1 clk <= ~clk;
