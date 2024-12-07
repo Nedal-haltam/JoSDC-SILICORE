@@ -14,8 +14,40 @@ CLA_8_Block DUT(
 );
 
 initial begin
-    operand1 = 32'hA; operand2 = 32'h1; operation = 1'b1;
+    operand1 = 32'hAAAA34A; operand2 = 32'h14; operation = 1'b0;
     #1000
-    $display("%d %b %d = %d", operand1, operation, operand2, result);
+    $display("%d %b %d = %d", $signed(operand1), operation, $signed(operand2), $signed(result));
+
+    operand1 = -32'hA; operand2 = 32'hBC; operation = 1'b0;
+    #1000
+    $display("%d %b %d = %d", $signed(operand1), operation, $signed(operand2), $signed(result));
+
+    operand1 = 32'h1A; operand2 = -32'hB; operation = 1'b0;
+    #1000
+    $display("%d %b %d = %d", $signed(operand1), operation, $signed(operand2), $signed(result));
+
+    operand1 = 32'hA; operand2 = -32'h7ABFC623; operation = 1'b0;
+    #1000
+    $display("%d %b %d = %d", $signed(operand1), operation, $signed(operand2), $signed(result));
+
+    operand1 = -32'hA; operand2 = 32'h1; operation = 1'b0;
+    #1000
+    $display("%d %b %d = %d", $signed(operand1), operation, $signed(operand2), $signed(result));
+
+    operand1 = 32'h1B4BFA52; operand2 = 32'h341; operation = 1'b1;
+    #1000
+    $display("%d %b %d = %d", $signed(operand1), operation, $signed(operand2), $signed(result));
+
+    operand1 = 32'h52; operand2 = 32'h341; operation = 1'b1;
+    #1000
+    $display("%d %b %d = %d", $signed(operand1), operation, $signed(operand2), $signed(result));
+
+    operand1 = 32'h5432; operand2 = -32'h13341; operation = 1'b1;
+    #1000
+    $display("%d %b %d = %d", $signed(operand1), operation, $signed(operand2), $signed(result));
+
+    operand1 = -32'h32; operand2 = -32'hFFFFFF; operation = 1'b1;
+    #1000
+    $display("%d %b %d = %d", $signed(operand1), operation, $signed(operand2), $signed(result));
 end
 endmodule
