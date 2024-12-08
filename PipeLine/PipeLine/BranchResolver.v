@@ -1,8 +1,8 @@
 
-module BranchResolver(PC_src, exception_flag, ID_opcode, EX_opcode, predicted, predicted_to_EX, Wrong_prediction, rst, clk);
+module BranchResolver(PC_src, ID_opcode, EX1_opcode, EX2_opcode, predicted, predicted_to_EX, Wrong_prediction, rst, clk);
 	
-	input [11:0] ID_opcode, EX_opcode;
-	input exception_flag, rst, Wrong_prediction, clk;
+	input [11:0] ID_opcode, EX1_opcode, EX2_opcode;
+	input rst, Wrong_prediction, clk;
 	
 	output [2:0] PC_src;
 	output predicted, predicted_to_EX;
@@ -10,17 +10,30 @@ module BranchResolver(PC_src, exception_flag, ID_opcode, EX_opcode, predicted, p
 	
 `include "opcodes.txt"
 
-wire [1:0] state;
-BranchPredictor BPU(ID_opcode, EX_opcode, predicted, predicted_to_EX, Wrong_prediction, rst, state, clk);
+// just to refer to the mux
+// MUX_8x1 PC_src_mux(
 
-assign PC_src = (exception_flag) ? 3'b001 : 
+// 0- inst_mem_in + 1'b1
+// 1- handler_addr
+// 2- ID_PFC
+// 3- inst_mem_in
+// 4- EX1_PFC
+// 5- EX2_PFC
+// 0
+// 0
+
+// PC_src, pc_reg_in);
+wire [1:0] state;
+BranchPredictor BPU(ID_opcode, EX2_opcode, predicted, predicted_to_EX, Wrong_prediction, rst, state, clk);
+
+assign PC_src =	(Wrong_prediction) ? 3'b101 : 
 (
-	(Wrong_prediction) ? 3'b100 : 
+	(ID_opcode == hlt_inst) ? 3'b011 : 
 		(
-			(ID_opcode == hlt_inst) ? 3'b011 : 
-				(
-					(predicted || ID_opcode == j || ID_opcode == jal) ? 3'b010 : 0
-				)
+			(EX1_opcode == jr) ? 3'b100 : 
+			(
+				(predicted || ID_opcode == j || ID_opcode == jal) ? 3'b010 : 0
+			)
 		)
 );
 

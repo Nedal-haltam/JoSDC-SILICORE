@@ -1,5 +1,5 @@
 Analysis & Synthesis report for PLCPU
-Sun Dec  8 19:11:48 2024
+Mon Dec  9 01:14:49 2024
 Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
 
 
@@ -36,19 +36,19 @@ Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
  28. Parameter Settings for User Entity Instance: ID_stage:id_stage|BranchResolver:BR|BranchPredictor:BPU
  29. Parameter Settings for User Entity Instance: ID_stage:id_stage|control_unit:cu
  30. Parameter Settings for User Entity Instance: ID_stage:id_stage|StallDetectionUnit:SDU
- 31. Parameter Settings for User Entity Instance: ID_EX_buffer:id_ex_buffer
- 32. Parameter Settings for User Entity Instance: EX_stage:ex_stage
- 33. Parameter Settings for User Entity Instance: EX_stage:ex_stage|MUX_4x1:alu_oper1
- 34. Parameter Settings for User Entity Instance: EX_stage:ex_stage|MUX_4x1:alu_oper2
- 35. Parameter Settings for User Entity Instance: EX_stage:ex_stage|ALU:alu
- 36. Parameter Settings for User Entity Instance: EX_stage:ex_stage|ALU_OPER:alu_oper
- 37. Parameter Settings for User Entity Instance: EX_stage:ex_stage|MUX_4x1:store_rs2_mux
- 38. Parameter Settings for User Entity Instance: MEM_stage:mem_stage|DM:data_mem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component
- 39. Parameter Settings for User Entity Instance: MEM_WB_buffer:mem_wb_buffer
- 40. altsyncram Parameter Settings by Entity Instance
- 41. Port Connectivity Checks: "EX_stage:ex_stage|MUX_4x1:store_rs2_mux"
+ 31. Parameter Settings for User Entity Instance: ID_EX_buffer1:id_ex_buffer1
+ 32. Parameter Settings for User Entity Instance: FORWARDING_stage:forwarding_stage|MUX_4x1:alu_oper1
+ 33. Parameter Settings for User Entity Instance: FORWARDING_stage:forwarding_stage|MUX_4x1:alu_oper2
+ 34. Parameter Settings for User Entity Instance: FORWARDING_stage:forwarding_stage|MUX_4x1:store_rs2_mux
+ 35. Parameter Settings for User Entity Instance: ID_EX_buffer2:id_ex_buffer2
+ 36. Parameter Settings for User Entity Instance: EX_stage:ex_stage
+ 37. Parameter Settings for User Entity Instance: EX_stage:ex_stage|ALU_OPER:alu_oper
+ 38. Parameter Settings for User Entity Instance: EX_stage:ex_stage|ALU:alu
+ 39. Parameter Settings for User Entity Instance: MEM_stage:mem_stage|DM:data_mem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component
+ 40. Parameter Settings for User Entity Instance: MEM_WB_buffer:mem_wb_buffer
+ 41. altsyncram Parameter Settings by Entity Instance
  42. Port Connectivity Checks: "EX_stage:ex_stage|ALU:alu"
- 43. Port Connectivity Checks: "EX_stage:ex_stage|MUX_4x1:alu_oper2"
+ 43. Port Connectivity Checks: "ID_EX_buffer2:id_ex_buffer2"
  44. Port Connectivity Checks: "ID_stage:id_stage|BranchResolver:BR|BranchPredictor:BPU"
  45. Port Connectivity Checks: "ID_stage:id_stage"
  46. Port Connectivity Checks: "IF_stage:if_stage|MUX_8x1:PC_src_mux"
@@ -82,15 +82,15 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                        ;
 +------------------------------------+------------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Sun Dec  8 19:11:48 2024          ;
+; Analysis & Synthesis Status        ; Successful - Mon Dec  9 01:14:49 2024          ;
 ; Quartus Prime Version              ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
 ; Revision Name                      ; PLCPU                                          ;
 ; Top-level Entity Name              ; PL_CPU                                         ;
 ; Family                             ; Cyclone IV E                                   ;
-; Total logic elements               ; 3,924                                          ;
-;     Total combinational functions  ; 2,873                                          ;
-;     Dedicated logic registers      ; 1,468                                          ;
-; Total registers                    ; 1468                                           ;
+; Total logic elements               ; 4,185                                          ;
+;     Total combinational functions  ; 3,102                                          ;
+;     Dedicated logic registers      ; 1,619                                          ;
+; Total registers                    ; 1619                                           ;
 ; Total pins                         ; 66                                             ;
 ; Total virtual pins                 ; 0                                              ;
 ; Total memory bits                  ; 32,768                                         ;
@@ -241,6 +241,7 @@ https://fpgasoftware.intel.com/eula.
 ; branchresolver.v                 ; yes             ; Auto-Found Verilog HDL File            ; D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchresolver.v               ;         ;
 ; branchpredictor.v                ; yes             ; Auto-Found Verilog HDL File            ; D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchpredictor.v              ;         ;
 ; stalldetectionunit.v             ; yes             ; Auto-Found Verilog HDL File            ; D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/stalldetectionunit.v           ;         ;
+; forwarding_stage.v               ; yes             ; Auto-Found Verilog HDL File            ; D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwarding_stage.v             ;         ;
 ; branchdecision.v                 ; yes             ; Auto-Found Verilog HDL File            ; D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchdecision.v               ;         ;
 ; altsyncram.tdf                   ; yes             ; Megafunction                           ; d:/quartus/devices_support/quartus/libraries/megafunctions/altsyncram.tdf        ;         ;
 ; stratix_ram_block.inc            ; yes             ; Megafunction                           ; d:/quartus/devices_support/quartus/libraries/megafunctions/stratix_ram_block.inc ;         ;
@@ -261,20 +262,20 @@ https://fpgasoftware.intel.com/eula.
 +---------------------------------------------+-----------+
 ; Resource                                    ; Usage     ;
 +---------------------------------------------+-----------+
-; Estimated Total logic elements              ; 3,924     ;
+; Estimated Total logic elements              ; 4,185     ;
 ;                                             ;           ;
-; Total combinational functions               ; 2873      ;
+; Total combinational functions               ; 3102      ;
 ; Logic element usage by number of LUT inputs ;           ;
-;     -- 4 input functions                    ; 2084      ;
-;     -- 3 input functions                    ; 568       ;
-;     -- <=2 input functions                  ; 221       ;
+;     -- 4 input functions                    ; 2367      ;
+;     -- 3 input functions                    ; 542       ;
+;     -- <=2 input functions                  ; 193       ;
 ;                                             ;           ;
 ; Logic elements by mode                      ;           ;
-;     -- normal mode                          ; 2701      ;
+;     -- normal mode                          ; 2930      ;
 ;     -- arithmetic mode                      ; 172       ;
 ;                                             ;           ;
-; Total registers                             ; 1468      ;
-;     -- Dedicated logic registers            ; 1468      ;
+; Total registers                             ; 1619      ;
+;     -- Dedicated logic registers            ; 1619      ;
 ;     -- I/O registers                        ; 0         ;
 ;                                             ;           ;
 ; I/O pins                                    ; 66        ;
@@ -282,10 +283,10 @@ https://fpgasoftware.intel.com/eula.
 ;                                             ;           ;
 ; Embedded Multiplier 9-bit elements          ; 0         ;
 ;                                             ;           ;
-; Maximum fan-out node                        ; hlt_logic ;
-; Maximum fan-out                             ; 1500      ;
-; Total fan-out                               ; 16544     ;
-; Average fan-out                             ; 3.67      ;
+; Maximum fan-out node                        ; rst~input ;
+; Maximum fan-out                             ; 1763      ;
+; Total fan-out                               ; 17990     ;
+; Average fan-out                             ; 3.68      ;
 +---------------------------------------------+-----------+
 
 
@@ -294,30 +295,31 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+---------------------------------------------------------------------------------------------------------------------------------+--------------------+--------------+
 ; Compilation Hierarchy Node                      ; Combinational ALUTs ; Dedicated Logic Registers ; Memory Bits ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                                                             ; Entity Name        ; Library Name ;
 +-------------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+---------------------------------------------------------------------------------------------------------------------------------+--------------------+--------------+
-; |PL_CPU                                         ; 2873 (33)           ; 1468 (32)                 ; 32768       ; 0            ; 0       ; 0         ; 66   ; 0            ; |PL_CPU                                                                                                                         ; PL_CPU             ; work         ;
-;    |EX_MEM_buffer:ex_mem_buffer|                ; 32 (32)             ; 84 (84)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_MEM_buffer:ex_mem_buffer                                                                                             ; EX_MEM_buffer      ; work         ;
-;    |EX_stage:ex_stage|                          ; 873 (2)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage                                                                                                       ; EX_stage           ; work         ;
-;       |ALU:alu|                                 ; 630 (630)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage|ALU:alu                                                                                               ; ALU                ; work         ;
+; |PL_CPU                                         ; 3102 (33)           ; 1619 (32)                 ; 32768       ; 0            ; 0       ; 0         ; 66   ; 0            ; |PL_CPU                                                                                                                         ; PL_CPU             ; work         ;
+;    |EX_MEM_buffer:ex_mem_buffer|                ; 0 (0)               ; 84 (84)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_MEM_buffer:ex_mem_buffer                                                                                             ; EX_MEM_buffer      ; work         ;
+;    |EX_stage:ex_stage|                          ; 694 (2)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage                                                                                                       ; EX_stage           ; work         ;
+;       |ALU:alu|                                 ; 633 (633)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage|ALU:alu                                                                                               ; ALU                ; work         ;
 ;       |ALU_OPER:alu_oper|                       ; 31 (31)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage|ALU_OPER:alu_oper                                                                                     ; ALU_OPER           ; work         ;
-;       |BranchDecision:BDU|                      ; 33 (0)              ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage|BranchDecision:BDU                                                                                    ; BranchDecision     ; work         ;
-;          |compare_equal:cmp1|                   ; 33 (33)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage|BranchDecision:BDU|compare_equal:cmp1                                                                 ; compare_equal      ; work         ;
-;       |MUX_4x1:alu_oper1|                       ; 75 (75)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage|MUX_4x1:alu_oper1                                                                                     ; MUX_4x1            ; work         ;
-;       |MUX_4x1:alu_oper2|                       ; 70 (66)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage|MUX_4x1:alu_oper2                                                                                     ; MUX_4x1            ; work         ;
-;          |BITWISEand2:sel0|                     ; 1 (1)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage|MUX_4x1:alu_oper2|BITWISEand2:sel0                                                                    ; BITWISEand2        ; work         ;
-;          |BITWISEand2:sel2|                     ; 3 (3)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage|MUX_4x1:alu_oper2|BITWISEand2:sel2                                                                    ; BITWISEand2        ; work         ;
-;       |MUX_4x1:store_rs2_mux|                   ; 32 (32)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage|MUX_4x1:store_rs2_mux                                                                                 ; MUX_4x1            ; work         ;
-;    |ID_EX_buffer:id_ex_buffer|                  ; 144 (144)           ; 140 (140)                 ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_EX_buffer:id_ex_buffer                                                                                               ; ID_EX_buffer       ; work         ;
-;    |ID_stage:id_stage|                          ; 1463 (11)           ; 1059 (0)                  ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_stage:id_stage                                                                                                       ; ID_stage           ; work         ;
-;       |BranchResolver:BR|                       ; 13 (5)              ; 3 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_stage:id_stage|BranchResolver:BR                                                                                     ; BranchResolver     ; work         ;
+;       |BranchDecision:BDU|                      ; 28 (0)              ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage|BranchDecision:BDU                                                                                    ; BranchDecision     ; work         ;
+;          |compare_equal:cmp1|                   ; 28 (28)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|EX_stage:ex_stage|BranchDecision:BDU|compare_equal:cmp1                                                                 ; compare_equal      ; work         ;
+;    |FORWARDING_stage:forwarding_stage|          ; 293 (0)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|FORWARDING_stage:forwarding_stage                                                                                       ; FORWARDING_stage   ; work         ;
+;       |MUX_4x1:alu_oper1|                       ; 98 (98)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|FORWARDING_stage:forwarding_stage|MUX_4x1:alu_oper1                                                                     ; MUX_4x1            ; work         ;
+;       |MUX_4x1:alu_oper2|                       ; 98 (97)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|FORWARDING_stage:forwarding_stage|MUX_4x1:alu_oper2                                                                     ; MUX_4x1            ; work         ;
+;          |BITWISEand2:sel0|                     ; 1 (1)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|FORWARDING_stage:forwarding_stage|MUX_4x1:alu_oper2|BITWISEand2:sel0                                                    ; BITWISEand2        ; work         ;
+;       |MUX_4x1:store_rs2_mux|                   ; 97 (97)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|FORWARDING_stage:forwarding_stage|MUX_4x1:store_rs2_mux                                                                 ; MUX_4x1            ; work         ;
+;    |ID_EX_buffer1:id_ex_buffer1|                ; 134 (134)           ; 140 (140)                 ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_EX_buffer1:id_ex_buffer1                                                                                             ; ID_EX_buffer1      ; work         ;
+;    |ID_EX_buffer2:id_ex_buffer2|                ; 87 (87)             ; 151 (151)                 ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_EX_buffer2:id_ex_buffer2                                                                                             ; ID_EX_buffer2      ; work         ;
+;    |ID_stage:id_stage|                          ; 1489 (31)           ; 1059 (0)                  ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_stage:id_stage                                                                                                       ; ID_stage           ; work         ;
+;       |BranchResolver:BR|                       ; 21 (13)             ; 3 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_stage:id_stage|BranchResolver:BR                                                                                     ; BranchResolver     ; work         ;
 ;          |BranchPredictor:BPU|                  ; 8 (8)               ; 3 (3)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_stage:id_stage|BranchResolver:BR|BranchPredictor:BPU                                                                 ; BranchPredictor    ; work         ;
-;       |Immed_Gen_unit:immed_gen|                ; 17 (17)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_stage:id_stage|Immed_Gen_unit:immed_gen                                                                              ; Immed_Gen_unit     ; work         ;
+;       |Immed_Gen_unit:immed_gen|                ; 6 (6)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_stage:id_stage|Immed_Gen_unit:immed_gen                                                                              ; Immed_Gen_unit     ; work         ;
 ;       |REG_FILE:reg_file|                       ; 1406 (1406)         ; 1056 (1056)               ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_stage:id_stage|REG_FILE:reg_file                                                                                     ; REG_FILE           ; work         ;
-;       |StallDetectionUnit:SDU|                  ; 14 (14)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_stage:id_stage|StallDetectionUnit:SDU                                                                                ; StallDetectionUnit ; work         ;
-;       |control_unit:cu|                         ; 2 (2)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_stage:id_stage|control_unit:cu                                                                                       ; control_unit       ; work         ;
-;    |IF_ID_buffer:if_id_buffer|                  ; 78 (78)             ; 48 (48)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|IF_ID_buffer:if_id_buffer                                                                                               ; IF_ID_buffer       ; work         ;
-;    |IF_stage:if_stage|                          ; 198 (31)            ; 32 (0)                    ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|IF_stage:if_stage                                                                                                       ; IF_stage           ; work         ;
-;       |IM:inst_mem|                             ; 78 (78)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|IF_stage:if_stage|IM:inst_mem                                                                                           ; IM                 ; work         ;
-;       |MUX_8x1:PC_src_mux|                      ; 89 (89)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|IF_stage:if_stage|MUX_8x1:PC_src_mux                                                                                    ; MUX_8x1            ; work         ;
+;       |StallDetectionUnit:SDU|                  ; 22 (22)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_stage:id_stage|StallDetectionUnit:SDU                                                                                ; StallDetectionUnit ; work         ;
+;       |control_unit:cu|                         ; 3 (3)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|ID_stage:id_stage|control_unit:cu                                                                                       ; control_unit       ; work         ;
+;    |IF_ID_buffer:if_id_buffer|                  ; 75 (75)             ; 48 (48)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|IF_ID_buffer:if_id_buffer                                                                                               ; IF_ID_buffer       ; work         ;
+;    |IF_stage:if_stage|                          ; 233 (31)            ; 32 (0)                    ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|IF_stage:if_stage                                                                                                       ; IF_stage           ; work         ;
+;       |IM:inst_mem|                             ; 77 (77)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|IF_stage:if_stage|IM:inst_mem                                                                                           ; IM                 ; work         ;
+;       |MUX_8x1:PC_src_mux|                      ; 125 (125)           ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|IF_stage:if_stage|MUX_8x1:PC_src_mux                                                                                    ; MUX_8x1            ; work         ;
 ;       |PC_register:pc_reg|                      ; 0 (0)               ; 32 (32)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|IF_stage:if_stage|PC_register:pc_reg                                                                                    ; PC_register        ; work         ;
 ;    |MEM_WB_buffer:mem_wb_buffer|                ; 4 (4)               ; 73 (73)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|MEM_WB_buffer:mem_wb_buffer                                                                                             ; MEM_WB_buffer      ; work         ;
 ;    |MEM_stage:mem_stage|                        ; 0 (0)               ; 0 (0)                     ; 32768       ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|MEM_stage:mem_stage                                                                                                     ; MEM_stage          ; work         ;
@@ -326,9 +328,8 @@ https://fpgasoftware.intel.com/eula.
 ;             |altsyncram:altsyncram_component|   ; 0 (0)               ; 0 (0)                     ; 32768       ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|MEM_stage:mem_stage|DM:data_mem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component                                ; altsyncram         ; work         ;
 ;                |altsyncram_mmk1:auto_generated| ; 0 (0)               ; 0 (0)                     ; 32768       ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|MEM_stage:mem_stage|DM:data_mem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component|altsyncram_mmk1:auto_generated ; altsyncram_mmk1    ; work         ;
 ;    |WB_stage:wb_stage|                          ; 32 (32)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|WB_stage:wb_stage                                                                                                       ; WB_stage           ; work         ;
-;    |forwardA:FA|                                ; 8 (8)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|forwardA:FA                                                                                                             ; forwardA           ; work         ;
-;    |forwardB:FB|                                ; 4 (4)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|forwardB:FB                                                                                                             ; forwardB           ; work         ;
-;    |forwardC:FC|                                ; 4 (4)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|forwardC:FC                                                                                                             ; forwardC           ; work         ;
+;    |forwardA:FA|                                ; 14 (14)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|forwardA:FA                                                                                                             ; forwardA           ; work         ;
+;    |forwardB:FB|                                ; 14 (14)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |PL_CPU|forwardB:FB                                                                                                             ; forwardB           ; work         ;
 +-------------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+---------------------------------------------------------------------------------------------------------------------------------+--------------------+--------------+
 Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
 
@@ -402,6 +403,7 @@ Note: All latches listed above may not be present at the end of synthesis due to
 +-----------------------------------------------------+--------------------------------------------------------+
 ; Register name                                       ; Reason for Removal                                     ;
 +-----------------------------------------------------+--------------------------------------------------------+
+; ID_EX_buffer1:id_ex_buffer1|EX1_PFC[10..31]         ; Stuck at GND due to stuck port data_in                 ;
 ; ID_stage:id_stage|REG_FILE:reg_file|reg_file[0][31] ; Stuck at GND due to stuck port data_in                 ;
 ; ID_stage:id_stage|REG_FILE:reg_file|reg_file[0][30] ; Stuck at GND due to stuck port data_in                 ;
 ; ID_stage:id_stage|REG_FILE:reg_file|reg_file[0][29] ; Stuck at GND due to stuck port data_in                 ;
@@ -434,116 +436,144 @@ Note: All latches listed above may not be present at the end of synthesis due to
 ; ID_stage:id_stage|REG_FILE:reg_file|reg_file[0][2]  ; Stuck at GND due to stuck port data_in                 ;
 ; ID_stage:id_stage|REG_FILE:reg_file|reg_file[0][1]  ; Stuck at GND due to stuck port data_in                 ;
 ; ID_stage:id_stage|REG_FILE:reg_file|reg_file[0][0]  ; Stuck at GND due to stuck port data_in                 ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[10..31]            ; Stuck at GND due to stuck port data_in                 ;
 ; IF_ID_buffer:if_id_buffer|ID_opcode[7]              ; Merged with IF_ID_buffer:if_id_buffer|ID_opcode[11]    ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_opcode[7]           ; Merged with ID_EX_buffer1:id_ex_buffer1|EX1_opcode[11] ;
 ; IF_ID_buffer:if_id_buffer|ID_INST[6,8,9]            ; Merged with IF_ID_buffer:if_id_buffer|ID_INST[10]      ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_opcode[7]           ; Merged with ID_EX_buffer2:id_ex_buffer2|EX2_opcode[11] ;
 ; IF_ID_buffer:if_id_buffer|ID_INST[12]               ; Merged with IF_ID_buffer:if_id_buffer|ID_INST[11]      ;
-; ID_EX_buffer:id_ex_buffer|EX_opcode[7]              ; Merged with ID_EX_buffer:id_ex_buffer|EX_opcode[11]    ;
 ; EX_MEM_buffer:ex_mem_buffer|MEM_opcode[7]           ; Merged with EX_MEM_buffer:ex_mem_buffer|MEM_opcode[11] ;
-; ID_EX_buffer:id_ex_buffer|EX_is_jal                 ; Stuck at GND due to stuck port data_in                 ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[0..10]              ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[10]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[11]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[11]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[12]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[12]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[13]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[13]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[14]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[14]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[15]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[15]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[16]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[16]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[17]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[17]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[18]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[18]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[19]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[19]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[20]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[20]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[21]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[21]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[22]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[22]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[23]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[23]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[24]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[24]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[25]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[25]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[26]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[26]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[27]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[27]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[28]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[28]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[29]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[29]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[30]                 ; Lost fanout                                            ;
-; IF_ID_buffer:if_id_buffer|ID_PC[30]                 ; Lost fanout                                            ;
-; ID_EX_buffer:id_ex_buffer|EX_PC[31]                 ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_is_jal              ; Stuck at GND due to stuck port data_in                 ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_is_jal              ; Stuck at GND due to stuck port data_in                 ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[31]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[31]              ; Lost fanout                                            ;
 ; IF_ID_buffer:if_id_buffer|ID_PC[31]                 ; Lost fanout                                            ;
-; Total Number of Removed Registers = 116             ;                                                        ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[30]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[30]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[30]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[29]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[29]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[29]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[28]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[28]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[28]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[27]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[27]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[27]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[26]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[26]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[26]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[25]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[25]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[25]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[24]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[24]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[24]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[23]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[23]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[23]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[22]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[22]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[22]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[21]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[21]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[21]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[20]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[20]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[20]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[19]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[19]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[19]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[18]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[18]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[18]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[17]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[17]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[17]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[16]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[16]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[16]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[15]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[15]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[15]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[14]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[14]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[14]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[13]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[13]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[13]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[12]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[12]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[12]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[11]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[11]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[11]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[10]              ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[10]              ; Lost fanout                                            ;
+; IF_ID_buffer:if_id_buffer|ID_PC[10]                 ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[9]               ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[9]               ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[8]               ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[8]               ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[7]               ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[7]               ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[6]               ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[6]               ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[5]               ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[5]               ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[4]               ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[4]               ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[3]               ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[3]               ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[2]               ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[2]               ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[1]               ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[1]               ; Lost fanout                                            ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[0]               ; Lost fanout                                            ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_PC[0]               ; Lost fanout                                            ;
+; Total Number of Removed Registers = 150             ;                                                        ;
 +-----------------------------------------------------+--------------------------------------------------------+
 
 
-+---------------------------------------------------------------------------------------------------------------------------------------------+
-; Removed Registers Triggering Further Register Optimizations                                                                                 ;
-+--------------------------------------+---------------------------+--------------------------------------------------------------------------+
-; Register name                        ; Reason for Removal        ; Registers Removed due to This Register                                   ;
-+--------------------------------------+---------------------------+--------------------------------------------------------------------------+
-; ID_EX_buffer:id_ex_buffer|EX_is_jal  ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[0], ID_EX_buffer:id_ex_buffer|EX_PC[1],  ;
-;                                      ; due to stuck port data_in ; ID_EX_buffer:id_ex_buffer|EX_PC[2], ID_EX_buffer:id_ex_buffer|EX_PC[3],  ;
-;                                      ;                           ; ID_EX_buffer:id_ex_buffer|EX_PC[5], ID_EX_buffer:id_ex_buffer|EX_PC[6],  ;
-;                                      ;                           ; ID_EX_buffer:id_ex_buffer|EX_PC[7], ID_EX_buffer:id_ex_buffer|EX_PC[8],  ;
-;                                      ;                           ; ID_EX_buffer:id_ex_buffer|EX_PC[9]                                       ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[31] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[31], IF_ID_buffer:if_id_buffer|ID_PC[31] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[30] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[30], IF_ID_buffer:if_id_buffer|ID_PC[30] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[29] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[29], IF_ID_buffer:if_id_buffer|ID_PC[29] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[28] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[28], IF_ID_buffer:if_id_buffer|ID_PC[28] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[27] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[27], IF_ID_buffer:if_id_buffer|ID_PC[27] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[26] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[26], IF_ID_buffer:if_id_buffer|ID_PC[26] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[25] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[25], IF_ID_buffer:if_id_buffer|ID_PC[25] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[24] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[24], IF_ID_buffer:if_id_buffer|ID_PC[24] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[23] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[23], IF_ID_buffer:if_id_buffer|ID_PC[23] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[22] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[22], IF_ID_buffer:if_id_buffer|ID_PC[22] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[21] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[21], IF_ID_buffer:if_id_buffer|ID_PC[21] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[20] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[20], IF_ID_buffer:if_id_buffer|ID_PC[20] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[19] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[19], IF_ID_buffer:if_id_buffer|ID_PC[19] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[18] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[18], IF_ID_buffer:if_id_buffer|ID_PC[18] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[17] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[17], IF_ID_buffer:if_id_buffer|ID_PC[17] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[16] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[16], IF_ID_buffer:if_id_buffer|ID_PC[16] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[15] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[15], IF_ID_buffer:if_id_buffer|ID_PC[15] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[14] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[14], IF_ID_buffer:if_id_buffer|ID_PC[14] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[13] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[13], IF_ID_buffer:if_id_buffer|ID_PC[13] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[12] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[12], IF_ID_buffer:if_id_buffer|ID_PC[12] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[11] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[11], IF_ID_buffer:if_id_buffer|ID_PC[11] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-; ID_EX_buffer:id_ex_buffer|EX_PFC[10] ; Stuck at GND              ; ID_EX_buffer:id_ex_buffer|EX_PC[10], IF_ID_buffer:if_id_buffer|ID_PC[10] ;
-;                                      ; due to stuck port data_in ;                                                                          ;
-+--------------------------------------+---------------------------+--------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------------------+
+; Removed Registers Triggering Further Register Optimizations                                                                                      ;
++----------------------------------------+---------------------------+-----------------------------------------------------------------------------+
+; Register name                          ; Reason for Removal        ; Registers Removed due to This Register                                      ;
++----------------------------------------+---------------------------+-----------------------------------------------------------------------------+
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[16] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[16], IF_ID_buffer:if_id_buffer|ID_PC[16] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[31] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[31], IF_ID_buffer:if_id_buffer|ID_PC[31] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[30] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[30], IF_ID_buffer:if_id_buffer|ID_PC[30] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[29] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[29], IF_ID_buffer:if_id_buffer|ID_PC[29] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[28] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[28], IF_ID_buffer:if_id_buffer|ID_PC[28] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[27] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[27], IF_ID_buffer:if_id_buffer|ID_PC[27] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[26] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[26], IF_ID_buffer:if_id_buffer|ID_PC[26] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[25] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[25], IF_ID_buffer:if_id_buffer|ID_PC[25] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[24] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[24], IF_ID_buffer:if_id_buffer|ID_PC[24] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[23] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[23], IF_ID_buffer:if_id_buffer|ID_PC[23] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[22] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[22], IF_ID_buffer:if_id_buffer|ID_PC[22] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[21] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[21], IF_ID_buffer:if_id_buffer|ID_PC[21] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[20] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[20], IF_ID_buffer:if_id_buffer|ID_PC[20] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[19] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[19], IF_ID_buffer:if_id_buffer|ID_PC[19] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[18] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[18], IF_ID_buffer:if_id_buffer|ID_PC[18] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[17] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[17], IF_ID_buffer:if_id_buffer|ID_PC[17] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[15] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[15], IF_ID_buffer:if_id_buffer|ID_PC[15] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[14] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[14], IF_ID_buffer:if_id_buffer|ID_PC[14] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[13] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[13], IF_ID_buffer:if_id_buffer|ID_PC[13] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[12] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[12], IF_ID_buffer:if_id_buffer|ID_PC[12] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[11] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[11], IF_ID_buffer:if_id_buffer|ID_PC[11] ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[10] ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[10], IF_ID_buffer:if_id_buffer|ID_PC[10] ;
+; ID_EX_buffer1:id_ex_buffer1|EX1_is_jal ; Stuck at GND              ; ID_EX_buffer2:id_ex_buffer2|EX2_is_jal                                      ;
+;                                        ; due to stuck port data_in ;                                                                             ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[9]  ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[9]                                       ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[8]  ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[8]                                       ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[7]  ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[7]                                       ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[6]  ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[6]                                       ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[5]  ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[5]                                       ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[4]  ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[4]                                       ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[3]  ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[3]                                       ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[2]  ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[2]                                       ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[1]  ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[1]                                       ;
+; ID_EX_buffer2:id_ex_buffer2|EX2_PC[0]  ; Lost Fanouts              ; ID_EX_buffer1:id_ex_buffer1|EX1_PC[0]                                       ;
++----------------------------------------+---------------------------+-----------------------------------------------------------------------------+
 
 
 +------------------------------------------------------+
@@ -551,12 +581,12 @@ Note: All latches listed above may not be present at the end of synthesis due to
 +----------------------------------------------+-------+
 ; Statistic                                    ; Value ;
 +----------------------------------------------+-------+
-; Total registers                              ; 1468  ;
-; Number of registers using Synchronous Clear  ; 27    ;
-; Number of registers using Synchronous Load   ; 42    ;
-; Number of registers using Asynchronous Clear ; 1394  ;
+; Total registers                              ; 1619  ;
+; Number of registers using Synchronous Clear  ; 96    ;
+; Number of registers using Synchronous Load   ; 5     ;
+; Number of registers using Asynchronous Clear ; 1555  ;
 ; Number of registers using Asynchronous Load  ; 0     ;
-; Number of registers using Clock Enable       ; 1079  ;
+; Number of registers using Clock Enable       ; 1069  ;
 ; Number of registers using Preset             ; 0     ;
 +----------------------------------------------+-------+
 
@@ -566,16 +596,16 @@ Note: All latches listed above may not be present at the end of synthesis due to
 +--------------------------------------------------+---------+
 ; Inverted Register                                ; Fan out ;
 +--------------------------------------------------+---------+
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[0]  ; 43      ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[0]  ; 42      ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[1]  ; 45      ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[2]  ; 39      ;
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[3]  ; 43      ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[3]  ; 45      ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[4]  ; 41      ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[5]  ; 6       ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[6]  ; 6       ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[7]  ; 6       ;
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[8]  ; 14      ;
-; IF_stage:if_stage|PC_register:pc_reg|DataOut[9]  ; 12      ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[8]  ; 15      ;
+; IF_stage:if_stage|PC_register:pc_reg|DataOut[9]  ; 15      ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[10] ; 3       ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[11] ; 3       ;
 ; IF_stage:if_stage|PC_register:pc_reg|DataOut[12] ; 3       ;
@@ -602,31 +632,30 @@ Note: All latches listed above may not be present at the end of synthesis due to
 +--------------------------------------------------+---------+
 
 
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                                            ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------+
-; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                                  ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------+
-; 3:1                ; 59 bits   ; 118 LEs       ; 59 LEs               ; 59 LEs                 ; Yes        ; |PL_CPU|IF_ID_buffer:if_id_buffer|ID_rs2_ind[1]             ;
-; 3:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; Yes        ; |PL_CPU|ID_EX_buffer:id_ex_buffer|EX_forward_to_B[8]        ;
-; 3:1                ; 16 bits   ; 32 LEs        ; 32 LEs               ; 0 LEs                  ; Yes        ; |PL_CPU|ID_EX_buffer:id_ex_buffer|EX_forward_to_B[18]       ;
-; 5:1                ; 5 bits    ; 15 LEs        ; 10 LEs               ; 5 LEs                  ; Yes        ; |PL_CPU|ID_EX_buffer:id_ex_buffer|EX_forward_to_B[11]       ;
-; 4:1                ; 6 bits    ; 12 LEs        ; 6 LEs                ; 6 LEs                  ; Yes        ; |PL_CPU|IF_ID_buffer:if_id_buffer|ID_opcode[1]              ;
-; 4:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; Yes        ; |PL_CPU|IF_ID_buffer:if_id_buffer|ID_rd_ind[2]              ;
-; 4:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; Yes        ; |PL_CPU|IF_ID_buffer:if_id_buffer|ID_rs1_ind[1]             ;
-; 33:1               ; 32 bits   ; 704 LEs       ; 704 LEs              ; 0 LEs                  ; Yes        ; |PL_CPU|ID_stage:id_stage|REG_FILE:reg_file|Read_data1[27]  ;
-; 33:1               ; 32 bits   ; 704 LEs       ; 704 LEs              ; 0 LEs                  ; Yes        ; |PL_CPU|ID_stage:id_stage|REG_FILE:reg_file|Read_data2[6]   ;
-; 3:1                ; 5 bits    ; 10 LEs        ; 5 LEs                ; 5 LEs                  ; No         ; |PL_CPU|ID_stage:id_stage|Immed_Gen_unit:immed_gen|Immed[6] ;
-; 3:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; No         ; |PL_CPU|ID_stage:id_stage|Immed_Gen_unit:immed_gen|Immed[3] ;
-; 3:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |PL_CPU|ID_stage:id_stage|StallDetectionUnit:SDU|PC_Write   ;
-; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux25                     ;
-; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux10                     ;
-; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux29                     ;
-; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux7                      ;
-; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux30                     ;
-; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux4                      ;
-; 18:1               ; 2 bits    ; 24 LEs        ; 18 LEs               ; 6 LEs                  ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux33                     ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                                           ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+------------------------------------------------------------+
+; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                                 ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+------------------------------------------------------------+
+; 3:1                ; 59 bits   ; 118 LEs       ; 59 LEs               ; 59 LEs                 ; Yes        ; |PL_CPU|IF_ID_buffer:if_id_buffer|ID_PC[10]                ;
+; 3:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; Yes        ; |PL_CPU|ID_EX_buffer1:id_ex_buffer1|EX1_PFC[1]             ;
+; 3:1                ; 16 bits   ; 32 LEs        ; 32 LEs               ; 0 LEs                  ; Yes        ; |PL_CPU|ID_EX_buffer1:id_ex_buffer1|EX1_forward_to_B[24]   ;
+; 4:1                ; 6 bits    ; 12 LEs        ; 6 LEs                ; 6 LEs                  ; Yes        ; |PL_CPU|IF_ID_buffer:if_id_buffer|ID_opcode[0]             ;
+; 4:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; Yes        ; |PL_CPU|IF_ID_buffer:if_id_buffer|ID_rd_ind[0]             ;
+; 4:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; Yes        ; |PL_CPU|IF_ID_buffer:if_id_buffer|ID_rs1_ind[3]            ;
+; 5:1                ; 10 bits   ; 30 LEs        ; 20 LEs               ; 10 LEs                 ; Yes        ; |PL_CPU|ID_EX_buffer1:id_ex_buffer1|EX1_forward_to_B[13]   ;
+; 5:1                ; 5 bits    ; 15 LEs        ; 10 LEs               ; 5 LEs                  ; Yes        ; |PL_CPU|ID_EX_buffer1:id_ex_buffer1|EX1_forward_to_B[2]    ;
+; 33:1               ; 32 bits   ; 704 LEs       ; 704 LEs              ; 0 LEs                  ; Yes        ; |PL_CPU|ID_stage:id_stage|REG_FILE:reg_file|Read_data1[27] ;
+; 33:1               ; 32 bits   ; 704 LEs       ; 704 LEs              ; 0 LEs                  ; Yes        ; |PL_CPU|ID_stage:id_stage|REG_FILE:reg_file|Read_data2[29] ;
+; 3:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |PL_CPU|ID_stage:id_stage|StallDetectionUnit:SDU|PC_Write  ;
+; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux18                    ;
+; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux16                    ;
+; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux26                    ;
+; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux6                     ;
+; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux30                    ;
+; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux4                     ;
+; 18:1               ; 2 bits    ; 24 LEs        ; 18 LEs               ; 6 LEs                  ; No         ; |PL_CPU|EX_stage:ex_stage|ALU:alu|Mux33                    ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+------------------------------------------------------------+
 
 
 +------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -1018,37 +1047,101 @@ Note: In order to hide this table in the UI and the text report file, please set
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
-+------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: ID_EX_buffer:id_ex_buffer ;
-+----------------+--------------+----------------------------------------+
-; Parameter Name ; Value        ; Type                                   ;
-+----------------+--------------+----------------------------------------+
-; add            ; 000000100000 ; Unsigned Binary                        ;
-; addu           ; 000000100001 ; Unsigned Binary                        ;
-; sub            ; 000000100010 ; Unsigned Binary                        ;
-; subu           ; 000000100011 ; Unsigned Binary                        ;
-; and_           ; 000000100100 ; Unsigned Binary                        ;
-; or_            ; 000000100101 ; Unsigned Binary                        ;
-; xor_           ; 000000100110 ; Unsigned Binary                        ;
-; nor_           ; 000000100111 ; Unsigned Binary                        ;
-; sll            ; 000000000000 ; Unsigned Binary                        ;
-; srl            ; 000000000010 ; Unsigned Binary                        ;
-; slt            ; 000000101010 ; Unsigned Binary                        ;
-; sgt            ; 000000101011 ; Unsigned Binary                        ;
-; jr             ; 000000001000 ; Unsigned Binary                        ;
-; addi           ; 001000000000 ; Unsigned Binary                        ;
-; andi           ; 001100000000 ; Unsigned Binary                        ;
-; ori            ; 001101000000 ; Unsigned Binary                        ;
-; xori           ; 001110000000 ; Unsigned Binary                        ;
-; lw             ; 100011000000 ; Unsigned Binary                        ;
-; sw             ; 101011000000 ; Unsigned Binary                        ;
-; slti           ; 001010000000 ; Unsigned Binary                        ;
-; beq            ; 000100000000 ; Unsigned Binary                        ;
-; bne            ; 000101000000 ; Unsigned Binary                        ;
-; j              ; 000010000000 ; Unsigned Binary                        ;
-; jal            ; 000011000000 ; Unsigned Binary                        ;
-; hlt_inst       ; 111111000000 ; Unsigned Binary                        ;
-+----------------+--------------+----------------------------------------+
++--------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: ID_EX_buffer1:id_ex_buffer1 ;
++----------------+--------------+------------------------------------------+
+; Parameter Name ; Value        ; Type                                     ;
++----------------+--------------+------------------------------------------+
+; add            ; 000000100000 ; Unsigned Binary                          ;
+; addu           ; 000000100001 ; Unsigned Binary                          ;
+; sub            ; 000000100010 ; Unsigned Binary                          ;
+; subu           ; 000000100011 ; Unsigned Binary                          ;
+; and_           ; 000000100100 ; Unsigned Binary                          ;
+; or_            ; 000000100101 ; Unsigned Binary                          ;
+; xor_           ; 000000100110 ; Unsigned Binary                          ;
+; nor_           ; 000000100111 ; Unsigned Binary                          ;
+; sll            ; 000000000000 ; Unsigned Binary                          ;
+; srl            ; 000000000010 ; Unsigned Binary                          ;
+; slt            ; 000000101010 ; Unsigned Binary                          ;
+; sgt            ; 000000101011 ; Unsigned Binary                          ;
+; jr             ; 000000001000 ; Unsigned Binary                          ;
+; addi           ; 001000000000 ; Unsigned Binary                          ;
+; andi           ; 001100000000 ; Unsigned Binary                          ;
+; ori            ; 001101000000 ; Unsigned Binary                          ;
+; xori           ; 001110000000 ; Unsigned Binary                          ;
+; lw             ; 100011000000 ; Unsigned Binary                          ;
+; sw             ; 101011000000 ; Unsigned Binary                          ;
+; slti           ; 001010000000 ; Unsigned Binary                          ;
+; beq            ; 000100000000 ; Unsigned Binary                          ;
+; bne            ; 000101000000 ; Unsigned Binary                          ;
+; j              ; 000010000000 ; Unsigned Binary                          ;
+; jal            ; 000011000000 ; Unsigned Binary                          ;
+; hlt_inst       ; 111111000000 ; Unsigned Binary                          ;
++----------------+--------------+------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: FORWARDING_stage:forwarding_stage|MUX_4x1:alu_oper1 ;
++----------------+-------+-------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                    ;
++----------------+-------+-------------------------------------------------------------------------+
+; bit_width      ; 32    ; Signed Integer                                                          ;
++----------------+-------+-------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: FORWARDING_stage:forwarding_stage|MUX_4x1:alu_oper2 ;
++----------------+-------+-------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                    ;
++----------------+-------+-------------------------------------------------------------------------+
+; bit_width      ; 32    ; Signed Integer                                                          ;
++----------------+-------+-------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: FORWARDING_stage:forwarding_stage|MUX_4x1:store_rs2_mux ;
++----------------+-------+-----------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                        ;
++----------------+-------+-----------------------------------------------------------------------------+
+; bit_width      ; 32    ; Signed Integer                                                              ;
++----------------+-------+-----------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: ID_EX_buffer2:id_ex_buffer2 ;
++----------------+--------------+------------------------------------------+
+; Parameter Name ; Value        ; Type                                     ;
++----------------+--------------+------------------------------------------+
+; add            ; 000000100000 ; Unsigned Binary                          ;
+; addu           ; 000000100001 ; Unsigned Binary                          ;
+; sub            ; 000000100010 ; Unsigned Binary                          ;
+; subu           ; 000000100011 ; Unsigned Binary                          ;
+; and_           ; 000000100100 ; Unsigned Binary                          ;
+; or_            ; 000000100101 ; Unsigned Binary                          ;
+; xor_           ; 000000100110 ; Unsigned Binary                          ;
+; nor_           ; 000000100111 ; Unsigned Binary                          ;
+; sll            ; 000000000000 ; Unsigned Binary                          ;
+; srl            ; 000000000010 ; Unsigned Binary                          ;
+; slt            ; 000000101010 ; Unsigned Binary                          ;
+; sgt            ; 000000101011 ; Unsigned Binary                          ;
+; jr             ; 000000001000 ; Unsigned Binary                          ;
+; addi           ; 001000000000 ; Unsigned Binary                          ;
+; andi           ; 001100000000 ; Unsigned Binary                          ;
+; ori            ; 001101000000 ; Unsigned Binary                          ;
+; xori           ; 001110000000 ; Unsigned Binary                          ;
+; lw             ; 100011000000 ; Unsigned Binary                          ;
+; sw             ; 101011000000 ; Unsigned Binary                          ;
+; slti           ; 001010000000 ; Unsigned Binary                          ;
+; beq            ; 000100000000 ; Unsigned Binary                          ;
+; bne            ; 000101000000 ; Unsigned Binary                          ;
+; j              ; 000010000000 ; Unsigned Binary                          ;
+; jal            ; 000011000000 ; Unsigned Binary                          ;
+; hlt_inst       ; 111111000000 ; Unsigned Binary                          ;
++----------------+--------------+------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
@@ -1087,36 +1180,6 @@ Note: In order to hide this table in the UI and the text report file, please set
 
 
 +----------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: EX_stage:ex_stage|MUX_4x1:alu_oper1 ;
-+----------------+-------+---------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                    ;
-+----------------+-------+---------------------------------------------------------+
-; bit_width      ; 32    ; Signed Integer                                          ;
-+----------------+-------+---------------------------------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+----------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: EX_stage:ex_stage|MUX_4x1:alu_oper2 ;
-+----------------+-------+---------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                    ;
-+----------------+-------+---------------------------------------------------------+
-; bit_width      ; 32    ; Signed Integer                                          ;
-+----------------+-------+---------------------------------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: EX_stage:ex_stage|ALU:alu ;
-+----------------+-------+-----------------------------------------------+
-; Parameter Name ; Value ; Type                                          ;
-+----------------+-------+-----------------------------------------------+
-; bit_width      ; 32    ; Signed Integer                                ;
-+----------------+-------+-----------------------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+----------------------------------------------------------------------------------+
 ; Parameter Settings for User Entity Instance: EX_stage:ex_stage|ALU_OPER:alu_oper ;
 +----------------+--------------+--------------------------------------------------+
 ; Parameter Name ; Value        ; Type                                             ;
@@ -1150,13 +1213,13 @@ Note: In order to hide this table in the UI and the text report file, please set
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
-+--------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: EX_stage:ex_stage|MUX_4x1:store_rs2_mux ;
-+----------------+-------+-------------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                        ;
-+----------------+-------+-------------------------------------------------------------+
-; bit_width      ; 32    ; Signed Integer                                              ;
-+----------------+-------+-------------------------------------------------------------+
++------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: EX_stage:ex_stage|ALU:alu ;
++----------------+-------+-----------------------------------------------+
+; Parameter Name ; Value ; Type                                          ;
++----------------+-------+-----------------------------------------------+
+; bit_width      ; 32    ; Signed Integer                                ;
++----------------+-------+-----------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
@@ -1275,15 +1338,6 @@ Note: In order to hide this table in the UI and the text report file, please set
 +-------------------------------------------+------------------------------------------------------------------------------------------+
 
 
-+---------------------------------------------------------------------+
-; Port Connectivity Checks: "EX_stage:ex_stage|MUX_4x1:store_rs2_mux" ;
-+------+-------+----------+-------------------------------------------+
-; Port ; Type  ; Severity ; Details                                   ;
-+------+-------+----------+-------------------------------------------+
-; ind  ; Input ; Info     ; Stuck at GND                              ;
-+------+-------+----------+-------------------------------------------+
-
-
 +----------------------------------------------------------------------------------------------------------------+
 ; Port Connectivity Checks: "EX_stage:ex_stage|ALU:alu"                                                          ;
 +------+--------+----------+-------------------------------------------------------------------------------------+
@@ -1294,14 +1348,18 @@ Note: In order to hide this table in the UI and the text report file, please set
 +------+--------+----------+-------------------------------------------------------------------------------------+
 
 
-+-----------------------------------------------------------------+
-; Port Connectivity Checks: "EX_stage:ex_stage|MUX_4x1:alu_oper2" ;
-+------------+-------+----------+---------------------------------+
-; Port       ; Type  ; Severity ; Details                         ;
-+------------+-------+----------+---------------------------------+
-; ind[31..1] ; Input ; Info     ; Stuck at GND                    ;
-; ind[0]     ; Input ; Info     ; Stuck at VCC                    ;
-+------------+-------+----------+---------------------------------+
++------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "ID_EX_buffer2:id_ex_buffer2"                                                                      ;
++--------------------+--------+----------+-------------------------------------------------------------------------------------+
+; Port               ; Type   ; Severity ; Details                                                                             ;
++--------------------+--------+----------+-------------------------------------------------------------------------------------+
+; EX2_rs1_ind        ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; EX2_rs2_ind        ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; EX2_rs1            ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; EX2_is_oper2_immed ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; EX2_is_jr          ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; EX2_forward_to_B   ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++--------------------+--------+----------+-------------------------------------------------------------------------------------+
 
 
 +-----------------------------------------------------------------------------------------------------------------+
@@ -1318,8 +1376,6 @@ Note: In order to hide this table in the UI and the text report file, please set
 +---------------------+--------+----------+-------------------------------------------------------------------------------------+
 ; Port                ; Type   ; Severity ; Details                                                                             ;
 +---------------------+--------+----------+-------------------------------------------------------------------------------------+
-; exception_flag      ; Input  ; Info     ; Stuck at GND                                                                        ;
-; imm                 ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
 ; ID_is_j             ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
 ; is_branch_and_taken ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
 +---------------------+--------+----------+-------------------------------------------------------------------------------------+
@@ -1335,7 +1391,6 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; inb[2..0]   ; Input ; Info     ; Stuck at GND                    ;
 ; inb[4]      ; Input ; Info     ; Stuck at GND                    ;
 ; inb[3]      ; Input ; Info     ; Stuck at VCC                    ;
-; inf         ; Input ; Info     ; Stuck at GND                    ;
 ; ing         ; Input ; Info     ; Stuck at GND                    ;
 ; inh         ; Input ; Info     ; Stuck at GND                    ;
 +-------------+-------+----------+---------------------------------+
@@ -1347,26 +1402,25 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; Type                  ; Count                       ;
 +-----------------------+-----------------------------+
 ; boundary_port         ; 66                          ;
-; cycloneiii_ff         ; 1468                        ;
-;     CLR               ; 266                         ;
-;     CLR SCLR          ; 27                          ;
-;     CLR SLD           ; 32                          ;
+; cycloneiii_ff         ; 1619                        ;
+;     CLR               ; 390                         ;
+;     CLR SCLR          ; 91                          ;
+;     CLR SCLR SLD      ; 5                           ;
 ;     ENA CLR           ; 1069                        ;
-;     ENA SLD           ; 10                          ;
 ;     plain             ; 64                          ;
-; cycloneiii_lcell_comb ; 2905                        ;
+; cycloneiii_lcell_comb ; 3134                        ;
 ;     arith             ; 172                         ;
 ;         2 data inputs ; 68                          ;
 ;         3 data inputs ; 104                         ;
-;     normal            ; 2733                        ;
+;     normal            ; 2962                        ;
 ;         1 data inputs ; 36                          ;
-;         2 data inputs ; 149                         ;
-;         3 data inputs ; 464                         ;
-;         4 data inputs ; 2084                        ;
+;         2 data inputs ; 121                         ;
+;         3 data inputs ; 438                         ;
+;         4 data inputs ; 2367                        ;
 ; cycloneiii_ram_block  ; 32                          ;
 ;                       ;                             ;
-; Max LUT depth         ; 15.00                       ;
-; Average LUT depth     ; 7.28                        ;
+; Max LUT depth         ; 10.00                       ;
+; Average LUT depth     ; 5.72                        ;
 +-----------------------+-----------------------------+
 
 
@@ -1385,7 +1439,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
-    Info: Processing started: Sun Dec  8 19:11:28 2024
+    Info: Processing started: Mon Dec  9 01:14:29 2024
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off PLCPU -c PLCPU
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 6 of the 6 processors detected
@@ -1406,9 +1460,10 @@ Info (12021): Found 1 design units, including 1 entities, in source file alu_ope
     Info (12023): Found entity 1: ALU_OPER File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 15
 Warning (12019): Can't analyze file -- file comparator.v is missing
 Info (12021): Found 1 design units, including 1 entities, in source file if_id_buffer.v
-    Info (12023): Found entity 1: IF_ID_buffer File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/IF_ID_buffer.v Line: 84
-Info (12021): Found 1 design units, including 1 entities, in source file id_ex_buffer.v
-    Info (12023): Found entity 1: ID_EX_buffer File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_EX_buffer.v Line: 2
+    Info (12023): Found entity 1: IF_ID_buffer File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/IF_ID_buffer.v Line: 1
+Info (12021): Found 2 design units, including 2 entities, in source file id_ex_buffer.v
+    Info (12023): Found entity 1: ID_EX_buffer1 File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_EX_buffer.v Line: 1
+    Info (12023): Found entity 2: ID_EX_buffer2 File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_EX_buffer.v Line: 99
 Info (12021): Found 1 design units, including 1 entities, in source file ex_mem_buffer.v
     Info (12023): Found entity 1: EX_MEM_buffer File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/EX_MEM_buffer.v Line: 2
 Warning (10238): Verilog Module Declaration warning at MEM_WB_buffer.v(7): ignored anonymous port(s) indicated by duplicate or dangling comma(s) in the port list for module "MEM_WB_buffer" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/MEM_WB_buffer.v Line: 7
@@ -1430,8 +1485,7 @@ Info (12021): Found 1 design units, including 1 entities, in source file mem_sta
     Info (12023): Found entity 1: MEM_stage File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/MEM_stage.v Line: 3
 Info (12021): Found 1 design units, including 1 entities, in source file wb_stage.v
     Info (12023): Found entity 1: WB_stage File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/WB_stage.v Line: 3
-Info (12021): Found 1 design units, including 1 entities, in source file exception_detect_unit.v
-    Info (12023): Found entity 1: exception_detect_unit File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/exception_detect_unit.v Line: 4
+Warning (12019): Can't analyze file -- file exception_detect_unit.v is missing
 Warning (12019): Can't analyze file -- file MUX_2x1.v is missing
 Info (12021): Found 1 design units, including 1 entities, in source file im.v
     Info (12023): Found entity 1: IM File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/IM.v Line: 1
@@ -1445,20 +1499,20 @@ Info (12021): Found 1 design units, including 1 entities, in source file datamem
     Info (12023): Found entity 1: DataMemory_IP File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/DataMemory_IP.v Line: 40
 Info (12021): Found 1 design units, including 1 entities, in source file pipeline_sim.v
     Info (12023): Found entity 1: PipeLine_sim File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PipeLine_sim.v Line: 45
-Warning (10275): Verilog HDL Module Instantiation warning at PL_CPU.v(106): ignored dangling comma in List of Port Connections File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 106
+Warning (10275): Verilog HDL Module Instantiation warning at PL_CPU.v(198): ignored dangling comma in List of Port Connections File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 198
 Info (12021): Found 1 design units, including 1 entities, in source file pl_cpu.v
     Info (12023): Found entity 1: PL_CPU File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 2
 Info (12127): Elaborating entity "PL_CPU" for the top level hierarchy
 Warning (12125): Using design file forwarda.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
-    Info (12023): Found entity 1: forwardA File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwarda.v Line: 2
-Info (12128): Elaborating entity "forwardA" for hierarchy "forwardA:FA" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 39
+    Info (12023): Found entity 1: forwardA File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwarda.v Line: 1
+Info (12128): Elaborating entity "forwardA" for hierarchy "forwardA:FA" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 63
 Warning (12125): Using design file forwardb.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
-    Info (12023): Found entity 1: forwardB File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwardb.v Line: 2
-Info (12128): Elaborating entity "forwardB" for hierarchy "forwardB:FB" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 42
+    Info (12023): Found entity 1: forwardB File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwardb.v Line: 1
+Info (12128): Elaborating entity "forwardB" for hierarchy "forwardB:FB" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 74
 Warning (12125): Using design file forwardc.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
-    Info (12023): Found entity 1: forwardC File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwardc.v Line: 2
-Info (12128): Elaborating entity "forwardC" for hierarchy "forwardC:FC" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 45
-Info (12128): Elaborating entity "IF_stage" for hierarchy "IF_stage:if_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 51
+    Info (12023): Found entity 1: forwardC File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwardc.v Line: 1
+Info (12128): Elaborating entity "forwardC" for hierarchy "forwardC:FC" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 85
+Info (12128): Elaborating entity "IF_stage" for hierarchy "IF_stage:if_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 91
 Info (12128): Elaborating entity "MUX_8x1" for hierarchy "IF_stage:if_stage|MUX_8x1:PC_src_mux" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/IF_stage.v Line: 19
 Info (12128): Elaborating entity "BITWISEand3" for hierarchy "IF_stage:if_stage|MUX_8x1:PC_src_mux|BITWISEand3:sel0" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/MUX_8x1.v Line: 23
 Info (12128): Elaborating entity "PC_register" for hierarchy "IF_stage:if_stage|PC_register:pc_reg" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/IF_stage.v Line: 21
@@ -1466,8 +1520,8 @@ Info (12128): Elaborating entity "IM" for hierarchy "IF_stage:if_stage|IM:inst_m
 Warning (10030): Net "InstMem.data_a" at IM.v(8) has no driver or initial value, using a default initial value '0' File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/IM.v Line: 8
 Warning (10030): Net "InstMem.waddr_a" at IM.v(8) has no driver or initial value, using a default initial value '0' File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/IM.v Line: 8
 Warning (10030): Net "InstMem.we_a" at IM.v(8) has no driver or initial value, using a default initial value '0' File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/IM.v Line: 8
-Info (12128): Elaborating entity "IF_ID_buffer" for hierarchy "IF_ID_buffer:if_id_buffer" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 54
-Info (12128): Elaborating entity "ID_stage" for hierarchy "ID_stage:id_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 66
+Info (12128): Elaborating entity "IF_ID_buffer" for hierarchy "IF_ID_buffer:if_id_buffer" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 94
+Info (12128): Elaborating entity "ID_stage" for hierarchy "ID_stage:id_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 106
 Info (12128): Elaborating entity "REG_FILE" for hierarchy "ID_stage:id_stage|REG_FILE:reg_file" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_stage.v Line: 28
 Warning (10240): Verilog HDL Always Construct warning at REG_FILE.v(15): inferring latch(es) for variable "i", which holds its previous value in one or more paths through the always construct File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/REG_FILE.v Line: 15
 Info (12128): Elaborating entity "Immed_Gen_unit" for hierarchy "ID_stage:id_stage|Immed_Gen_unit:immed_gen" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_stage.v Line: 30
@@ -1477,19 +1531,30 @@ Warning (10230): Verilog HDL assignment warning at Immed_Gen_unit.v(29): truncat
 Warning (12125): Using design file branchresolver.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: BranchResolver File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchresolver.v Line: 2
 Info (12128): Elaborating entity "BranchResolver" for hierarchy "ID_stage:id_stage|BranchResolver:BR" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_stage.v Line: 42
-Warning (10230): Verilog HDL assignment warning at branchresolver.v(16): truncated value with size 32 to match size of target (3) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchresolver.v Line: 16
+Warning (10230): Verilog HDL assignment warning at branchresolver.v(29): truncated value with size 32 to match size of target (3) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchresolver.v Line: 29
 Warning (12125): Using design file branchpredictor.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: BranchPredictor File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchpredictor.v Line: 1
-Info (12128): Elaborating entity "BranchPredictor" for hierarchy "ID_stage:id_stage|BranchResolver:BR|BranchPredictor:BPU" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchresolver.v Line: 14
+Info (12128): Elaborating entity "BranchPredictor" for hierarchy "ID_stage:id_stage|BranchResolver:BR|BranchPredictor:BPU" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchresolver.v Line: 27
 Info (12128): Elaborating entity "control_unit" for hierarchy "ID_stage:id_stage|control_unit:cu" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_stage.v Line: 44
 Warning (12125): Using design file stalldetectionunit.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: StallDetectionUnit File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/stalldetectionunit.v Line: 1
 Info (12128): Elaborating entity "StallDetectionUnit" for hierarchy "ID_stage:id_stage|StallDetectionUnit:SDU" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_stage.v Line: 47
-Info (12128): Elaborating entity "ID_EX_buffer" for hierarchy "ID_EX_buffer:id_ex_buffer" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 76
-Info (12128): Elaborating entity "EX_stage" for hierarchy "EX_stage:ex_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 85
-Info (12128): Elaborating entity "MUX_4x1" for hierarchy "EX_stage:ex_stage|MUX_4x1:alu_oper1" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/EX_stage.v Line: 19
-Info (12128): Elaborating entity "BITWISEand2" for hierarchy "EX_stage:ex_stage|MUX_4x1:alu_oper1|BITWISEand2:sel0" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/MUX_4x1.v Line: 20
-Info (12128): Elaborating entity "ALU" for hierarchy "EX_stage:ex_stage|ALU:alu" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/EX_stage.v Line: 23
+Info (12128): Elaborating entity "ID_EX_buffer1" for hierarchy "ID_EX_buffer1:id_ex_buffer1" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 131
+Warning (12125): Using design file forwarding_stage.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: FORWARDING_stage File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwarding_stage.v Line: 1
+Info (12128): Elaborating entity "FORWARDING_stage" for hierarchy "FORWARDING_stage:forwarding_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 140
+Info (12128): Elaborating entity "MUX_4x1" for hierarchy "FORWARDING_stage:forwarding_stage|MUX_4x1:alu_oper1" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwarding_stage.v Line: 21
+Info (12128): Elaborating entity "BITWISEand2" for hierarchy "FORWARDING_stage:forwarding_stage|MUX_4x1:alu_oper1|BITWISEand2:sel0" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/MUX_4x1.v Line: 20
+Info (12128): Elaborating entity "ID_EX_buffer2" for hierarchy "ID_EX_buffer2:id_ex_buffer2" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 153
+Info (12128): Elaborating entity "EX_stage" for hierarchy "EX_stage:ex_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 159
+Info (12128): Elaborating entity "ALU_OPER" for hierarchy "EX_stage:ex_stage|ALU_OPER:alu_oper" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/EX_stage.v Line: 16
+Warning (10270): Verilog HDL Case Statement warning at ALU_OPER.v(25): incomplete case statement has no default case item File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
+Warning (10240): Verilog HDL Always Construct warning at ALU_OPER.v(25): inferring latch(es) for variable "ALU_OP", which holds its previous value in one or more paths through the always construct File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
+Info (10041): Inferred latch for "ALU_OP[0]" at ALU_OPER.v(25) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
+Info (10041): Inferred latch for "ALU_OP[1]" at ALU_OPER.v(25) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
+Info (10041): Inferred latch for "ALU_OP[2]" at ALU_OPER.v(25) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
+Info (10041): Inferred latch for "ALU_OP[3]" at ALU_OPER.v(25) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
+Info (12128): Elaborating entity "ALU" for hierarchy "EX_stage:ex_stage|ALU:alu" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/EX_stage.v Line: 18
 Warning (10230): Verilog HDL assignment warning at ALU.v(46): truncated value with size 32 to match size of target (1) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU.v Line: 46
 Warning (10230): Verilog HDL assignment warning at ALU.v(50): truncated value with size 32 to match size of target (1) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU.v Line: 50
 Warning (10270): Verilog HDL Case Statement warning at ALU.v(25): incomplete case statement has no default case item File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU.v Line: 25
@@ -1528,19 +1593,12 @@ Info (10041): Inferred latch for "res[29]" at ALU.v(25) File: D:/GitHub Repos/Jo
 Info (10041): Inferred latch for "res[30]" at ALU.v(25) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU.v Line: 25
 Info (10041): Inferred latch for "res[31]" at ALU.v(25) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU.v Line: 25
 Info (10041): Inferred latch for "CF" at ALU.v(25) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU.v Line: 25
-Info (12128): Elaborating entity "ALU_OPER" for hierarchy "EX_stage:ex_stage|ALU_OPER:alu_oper" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/EX_stage.v Line: 25
-Warning (10270): Verilog HDL Case Statement warning at ALU_OPER.v(25): incomplete case statement has no default case item File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
-Warning (10240): Verilog HDL Always Construct warning at ALU_OPER.v(25): inferring latch(es) for variable "ALU_OP", which holds its previous value in one or more paths through the always construct File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
-Info (10041): Inferred latch for "ALU_OP[0]" at ALU_OPER.v(25) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
-Info (10041): Inferred latch for "ALU_OP[1]" at ALU_OPER.v(25) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
-Info (10041): Inferred latch for "ALU_OP[2]" at ALU_OPER.v(25) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
-Info (10041): Inferred latch for "ALU_OP[3]" at ALU_OPER.v(25) File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
 Warning (12125): Using design file branchdecision.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: BranchDecision File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchdecision.v Line: 1
-Info (12128): Elaborating entity "BranchDecision" for hierarchy "EX_stage:ex_stage|BranchDecision:BDU" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/EX_stage.v Line: 31
+Info (12128): Elaborating entity "BranchDecision" for hierarchy "EX_stage:ex_stage|BranchDecision:BDU" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/EX_stage.v Line: 22
 Info (12128): Elaborating entity "compare_equal" for hierarchy "EX_stage:ex_stage|BranchDecision:BDU|compare_equal:cmp1" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchdecision.v Line: 15
-Info (12128): Elaborating entity "EX_MEM_buffer" for hierarchy "EX_MEM_buffer:ex_mem_buffer" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 94
-Info (12128): Elaborating entity "MEM_stage" for hierarchy "MEM_stage:mem_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 97
+Info (12128): Elaborating entity "EX_MEM_buffer" for hierarchy "EX_MEM_buffer:ex_mem_buffer" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 186
+Info (12128): Elaborating entity "MEM_stage" for hierarchy "MEM_stage:mem_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 189
 Info (12128): Elaborating entity "DM" for hierarchy "MEM_stage:mem_stage|DM:data_mem" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/MEM_stage.v Line: 10
 Info (12128): Elaborating entity "DataMemory_IP" for hierarchy "MEM_stage:mem_stage|DM:data_mem|DataMemory_IP:DataMemory" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/DM.v Line: 33
 Info (12128): Elaborating entity "altsyncram" for hierarchy "MEM_stage:mem_stage|DM:data_mem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/DataMemory_IP.v Line: 86
@@ -1565,8 +1623,8 @@ Info (12133): Instantiated megafunction "MEM_stage:mem_stage|DM:data_mem|DataMem
 Info (12021): Found 1 design units, including 1 entities, in source file db/altsyncram_mmk1.tdf
     Info (12023): Found entity 1: altsyncram_mmk1 File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/db/altsyncram_mmk1.tdf Line: 28
 Info (12128): Elaborating entity "altsyncram_mmk1" for hierarchy "MEM_stage:mem_stage|DM:data_mem|DataMemory_IP:DataMemory|altsyncram:altsyncram_component|altsyncram_mmk1:auto_generated" File: d:/quartus/devices_support/quartus/libraries/megafunctions/altsyncram.tdf Line: 792
-Info (12128): Elaborating entity "MEM_WB_buffer" for hierarchy "MEM_WB_buffer:mem_wb_buffer" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 106
-Info (12128): Elaborating entity "WB_stage" for hierarchy "WB_stage:wb_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 109
+Info (12128): Elaborating entity "MEM_WB_buffer" for hierarchy "MEM_WB_buffer:mem_wb_buffer" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 198
+Info (12128): Elaborating entity "WB_stage" for hierarchy "WB_stage:wb_stage" File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v Line: 201
 Info (276014): Found 1 instances of uninferred RAM logic
     Info (276007): RAM logic "IF_stage:if_stage|IM:inst_mem|InstMem" is uninferred due to asynchronous read logic File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/IM.v Line: 8
 Warning (13012): Latch EX_stage:ex_stage|ALU:alu|res[0] has unsafe behavior File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU.v Line: 25
@@ -1634,30 +1692,30 @@ Warning (13012): Latch EX_stage:ex_stage|ALU:alu|res[30] has unsafe behavior Fil
 Warning (13012): Latch EX_stage:ex_stage|ALU:alu|res[31] has unsafe behavior File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU.v Line: 25
     Warning (13013): Ports D and ENA on the latch are fed by the same signal EX_stage:ex_stage|ALU_OPER:alu_oper|ALU_OP[3] File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
 Warning (13012): Latch EX_stage:ex_stage|ALU_OPER:alu_oper|ALU_OP[2] has unsafe behavior File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
-    Warning (13013): Ports D and ENA on the latch are fed by the same signal ID_EX_buffer:id_ex_buffer|EX_opcode[11] File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_EX_buffer.v Line: 29
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal ID_EX_buffer2:id_ex_buffer2|EX2_opcode[11] File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_EX_buffer.v Line: 174
 Warning (13012): Latch EX_stage:ex_stage|ALU_OPER:alu_oper|ALU_OP[3] has unsafe behavior File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
-    Warning (13013): Ports D and ENA on the latch are fed by the same signal ID_EX_buffer:id_ex_buffer|EX_opcode[11] File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_EX_buffer.v Line: 29
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal ID_EX_buffer2:id_ex_buffer2|EX2_opcode[11] File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_EX_buffer.v Line: 174
 Warning (13012): Latch EX_stage:ex_stage|ALU_OPER:alu_oper|ALU_OP[0] has unsafe behavior File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
-    Warning (13013): Ports D and ENA on the latch are fed by the same signal ID_EX_buffer:id_ex_buffer|EX_opcode[11] File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_EX_buffer.v Line: 29
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal ID_EX_buffer2:id_ex_buffer2|EX2_opcode[11] File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_EX_buffer.v Line: 174
 Warning (13012): Latch EX_stage:ex_stage|ALU_OPER:alu_oper|ALU_OP[1] has unsafe behavior File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v Line: 25
-    Warning (13013): Ports D and ENA on the latch are fed by the same signal ID_EX_buffer:id_ex_buffer|EX_opcode[11] File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_EX_buffer.v Line: 29
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal ID_EX_buffer2:id_ex_buffer2|EX2_opcode[11] File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_EX_buffer.v Line: 174
 Info (13000): Registers with preset signals will power-up high File: D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PC_register.v Line: 17
 Info (13003): DEV_CLRn pin will set, and not reset, register with preset signal due to NOT Gate Push-Back
 Info (286030): Timing-Driven Synthesis is running
-Info (17049): 54 registers lost all their fanouts during netlist optimizations.
+Info (17049): 86 registers lost all their fanouts during netlist optimizations.
 Info (144001): Generated suppressed messages file D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PLCPU.map.smsg
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
-Info (21057): Implemented 4090 device resources after synthesis - the final resource count might be different
+Info (21057): Implemented 4351 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 2 input pins
     Info (21059): Implemented 64 output pins
-    Info (21061): Implemented 3992 logic cells
+    Info (21061): Implemented 4253 logic cells
     Info (21064): Implemented 32 RAM segments
-Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 102 warnings
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 104 warnings
     Info: Peak virtual memory: 4848 megabytes
-    Info: Processing ended: Sun Dec  8 19:11:48 2024
+    Info: Processing ended: Mon Dec  9 01:14:49 2024
     Info: Elapsed time: 00:00:20
-    Info: Total CPU time (on all processors): 00:00:33
+    Info: Total CPU time (on all processors): 00:00:36
 
 
 +------------------------------------------+

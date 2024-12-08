@@ -12,6 +12,7 @@
 `include "forwardA.v"
 `include "forwardB.v"
 `include "forwardC.v"
+`include "FORWARDING_stage.v"
 `include "IF_stage.v"
 `include "ID_stage.v"
 `include "EX_stage.v"

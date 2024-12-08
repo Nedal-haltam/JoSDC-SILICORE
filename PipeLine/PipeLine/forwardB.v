@@ -1,26 +1,31 @@
-
-module forwardB(EX_opcode, EX_rs1, EX_rs2, 
-				MEM_rd_ind_zero, MEM_rd, MEM_Write_en, 
-				WB_rd_ind_zero, WB_rd, WB_Write_en, 
-				forwardB, is_oper2_immed, 
-				clk, is_jal
+module forwardB
+(
+	EX1_rs2_ind, 
+	
+	EX2_rd_indzero, EX2_rd_ind, EX2_regwrite, 
+	MEM_rd_indzero, MEM_rd_ind, MEM_regwrite, 
+	WB_rd_indzero, WB_rd_ind, WB_regwrite,
+	
+	alu_selB, EX1_is_oper2_immed
 );
 
 `include "opcodes.txt"
 
-input [11:0] EX_opcode;
-input [4:0] EX_rs1, EX_rs2;				
-input [4:0] MEM_rd, WB_rd; 
-input MEM_Write_en, WB_Write_en, is_oper2_immed, MEM_rd_ind_zero, WB_rd_ind_zero, clk, is_jal;
+input [4:0] EX1_rs2_ind, EX2_rd_ind, MEM_rd_ind, WB_rd_ind;
 
-output [1:0] forwardB; // the selection lines for the ALU oprands mux
+input EX2_rd_indzero, MEM_rd_indzero, WB_rd_indzero;
+input EX2_regwrite, MEM_regwrite, WB_regwrite;
+input EX1_is_oper2_immed;
 
-wire exhaz, memhaz;
-assign exhaz = MEM_Write_en && MEM_rd_ind_zero && MEM_rd == EX_rs2;
-assign memhaz = WB_Write_en && WB_rd_ind_zero && WB_rd == EX_rs2;
+output [1:0] alu_selB;
+
+wire idhaz, exhaz, memhaz;
+assign idhaz = EX2_regwrite && EX2_rd_indzero && EX2_rd_ind == EX1_rs2_ind;
+assign exhaz = MEM_regwrite && MEM_rd_indzero && MEM_rd_ind == EX1_rs2_ind;
+assign memhaz = WB_regwrite && WB_rd_indzero && WB_rd_ind == EX1_rs2_ind;
 
 
-assign forwardB[0] = is_jal || (memhaz && ~exhaz);
-assign forwardB[1] = (is_jal ||  exhaz) && ~is_oper2_immed;
+assign alu_selB[0] =  (idhaz || (memhaz && ~exhaz)) && ~EX1_is_oper2_immed;
+assign alu_selB[1] = (idhaz ||  exhaz) && ~EX1_is_oper2_immed;
 
 endmodule

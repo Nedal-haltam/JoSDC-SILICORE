@@ -1,20 +1,29 @@
+module forwardC
+(
+	EX1_rs2_ind, 
 
-module forwardC(EX_opcode, EX_rs1, EX_rs2, 
-				MEM_rd_ind_zero, MEM_rd, MEM_Write_en, 
-				WB_rd_ind_zero, WB_rd, WB_Write_en, 
-				store_rs2_forward, clk
+	EX2_rd_indzero, EX2_rd_ind, EX2_regwrite, 
+	MEM_rd_indzero, MEM_rd_ind, MEM_regwrite, 
+	WB_rd_indzero, WB_rd_ind, WB_regwrite,
+	
+	store_rs2_forward
 );
 
 `include "opcodes.txt"
 
-input [11:0] EX_opcode;
-input [4:0] EX_rs1, EX_rs2;				
-input [4:0] MEM_rd, WB_rd; 
-input MEM_Write_en, WB_Write_en, MEM_rd_ind_zero, WB_rd_ind_zero, clk;
 
-output [1:0] store_rs2_forward; // the selection lines for the register that is going to be stored in the data memory
-	
-assign store_rs2_forward[0] = MEM_Write_en && MEM_rd_ind_zero && MEM_rd == EX_rs2;
-assign store_rs2_forward[1] = WB_Write_en && WB_rd_ind_zero && WB_rd == EX_rs2;
+input [4:0] EX1_rs2_ind, EX2_rd_ind, MEM_rd_ind, WB_rd_ind;
+
+input EX2_rd_indzero, EX2_regwrite, MEM_rd_indzero, MEM_regwrite, WB_rd_indzero, WB_regwrite;
+
+output [1:0] store_rs2_forward;
+
+wire idhaz, exhaz, memhaz;
+assign idhaz = EX2_regwrite && EX2_rd_indzero && EX2_rd_ind == EX1_rs2_ind;
+assign exhaz = MEM_regwrite && MEM_rd_indzero && MEM_rd_ind == EX1_rs2_ind;
+assign memhaz = WB_regwrite && WB_rd_indzero && WB_rd_ind == EX1_rs2_ind;
+
+assign store_rs2_forward[0] = idhaz || (memhaz && ~exhaz);
+assign store_rs2_forward[1] = idhaz || exhaz;
 
 endmodule
