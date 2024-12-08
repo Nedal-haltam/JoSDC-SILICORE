@@ -2,7 +2,7 @@
 module ID_stage(pc, inst, ID_opcode, EX_opcode, EX_memread, wr_reg_data, ID_rs1_ind, ID_rs2_ind,
 				EX_rd_ind, WB_rd_ind,
 			    ID_EX_flush, Wrong_prediction, exception_flag, clk, PFC_to_IF, PFC_to_EX, predicted_to_EX, rs1, rs2, PC_src, 
-				pc_write, IF_ID_write, IF_ID_flush, imm,reg_write_from_wb, reg_write, mem_read, mem_write, rst, is_oper2_immed, 
+				pc_write, IF_ID_write, IF_ID_flush,reg_write_from_wb, reg_write, mem_read, mem_write, rst, is_oper2_immed, 
 				ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal, ID_is_j, is_branch_and_taken, forward_to_B);
 	
 	`include "opcodes.txt"
@@ -21,7 +21,7 @@ module ID_stage(pc, inst, ID_opcode, EX_opcode, EX_memread, wr_reg_data, ID_rs1_
 	
 	output IF_ID_flush, ID_EX_flush;
 	
-	output [31:0] imm;
+	wire [31:0] imm;
     
 	wire predicted;
 
@@ -34,7 +34,7 @@ module ID_stage(pc, inst, ID_opcode, EX_opcode, EX_memread, wr_reg_data, ID_rs1_
 	output wire is_branch_and_taken;
 	assign is_branch_and_taken = (ID_is_beq || ID_is_bne) && predicted;
 
-	assign PFC_to_IF[9:0] = ((ID_is_beq || ID_is_bne) && predicted) ? pc[9:0] + imm[9:0] : imm[9:0];
+	assign PFC_to_IF[9:0] = ((ID_is_beq || ID_is_bne) && predicted) ? pc[9:0] + imm[9:0] : inst[9:0];
 	assign PFC_to_EX[9:0] = ((ID_is_beq || ID_is_bne) && predicted_to_EX) ? pc[9:0] + 10'd1 : pc[9:0] + imm[9:0];
 	assign PFC_to_IF[31:10] = 0;
 	assign PFC_to_EX[31:10] = 0;

@@ -6,12 +6,7 @@ module Immed_Gen_unit(Inst, opcode, Immed);
 	
 	output reg [31:0] Immed;
 	
-	
-	
 `include "opcodes.txt"
-
-	
-	
 	
 	always@(*) begin
 		
@@ -27,19 +22,11 @@ module Immed_Gen_unit(Inst, opcode, Immed);
 		if (opcode == sll || opcode == srl) // zero extend
 			Immed <= {32'd0 , Inst[10:6]};
 		
-		else if (opcode[11:6] != 6'd0) begin // if it is an I-fromat or J-format
-		
-			if (opcode == andi || opcode == ori || opcode == xori) // zero extend
-				Immed <= {32'd0 , Inst[15:0]};
-		
-	   		else if (opcode == j || opcode == jal) // zero extend
-				Immed <= {32'd0 , Inst[25:0]};
-			
-			else if (opcode == addi || opcode == lw || opcode == sw || 
-			         opcode == beq || opcode == bne || opcode == slti)
-				Immed <= {{32{Inst[15]}} , Inst[15:0]};
-				
-		end
+		else if (opcode == andi || opcode == ori || opcode == xori) // zero extend
+			Immed <= {32'd0 , Inst[15:0]};
+	
+		else if (opcode == addi || opcode == lw || opcode == sw || opcode == beq || opcode == bne || opcode == slti)
+			Immed <= {{32{Inst[15]}} , Inst[15:0]};
 		
 		
 	end

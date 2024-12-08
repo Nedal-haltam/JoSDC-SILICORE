@@ -31,7 +31,6 @@
 `include "PC_register.v"
 `include "BranchResolver.v"
 `include "control_unit.v"
-`include "exception_detect_unit.v"
 `include "StallDetectionUnit.v"
 `include "Immed_Gen_unit.v"
 `include "CompareEqual.v"

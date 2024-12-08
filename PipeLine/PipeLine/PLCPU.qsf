@@ -4,7 +4,7 @@
 
 set_global_assignment -name FAMILY "Cyclone IV E"
 set_global_assignment -name DEVICE EP4CE115F29C7
-set_global_assignment -name TOP_LEVEL_ENTITY PL_CPU_sim
+set_global_assignment -name TOP_LEVEL_ENTITY PL_CPU
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION "16.0.0"
 set_global_assignment -name LAST_QUARTUS_VERSION "23.1std.1 Lite Edition"
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "09:11:59 SEPTEMBER 17,2024"
@@ -116,7 +116,6 @@ set_location_assignment PIN_C13 -to VGA_VS
 #============================================================
 
 
-set_global_assignment -name VERILOG_FILE PLCPU.v
 set_global_assignment -name SDC_FILE PLCPU.SDC
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
@@ -222,8 +221,6 @@ set_location_assignment PIN_U6 -to DRAM_RAS_N
 set_location_assignment PIN_V6 -to DRAM_WE_N
 set_global_assignment -name VERILOG_FILE IM.v
 set_global_assignment -name VERILOG_FILE DM.v
-set_global_assignment -name VERILOG_FILE empty.v
-set_global_assignment -name VERILOG_FILE CPU5STAGE.v
 set_global_assignment -name VERILOG_FILE bcd7seg.v
 set_global_assignment -name EDA_SIMULATION_TOOL "Questa Intel FPGA (Verilog)"
 set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
@@ -613,15 +610,15 @@ set_location_assignment PIN_E10 -to EXT_IO[5]
 set_location_assignment PIN_D9 -to EXT_IO[6]
 set_global_assignment -name VERILOG_FILE CompareEqual.v
 set_global_assignment -name QIP_FILE DataMemory_IP.qip
-set_global_assignment -name QIP_FILE InstructionMemory.qip
-set_global_assignment -name VERILOG_FILE PL_CPU_sim.v
+set_global_assignment -name EDA_TEST_BENCH_NAME PL_CPU_sim -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id PL_CPU_sim
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME PL_CPU_sim -section_id PL_CPU_sim
+set_global_assignment -name EDA_TEST_BENCH_FILE PL_CPU_sim.v -section_id PL_CPU_sim
+set_global_assignment -name VERILOG_FILE PipeLine_sim.v
+set_global_assignment -name VERILOG_FILE PL_CPU.v
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
 set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
-set_global_assignment -name EDA_TEST_BENCH_NAME PL_CPU_sim -section_id eda_simulation
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id PL_CPU_sim
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME PL_CPU_sim -section_id PL_CPU_sim
-set_global_assignment -name EDA_TEST_BENCH_FILE PL_CPU_sim.v -section_id PL_CPU_sim
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

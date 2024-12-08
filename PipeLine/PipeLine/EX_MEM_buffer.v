@@ -1,7 +1,7 @@
 
 module EX_MEM_buffer
 (
-	clk, rst, EXCEP_EX_FLUSH,
+	clk, rst,
 	EX_ALU_OUT, EX_rs2_out, EX_rd_indzero, EX_rd_ind, EX_opcode, EX_regwrite, EX_memread, EX_memwrite,
 	MEM_ALU_OUT, MEM_rs2, MEM_rd_indzero, MEM_rd_ind, MEM_opcode, MEM_regwrite, MEM_memread, MEM_memwrite
 );					 
@@ -9,7 +9,7 @@ module EX_MEM_buffer
 	input [31:0] EX_ALU_OUT, EX_rs2_out;
 	input [4:0]  EX_rd_ind;
 	input [11:0] EX_opcode;
-	input EX_regwrite, EX_memread, EX_memwrite, EXCEP_EX_FLUSH, clk, rst, EX_rd_indzero;
+	input EX_regwrite, EX_memread, EX_memwrite, clk, rst, EX_rd_indzero;
 	
 	
 	output reg [31:0] MEM_ALU_OUT, MEM_rs2;
@@ -24,7 +24,7 @@ module EX_MEM_buffer
 	if (rst) begin
 		{MEM_ALU_OUT, MEM_rs2, MEM_rd_ind, MEM_opcode, MEM_memread, MEM_memwrite, MEM_regwrite, MEM_rd_indzero} <= 0;
 	end
-	else if (!EXCEP_EX_FLUSH) begin
+	else begin
 			
 		MEM_ALU_OUT <= EX_ALU_OUT;
 		MEM_rs2 <= EX_rs2_out;
@@ -36,9 +36,6 @@ module EX_MEM_buffer
 		MEM_rd_indzero <= EX_rd_indzero;
 			
 	end
-	else
-        {MEM_ALU_OUT, MEM_rs2, MEM_rd_ind, MEM_opcode, MEM_memread, MEM_memwrite, MEM_regwrite, MEM_rd_indzero} <= 0;
-		
-	end
+end
 	
 endmodule
