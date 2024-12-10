@@ -17,6 +17,9 @@ always@ (posedge clk)
     Data_Out <= DataMem[addr[9:0]];
 
 initial begin
+for (i = 0; i < 1024; i = i + 1)
+    DataMem[i] <= 0;
+
 `include "DM_INIT.INIT"
 end
 

@@ -15,6 +15,9 @@ always @(posedge clock) begin
         DataMem[address] <= data;
 end
 initial begin
+for (i = 0; i < 1024; i = i + 1)
+    DataMem[i] <= 0;
+
 `include "DM_INIT.INIT"
 end
 

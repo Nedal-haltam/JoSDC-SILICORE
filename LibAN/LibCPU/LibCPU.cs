@@ -114,7 +114,7 @@ namespace LibCPU
 
             List<string> DM = [.. data_mem_init];
 
-            for (int i = 0; i < 1024 - data_mem_init.Count; i++) DM.Add("x");
+            for (int i = 0; i < 1024 - data_mem_init.Count; i++) DM.Add("0");
 
             return (IM, DM, regs);
         }
