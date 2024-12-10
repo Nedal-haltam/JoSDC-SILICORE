@@ -6,7 +6,6 @@ input input_clk, rst;
 output [31:0] PC;
 output reg [31:0] cycles_consumed;
 
-parameter handler_addr = 32'd1000;
 
 
 wire clk, hlt;
@@ -51,36 +50,30 @@ end
 nor hlt_logic(clk, input_clk, hlt);
 
 
+wire idhaz, exhaz, memhaz;
+assign idhaz = EX2_regwrite && EX2_rd_indzero && EX2_rd_ind == EX1_rs1_ind;
+assign exhaz = MEM_regwrite && MEM_rd_indzero && MEM_rd_ind == EX1_rs1_ind;
+assign memhaz = WB_regwrite && WB_rd_indzero && WB_rd_ind == EX1_rs1_ind;
 forwardA FA
 (
-	EX1_rs1_ind, 
-	
-	EX2_rd_indzero, EX2_rd_ind, EX2_regwrite, 
-	MEM_rd_indzero, MEM_rd_ind, MEM_regwrite, 
-	WB_rd_indzero, WB_rd_ind, WB_regwrite,
-	
+	idhaz, exhaz, memhaz,
 	alu_selA
 );
 
+
+wire idhaz2, exhaz2, memhaz2;
+assign idhaz2 = EX2_regwrite && EX2_rd_indzero && EX2_rd_ind == EX1_rs2_ind;
+assign exhaz2 = MEM_regwrite && MEM_rd_indzero && MEM_rd_ind == EX1_rs2_ind;
+assign memhaz2 = WB_regwrite && WB_rd_indzero && WB_rd_ind == EX1_rs2_ind;
 forwardB FB
 (
-	EX1_rs2_ind, 
-	
-	EX2_rd_indzero, EX2_rd_ind, EX2_regwrite, 
-	MEM_rd_indzero, MEM_rd_ind, MEM_regwrite, 
-	WB_rd_indzero, WB_rd_ind, WB_regwrite,
-	
+	idhaz2, exhaz2, memhaz2,
 	alu_selB, EX1_is_oper2_immed
 );
 
 forwardC FC
 (
-	EX1_rs2_ind, 
-
-	EX2_rd_indzero, EX2_rd_ind, EX2_regwrite, 
-	MEM_rd_indzero, MEM_rd_ind, MEM_regwrite, 
-	WB_rd_indzero, WB_rd_ind, WB_regwrite,
-	
+	idhaz2, exhaz2, memhaz2,
 	store_rs2_forward
 );
 
@@ -88,7 +81,7 @@ forwardC FC
 
 
 
-IF_stage #(.handler_addr(handler_addr))if_stage(ID_PFC_to_IF, EX1_PFC_to_IF, EX2_PFC_to_IF, pc_src, IF_pc, pc_write, clk, IF_INST, rst);
+IF_stage if_stage(ID_PFC_to_IF, EX1_PFC_to_IF, EX2_PFC_to_IF, pc_src, IF_pc, pc_write, clk, IF_INST, rst);
 
 
 IF_ID_buffer if_id_buffer(IF_pc, IF_INST, STALL_IF_FLUSH, if_id_write, ~clk, ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_PC, ID_INST, rst); 
@@ -99,7 +92,7 @@ ID_stage id_stage
 (
 	ID_PC, ID_INST, ID_opcode, EX1_opcode, EX2_opcode, EX1_memread, EX2_memread, wdata_to_reg_file, 
 	ID_rs1_ind, ID_rs2_ind,
-	EX1_rd_ind, EX2_rd_ind, WB_rd_ind,
+	EX1_rd_indzero, EX1_rd_ind, EX2_rd_indzero, EX2_rd_ind, WB_rd_ind,
 	STALL_ID1_FLUSH, STALL_ID2_FLUSH, Wrong_prediction, clk, ID_PFC_to_IF, ID_PFC_to_EX, ID_predicted, ID_rs1, ID_rs2, pc_src,
 	pc_write, if_id_write, STALL_IF_FLUSH, WB_regwrite, ID_regwrite, ID_memread, ID_memwrite, rst, ID_is_oper2_immed, 
 	ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal, ID_is_j, is_branch_and_taken, ID_forward_to_B
@@ -121,13 +114,13 @@ wire [31:0] EX1_PFC, EX1_ALU_OUT, EX1_PC, EX1_PFC_to_IF, EX1_rs1, EX1_rs2, EX1_r
 wire [11:0] EX1_opcode;
 wire [4:0] EX1_rd_ind, EX1_rs1_ind, EX1_rs2_ind;
 wire [1:0]  alu_selA, alu_selB, store_rs2_forward;
-wire EX1_regwrite, EX1_memread, EX1_memwrite, EX1_predicted, EX1_is_oper2_immed, EX1_is_jr, EX1_is_beq, EX1_is_bne, EX1_is_jal;
+wire EX1_regwrite, EX1_memread, EX1_memwrite, EX1_predicted, EX1_is_oper2_immed, EX1_is_jr, EX1_is_beq, EX1_is_bne, EX1_is_jal, EX1_rd_indzero;
 
 ID_EX_buffer1 id_ex_buffer1
 (
 	~clk, STALL_ID1_FLUSH, rst,
-	ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_PC, ID_rs1, ID_rs2, ID_regwrite, ID_memread, ID_memwrite, ID_PFC_to_EX, ID_predicted, ID_is_oper2_immed, ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal, ID_forward_to_B,
-	EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2, EX1_regwrite, EX1_memread, EX1_memwrite, EX1_PFC, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B
+	ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind != 0, ID_rd_ind, ID_PC, ID_rs1, ID_rs2, ID_regwrite, ID_memread, ID_memwrite, ID_PFC_to_EX, ID_predicted, ID_is_oper2_immed, ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal, ID_forward_to_B,
+	EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_indzero, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2, EX1_regwrite, EX1_memread, EX1_memwrite, EX1_PFC, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B
 );
 
 
@@ -148,7 +141,7 @@ wire EX2_regwrite, EX2_memread, EX2_memwrite, EX2_predicted, EX2_is_oper2_immed,
 ID_EX_buffer2 id_ex_buffer2
 (
 	~clk, STALL_ID2_FLUSH, rst,
-	EX1_ALU_OPER1, EX1_ALU_OPER2, EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_ind != 0, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2_out, EX1_regwrite, EX1_memread, EX1_memwrite, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B, EX1_PFC_to_IF, 
+	EX1_ALU_OPER1, EX1_ALU_OPER2, EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_indzero, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2_out, EX1_regwrite, EX1_memread, EX1_memwrite, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B, EX1_PFC_to_IF, 
 	EX2_ALU_OPER1, EX2_ALU_OPER2, EX2_opcode, EX2_rs1_ind, EX2_rs2_ind, EX2_rd_indzero, EX2_rd_ind, EX2_PC, EX2_rs1, EX2_rs2_out, EX2_regwrite, EX2_memread, EX2_memwrite, EX2_predicted, EX2_is_oper2_immed, EX2_is_beq, EX2_is_bne, EX2_is_jr, EX2_is_jal, EX2_forward_to_B,	EX2_PFC_to_IF
 );
 

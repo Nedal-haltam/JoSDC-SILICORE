@@ -11,7 +11,6 @@ Our submission contains the following:
 		- Development Phase Report
 		- And this README
 		- A recording explains the flow of the system built:
-			- TODO: maybe
 
 
 FOR THE HARDWARE PART

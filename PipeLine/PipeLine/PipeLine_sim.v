@@ -23,7 +23,7 @@
 `include "EX_MEM_buffer.v"
 `include "MEM_WB_buffer.v"
 `include "MUX_4x1.v"
-`include "MUX_8x1.v"
+`include "PC_src_mux.v"
 `include "ALU_OPER.v"
 `include "ALU.v"
 `include "REG_FILE.v"

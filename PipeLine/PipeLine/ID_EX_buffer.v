@@ -1,8 +1,8 @@
 module ID_EX_buffer1
 (
 	clk, FLUSH, rst,
-	ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_PC, ID_rs1, ID_rs2, ID_regwrite, ID_memread, ID_memwrite, ID_PFC_to_EX, ID_predicted, ID_is_oper2_immed, ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal, ID_forward_to_B,
-	EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2, EX1_regwrite, EX1_memread, EX1_memwrite, EX1_PFC, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B
+	ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_indzero, ID_rd_ind, ID_PC, ID_rs1, ID_rs2, ID_regwrite, ID_memread, ID_memwrite, ID_PFC_to_EX, ID_predicted, ID_is_oper2_immed, ID_is_beq, ID_is_bne, ID_is_jr, ID_is_jal, ID_forward_to_B,
+	EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_indzero, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2, EX1_regwrite, EX1_memread, EX1_memwrite, EX1_PFC, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B
 );
 
 
@@ -31,7 +31,8 @@ input ID_regwrite,
 	  ID_is_beq,
 	  ID_is_bne,
 	  ID_is_jr,
-	  ID_is_jal;
+	  ID_is_jal,
+	  ID_rd_indzero;
 
 
 output reg [11:0] EX1_opcode;
@@ -55,13 +56,14 @@ output reg EX1_regwrite,
 	  EX1_is_beq,
 	  EX1_is_bne,
 	  EX1_is_jr,
-	  EX1_is_jal;
+	  EX1_is_jal,
+	  EX1_rd_indzero;
 
 
 always@(posedge clk, posedge rst) begin
 
 if (rst) begin
-{EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2, EX1_regwrite, EX1_memread, EX1_memwrite, EX1_PFC, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B} <= 0;
+{EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2, EX1_regwrite, EX1_memread, EX1_memwrite, EX1_PFC, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B, EX1_rd_indzero} <= 0;
 end
 
 else if (~FLUSH) begin
@@ -83,10 +85,11 @@ EX1_is_bne <= ID_is_bne;
 EX1_is_jr <= ID_is_jr;
 EX1_is_jal <= ID_is_jal;
 EX1_forward_to_B <= ID_forward_to_B;
+EX1_rd_indzero <= ID_rd_indzero;
 end
 
 else begin
-{EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2, EX1_regwrite, EX1_memread, EX1_memwrite, EX1_PFC, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B} <= 0;
+{EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2, EX1_regwrite, EX1_memread, EX1_memwrite, EX1_PFC, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B, EX1_rd_indzero} <= 0;
 end
 
 

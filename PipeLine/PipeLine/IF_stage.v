@@ -1,7 +1,4 @@
-module IF_stage#
-(
-    parameter handler_addr = 32'd1000
-)
+module IF_stage
 (
     ID_PFC, EX1_PFC, EX2_PFC, PC_src, inst_mem_in, PC_write, clk, inst, rst
 );
@@ -16,7 +13,7 @@ inout [31:0] inst_mem_in;
 wire [31:0] pc_reg_in;
 
 
-MUX_8x1 PC_src_mux(inst_mem_in + 1'b1, handler_addr, ID_PFC, inst_mem_in, EX1_PFC, EX2_PFC, 0, 0, PC_src, pc_reg_in);
+PC_src_mux pc_src_mux(inst_mem_in + 1'b1, ID_PFC, inst_mem_in, EX1_PFC, EX2_PFC, 0, 0, 0, PC_src, pc_reg_in);
 
 PC_register pc_reg(pc_reg_in, inst_mem_in, PC_write, clk, rst); 
 

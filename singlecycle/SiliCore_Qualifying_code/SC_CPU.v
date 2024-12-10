@@ -1,7 +1,6 @@
 module SC_CPU(input_clk, rst, PC, cycles_consumed, clk);
 
 	`include "opcodes.txt"
-	parameter handler_addr = 32'd1000;
 	//inputs
 	input input_clk, rst;
 	output wire clk;
@@ -15,8 +14,8 @@ module SC_CPU(input_clk, rst, PC, cycles_consumed, clk);
 	wire [5:0] opcode, funct;
 	wire [4:0] rs, rt, rd, WriteRegister;
 	wire [3:0] ALUOp;
-	wire RegDst, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, zero, hlt, excep_flag;
-	wire [1:0] PCsrc;
+	wire RegDst, MemReadEn, MemtoReg, MemWriteEn, RegWriteEn, ALUSrc, zero, hlt;
+	wire PCsrc;
 	
 	
 	assign opcode  = (~rst) ? 0 : instruction[31:26];
@@ -41,7 +40,7 @@ always@(posedge clk , negedge rst) begin
 
 end
 
-BranchController branchcontroller(.opcode(opcode), .funct(funct), .operand1(readData1), .operand2(ALUin2), .excep_flag(excep_flag), .PCsrc(PCsrc), .rst(rst));
+BranchController branchcontroller(.opcode(opcode), .funct(funct), .operand1(readData1), .operand2(ALUin2), .PCsrc(PCsrc), .rst(rst));
 
 
 assign PCPlus1 = PC + 32'd1;
@@ -51,13 +50,7 @@ assign adderResult = (opcode == jal || opcode == j) ? address :
 );
 
 
-assign nextPC = (PCsrc == 2'b00) ? PCPlus1 : 
-(
-	(PCsrc == 2'b01) ? adderResult :
-	(
-		(PCsrc == 2'b10) ? handler_addr : handler_addr  // this is not by mistake because if PCsrc is invalid we should go to the exception handler
-	)
-);
+assign nextPC = (PCsrc) ? adderResult : PCPlus1;
 programCounter pc(.clk(clk), .rst(rst), .PCin(nextPC), .PCout(PC));	
 
 
