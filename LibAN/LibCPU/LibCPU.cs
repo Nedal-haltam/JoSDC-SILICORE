@@ -135,7 +135,7 @@ namespace LibCPU
 
         public enum Stage
         {
-            fetch, decode, execute, memory, write_back
+            fetch, decode, execute1, execute2, memory, write_back
         }
         public enum Exceptions
         {
@@ -454,15 +454,18 @@ namespace LibCPU
         public List<string> IM; // Instruction Mem
 
         Instruction IFID;
-        Instruction IDEX;
+        Instruction IDEX1;
+        Instruction IDEX2;
         Instruction EXMEM;
         Instruction MEMWB;
 
         Instruction memed_in_MEM_MIPS;
-        Instruction executed_in_EX_MIPS;
+        Instruction executed1_in_EX_MIPS;
+        Instruction executed2_in_EX_MIPS;
         Instruction decoded_in_ID_MIPS;
         string fetched_in_IF_MIPS;
 
+        int ID_HAZ;
         int EX_HAZ;
         int MEM_HAZ;
         enum PCsrc
@@ -480,11 +483,13 @@ namespace LibCPU
             targetaddress = 0;
 
             IFID = GetNewInst();
-            IDEX = GetNewInst();
+            IDEX1 = GetNewInst();
+            IDEX2 = GetNewInst();
             EXMEM = GetNewInst();
             MEMWB = GetNewInst();
             memed_in_MEM_MIPS = GetNewInst();
-            executed_in_EX_MIPS = GetNewInst();
+            executed1_in_EX_MIPS = GetNewInst();
+            executed2_in_EX_MIPS = GetNewInst();
             decoded_in_ID_MIPS = GetNewInst();
             fetched_in_IF_MIPS = "";
             EX_HAZ = 0;
@@ -492,8 +497,13 @@ namespace LibCPU
         }
         int forward(int source_ind, int source_reg)
         {
+            // ID_HAZ
+            if (IDEX2.rdind != 0 && iswb(IDEX2.mnem) && IDEX2.rdind == source_ind)
+            {
+                return ID_HAZ;
+            }
             // EX haz
-            if (EXMEM.rdind != 0 && iswb(EXMEM.mnem) && EXMEM.rdind == source_ind)
+            else if (EXMEM.rdind != 0 && iswb(EXMEM.mnem) && EXMEM.rdind == source_ind)
             {
                 return EX_HAZ;
             }
@@ -562,6 +572,8 @@ namespace LibCPU
             if (inst.format == "I")
             {
                 inst.rdind = inst.rtind;
+                if (!isbranch(inst.mnem))
+                    inst.rtind = 0;
             }
             if (inst.format == "J")
             {
@@ -582,7 +594,7 @@ namespace LibCPU
                 pcsrc = PCsrc.PCplus1;
             }
 
-            if (isbranch(executed_in_EX_MIPS.mnem))
+            if (isbranch(executed2_in_EX_MIPS.mnem))
             {
                 if (state <= 1)
                 {
@@ -627,31 +639,34 @@ namespace LibCPU
             {
                 throw new Exception(BUBBLE) { Source = JR_INDECODE };
             }
-            else if (executed_in_EX_MIPS.mnem == Mnemonic.lw && executed_in_EX_MIPS.rdind != 0)
+            else if (executed1_in_EX_MIPS.mnem == Mnemonic.lw && executed1_in_EX_MIPS.rdind != 0)
             {
-                int rdind = executed_in_EX_MIPS.rdind;
-                if (decoded.format == "R")
+                int rdind1 = executed1_in_EX_MIPS.rdind;
+                if (decoded.rsind == rdind1 || decoded.rtind == rdind1)
                 {
-                    if (decoded.rsind == rdind || decoded.rtind == rdind)
-                    {
-                        throw new Exception(BUBBLE) { Source = LOAD_USE };
-                    }
-                }
-                else if (decoded.format == "I")
-                {
-                    if (decoded.rsind == rdind || decoded.rtind == rdind)
-                    {
-                        throw new Exception(BUBBLE) { Source = LOAD_USE };
-                    }
+                    throw new Exception(BUBBLE) { Source = LOAD_USE };
                 }
             }
-            else if (decoded.mnem == Mnemonic.hlt)
+            else if (executed2_in_EX_MIPS.mnem == Mnemonic.lw && executed2_in_EX_MIPS.rdind != 0)
+            {
+                int rdind2 = executed2_in_EX_MIPS.rdind;
+                if (decoded.rsind == rdind2 || decoded.rtind == rdind2)
+                {
+                    throw new Exception(BUBBLE) { Source = LOAD_USE };
+                }
+            }
+            if (decoded.mnem == Mnemonic.hlt)
             {
                 pcsrc = PCsrc.none;
             }
             else // here we handle the branch prediction
             {
-                if (decoded.mnem == Mnemonic.beq || decoded.mnem == Mnemonic.bne)
+                if (executed1_in_EX_MIPS.mnem == Mnemonic.jr)
+                {
+                    pcsrc = PCsrc.pfc;
+                    targetaddress = executed1_in_EX_MIPS.oper1;
+                }
+                else if (decoded.mnem == Mnemonic.beq || decoded.mnem == Mnemonic.bne)
                 {
                     if (decoded.prediction)
                         targetaddress = decoded.PC + decoded.immeds;
@@ -690,7 +705,26 @@ namespace LibCPU
             detect_exception(decoded, Stage.decode);
             return decoded;
         }
-        Instruction execute(Instruction decoded)
+
+        Instruction execute2(Instruction forwarded)
+        {
+            Instruction temp = forwarded;
+            if (forwarded.mnem == Mnemonic.nop)
+            {
+                return temp;
+            }
+            detect_exception(forwarded, Stage.execute2);
+            temp.aluout = execute_inst(temp);
+            if (temp.mnem == Mnemonic.jal)
+                temp.aluout = temp.PC + 1;
+            bool BranchDecision = temp.mnem == Mnemonic.beq && temp.oper1 == temp.oper2 ||
+                                  temp.mnem == Mnemonic.bne && temp.oper1 != temp.oper2;
+            WrongPrediction = temp.prediction != BranchDecision;
+
+            ID_HAZ = temp.aluout;
+            return temp;
+        }
+        Instruction execute1(Instruction decoded)
         {
             Instruction temp = decoded;
             if (decoded.mnem == Mnemonic.nop)
@@ -721,11 +755,7 @@ namespace LibCPU
                     temp.rt = forward(temp.rtind, temp.rt);
                 }
             }
-            detect_exception(decoded, Stage.execute);
-            temp.aluout = execute_inst(temp);
-            bool BranchDecision = temp.mnem == Mnemonic.beq && temp.oper1 == temp.oper2 ||
-                                  temp.mnem == Mnemonic.bne && temp.oper1 != temp.oper2;
-            WrongPrediction = temp.prediction != BranchDecision || temp.mnem == Mnemonic.jr;
+            detect_exception(decoded, Stage.execute1);
             return temp;
         }
         Instruction mem(ref Instruction inst)
@@ -774,19 +804,22 @@ namespace LibCPU
 
             if (s == DECODE)
             {
-                IDEX = GetNewInst();
-                EXMEM = executed_in_EX_MIPS;
+                IDEX1 = GetNewInst();
+                IDEX2 = GetNewInst();
+                EXMEM = executed2_in_EX_MIPS;
                 MEMWB = memed_in_MEM_MIPS;
             }
             else if (s == EXECUTE)
             {
-                IDEX = GetNewInst();
+                IDEX1 = GetNewInst();
+                IDEX2 = GetNewInst();
                 EXMEM = GetNewInst();
                 MEMWB = memed_in_MEM_MIPS;
             }
             else if (s == MEMORY || s == WRITEBACK) // made them in a single if condition because they have the same effect in an exception case
             {
-                IDEX = GetNewInst();
+                IDEX1 = GetNewInst();
+                IDEX2 = GetNewInst();
                 EXMEM = GetNewInst();
                 MEMWB = GetNewInst();
                 EX_HAZ = 0;
@@ -815,7 +848,10 @@ namespace LibCPU
                     }
                 }
             }
-            else if (stage == Stage.execute)
+            else if (stage == Stage.execute1)
+            {
+            }
+            else if (stage == Stage.execute2)
             {
                 // detect if there is an exception in the execution of the instruction in the execute stage (/0)
                 if (inst.oper2 == 0 && inst.aluop == Aluop.div)
@@ -850,37 +886,39 @@ namespace LibCPU
         {
             if (source == WRONG_PRED)
             {
-                if (isbranch(executed_in_EX_MIPS.mnem))
+                if (isbranch(executed2_in_EX_MIPS.mnem))
                 {
-                    if (executed_in_EX_MIPS.prediction)
+                    if (executed2_in_EX_MIPS.prediction)
                     {
-                        PC = executed_in_EX_MIPS.PC + 1;
+                        pcsrc = PCsrc.PCplus1;
+                        PC = executed2_in_EX_MIPS.PC + 1;
                     }
                     else
                     {
-                        PC = executed_in_EX_MIPS.PC + executed_in_EX_MIPS.immeds;
+                        pcsrc = PCsrc.pfc;
+                        PC = executed2_in_EX_MIPS.PC + executed2_in_EX_MIPS.immeds;
                     }
                 }
-                else if (executed_in_EX_MIPS.mnem == Mnemonic.jr)
-                    PC = executed_in_EX_MIPS.oper1;
                 fetched_in_IF_MIPS = fetch();
-
                 IFID.mc = fetched_in_IF_MIPS;
-                IDEX = GetNewInst();
-                EXMEM = executed_in_EX_MIPS;
+                IDEX1 = GetNewInst();
+                IDEX2 = GetNewInst();
+                EXMEM = executed2_in_EX_MIPS;
                 MEMWB = memed_in_MEM_MIPS;
             }
             else if (source == LOAD_USE)
             {
-                IDEX = GetNewInst();
-                EXMEM = executed_in_EX_MIPS;
+                IDEX1 = GetNewInst();
+                IDEX2 = executed1_in_EX_MIPS;
+                EXMEM = executed2_in_EX_MIPS;
                 MEMWB = memed_in_MEM_MIPS;
             }
             else if (source == JR_INDECODE)
             {
                 IFID.mc = "".PadLeft(32, '0');
-                IDEX = decoded_in_ID_MIPS;
-                EXMEM = executed_in_EX_MIPS;
+                IDEX1 = decoded_in_ID_MIPS;
+                IDEX2 = executed1_in_EX_MIPS;
+                EXMEM = executed2_in_EX_MIPS;
                 MEMWB = memed_in_MEM_MIPS;
             }
         }
@@ -894,7 +932,8 @@ namespace LibCPU
                 if (hlt)
                     return;
                 memed_in_MEM_MIPS = mem(ref EXMEM);
-                executed_in_EX_MIPS = execute(IDEX);
+                executed2_in_EX_MIPS = execute2(IDEX2);
+                executed1_in_EX_MIPS = execute1(IDEX1);
                 decoded_in_ID_MIPS = decode(IFID.mc);
                 fetched_in_IF_MIPS = fetch();
             }
@@ -912,19 +951,24 @@ namespace LibCPU
                 }
             }
             MEMWB = memed_in_MEM_MIPS;
-            EXMEM = executed_in_EX_MIPS;
-            IDEX = decoded_in_ID_MIPS;
+            EXMEM = executed2_in_EX_MIPS;
+            IDEX2 = executed1_in_EX_MIPS;
+            IDEX1 = decoded_in_ID_MIPS;
             IFID.mc = fetched_in_IF_MIPS;
         }
+        int i = 0;
         public (int, Exceptions) Run()
         {
-            int i = 0;
             Exceptions excep = Exceptions.NONE;
             while (PC < IM.Count)
             {
                 i++;
                 try
                 {
+                    if (PC == 5)
+                    {
+
+                    }
                     ConsumeInst();
                 }
                 catch (Exception e)

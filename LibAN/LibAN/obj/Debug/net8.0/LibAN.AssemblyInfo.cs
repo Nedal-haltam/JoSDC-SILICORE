@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LibAN")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9e14f414d3d5976d06cdc9950ed0df085008de5e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ba3756126ac007323fddca1f7639a39072ef5e06")]
 [assembly: System.Reflection.AssemblyProductAttribute("LibAN")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LibAN")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
