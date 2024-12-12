@@ -5,41 +5,41 @@ if {[file exists rtl_work]} {
 vlib rtl_work
 vmap work rtl_work
 
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/MUX_4x1.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/MUX_8x1.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ALU.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/REG_FILE.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/EX_MEM_buffer.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/PC_register.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/IF_stage.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/MEM_stage.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/WB_stage.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/DM.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/CPU5STAGE.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/CompareEqual.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/DataMemory_IP.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/PL_CPU_sim.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchdecision.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ALU_OPER.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/IF_ID_buffer.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ID_EX_buffer.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/MEM_WB_buffer.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/control_unit.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/Immed_Gen_unit.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/ID_stage.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/EX_stage.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/exception_detect_unit.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/IM.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/forwarda.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/forwardb.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/forwardc.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchresolver.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/branchpredictor.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/stalldetectionunit.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/MUX_4x1.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/REG_FILE.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/EX_MEM_buffer.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PC_register.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/IF_stage.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/MEM_stage.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/WB_stage.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/DM.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/CompareEqual.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/DataMemory_IP.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PL_CPU.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PipeLine_sim.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwarda.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwardb.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwardc.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/pc_src_mux.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/forwarding_stage.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchdecision.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ALU_OPER.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/IF_ID_buffer.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_EX_buffer.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/MEM_WB_buffer.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/control_unit.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/Immed_Gen_unit.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/ID_stage.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/EX_stage.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/IM.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchresolver.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/branchpredictor.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/stalldetectionunit.v}
 
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA {D:/GitHub Repos/JoSDC-SSOOO-CPU/PL_CPU_FPGA/PL_CPU_FPGA/PL_CPU_sim.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SSOOO-CPU/PipeLine/PipeLine/PipeLine_sim.v}
 
-vsim -t 1ps -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L cycloneive_ver -L rtl_work -L work -voptargs="+acc"  PL_CPU_sim
+vsim -t 1ps -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L cycloneive_ver -L rtl_work -L work -voptargs="+acc"  PipeLine_sim
 
 add wave *
 view structure

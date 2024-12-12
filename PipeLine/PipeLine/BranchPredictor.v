@@ -43,7 +43,7 @@ module BranchPredictor(ID_opcode, EX_opcode, predicted, predicted_to_EX, Wrong_p
 	end
 
 
-assign predicted = ~(rst || ~((ID_opcode == beq || ID_opcode == bne) && (state == 2'b10 || state == 2'b11)));
+	assign predicted = ~(rst || ~((ID_opcode == beq || ID_opcode == bne) && (state == 2'b10 || state == 2'b11)));
 
 	always@(posedge rst, posedge clk)
 		if (rst)

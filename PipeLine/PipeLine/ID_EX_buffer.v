@@ -63,7 +63,8 @@ output reg EX1_regwrite,
 always@(posedge clk, posedge rst) begin
 
 if (rst) begin
-{EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2, EX1_regwrite, EX1_memread, EX1_memwrite, EX1_PFC, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B, EX1_rd_indzero} <= 0;
+{EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2, EX1_regwrite, EX1_memread, 
+EX1_memwrite, EX1_PFC, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B, EX1_rd_indzero} <= 0;
 end
 
 else if (~FLUSH) begin
@@ -89,7 +90,8 @@ EX1_rd_indzero <= ID_rd_indzero;
 end
 
 else begin
-{EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2, EX1_regwrite, EX1_memread, EX1_memwrite, EX1_PFC, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B, EX1_rd_indzero} <= 0;
+{EX1_opcode, EX1_rs1_ind, EX1_rs2_ind, EX1_rd_ind, EX1_PC, EX1_rs1, EX1_rs2, EX1_regwrite, EX1_memread, 
+EX1_memwrite, EX1_PFC, EX1_predicted, EX1_is_oper2_immed, EX1_is_beq, EX1_is_bne, EX1_is_jr, EX1_is_jal, EX1_forward_to_B, EX1_rd_indzero} <= 0;
 end
 
 
@@ -171,7 +173,8 @@ EX2_rd_indzero;
 always@(posedge clk, posedge rst) begin
 
 if (rst) begin
-{EX2_ALU_OPER1, EX2_ALU_OPER2, EX2_opcode, EX2_rs1_ind, EX2_rs2_ind, EX2_rd_ind, EX2_PC, EX2_rs1, EX2_rs2_out, EX2_regwrite, EX2_memread, EX2_memwrite, EX2_predicted, EX2_is_oper2_immed, EX2_is_beq, EX2_is_bne, EX2_is_jr, EX2_is_jal, EX2_forward_to_B, EX2_PFC_to_IF, EX2_rd_indzero} <= 0;
+{EX2_ALU_OPER1, EX2_ALU_OPER2, EX2_opcode, EX2_rs1_ind, EX2_rs2_ind, EX2_rd_ind, EX2_PC, EX2_rs1, EX2_rs2_out, EX2_regwrite, EX2_memread, 
+EX2_memwrite, EX2_predicted, EX2_is_oper2_immed, EX2_is_beq, EX2_is_bne, EX2_is_jr, EX2_is_jal, EX2_forward_to_B, EX2_PFC_to_IF, EX2_rd_indzero} <= 0;
 end
 
 else if (~FLUSH) begin
@@ -199,7 +202,8 @@ EX2_rd_indzero <= EX1_rd_indzero;
 end
 
 else begin
-{EX2_ALU_OPER1, EX2_ALU_OPER2, EX2_opcode, EX2_rs1_ind, EX2_rs2_ind, EX2_rd_ind, EX2_PC, EX2_rs1, EX2_rs2_out, EX2_regwrite, EX2_memread, EX2_memwrite, EX2_predicted, EX2_is_oper2_immed, EX2_is_beq, EX2_is_bne, EX2_is_jr, EX2_is_jal, EX2_forward_to_B, EX2_PFC_to_IF, EX2_rd_indzero} <= 0;
+{EX2_ALU_OPER1, EX2_ALU_OPER2, EX2_opcode, EX2_rs1_ind, EX2_rs2_ind, EX2_rd_ind, EX2_PC, EX2_rs1, EX2_rs2_out, EX2_regwrite, EX2_memread, 
+EX2_memwrite, EX2_predicted, EX2_is_oper2_immed, EX2_is_beq, EX2_is_bne, EX2_is_jr, EX2_is_jal, EX2_forward_to_B, EX2_PFC_to_IF, EX2_rd_indzero} <= 0;
 end
 
 end
