@@ -6,19 +6,19 @@ using System.Runtime.InteropServices;
 namespace Epsilon
 {
 
-    struct NodeTermIntLit
+    public struct NodeTermIntLit
     {
         public Token intlit;
     }
-    struct NodeTermIdent
+    public struct NodeTermIdent
     {
         public Token ident;
     }
-    class NodeTermParen
+    public class NodeTermParen
     {
         public NodeExpr expr;
     }
-    struct NodeTerm
+    public struct NodeTerm
     {
         public enum NodeTermType
         {
@@ -30,7 +30,7 @@ namespace Epsilon
         public NodeTermParen paren;
     }
 
-    class NodeBinExpr // could be (add, sub, and, or, xor, nor, sll, srl)
+    public class NodeBinExpr // could be (add, sub, and, or, xor, nor, sll, srl)
     {
         public enum NodeBinExprType
         {
@@ -45,7 +45,7 @@ namespace Epsilon
         }
     }
 
-    struct NodeExpr
+    public struct NodeExpr
     {
         public enum NodeExprType
         {
@@ -57,7 +57,7 @@ namespace Epsilon
     }
 
 
-    struct NodeStmtExit
+    public struct NodeStmtExit
     {
         public NodeExpr expr;
     }
@@ -69,11 +69,7 @@ namespace Epsilon
     //    public NodeUpdate udpate;
     //    public NodeScope scope;
     //}
-    struct NodeCond
-    {
-        public NodeExpr expr;
-    }
-    struct NodeScope
+    public struct NodeScope
     {
         public List<NodeStmt> stmts;
         public NodeScope()
@@ -81,26 +77,56 @@ namespace Epsilon
             stmts = [];
         }
     }
-
-    struct NodeStmtIF
+    public struct NodeIfPredicate
     {
-        public NodeCond cond;
+        public NodeExpr cond;
         public NodeScope scope;
-        public NodeStmtIF()
-        {
-            cond = new NodeCond();
-            scope = new NodeScope();
-        }
-
+    }
+    public class NodeElif
+    {
+        public NodeIfPredicate pred;
+        public NodeIfElifs? elifs;
+    }
+    public struct NodeElse
+    {
+        public NodeScope scope;
     }
 
-    struct NodeStmtAssign
+    public struct NodeIfElifs
+    {
+        public enum NodeIfElifsType
+        {
+            elif, elsee
+        }
+        public NodeIfElifsType type;
+        public NodeElif elif;
+        public NodeElse elsee;
+        public NodeIfElifs()
+        {
+            type = NodeIfElifsType.elsee;
+            elif = new NodeElif();
+            elsee = new NodeElse();
+        }
+    }
+
+    public class NodeStmtIF
+    {
+        public NodeIfPredicate pred;
+        public NodeIfElifs? elifs;
+        public NodeStmtIF()
+        {
+            pred = new NodeIfPredicate();
+            elifs = null;
+        }
+    }
+
+    public struct NodeStmtAssign
     {
         public Token ident;
         public NodeExpr expr;
     }
 
-    struct NodeStmtDeclare
+    public struct NodeStmtDeclare
     {
         public enum NodeStmtDeclareType
         {
@@ -111,7 +137,7 @@ namespace Epsilon
         public NodeExpr expr;
     }
 
-    struct NodeStmt
+    public struct NodeStmt
     {
         public enum NodeStmtType
         {
@@ -123,7 +149,7 @@ namespace Epsilon
         public NodeStmtIF iff;
         public NodeStmtExit Exit;
     }
-    struct NodeProg
+    public struct NodeProg
     {
         public NodeScope scope;
         public NodeProg()

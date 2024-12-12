@@ -2,10 +2,13 @@
 
 int x = 123;
 
-int y = 00;
+int y = x;
 
-
-if (y == 0)
+// suiiiiii
+if (x != 0)
     int z = 999;
-
+elif (y == 0)
+    int w = 888;
+else
+    int haha = 777;
 exit(213);

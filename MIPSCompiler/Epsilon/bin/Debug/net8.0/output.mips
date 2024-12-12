@@ -4,14 +4,13 @@ ADDI $sp, $zero, 20
 ADDI $1, $zero, 123
 SW $1, $sp, 0
 ADDI $sp, $sp, -1
-ADDI $1, $zero, 00
+LW $1, $sp, 1
 SW $1, $sp, 0
 ADDI $sp, $sp, -1
-LABEL0_START:
 ADDI $1, $zero, 0
 SW $1, $sp, 0
 ADDI $sp, $sp, -1
-LW $1, $sp, 2
+LW $1, $sp, 3
 SW $1, $sp, 0
 ADDI $sp, $sp, -1
 ADDI $sp, $sp, 1
@@ -20,18 +19,52 @@ ADDI $sp, $sp, 1
 LW $2, $sp, 0
 TEMP_LABEL2_START:
 SUB $1, $1, $2
-BEQ $1, $zero, TEMP_LABEL2_ELSE
-ADDI $1, $zero, 0
-J TEMP_LABEL2_END
-TEMP_LABEL2_ELSE:
+BEQ $1, $zero, TEMP_LABEL3_ELSE
 ADDI $1, $zero, 1
-TEMP_LABEL2_END:
+J TEMP_LABEL4_END
+TEMP_LABEL3_ELSE:
+ADDI $1, $zero, 0
+TEMP_LABEL4_END:
 SW $1, $sp, 0
 ADDI $sp, $sp, -1
 ADDI $sp, $sp, 1
 LW $1, $sp, 0
-beq $1, $zero, LABEL0_END
+beq $1, $zero, LABEL1_elifs
 ADDI $1, $zero, 999
+SW $1, $sp, 0
+ADDI $sp, $sp, -1
+J LABEL0_END
+LABEL1_elifs:
+ADDI $1, $zero, 0
+SW $1, $sp, 0
+ADDI $sp, $sp, -1
+LW $1, $sp, 3
+SW $1, $sp, 0
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, $sp, 0
+ADDI $sp, $sp, 1
+LW $2, $sp, 0
+TEMP_LABEL6_START:
+SUB $1, $1, $2
+BEQ $1, $zero, TEMP_LABEL7_ELSE
+ADDI $1, $zero, 0
+J TEMP_LABEL8_END
+TEMP_LABEL7_ELSE:
+ADDI $1, $zero, 1
+TEMP_LABEL8_END:
+SW $1, $sp, 0
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, $sp, 0
+beq $1, $zero, LABEL5_elifs
+ADDI $1, $zero, 888
+SW $1, $sp, 0
+ADDI $sp, $sp, -1
+J LABEL0_END
+J LABEL0_END
+LABEL5_elifs:
+ADDI $1, $zero, 777
 SW $1, $sp, 0
 ADDI $sp, $sp, -1
 LABEL0_END:

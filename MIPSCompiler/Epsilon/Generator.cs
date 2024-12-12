@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 #pragma warning disable CS8500
 
@@ -10,7 +11,7 @@ namespace Epsilon
         public NodeProg m_prog;
         StringBuilder m_outputcode = new StringBuilder();
         List<string> m_vars = new List<string>();
-        List<string> m_labels = new List<string>();
+        int m_labels_count = 0;
         int StackSize = 0;
         //Dictionary<string, int> m_Vars = new Dictionary<string, int>();
         //int m_VarCount = 0;
@@ -46,10 +47,13 @@ namespace Epsilon
 
         void GenScope(NodeScope scope)
         {
+            // TODO: add scope boundaries for variables
+            // beginscope
             foreach (NodeStmt stmt in scope.stmts)
             {
                 GenStmt(stmt);
             }
+            // endscope
         }
 
         void GenTerm(NodeTerm term)
@@ -87,12 +91,9 @@ namespace Epsilon
             GenPop(source_reg2);
             if (binExpr.type == NodeBinExpr.NodeBinExprType.equalequal)
             {
-                string new_label_start = $"TEMP_LABEL{m_labels.Count}_START";
-                string new_label_else = $"TEMP_LABEL{m_labels.Count}_ELSE";
-                string new_label_end = $"TEMP_LABEL{m_labels.Count}_END";
-                m_labels.Add(new_label_start);
-                m_labels.Add(new_label_else);
-                m_labels.Add(new_label_end);
+                string new_label_start = $"TEMP_LABEL{m_labels_count++}_START";
+                string new_label_else = $"TEMP_LABEL{m_labels_count++}_ELSE";
+                string new_label_end = $"TEMP_LABEL{m_labels_count++}_END";
                 // TODO: optimize the comparison by adding seq, sneq instructions
                 m_outputcode.Append($"{new_label_start}:\n");
                 m_outputcode.Append($"SUB {source_reg1}, {source_reg1}, {source_reg2}\n");
@@ -106,12 +107,9 @@ namespace Epsilon
             }
             else if (binExpr.type == NodeBinExpr.NodeBinExprType.notequal)
             {
-                string new_label_start = $"TEMP_LABEL{m_labels.Count}_START";
-                string new_label_else = $"TEMP_LABEL{m_labels.Count}_ELSE";
-                string new_label_end = $"TEMP_LABEL{m_labels.Count}_END";
-                m_labels.Add(new_label_start);
-                m_labels.Add(new_label_else);
-                m_labels.Add(new_label_end);
+                string new_label_start = $"TEMP_LABEL{m_labels_count++}_START";
+                string new_label_else = $"TEMP_LABEL{m_labels_count++}_ELSE";
+                string new_label_end = $"TEMP_LABEL{m_labels_count++}_END";
                 // TODO: optimize the comparison by adding seq, sneq instructions
                 m_outputcode.Append($"{new_label_start}:\n");
                 m_outputcode.Append($"SUB {source_reg1}, {source_reg1}, {source_reg2}\n");
@@ -166,20 +164,58 @@ namespace Epsilon
             int relative_location = StackSize - m_vars.IndexOf(ident.Value);
             m_outputcode.Append($"SW {reg}, $sp, {relative_location}\n");
         }
+        void GenElifs(NodeIfElifs elifs, string label_end)
+        {
+            if (elifs.type == NodeIfElifs.NodeIfElifsType.elif)
+            {
+                string label = $"LABEL{m_labels_count++}_elifs";
+                GenExpr(elifs.elif.pred.cond);
+                string reg = "$1";
+                GenPop(reg);
+                m_outputcode.Append($"beq $1, $zero, {label}\n");
+                GenScope(elifs.elif.pred.scope);
+                m_outputcode.Append($"J {label_end}\n");
+                if (elifs.elif.elifs.HasValue)
+                {
+                    m_outputcode.Append($"J {label_end}\n");
+                    m_outputcode.Append($"{label}:\n");
+                    GenElifs(elifs.elif.elifs.Value, label_end);
+                }
+                else
+                {
+                    m_outputcode.Append($"{label}:\n");
+                }
+            }
+            else if (elifs.type == NodeIfElifs.NodeIfElifsType.elsee)
+            {
+                GenScope(elifs.elsee.scope);
+            }
+            else
+            {
+                Error("UNREACHABLE", -1);
+            }
+        }
         void GenStmtIF(NodeStmtIF iff)
         {
-            string new_label_start = $"LABEL{m_labels.Count}_START";
-            string new_label_end = $"LABEL{m_labels.Count}_END";
-            m_labels.Add(new_label_start);
-            m_labels.Add(new_label_end);
+            string label_end = $"LABEL{m_labels_count++}_END";
 
-            m_outputcode.Append($"{new_label_start}:\n");
-            GenExpr(iff.cond.expr);
+            string label = $"LABEL{m_labels_count++}_elifs";
+            GenExpr(iff.pred.cond);
             string reg = "$1";
             GenPop(reg);
-            m_outputcode.Append($"beq $1, $zero, {new_label_end}\n");
-            GenScope(iff.scope);
-            m_outputcode.Append($"{new_label_end}:\n");
+            m_outputcode.Append($"beq $1, $zero, {label}\n");
+            GenScope(iff.pred.scope);
+            if (iff.elifs.HasValue)
+            {
+                m_outputcode.Append($"J {label_end}\n");
+                m_outputcode.Append($"{label}:\n");
+                GenElifs(iff.elifs.Value, label_end);
+            }
+            else
+            {
+                m_outputcode.Append($"{label}:\n");
+            }
+            m_outputcode.Append($"{label_end}:\n");
         }
         void GenStmtExit(NodeStmtExit exit)
         {

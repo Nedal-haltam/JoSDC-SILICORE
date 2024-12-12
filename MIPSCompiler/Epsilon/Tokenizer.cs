@@ -5,13 +5,13 @@
 
 namespace Epsilon
 {
-    struct Token
+    public struct Token
     {
         public TokenType Type;
         public string Value;
         public int Line;
     }
-    enum TokenType
+    public enum TokenType
     {
         // `(` , `)` , `[` , `]` , `,` , (+, -, <, >, &, |, ^, ~|, <<, >>) , `=` , `;` , `\n` (for line increament) , else invalid token
         OpenParen, CloseParen, OpenSquare, CloseSquare, OpenCurly, CloseCurly, Comma, Plus,
@@ -77,14 +77,14 @@ namespace Epsilon
                     {
                         tokens.Add(new() { Value = word, Type = TokenType.Iff, Line = line });
                     }
-                    //else if (word == "elif")
-                    //{
-                    //    tokens.Add(new() { Value = word, Type = TokenType.Elif, Line = line });
-                    //}
-                    //else if (word == "else")
-                    //{
-                    //    tokens.Add(new() { Value = word, Type = TokenType.Else, Line = line });
-                    //}
+                    else if (word == "elif")
+                    {
+                        tokens.Add(new() { Value = word, Type = TokenType.Elif, Line = line });
+                    }
+                    else if (word == "else")
+                    {
+                        tokens.Add(new() { Value = word, Type = TokenType.Else, Line = line });
+                    }
                     //else if (word == "for")
                     //{
                     //    tokens.Add(new() { Value = word, Type = TokenType.For, Line = line });

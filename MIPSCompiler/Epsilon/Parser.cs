@@ -2,6 +2,10 @@
 
 
 
+using System.Linq.Expressions;
+using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
+
 namespace Epsilon
 {
     class Parser
@@ -63,8 +67,7 @@ namespace Epsilon
         }
         bool IsStmtIF()
         {
-            return peek(TokenType.Iff, 0).HasValue &&
-                   peek(TokenType.OpenParen, 1).HasValue;
+            return peek(TokenType.Iff, 0).HasValue;
         }
         bool IsStmtExit()
         {
@@ -209,10 +212,10 @@ namespace Epsilon
                     }
                     else
                     {
-                        ErrorExpected("statement");
+                        return null;
                     }
                 }
-                consume();
+                try_consume_err(TokenType.CloseCurly);
                 return scope;
             }
             else
@@ -226,13 +229,80 @@ namespace Epsilon
                 }
                 else
                 {
-                    ErrorExpected("statement");
+                    return null;
                 }
             }
+        }
 
+        NodeIfElifs? ParseElifs()
+        {
+            NodeIfElifs elifs = new NodeIfElifs();
+            if (peek(TokenType.Elif).HasValue)
+            {
+                consume();
+                NodeIfPredicate? pred = ParsePredicate();
+                if (pred.HasValue)
+                {
+                    elifs.type = NodeIfElifs.NodeIfElifsType.elif;
+                    elifs.elif = new NodeElif();
+                    elifs.elif.pred = pred.Value;
+                    elifs.elif.elifs = ParseElifs();
+                    return elifs;
+                }
+                else
+                {
+                    ErrorExpected("predicate");
+
+                }
+            }
+            else if (peek(TokenType.Else).HasValue)
+            {
+                consume();
+                NodeScope? scope = ParseScope();
+                if (scope.HasValue)
+                {
+                    elifs.type = NodeIfElifs.NodeIfElifsType.elsee;
+                    elifs.elsee = new NodeElse();
+                    elifs.elsee.scope = scope.Value;
+                    return elifs;
+                }
+                else
+                {
+                    ErrorExpected("scope");
+                }
+            }
             return null;
         }
 
+        NodeIfPredicate? ParsePredicate()
+        {
+            if (!peek(TokenType.OpenParen).HasValue)
+            {
+                return null;
+            }
+            consume();
+            NodeIfPredicate pred = new NodeIfPredicate();
+            NodeExpr? cond = ParseExpr();
+            if (cond.HasValue)
+            {
+                pred.cond = cond.Value;
+            }
+            else
+            {
+                return null;
+            }
+            try_consume_err(TokenType.CloseParen);
+            NodeScope? scope = ParseScope();
+            if (scope.HasValue)
+            {
+                pred.scope = scope.Value;
+            }
+            else
+            {
+                return null;
+            }
+            return pred;
+        }
         NodeStmt? ParseStmt()
         {
             // see what possible statements you have and parse it (stmts: declare, assign, if, for)
@@ -302,21 +372,18 @@ namespace Epsilon
             else if (IsStmtIF())
             {
                 consume();
-                consume();
                 NodeStmtIF iff = new NodeStmtIF();
-                NodeExpr? nodeExpr = ParseExpr();
-                if (nodeExpr.HasValue)
+                NodeIfPredicate? pred = ParsePredicate();
+                if (pred.HasValue)
                 {
-                    iff.cond = new NodeCond();
-                    iff.cond.expr = nodeExpr.Value;
+                    iff.pred = pred.Value;
                 }
                 else
                 {
-                    ErrorExpected("expression");
+                    return null;
                 }
-                try_consume_err(TokenType.CloseParen);
-                NodeScope? scope = ParseScope();
-                iff.scope = scope.Value;
+                NodeIfElifs? elifs = ParseElifs();
+                iff.elifs = elifs;
                 NodeStmt stmt = new NodeStmt();
                 stmt.type = NodeStmt.NodeStmtType.iff;
                 stmt.iff = iff;
