@@ -34,7 +34,7 @@ namespace Epsilon
     {
         public enum NodeBinExprType
         {
-            add = 7, sub, and, or, xor, nor, sll, srl
+            add = 7, sub, and, or, xor, nor, sll, srl, equalequal, notequal
         }
         public NodeBinExprType type;
         public NodeExpr lhs;
@@ -56,6 +56,12 @@ namespace Epsilon
         public NodeBinExpr binexpr;
     }
 
+
+    struct NodeStmtExit
+    {
+        public NodeExpr expr;
+    }
+
     //struct NodeStmtFor
     //{
     //    public NodeInit init;
@@ -63,18 +69,30 @@ namespace Epsilon
     //    public NodeUpdate udpate;
     //    public NodeScope scope;
     //}
-
-    //struct NodeStmtIf
-    //{
-    //    public NodeCond cond;
-    //    public NodeScope scope;
-    //}
-
-    struct NodeStmtExit
+    struct NodeCond
     {
         public NodeExpr expr;
     }
+    struct NodeScope
+    {
+        public List<NodeStmt> stmts;
+        public NodeScope()
+        {
+            stmts = [];
+        }
+    }
 
+    struct NodeStmtIF
+    {
+        public NodeCond cond;
+        public NodeScope scope;
+        public NodeStmtIF()
+        {
+            cond = new NodeCond();
+            scope = new NodeScope();
+        }
+
+    }
 
     struct NodeStmtAssign
     {
@@ -97,60 +115,20 @@ namespace Epsilon
     {
         public enum NodeStmtType
         {
-            nodestmtdeclare, nodestmtassign, Return
+            declare, assign, iff, Exit
         }
         public NodeStmtType type;
         public NodeStmtDeclare declare;
         public NodeStmtAssign assign;
+        public NodeStmtIF iff;
         public NodeStmtExit Exit;
     }
     struct NodeProg
     {
-        public List<NodeStmt> stmts;
-
+        public NodeScope scope;
         public NodeProg()
         {
-            stmts = new List<NodeStmt>();
+            scope = new();
         }
     }
-
-
-    /*
-
-    NodeStmt: could be one of the following
-
-        NodeStmtDeclare: could be
-            StmtReg: is composed of
-                identifier
-                expression
-
-            StmtMem: is composed of
-                identifier
-                expression
-
-        StmtAssign: is composed of
-            identifier
-            expression
-
-        StmtIf: is composed of 
-            condition
-            scope
-
-        StmtFor: is composed of
-            Initialization: could be
-                StmtReg
-                StmtAssign
-            condition
-            update: is an
-                expression
-            scope: is a
-                list of statements    
-
-
-
-    excpression: could be a 
-        intlit, ident, binary expr
-
-    */
-
 }

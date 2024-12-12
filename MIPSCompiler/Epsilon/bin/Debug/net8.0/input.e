@@ -1,6 +1,11 @@
 
-int x_x;
 
-x_x = 10;
+int x = 123;
 
-int Y_Y = x_x + 10;
+int y = 00;
+
+
+if (y == 0)
+    int z = 999;
+
+exit(213);

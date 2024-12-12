@@ -54,16 +54,23 @@ namespace Epsilon
         bool IsStmtDeclare()
         {
             return (peek(TokenType.Int, 0).HasValue) &&
-                   peek(TokenType.Ident, 1).HasValue
-                   ;//&& peek(TokenType.Equal, 2).HasValue;
+                   peek(TokenType.Ident, 1).HasValue;
         }
-
         bool IsStmtAssign()
         {
             return peek(TokenType.Ident).HasValue &&
                    peek(TokenType.Equal, 1).HasValue;
         }
-
+        bool IsStmtIF()
+        {
+            return peek(TokenType.Iff, 0).HasValue &&
+                   peek(TokenType.OpenParen, 1).HasValue;
+        }
+        bool IsStmtExit()
+        {
+            return peek(TokenType.Exit).HasValue &&
+                   peek(TokenType.OpenParen, 1).HasValue;
+        }
         bool IsBinExpr()
         {
             return peek(TokenType.Plus).HasValue ||
@@ -73,6 +80,8 @@ namespace Epsilon
                    peek(TokenType.Xor).HasValue ||
                    peek(TokenType.Nor).HasValue ||
                    peek(TokenType.Sll).HasValue ||
+                   peek(TokenType.EqualEqual).HasValue ||
+                   peek(TokenType.NotEqual).HasValue ||
                    peek(TokenType.Srl).HasValue;
         }
 
@@ -115,6 +124,8 @@ namespace Epsilon
         {
             switch (type)
             {
+                case TokenType.EqualEqual:
+                case TokenType.NotEqual:
                 case TokenType.Plus:
                 case TokenType.Minus:
                     return 0;
@@ -182,6 +193,46 @@ namespace Epsilon
             }
         }
 
+        NodeScope? ParseScope()
+        {
+            NodeScope scope = new NodeScope();
+            if (peek(TokenType.OpenCurly).HasValue)
+            {
+                consume();
+                while (!peek(TokenType.CloseCurly).HasValue)
+                {
+                    scope.stmts = [];
+                    NodeStmt? stmt = ParseStmt();
+                    if (stmt.HasValue)
+                    {
+                        scope.stmts.Add(stmt.Value);
+                    }
+                    else
+                    {
+                        ErrorExpected("statement");
+                    }
+                }
+                consume();
+                return scope;
+            }
+            else
+            {
+                NodeStmt? stmt = ParseStmt();
+                if (stmt.HasValue)
+                {
+                    scope.stmts = [];
+                    scope.stmts.Add(stmt.Value);
+                    return scope;
+                }
+                else
+                {
+                    ErrorExpected("statement");
+                }
+            }
+
+            return null;
+        }
+
         NodeStmt? ParseStmt()
         {
             // see what possible statements you have and parse it (stmts: declare, assign, if, for)
@@ -192,6 +243,10 @@ namespace Epsilon
                 if (vartype.Type == TokenType.Int)
                 {
                     declare.type = NodeStmtDeclare.NodeStmtDeclareType.Int;
+                }
+                else
+                {
+                    ErrorExpected("variable type");
                 }
                 declare.ident = consume();
                 if (peek(TokenType.Equal).HasValue)
@@ -220,7 +275,7 @@ namespace Epsilon
                 }
                 try_consume_err(TokenType.SemiColon);
                 NodeStmt stmt = new NodeStmt();
-                stmt.type = NodeStmt.NodeStmtType.nodestmtdeclare;
+                stmt.type = NodeStmt.NodeStmtType.declare;
                 stmt.declare = declare;
                 return stmt;
             }
@@ -240,12 +295,36 @@ namespace Epsilon
                 }
                 try_consume_err(TokenType.SemiColon);
                 NodeStmt stmt = new NodeStmt();
-                stmt.type = NodeStmt.NodeStmtType.nodestmtassign;
+                stmt.type = NodeStmt.NodeStmtType.assign;
                 stmt.assign = assign;
                 return stmt;
-            }   
-            else if (peek(TokenType.Exit).HasValue)
+            }
+            else if (IsStmtIF())
             {
+                consume();
+                consume();
+                NodeStmtIF iff = new NodeStmtIF();
+                NodeExpr? nodeExpr = ParseExpr();
+                if (nodeExpr.HasValue)
+                {
+                    iff.cond = new NodeCond();
+                    iff.cond.expr = nodeExpr.Value;
+                }
+                else
+                {
+                    ErrorExpected("expression");
+                }
+                try_consume_err(TokenType.CloseParen);
+                NodeScope? scope = ParseScope();
+                iff.scope = scope.Value;
+                NodeStmt stmt = new NodeStmt();
+                stmt.type = NodeStmt.NodeStmtType.iff;
+                stmt.iff = iff;
+                return stmt;
+            }
+            else if (IsStmtExit())
+            {
+                consume();
                 consume();
                 NodeStmtExit Return = new NodeStmtExit();
                 NodeExpr? expr = ParseExpr();
@@ -257,9 +336,10 @@ namespace Epsilon
                 {
                     ErrorExpected("expression");
                 }
+                try_consume_err(TokenType.CloseParen);
                 try_consume_err(TokenType.SemiColon);
                 NodeStmt stmt = new NodeStmt();
-                stmt.type = NodeStmt.NodeStmtType.Return;
+                stmt.type = NodeStmt.NodeStmtType.Exit;
                 stmt.Exit = Return;
                 return stmt;
             }
@@ -269,7 +349,7 @@ namespace Epsilon
         }
 
 
-        public NodeProg Parse()
+        public NodeProg ParseProg()
         {
             NodeProg prog = new NodeProg();
             
@@ -277,11 +357,10 @@ namespace Epsilon
             {
                 NodeStmt? stmt = ParseStmt();
                 if (stmt.HasValue)
-                    prog.stmts.Add(stmt.Value);
+                    prog.scope.stmts.Add(stmt.Value);
                 else
                     ErrorExpected($"statement");
             }
-
             return prog;
         }
     }

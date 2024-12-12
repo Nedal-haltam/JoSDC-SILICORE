@@ -1,6 +1,7 @@
 ﻿
 
 using System.Net.WebSockets;
+using System.Text;
 
 namespace Epsilon
 {
@@ -14,16 +15,12 @@ namespace Epsilon
             List<Token> Tprog = tokenizer.Tokinze(); // tokenized program
 
             Parser parser = new(Tprog);
-            NodeProg Pprog = parser.Parse(); // parsed program
+            NodeProg Pprog = parser.ParseProg(); // parsed program
 
             Generator generator = new(Pprog);
-            string outputcode = generator.Generate();
+            StringBuilder outputcode = generator.GenProg();
 
-            File.WriteAllText("./output.mips", outputcode);
-
-
-
-
+            File.WriteAllText("./output.mips", outputcode.ToString());
         }
     }
 }

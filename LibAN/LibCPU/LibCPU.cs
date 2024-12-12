@@ -572,8 +572,6 @@ namespace LibCPU
             if (inst.format == "I")
             {
                 inst.rdind = inst.rtind;
-                if (!isbranch(inst.mnem))
-                    inst.rtind = 0;
             }
             if (inst.format == "J")
             {
@@ -1047,6 +1045,11 @@ namespace LibCPU
                 if (mc == "".PadLeft(32, '0'))
                     inst.mnem = Mnemonic.nop;
                 inst.mnem = value;
+            }
+
+            if (inst.mnem == Mnemonic.sw)
+            {
+
             }
 
             inst.aluop = get_inst_aluop(inst.mnem);

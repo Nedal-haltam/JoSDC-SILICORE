@@ -21,7 +21,7 @@ Run_BenchMark_SW()
 {
     ProgName=$1
     ProgFolder="./$ProgName/"
-    ProgCode="./$ProgName/$ProgName.txt"
+    ProgCode="./$ProgName/$ProgName.mips"
 
     # define the I/O
     ASSEMBLER_IN=$ProgCode
