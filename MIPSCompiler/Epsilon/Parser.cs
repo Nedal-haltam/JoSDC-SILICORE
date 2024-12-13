@@ -202,9 +202,9 @@ namespace Epsilon
             if (peek(TokenType.OpenCurly).HasValue)
             {
                 consume();
+                scope.stmts = [];
                 while (!peek(TokenType.CloseCurly).HasValue)
                 {
-                    scope.stmts = [];
                     NodeStmt? stmt = ParseStmt();
                     if (stmt.HasValue)
                     {

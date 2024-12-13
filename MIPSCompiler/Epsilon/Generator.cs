@@ -11,6 +11,7 @@ namespace Epsilon
         public NodeProg m_prog;
         StringBuilder m_outputcode = new StringBuilder();
         List<string> m_vars = new List<string>();
+        List<int> m_scopes = new List<int>();
         int m_labels_count = 0;
         int StackSize = 0;
         //Dictionary<string, int> m_Vars = new Dictionary<string, int>();
@@ -47,13 +48,18 @@ namespace Epsilon
 
         void GenScope(NodeScope scope)
         {
-            // TODO: add scope boundaries for variables
-            // beginscope
+            m_outputcode.Append("# begin scope\n");
+            m_scopes.Add(m_vars.Count);
             foreach (NodeStmt stmt in scope.stmts)
             {
                 GenStmt(stmt);
             }
-            // endscope
+            m_outputcode.Append("# end scope\n");
+            int popcount = m_vars.Count - m_scopes[^1];
+            m_outputcode.Append($"ADDi $sp, $sp, {popcount}\n");
+            StackSize -= popcount;
+            m_vars.RemoveRange(m_vars.Count - popcount, popcount);
+            m_scopes.RemoveAt(m_scopes.Count - 1);
         }
 
         void GenTerm(NodeTerm term)
@@ -172,7 +178,7 @@ namespace Epsilon
                 GenExpr(elifs.elif.pred.cond);
                 string reg = "$1";
                 GenPop(reg);
-                m_outputcode.Append($"beq $1, $zero, {label}\n");
+                m_outputcode.Append($"BEQ $1, $zero, {label}\n");
                 GenScope(elifs.elif.pred.scope);
                 m_outputcode.Append($"J {label_end}\n");
                 if (elifs.elif.elifs.HasValue)
@@ -203,7 +209,7 @@ namespace Epsilon
             GenExpr(iff.pred.cond);
             string reg = "$1";
             GenPop(reg);
-            m_outputcode.Append($"beq $1, $zero, {label}\n");
+            m_outputcode.Append($"BEQ $1, $zero, {label}\n");
             GenScope(iff.pred.scope);
             if (iff.elifs.HasValue)
             {
@@ -221,7 +227,7 @@ namespace Epsilon
         {
             GenExpr(exit.expr);
             GenPop("$1");
-            m_outputcode.Append("HLT");
+            m_outputcode.Append("HLT\n");
         }
         void GenStmt(NodeStmt stmt)
         {
