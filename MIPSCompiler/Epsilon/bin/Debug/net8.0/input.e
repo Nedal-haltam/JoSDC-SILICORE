@@ -21,3 +21,9 @@ for (int i = 0; i < 10; i = i + 1)
     x = x + 1;
 }
 exit(42);
+
+/*
+string[] metasyntactic_vars_PlusNedal = {
+    "foobar", "foo", "bar", "baz", "qux", "quux", "corge", "grault", "garply", "waldo", "fred", "plugh", "xyzzy", "thud", "nedal"
+}
+*/
