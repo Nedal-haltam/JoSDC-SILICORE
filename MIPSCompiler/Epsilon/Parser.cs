@@ -3,6 +3,7 @@
 
 
 using System.Linq.Expressions;
+using System.Net.Sockets;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 
@@ -57,7 +58,7 @@ namespace Epsilon
 
         bool IsStmtDeclare()
         {
-            return (peek(TokenType.Int, 0).HasValue) &&
+            return (peek(TokenType.Int).HasValue) &&
                    peek(TokenType.Ident, 1).HasValue;
         }
         bool IsStmtAssign()
@@ -67,7 +68,11 @@ namespace Epsilon
         }
         bool IsStmtIF()
         {
-            return peek(TokenType.Iff, 0).HasValue;
+            return peek(TokenType.Iff).HasValue;
+        }
+        bool IsStmtFor()
+        {
+            return peek(TokenType.For).HasValue;
         }
         bool IsStmtExit()
         {
@@ -78,14 +83,12 @@ namespace Epsilon
         {
             return peek(TokenType.Plus).HasValue ||
                    peek(TokenType.Minus).HasValue ||
-                   peek(TokenType.And).HasValue ||
-                   peek(TokenType.Or).HasValue ||
-                   peek(TokenType.Xor).HasValue ||
-                   peek(TokenType.Nor).HasValue ||
                    peek(TokenType.Sll).HasValue ||
+                   peek(TokenType.Srl).HasValue ||
                    peek(TokenType.EqualEqual).HasValue ||
                    peek(TokenType.NotEqual).HasValue ||
-                   peek(TokenType.Srl).HasValue;
+                   peek(TokenType.LessThan).HasValue ||
+                   peek(TokenType.GreaterThan).HasValue;
         }
 
 
@@ -129,16 +132,38 @@ namespace Epsilon
             {
                 case TokenType.EqualEqual:
                 case TokenType.NotEqual:
+                case TokenType.LessThan:
+                case TokenType.GreaterThan:
+                    return 0;
+                case TokenType.Sll:
+                case TokenType.Srl:
+                    return 1;
                 case TokenType.Plus:
                 case TokenType.Minus:
-                    return 0;
-                case TokenType.star:
-                case TokenType.fslash:
-                    return 1;
+                    return 2;
                 default: return null;
             }
         }
-
+        NodeBinExpr.NodeBinExprType? GetOpType(TokenType op)
+        {
+            if (op == TokenType.Plus)
+                return NodeBinExpr.NodeBinExprType.add;
+            if (op == TokenType.Minus)
+                return NodeBinExpr.NodeBinExprType.sub;
+            if (op == TokenType.Sll)
+                return NodeBinExpr.NodeBinExprType.sll;
+            if (op == TokenType.Srl)
+                return NodeBinExpr.NodeBinExprType.srl;
+            if (op == TokenType.EqualEqual)
+                return NodeBinExpr.NodeBinExprType.equalequal;
+            if (op == TokenType.NotEqual)
+                return NodeBinExpr.NodeBinExprType.notequal;
+            if (op == TokenType.LessThan)
+                return NodeBinExpr.NodeBinExprType.lessthan;
+            if (op == TokenType.GreaterThan)
+                return NodeBinExpr.NodeBinExprType.greaterthan;
+            return null;
+        }
         NodeExpr? ParseExpr(int min_prec = 0)
         {
             NodeTerm? Termlhs = ParseTerm();
@@ -178,10 +203,13 @@ namespace Epsilon
                     NodeBinExpr expr = new NodeBinExpr();
                     NodeExpr expr_lhs2 = new NodeExpr();
                     expr_lhs2 = exprlhs;
-                    expr.type = (NodeBinExpr.NodeBinExprType)op.Type;
+                    NodeBinExpr.NodeBinExprType? optype = GetOpType(op.Type);
+                    if (optype.HasValue)
+                        expr.type = optype.Value;
+                    else
+                        return null;
                     expr.lhs = expr_lhs2;
                     expr.rhs = expr_rhs.Value;
-
                     exprlhs.type = NodeExpr.NodeExprType.binExpr;
                     exprlhs.binexpr = expr;
                 }
@@ -240,7 +268,7 @@ namespace Epsilon
             if (peek(TokenType.Elif).HasValue)
             {
                 consume();
-                NodeIfPredicate? pred = ParsePredicate();
+                NodeIfPredicate? pred = ParseIfPredicate();
                 if (pred.HasValue)
                 {
                     elifs.type = NodeIfElifs.NodeIfElifsType.elif;
@@ -252,7 +280,6 @@ namespace Epsilon
                 else
                 {
                     ErrorExpected("predicate");
-
                 }
             }
             else if (peek(TokenType.Else).HasValue)
@@ -274,12 +301,10 @@ namespace Epsilon
             return null;
         }
 
-        NodeIfPredicate? ParsePredicate()
+        NodeIfPredicate? ParseIfPredicate()
         {
             if (!peek(TokenType.OpenParen).HasValue)
-            {
                 return null;
-            }
             consume();
             NodeIfPredicate pred = new NodeIfPredicate();
             NodeExpr? cond = ParseExpr();
@@ -292,6 +317,159 @@ namespace Epsilon
                 return null;
             }
             try_consume_err(TokenType.CloseParen);
+            NodeScope? scope = ParseScope();
+            if (scope.HasValue)
+            {
+                pred.scope = scope.Value;
+            }
+            else
+            {
+                return null;
+            }
+            return pred;
+        }
+        NodeForInit? ParseForInit()
+        {
+            if (IsStmtDeclare())
+            {
+                Token vartype = consume();
+                NodeStmtDeclare declare = new NodeStmtDeclare();
+                if (vartype.Type == TokenType.Int)
+                {
+                    declare.type = NodeStmtDeclare.NodeStmtDeclareType.Int;
+                }
+                else
+                {
+                    ErrorExpected("variable type");
+                }
+                declare.ident = consume();
+                if (peek(TokenType.Equal).HasValue)
+                {
+                    consume();
+                    NodeExpr? expr = ParseExpr();
+                    if (expr.HasValue)
+                    {
+                        declare.expr = expr.Value;
+                    }
+                    else
+                    {
+                        ErrorExpected("expression");
+                    }
+                }
+                else
+                {
+                    NodeExpr expr = new()
+                    {
+                        type = NodeExpr.NodeExprType.term
+                    };
+                    expr.term.type = NodeTerm.NodeTermType.intlit;
+                    expr.term.intlit.intlit.Type = TokenType.Int;
+                    expr.term.intlit.intlit.Value = "0";
+                    declare.expr = expr;
+                }
+                try_consume_err(TokenType.SemiColon);
+                NodeForInit forinit = new NodeForInit();
+                forinit.type = NodeForInit.NodeForInitType.declare;
+                forinit.declare = declare;
+                return forinit;
+            }
+            else if (IsStmtAssign())
+            {
+                NodeStmtAssign assign = new NodeStmtAssign();
+                assign.ident = consume();
+                consume();
+                NodeExpr? expr = ParseExpr();
+                if (expr.HasValue)
+                {
+                    assign.expr = expr.Value;
+                }
+                else
+                {
+                    ErrorExpected("expression");
+                }
+                try_consume_err(TokenType.SemiColon);
+                NodeForInit forinit = new NodeForInit();
+                forinit.type = NodeForInit.NodeForInitType.assign;
+                forinit.assign = assign;
+                return forinit;
+            }
+            return null;
+        }
+        NodeForCond? ParseForCond()
+        {
+            NodeForCond forcond = new NodeForCond();
+            NodeExpr? cond = ParseExpr();
+            if (cond.HasValue)
+            {
+                try_consume_err(TokenType.SemiColon);
+                forcond.cond = cond.Value;
+            }
+            else
+            {
+                try_consume_err(TokenType.SemiColon);
+                return null;
+            }
+            return forcond;
+        }
+        NodeStmtAssign? ParseStmtUpdate()
+        {
+            if (IsStmtAssign())
+            {
+                NodeStmtAssign assign = new NodeStmtAssign();
+                assign.ident = consume();
+                consume();
+                NodeExpr? expr = ParseExpr();
+                if (expr.HasValue)
+                {
+                    assign.expr = expr.Value;
+                }
+                else
+                {
+                    ErrorExpected("expression");
+                }
+                return assign;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        NodeForUpdate? ParseForUpdate()
+        {
+            NodeForUpdate forupdate = new NodeForUpdate();
+            forupdate.udpates = [];
+            NodeStmtAssign? update = ParseStmtUpdate();
+            if (update.HasValue)
+            {
+                while (update.HasValue)
+                {
+                    forupdate.udpates.Add(update.Value);
+                    if (peek(TokenType.CloseParen).HasValue)
+                    {
+                        consume();
+                        return forupdate;
+                    }
+                    try_consume_err(TokenType.Comma);
+                    update = ParseStmtUpdate();
+                }
+                ErrorExpected("statement assign");
+                return null;
+            }
+            else
+            {
+                try_consume_err(TokenType.CloseParen);
+                return null;
+            }
+        }
+        NodeForPredicate? ParseForPredicate()
+        {
+            NodeForPredicate pred = new NodeForPredicate();
+            if (!peek(TokenType.OpenParen).HasValue)
+                return null;
+            consume();
+            pred.init = ParseForInit();
+            pred.cond = ParseForCond();
+            pred.udpate = ParseForUpdate();
             NodeScope? scope = ParseScope();
             if (scope.HasValue)
             {
@@ -373,7 +551,7 @@ namespace Epsilon
             {
                 consume();
                 NodeStmtIF iff = new NodeStmtIF();
-                NodeIfPredicate? pred = ParsePredicate();
+                NodeIfPredicate? pred = ParseIfPredicate();
                 if (pred.HasValue)
                 {
                     iff.pred = pred.Value;
@@ -387,6 +565,24 @@ namespace Epsilon
                 NodeStmt stmt = new NodeStmt();
                 stmt.type = NodeStmt.NodeStmtType.iff;
                 stmt.iff = iff;
+                return stmt;
+            }
+            else if (IsStmtFor())
+            {
+                consume();
+                NodeStmtFor forr = new NodeStmtFor();
+                NodeForPredicate? pred = ParseForPredicate();
+                if (pred.HasValue)
+                {
+                    forr.pred = pred.Value;
+                }
+                else
+                {
+                    return null;
+                }
+                NodeStmt stmt = new NodeStmt();
+                stmt.type = NodeStmt.NodeStmtType.forr;
+                stmt.forr = forr;
                 return stmt;
             }
             else if (IsStmtExit())

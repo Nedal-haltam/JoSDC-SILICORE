@@ -30,19 +30,15 @@ namespace Epsilon
         public NodeTermParen paren;
     }
 
-    public class NodeBinExpr // could be (add, sub, and, or, xor, nor, sll, srl)
+    public class NodeBinExpr 
     {
         public enum NodeBinExprType
         {
-            add = 7, sub, and, or, xor, nor, sll, srl, equalequal, notequal
+            add, sub, sll, srl, equalequal, notequal, lessthan, greaterthan
         }
         public NodeBinExprType type;
         public NodeExpr lhs;
         public NodeExpr rhs;
-
-        public NodeBinExpr()
-        {
-        }
     }
 
     public struct NodeExpr
@@ -61,14 +57,6 @@ namespace Epsilon
     {
         public NodeExpr expr;
     }
-
-    //struct NodeStmtFor
-    //{
-    //    public NodeInit init;
-    //    public NodeCond cond;
-    //    public NodeUpdate udpate;
-    //    public NodeScope scope;
-    //}
     public struct NodeScope
     {
         public List<NodeStmt> stmts;
@@ -136,17 +124,46 @@ namespace Epsilon
         public Token ident;
         public NodeExpr expr;
     }
-
+    public struct NodeForInit
+    {
+        public enum NodeForInitType
+        {
+            declare, assign
+        }
+        public NodeForInitType type;
+        public NodeStmtDeclare declare;
+        public NodeStmtAssign assign;
+    }
+    public struct NodeForCond
+    {
+        public NodeExpr cond;
+    }
+    public struct NodeForUpdate
+    {
+        public List<NodeStmtAssign> udpates;
+    }
+    public struct NodeForPredicate
+    {
+        public NodeForInit? init;
+        public NodeForCond? cond;
+        public NodeForUpdate? udpate;
+        public NodeScope scope;
+    }
+    public struct NodeStmtFor
+    {
+        public NodeForPredicate pred;
+    }
     public struct NodeStmt
     {
         public enum NodeStmtType
         {
-            declare, assign, iff, Exit
+            declare, assign, iff, forr, Exit
         }
         public NodeStmtType type;
         public NodeStmtDeclare declare;
         public NodeStmtAssign assign;
         public NodeStmtIF iff;
+        public NodeStmtFor forr;
         public NodeStmtExit Exit;
     }
     public struct NodeProg

@@ -16,7 +16,7 @@ namespace Epsilon
         // `(` , `)` , `[` , `]` , `,` , (+, -, <, >, &, |, ^, ~|, <<, >>) , `=` , `;` , `\n` (for line increament) , else invalid token
         OpenParen, CloseParen, OpenSquare, CloseSquare, OpenCurly, CloseCurly, Comma, Plus,
         Minus, And, Or, Xor, Nor, Sll, Srl, EqualEqual, NotEqual, Equal, SemiColon, NewLine,
-        Int, Ident, For, Iff, Elif, Else, IntLit, Exit, fslash, star
+        Int, Ident, For, Iff, Elif, Else, IntLit, Exit, fslash, star, LessThan, GreaterThan
     }
     class Tokenizer(string thecode)
     {
@@ -85,10 +85,10 @@ namespace Epsilon
                     {
                         tokens.Add(new() { Value = word, Type = TokenType.Else, Line = line });
                     }
-                    //else if (word == "for")
-                    //{
-                    //    tokens.Add(new() { Value = word, Type = TokenType.For, Line = line });
-                    //}
+                    else if (word == "for")
+                    {
+                        tokens.Add(new() { Value = word, Type = TokenType.For, Line = line });
+                    }
                     else if (word == "exit")
                     {
                         tokens.Add(new() { Value = word, Type = TokenType.Exit, Line = line });
@@ -189,31 +189,6 @@ namespace Epsilon
                     buffer.Append(Consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Minus, Line = line });
                 }
-                else if (curr_token == '*')
-                {
-                    buffer.Append(Consume());
-                    tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.star, Line = line });
-                }
-                else if (curr_token == '/')
-                {
-                    buffer.Append(Consume());
-                    tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.fslash, Line = line });
-                }
-                else if (curr_token == '&')
-                {
-                    buffer.Append(Consume());
-                    tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.And, Line = line });
-                }
-                else if (curr_token == '|')
-                {
-                    buffer.Append(Consume());
-                    tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Or, Line = line });
-                }
-                else if (curr_token == '^')
-                {
-                    buffer.Append(Consume());
-                    tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Xor, Line = line });
-                }
                 else if ((Peek('<').HasValue && Peek('<', 1).HasValue))
                 {
                     buffer.Append(Consume());
@@ -226,12 +201,6 @@ namespace Epsilon
                     buffer.Append(Consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Srl, Line = line });
                 }
-                else if ((Peek('~').HasValue && Peek('|', 1).HasValue))
-                {
-                    buffer.Append(Consume());
-                    buffer.Append(Consume());
-                    tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Nor, Line = line });
-                }
                 else if (Peek('=').HasValue && Peek('=', 1).HasValue)
                 {
                     buffer.Append(Consume());
@@ -243,6 +212,11 @@ namespace Epsilon
                     buffer.Append(Consume());
                     buffer.Append(Consume());
                     tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.NotEqual, Line = line });
+                }
+                else if (Peek('<').HasValue)
+                {
+                    buffer.Append(Consume());
+                    tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.LessThan, Line = line });
                 }
                 // end operators
                 else if (curr_token == '=')

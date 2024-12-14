@@ -45,21 +45,28 @@ namespace Epsilon
             //m_Vars.RemoveAt(m_Vars.Count - 1);
             StackSize--;
         }
-
-        void GenScope(NodeScope scope)
+        void BeginScope()
         {
             m_outputcode.Append("# begin scope\n");
             m_scopes.Add(m_vars.Count);
-            foreach (NodeStmt stmt in scope.stmts)
-            {
-                GenStmt(stmt);
-            }
+        }
+        void EndScope()
+        {
             m_outputcode.Append("# end scope\n");
             int popcount = m_vars.Count - m_scopes[^1];
             m_outputcode.Append($"ADDi $sp, $sp, {popcount}\n");
             StackSize -= popcount;
             m_vars.RemoveRange(m_vars.Count - popcount, popcount);
             m_scopes.RemoveAt(m_scopes.Count - 1);
+        }
+        void GenScope(NodeScope scope)
+        {
+            BeginScope();
+            foreach (NodeStmt stmt in scope.stmts)
+            {
+                GenStmt(stmt);
+            }
+            EndScope();
         }
 
         void GenTerm(NodeTerm term)
@@ -85,18 +92,70 @@ namespace Epsilon
             {
                 GenExpr(term.paren.expr);
             }
-
         }
-
         void GenBinExpr(NodeBinExpr binExpr)
         {
-            string source_reg1 = "$1", source_reg2 = "$2";
-            GenExpr(binExpr.rhs);
-            GenExpr(binExpr.lhs);
-            GenPop(source_reg1);
-            GenPop(source_reg2);
-            if (binExpr.type == NodeBinExpr.NodeBinExprType.equalequal)
+            // TODO: add an instruction to ISA to enable us to evaluate (`==`, `!=`) operators
+            if (binExpr.type == NodeBinExpr.NodeBinExprType.add)
             {
+                string source_reg1 = "$1", source_reg2 = "$2";
+                GenExpr(binExpr.rhs);
+                GenExpr(binExpr.lhs);
+                GenPop(source_reg1);
+                GenPop(source_reg2);
+                m_outputcode.Append($"ADD {source_reg1}, {source_reg1}, {source_reg2}\n");
+                GenPush(source_reg1);
+            }
+            else if (binExpr.type == NodeBinExpr.NodeBinExprType.sub)
+            {
+                string source_reg1 = "$1", source_reg2 = "$2";
+                GenExpr(binExpr.rhs);
+                GenExpr(binExpr.lhs);
+                GenPop(source_reg1);
+                GenPop(source_reg2);
+                m_outputcode.Append($"SUB {source_reg1}, {source_reg1}, {source_reg2}\n");
+                GenPush(source_reg1);
+            }
+            // TODO: support shifting using registers, add it to mips ISA
+            else if (binExpr.type == NodeBinExpr.NodeBinExprType.sll)
+            {
+                string source_reg1 = "$1", source_reg2 = "$2";
+                GenExpr(binExpr.rhs);
+                GenExpr(binExpr.lhs);
+                GenPop(source_reg1);
+                GenPop(source_reg2);
+
+                string? immed = GenImmedExpr(binExpr.rhs);
+                if (immed != null)
+                    source_reg2 = immed;
+                else
+                    Error("expected immediate", -1);
+                m_outputcode.Append($"SLL {source_reg1}, {source_reg1}, {source_reg2}\n");
+                GenPush(source_reg1);
+            }
+            else if (binExpr.type == NodeBinExpr.NodeBinExprType.srl)
+            {
+                string source_reg1 = "$1", source_reg2 = "$2";
+                GenExpr(binExpr.rhs);
+                GenExpr(binExpr.lhs);
+                GenPop(source_reg1);
+                GenPop(source_reg2);
+
+                string? immed = GenImmedExpr(binExpr.rhs);
+                if (immed != null)
+                    source_reg2 = immed;
+                else
+                    Error("expected immediate", -1);
+                m_outputcode.Append($"SRL {source_reg1}, {source_reg1}, {source_reg2}\n");
+                GenPush(source_reg1);
+            }
+            else if (binExpr.type == NodeBinExpr.NodeBinExprType.equalequal)
+            {
+                string source_reg1 = "$1", source_reg2 = "$2";
+                GenExpr(binExpr.rhs);
+                GenExpr(binExpr.lhs);
+                GenPop(source_reg1);
+                GenPop(source_reg2);
                 string new_label_start = $"TEMP_LABEL{m_labels_count++}_START";
                 string new_label_else = $"TEMP_LABEL{m_labels_count++}_ELSE";
                 string new_label_end = $"TEMP_LABEL{m_labels_count++}_END";
@@ -113,6 +172,11 @@ namespace Epsilon
             }
             else if (binExpr.type == NodeBinExpr.NodeBinExprType.notequal)
             {
+                string source_reg1 = "$1", source_reg2 = "$2";
+                GenExpr(binExpr.rhs);
+                GenExpr(binExpr.lhs);
+                GenPop(source_reg1);
+                GenPop(source_reg2);
                 string new_label_start = $"TEMP_LABEL{m_labels_count++}_START";
                 string new_label_else = $"TEMP_LABEL{m_labels_count++}_ELSE";
                 string new_label_end = $"TEMP_LABEL{m_labels_count++}_END";
@@ -127,13 +191,27 @@ namespace Epsilon
                 m_outputcode.Append($"{new_label_end}:\n");
                 GenPush(source_reg1);
             }
-            else
+            else if (binExpr.type == NodeBinExpr.NodeBinExprType.lessthan)
             {
-                m_outputcode.Append($"{binExpr.type.ToString()} {source_reg1}, {source_reg1}, {source_reg2}\n");
+                string source_reg1 = "$1", source_reg2 = "$2";
+                GenExpr(binExpr.rhs);
+                GenExpr(binExpr.lhs);
+                GenPop(source_reg1);
+                GenPop(source_reg2);
+                m_outputcode.Append($"SLT {source_reg1}, {source_reg1}, {source_reg2}\n");
+                GenPush(source_reg1);
+            }
+            else if (binExpr.type == NodeBinExpr.NodeBinExprType.greaterthan)
+            {
+                string source_reg1 = "$1", source_reg2 = "$2";
+                GenExpr(binExpr.rhs);
+                GenExpr(binExpr.lhs);
+                GenPop(source_reg1);
+                GenPop(source_reg2);
+                m_outputcode.Append($"SGT {source_reg1}, {source_reg1}, {source_reg2}\n");
                 GenPush(source_reg1);
             }
         }
-
         void GenExpr(NodeExpr expr)
         {
             if (expr.type == NodeExpr.NodeExprType.term)
@@ -145,7 +223,60 @@ namespace Epsilon
                 GenBinExpr(expr.binexpr);
             }
         }
+        string? GenImmedTerm(NodeTerm term)
+        {
+            if (term.type == NodeTerm.NodeTermType.intlit)
+            {
+                return term.intlit.intlit.Value;
+            }
+            else if (term.type == NodeTerm.NodeTermType.paren)
+            {
+                return GenImmedExpr(term.paren.expr);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        string? GenImmedBinExpr(NodeBinExpr binExpr)
+        {
+            string? imm2 = GenImmedExpr(binExpr.rhs);
+            string? imm1 = GenImmedExpr(binExpr.lhs);
+            if (imm1 != null && imm2 != null)
+            {
+                return GetImmedOperation(imm1, imm2, binExpr.type);
+            }
+            return null;
 
+        }
+        string? GetImmedOperation(string imm1, string imm2, NodeBinExpr.NodeBinExprType op)
+        {
+            if (op == NodeBinExpr.NodeBinExprType.add)
+                return (Convert.ToInt32(imm1) + Convert.ToInt32(imm2)).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.sub)
+                return (Convert.ToInt32(imm1) - Convert.ToInt32(imm2)).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.sll)
+                return (Convert.ToInt32(imm1) << Convert.ToInt32(imm2)).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.srl)
+                return (Convert.ToInt32(imm1) >> Convert.ToInt32(imm2)).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.equalequal)
+                return (Convert.ToInt32(imm1) == Convert.ToInt32(imm2) ? 1 : 0).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.notequal)
+                return (Convert.ToInt32(imm1) != Convert.ToInt32(imm2) ? 1 : 0).ToString();
+            return null;
+        }
+        string? GenImmedExpr(NodeExpr Iexpr)
+        {
+            if (Iexpr.type == NodeExpr.NodeExprType.term)
+            {
+                return GenImmedTerm(Iexpr.term);
+            }
+            else if (Iexpr.type == NodeExpr.NodeExprType.binExpr)
+            {
+                return GenImmedBinExpr(Iexpr.binexpr);
+            }
+            return null;
+        }
         void GenStmtDeclare(NodeStmtDeclare declare)
         {
             Token ident = declare.ident;
@@ -201,11 +332,13 @@ namespace Epsilon
                 Error("UNREACHABLE", -1);
             }
         }
-        void GenStmtIF(NodeStmtIF iff)
+        string GenStmtIF(NodeStmtIF iff)
         {
+            string label_start = $"LABEL{m_labels_count++}_START";
             string label_end = $"LABEL{m_labels_count++}_END";
-
             string label = $"LABEL{m_labels_count++}_elifs";
+
+            m_outputcode.Append($"{label_start}:\n");
             GenExpr(iff.pred.cond);
             string reg = "$1";
             GenPop(reg);
@@ -222,6 +355,71 @@ namespace Epsilon
                 m_outputcode.Append($"{label}:\n");
             }
             m_outputcode.Append($"{label_end}:\n");
+            return label_start;
+        }
+        void GenStmtFor(NodeStmtFor forr)
+        {
+            m_outputcode.Append("# begin forloop\n");
+            BeginScope();
+            if (forr.pred.init.HasValue)
+            {
+                // TODO: pop the initialization variables
+                m_outputcode.Append("# begin init\n");
+                if (forr.pred.init.Value.type == NodeForInit.NodeForInitType.declare)
+                    GenStmtDeclare(forr.pred.init.Value.declare);
+                else if (forr.pred.init.Value.type == NodeForInit.NodeForInitType.assign)
+                    GenStmtAssign(forr.pred.init.Value.assign);
+                m_outputcode.Append("# end init\n");
+            }
+            if (forr.pred.cond.HasValue)
+            {
+                m_outputcode.Append("# begin condition\n");
+                string label_start = $"TEMP_LABEL{m_labels_count++}_START";
+                string label_end = $"TEMP_LABEL{m_labels_count++}_END"; 
+
+                m_outputcode.Append($"{label_start}:\n");
+                GenExpr(forr.pred.cond.Value.cond);
+                string reg = "$1";
+                GenPop(reg);
+                m_outputcode.Append($"BEQ $1, $zero, {label_end}\n");
+                m_outputcode.Append("# end condition\n");
+                GenScope(forr.pred.scope);
+                m_outputcode.Append("# begin update\n");
+                if (forr.pred.udpate.HasValue)
+                {
+                    for (int i = 0; i < forr.pred.udpate.Value.udpates.Count; i++)
+                    {
+                        GenStmtAssign(forr.pred.udpate.Value.udpates[i]);
+                    }
+                }
+                m_outputcode.Append("# end update\n");
+                m_outputcode.Append($"J {label_start}\n");
+                m_outputcode.Append($"{label_end}:\n");
+            }
+            else if (forr.pred.udpate.HasValue)
+            {
+                m_outputcode.Append("# begin update\n");
+                string label_start = $"TEMP_LABEL{m_labels_count++}_START";
+
+                m_outputcode.Append($"{label_start}:\n");
+                GenScope(forr.pred.scope);
+                for (int i = 0; i < forr.pred.udpate.Value.udpates.Count; i++)
+                {
+                    GenStmtAssign(forr.pred.udpate.Value.udpates[i]);
+                }
+                m_outputcode.Append("# end update\n");
+                m_outputcode.Append($"J {label_start}\n");
+            }
+            else
+            {
+                string label_start = $"TEMP_LABEL{m_labels_count++}_START";
+
+                m_outputcode.Append($"{label_start}:\n");
+                GenScope(forr.pred.scope);
+                m_outputcode.Append($"J {label_start}\n");
+            }
+            EndScope();
+            m_outputcode.Append("# end forloop\n");
         }
         void GenStmtExit(NodeStmtExit exit)
         {
@@ -243,6 +441,10 @@ namespace Epsilon
             {
                 GenStmtIF(stmt.iff);
             }
+            else if (stmt.type == NodeStmt.NodeStmtType.forr)
+            {
+                GenStmtFor(stmt.forr);
+            }
             else if (stmt.type == NodeStmt.NodeStmtType.Exit)
             {
                 GenStmtExit(stmt.Exit);
@@ -261,18 +463,3 @@ namespace Epsilon
     }
 }
 #pragma warning restore CS8500
-
-/*
-if (cond)
-if (x) -> (x != 0)
-if (x == 123)
-if (x != 123)
-
-
-bne x, 0, LABEL1
-
-
-
-LABEL1:
-
-*/
