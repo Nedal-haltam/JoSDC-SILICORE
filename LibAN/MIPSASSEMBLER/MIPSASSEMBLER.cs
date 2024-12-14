@@ -369,8 +369,8 @@ namespace MIPSASSEMBLER
                     branch = "beq";
                 }
                 return [
-                    new Instruction([new Token("slt"), new Token("x31"), new Token($"{inst.m_tokens[1].m_value}"), new Token("x0") ]),
-                    new Instruction([new Token(branch), new Token("x31"), new Token("x0"), new Token($"{inst.m_tokens[2].m_value}") ]),
+                    new Instruction([new Token("slt"), new Token("$31"), new Token($"{inst.m_tokens[1].m_value}"), new Token("$0") ]),
+                    new Instruction([new Token(branch), new Token("$31"), new Token("$0"), new Token($"{inst.m_tokens[2].m_value}") ]),
                 ];
             }
             Assert($"Invalid Pseudo Instruction : {inst.m_tokens[0].m_value}");

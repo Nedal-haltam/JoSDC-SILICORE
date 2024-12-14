@@ -6,43 +6,43 @@ Arr: .word 0x5, 0x7, 0x2, 0xF, 0xA, 0x10, 0x30, 0x1, 0xFF, 0x55
 .text
 
 main:
-// ADDI X20, X0, 20
-ADDI X20, X0, 10
-ADDI x1, x0, 2
-ADDi  x22, x0, -1
+// ADDI $20, $0, 20
+ADDI $20, $0, 10
+ADDI $1, $0, 2
+ADDi  $22, $0, -1
 
 
 
 FOR_LOOP:
 
-SUB x31, x1, x20
-BGEZ x31, EXIT
-# BGE  x1, x20, EXIT
-LW   x8, x1, 0
-ADDI x2, x1, -1
+SUB $31, $1, $20
+BGEZ $31, EXIT
+# BGE  $1, $20, EXIT
+LW   $8, 0($1)
+ADDI $2, $1, -1
 
 
 WHILE_LOOP:
 
 
-SGT  x3, x2, x22
-BEQ  x3, x0, EXIT_WHILE
+SGT  $3, $2, $22
+BEQ  $3, $0, EXIT_WHILE
 
-LW   x5, x2, 0
-SGT  x4, x5, x8
-AND  x7, x3, x4
-BEQ  x7, x0, EXIT_WHILE
+LW   $5, 0($2)
+SGT  $4, $5, $8
+AND  $7, $3, $4
+BEQ  $7, $0, EXIT_WHILE
 
-ADDI x6, x2, 1
-SW   x5, x6, 0
-ADDI x2, x2, -1
+ADDI $6, $2, 1
+SW   $5, 0($6)
+ADDI $2, $2, -1
 J    WHILE_LOOP
 
 EXIT_WHILE:
 
-ADDI x2, x2, 1
-SW   x8, x2, 0
-ADDI x1, x1, 1
+ADDI $2, $2, 1
+SW   $8, 0($2)
+ADDI $1, $1, 1
 
 J    FOR_LOOP
 

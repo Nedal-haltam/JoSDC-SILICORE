@@ -109,7 +109,7 @@ namespace LibCPU
             for (int i = 0; i < 1024 - curr_count; i++) IM.Add(nop);
 
             IM[HANDLER_ADDR - 1] = "11111100000000000000000000000000"; // hlt
-            IM[HANDLER_ADDR] = "00100000000111111111111111111111"; // addi x31 x0 -1
+            IM[HANDLER_ADDR] = "00100000000111111111111111111111"; // addi $31 $0 -1
             IM[HANDLER_ADDR + 1] = "11111100000000000000000000000000"; // hlt
 
             List<string> DM = [.. data_mem_init];
