@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MIPSASSEMBLER")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+28841dd91386fb32683cfb5538f1ac059d604405")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3e2394ed3972271c08aa13a7c086a02e05108dd5")]
 [assembly: System.Reflection.AssemblyProductAttribute("MIPSASSEMBLER")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MIPSASSEMBLER")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

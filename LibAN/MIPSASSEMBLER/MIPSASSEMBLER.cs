@@ -2,6 +2,7 @@
 
 
 using System.ComponentModel.Design;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace MIPSASSEMBLER
@@ -125,17 +126,7 @@ namespace MIPSASSEMBLER
 
         string? Getregindex(string reg)
         {
-            if (reg.StartsWith('x'))
-            {
-                string index = reg[1..];
-                if (byte.TryParse(index, out byte usb) && usb >= 0 && usb <= 31)
-                {
-                    return Convert.ToString(usb, 2).PadLeft(5, '0');
-                }
-                else
-                    return null;
-            }
-            else if (reg.StartsWith('$'))
+            if (reg.StartsWith('$'))
             {
 
                 string name = reg[1..];
@@ -217,21 +208,45 @@ namespace MIPSASSEMBLER
             }
             return mc;
         }
+        string? GetImmed(string immed)
+        {
+            // andi, ori, xori (they do zero extend)
+            if ((immed.StartsWith("0x") || immed.StartsWith("0X")))
+            {
+                short temp;
+                try { temp = Convert.ToInt16(immed, 16); }
+                catch { return null; }
+
+                return Convert.ToString(temp, 2).PadLeft(16, '0');
+            }
+            else if (ushort.TryParse(immed, out ushort usb))
+            {
+                immed = Convert.ToString(usb, 2);
+                return immed.PadLeft(16, '0');
+            }
+            else if (short.TryParse(immed, out short sb))
+            {
+                immed = Convert.ToString(sb, 2);
+                return immed.PadLeft(16, immed[0]);
+            }
+            else
+                return null;
+        }
         string? Getitypeinst(Instruction inst)
         {
-            if (inst.m_tokens.Count != 4)
+            if (inst.m_tokens.Count > 0 && (inst.m_tokens[0].m_value == "sw" || inst.m_tokens[0].m_value == "lw") && inst.m_tokens.Count != 6)
+                return null;
+            else if (!(inst.m_tokens[0].m_value == "sw" || inst.m_tokens[0].m_value == "lw") && inst.m_tokens.Count != 4)
                 return null;
             string mc;
             string opcode = opcodes[inst.m_tokens[0].m_value];
 
-
-            string? reg1 = Getregindex(inst.m_tokens[1].m_value);
-            string? reg2 = Getregindex(inst.m_tokens[2].m_value);
-            if (reg1 == null || reg2 == null)
-                return null;
-
             if (Isbranch(inst.m_tokens[0].m_value))
             {
+                string? reg1 = Getregindex(inst.m_tokens[1].m_value);
+                string? reg2 = Getregindex(inst.m_tokens[2].m_value);
+                if (reg1 == null || reg2 == null)
+                    return null;
                 if (!labels.ContainsKey(inst.m_tokens[3].m_value))
                     return null;
                 string immed = inst.m_tokens[3].m_value;
@@ -249,29 +264,27 @@ namespace MIPSASSEMBLER
                 string rs2 = reg2;
                 mc = opcode + rs1 + rs2 + immed;
             }
+            else if (inst.m_tokens[0].m_value == "lw" || inst.m_tokens[0].m_value == "sw")
+            { // sw $1, 0($1)
+                string? reg1 = Getregindex(inst.m_tokens[1].m_value);
+                string? reg2 = Getregindex(inst.m_tokens[4].m_value);
+                if (reg1 == null || reg2 == null)
+                    return null;
+                string? immed = GetImmed(inst.m_tokens[2].m_value);
+                if (immed == null)
+                    return null;
+                string rd = reg1;
+                string rs1 = reg2;
+                mc = opcode + rs1 + rd + immed;
+            }
             else
             {
-                // andi, ori, xori (they do zero extend)
-                string immed = inst.m_tokens[3].m_value;
-                if ((immed.StartsWith("0x") || immed.StartsWith("0X")))
-                {
-                    short temp;
-                    try { temp = Convert.ToInt16(immed, 16); }
-                    catch { return null; }
-
-                    immed = Convert.ToString(temp, 2).PadLeft(16, '0');
-                }
-                else if (ushort.TryParse(immed, out ushort usb))
-                {
-                    immed = Convert.ToString(usb, 2);
-                    immed = immed.PadLeft(16, '0');
-                }
-                else if (short.TryParse(immed, out short sb))
-                {
-                    immed = Convert.ToString(sb, 2);
-                    immed = immed.PadLeft(16, immed[0]); // 1010101000
-                }
-                else
+                string? reg1 = Getregindex(inst.m_tokens[1].m_value);
+                string? reg2 = Getregindex(inst.m_tokens[2].m_value);
+                if (reg1 == null || reg2 == null)
+                    return null;
+                string? immed = GetImmed(inst.m_tokens[3].m_value);
+                if (immed == null)
                     return null;
                 string rd = reg1;
                 string rs1 = reg2;
@@ -466,6 +479,18 @@ namespace MIPSASSEMBLER
                         buffer.Clear();
                     }
                     break;
+                }
+                else if (c == '(' || c == ')')
+                {
+                    if (buffer.Length != 0)
+                    {
+                        instruction.m_tokens.Add(new Token(buffer.ToString()));
+                        buffer.Clear();
+                    }
+                    buffer.Append(char.ToLower(c));
+                    instruction.m_tokens.Add(new Token(buffer.ToString()));
+                    consume();
+                    buffer.Clear();
                 }
                 else
                 {

@@ -73,7 +73,10 @@ namespace LibAN
         }
         public static (List<string> , List<string>) Get_directives(List<string> src)
         {
-            src.ForEach(x => x = x.ToString().Trim(' '));
+            for (int i = 0; i < src.Count; i++)
+            {
+                src[i] = src[i].Trim();
+            }
 
             int data_index = src.IndexOf(".data");
             int text_index = src.IndexOf(".text");

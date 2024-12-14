@@ -20,8 +20,8 @@ ADD $3, $0, $1
 init:
 sub $8, $2, $11
 BGEZ $8, EXITINIT
-SW $3, $2, 0
-SW $3, $2, 1
+SW $3, 0x0($2)
+SW $3, 0x1($2)
 ADDI $2, $2, 2
 ADDI $3, $3, -1
 BEQ $0, $0, init
@@ -38,12 +38,12 @@ SUB $7, $7, $3
 L2:
 BEQ $4, $7, EXITL2
 
-LW $5, $4, 0
-LW $6, $4, 1
+LW $5, 0x0($4)
+LW $6, 0x1($4)
 sub $8, $5, $6
 BLTZ $8, else
-SW $5, $4, 1
-SW $6, $4, 0
+SW $5, 0x1($4)
+SW $6, 0x0($4)
 else:
 
 ADDI $4, $4, 1
