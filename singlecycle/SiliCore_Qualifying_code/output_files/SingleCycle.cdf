@@ -4,7 +4,7 @@ JedecChain;
 	DefaultMfr(6E);
 
 	P ActionCode(Cfg)
-		Device PartName(10M50DAF484) Path("D:/JoSDC Comp Folder/Qualifying phase (0)/Qualifying Phase/SiliCore_Qualifying_code/SiliCore_Qualifying_code/SiliCore_Qualifying_code/output_files/") File("SingleCycle.sof") MfrSpec(OpMask(1));
+		Device PartName(10M50DAF484) Path("D:/GitHub Repos/JoSDC-SILICORE/singlecycle/SiliCore_Qualifying_code/output_files/") File("SingleCycle.sof") MfrSpec(OpMask(1));
 
 ChainEnd;
 

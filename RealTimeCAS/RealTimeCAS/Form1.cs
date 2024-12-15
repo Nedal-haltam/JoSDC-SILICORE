@@ -313,7 +313,7 @@ namespace RealTimeCAS
                     List<string> saved = [];
                     saved.Add("# CODE");
                     saved.AddRange([.. input.Lines]);
-                    File.WriteAllLines(file_path, [.. saved]);
+                    File.WriteAllLines(file_path + ".txt", [.. saved]);
                 }
             }
         }
