@@ -13,22 +13,22 @@
 
 module RegFile_tb;
 
-parameter ROB_Entry_WIDTH = 5;
+parameter ROB_EN_WIDTH = 5;
 
 reg clk = 1, rst = 0;
 reg WP1_Wen = 0, WP1_Wen_IQ = 0;
-reg [ROB_Entry_WIDTH - 1:0] WP1_ROBEN = 0, WP1_ROBEN_IQ = 0;
+reg [ROB_EN_WIDTH - 1:0] WP1_ROBEN = 0, WP1_ROBEN_IQ = 0;
 reg [4:0]                   WP1_DRindex = 0, WP1_DRindex_IQ = 0;
 reg [31:0]                  WP1_Data;
 reg [4:0]   RP1_index1, RP1_index2;
 wire [31:0] RP1_Reg1, RP1_Reg2;
-wire [(1 << ROB_Entry_WIDTH) - 1 : 0] RP1_Reg1_ROBEN, RP1_Reg2_ROBEN;
+wire [(1 << ROB_EN_WIDTH) - 1 : 0] RP1_Reg1_ROBEN, RP1_Reg2_ROBEN;
 
 
 reg [4:0] input_WP1_DRindex_test;
-wire [(1 << ROB_Entry_WIDTH) - 1 : 0] output_ROBEN_test;
+wire [(1 << ROB_EN_WIDTH) - 1 : 0] output_ROBEN_test;
 
-RegFile #(.ROB_Entry_WIDTH(ROB_Entry_WIDTH)) dut  
+RegFile #(.ROB_EN_WIDTH(ROB_EN_WIDTH)) dut  
 (
 .clk(clk),
 .rst(rst),
@@ -71,13 +71,13 @@ WP1_Wen <= 1'b1;
 WP1_Data <= 32'd123;
 WP1_DRindex <= 5'd1; 
 WP1_ROBEN <= 2;
- 
+
 WP1_Wen_IQ <= 1'b1;
 WP1_ROBEN_IQ <= 2;
 WP1_DRindex_IQ <= 5'd1;
 `ADVANCE_N_CYCLE(1); // after one positive edge and one negative edge, respectively
 // it first tries to update the register file but it could not 
-// because the ROB entry is not updated yet because it is on the next negative edge
+// because the ROB entry is not updated yet
 `DISPLAYVALS(msg_RP1_Reg1, RP1_index1, RP1_Reg1, 10);
 `DISPLAYVALS(msg_ROB_read, input_WP1_DRindex_test, output_ROBEN_test, 10);
 

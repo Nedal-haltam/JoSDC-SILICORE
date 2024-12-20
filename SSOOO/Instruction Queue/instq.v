@@ -1,7 +1,7 @@
 module InstQ
 (
     input  [31:0] PC,
-    output [ 5:0] opcode, funct,
+    output [ 11:0] opcode,
     output [ 4:0] rs, rt, rd, shamt,
     output [15:0] immediate,
     output [25:0] address
@@ -14,8 +14,7 @@ wire [31:0] inst;
 
 assign inst = InstMem[PC];
 
-assign opcode    = inst[31:26];
-assign funct     = inst[5:0];
+assign opcode    = { inst[31:26], inst[5:0] };
 assign rs        = inst[25:21];
 assign rt        = inst[20:16];
 assign rd        = inst[15:11];
