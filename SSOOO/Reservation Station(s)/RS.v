@@ -1,6 +1,6 @@
 module RS
 (
-    input clk, rst, VALID_Inst,
+    input clk, rst,
     input [11:0] opcode,
     input [3:0] ALUOP, 
     input [2:0] RS_ID1, RS_ID2,
@@ -10,15 +10,24 @@ module RS
     input [2:0] CDB_RS_ID,
     input [31:0] CDB_RS_ID_VAL,
 
+    input VALID_Inst,
     input FU_Is_Free,
-    input FU_Is_Finish,
 
     output reg FULL_FLAG,
 
     output reg [3:0] FU_RS_ID,
     output reg [3:0] FU_ALUOP,
     output reg [31:0] FU_Val1, FU_Val2,
-    output reg [31:0] FU_Immediate
+    output reg [31:0] FU_Immediate,
+
+    input [3:0] input_index_test,
+    output [11:0] opcode_test,
+    output [3:0] ALUOP_test, 
+    output [2:0] RS_ID1_test, RS_ID2_test,
+    output [31:0] RS_ID1_VAL_test, RS_ID2_VAL_test,
+    output [31:0] Immediate_test,
+    output [0:0] busy_test
+
 );
 
 
@@ -36,6 +45,15 @@ reg [32:0] Reg_Immediate [7:0];
 reg Reg_Busy [7:0];
 
 
+assign opcode_test = Reg_opcodes[`I(input_index_test)];
+assign ALUOP_test = Reg_ALUOPs[`I(input_index_test)]; 
+assign RS_ID1_test = Reg_RS_ID1[`I(input_index_test)]; 
+assign RS_ID2_test = Reg_RS_ID2[`I(input_index_test)];
+assign RS_ID1_VAL_test = Reg_RS_ID1_VAL[`I(input_index_test)]; 
+assign RS_ID2_VAL_test = Reg_RS_ID2_VAL[`I(input_index_test)];
+assign Immediate_test = Reg_Immediate[`I(input_index_test)];
+assign busy_test = Reg_Busy[`I(input_index_test)];
+
 /*
 this block is do the following:
     - resetting the Busy buffer to start with a clean RS
@@ -50,6 +68,7 @@ always@(posedge clk, posedge rst) begin
             Reg_Busy[i] = 0;
         i = 0;
         Next_Free = 0;
+        FULL_FLAG = 0;
     end
     else if (VALID_Inst) begin
         Next_Free = 0;
@@ -66,10 +85,10 @@ always@(posedge clk, posedge rst) begin
             Reg_RS_ID1_VAL [`I(Next_Free) - 1'b1] = RS_ID1_VAL;
             Reg_RS_ID2_VAL [`I(Next_Free) - 1'b1] = RS_ID2_VAL;
             Reg_Immediate [`I(Next_Free) - 1'b1] = Immediate;
-            FULL_FLAG = 1'b1;
+            FULL_FLAG = 1'b0;
         end
         else begin
-            FULL_FLAG = 1'b0;
+            FULL_FLAG = 1'b1;
         end
     end
 end
@@ -113,7 +132,7 @@ always@(posedge clk, posedge rst) begin
     end
 end
 
-always@(posedge FU_Is_Finish) begin
+always@(posedge FU_Is_Free) begin
     Reg_Busy[`I(FU_RS_ID) - 1'b1] = 1'b0;
 end
 

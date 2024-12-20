@@ -1,7 +1,7 @@
 `include "RegFile.v"
 
 `define HALF_CYCLE 1
-
+`define ONE_CLK (2 * `HALF_CYCLE)
 `define ADVANCE_N_CYCLE(N) #(2 * `HALF_CYCLE * N);
 
 `define DISPLAYVALS(msg, index, data, N) \
