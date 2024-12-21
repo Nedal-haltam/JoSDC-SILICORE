@@ -1,6 +1,7 @@
 module InstQ
 (
     input  [31:0] PC,
+    
     output [ 11:0] opcode,
     output [ 4:0] rs, rt, rd, shamt,
     output [15:0] immediate,
