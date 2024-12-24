@@ -8,12 +8,12 @@
 `define DISPLAYVALS \
 clk_en = 0; \
 $display("Start_Index = %d, End_Index = %d", Start_Index, End_Index); \
-$display("FULL_FLAG = %d , EXCEPTION_Flag = %d , FLUSH_Flag = %d , Commit_opcode = %h , Commit_Rd = %d , Commit_Write_Data = %d , Commit_Mem_Addr = %d , Commit_Control_Signals = %b", \
-        FULL_FLAG, EXCEPTION_Flag, FLUSH_Flag, Commit_opcode, Commit_Rd, Commit_Write_Data, Commit_Mem_Addr, Commit_Control_Signals); \
+$display("FULL_FLAG = %d , EXCEPTION_Flag = %d , FLUSH_Flag = %d , Commit_opcode = %h , Commit_Rd = %d , Commit_Write_Data = %d , Commit_Control_Signals = %b", \
+        FULL_FLAG, EXCEPTION_Flag, FLUSH_Flag, Commit_opcode, Commit_Rd, Commit_Write_Data, Commit_Control_Signals); \
 for (i = 0; i < 16; i = i + 1) begin \
     index_test = i[4:0]; \
-    #`ONE_CLK $display("index_test = %d, Reg_Busy_test = %d, Reg_opcode_test = %h, Reg_Rd_test = %d, Reg_Write_Data_test = %d, Reg_Mem_Addr_test = %d, Reg_Ready_test = %d, Reg_Speculation_test = %b, Reg_Exception_test = %d, Reg_Valid_test = %d", \
-        index_test, Reg_Busy_test, Reg_opcode_test, Reg_Rd_test, Reg_Write_Data_test, Reg_Mem_Addr_test, Reg_Ready_test, Reg_Speculation_test, Reg_Exception_test, Reg_Valid_test); \
+    #`ONE_CLK $display("index_test = %d, Reg_Busy_test = %d, Reg_opcode_test = %h, Reg_Rd_test = %d, Reg_Write_Data_test = %d, Reg_Ready_test = %d, Reg_Speculation_test = %b, Reg_Exception_test = %d, Reg_Valid_test = %d", \
+        index_test, Reg_Busy_test, Reg_opcode_test, Reg_Rd_test, Reg_Write_Data_test, Reg_Ready_test, Reg_Speculation_test, Reg_Exception_test, Reg_Valid_test); \
 end \
 clk_en = 1; \
 $display("\n\n");
@@ -30,9 +30,6 @@ reg [11:0] Decoded_opcode;
 reg [4:0] Decoded_Rd;
 reg Decoded_prediction;
 
-reg [4:0] Addr_Unit_ROBEN;
-reg [31:0] Addr_Unit_Mem_Addr;
-
 reg [4:0] CDB_ROBEN;
 reg [31:0] CDB_ROBEN_Write_Data;
 reg CDB_Branch_Decision;
@@ -45,7 +42,6 @@ wire FLUSH_Flag;
 wire [11:0] Commit_opcode;
 wire [4:0] Commit_Rd;
 wire [31:0] Commit_Write_Data;
-wire [31:0] Commit_Mem_Addr;
 wire [2:0] Commit_Control_Signals;
 
 wire [3:0] Start_Index, End_Index;
@@ -54,7 +50,6 @@ reg  [4:0] index_test;
 wire [11:0] Reg_opcode_test;
 wire [4:0]  Reg_Rd_test;
 wire [31:0] Reg_Write_Data_test;
-wire [31:0] Reg_Mem_Addr_test;
 wire [0:0]  Reg_Busy_test;
 wire [0:0]  Reg_Ready_test;
 wire [1:0]  Reg_Speculation_test;
@@ -70,9 +65,6 @@ ROB dut
     .Decoded_Rd(Decoded_Rd),
     .Decoded_prediction(Decoded_prediction),
 
-    .Addr_Unit_ROBEN(Addr_Unit_ROBEN),
-    .Addr_Unit_Mem_Addr(Addr_Unit_Mem_Addr),
-
     .CDB_ROBEN(CDB_ROBEN),
     .CDB_ROBEN_Write_Data(CDB_ROBEN_Write_Data),
     .CDB_Branch_Decision(CDB_Branch_Decision),
@@ -85,7 +77,6 @@ ROB dut
     .Commit_opcode(Commit_opcode),
     .Commit_Rd(Commit_Rd),
     .Commit_Write_Data(Commit_Write_Data),
-    .Commit_Mem_Addr(Commit_Mem_Addr),
     .Commit_Control_Signals(Commit_Control_Signals),
 
     .Start_Index(Start_Index),
@@ -95,7 +86,6 @@ ROB dut
     .Reg_opcode_test(Reg_opcode_test),
     .Reg_Rd_test(Reg_Rd_test),
     .Reg_Write_Data_test(Reg_Write_Data_test),
-    .Reg_Mem_Addr_test(Reg_Mem_Addr_test),
     .Reg_Busy_test(Reg_Busy_test),
     .Reg_Ready_test(Reg_Ready_test),
     .Reg_Speculation_test(Reg_Speculation_test),
@@ -283,74 +273,19 @@ end
 `ADVANCE_N_CYCLE(1);
 `DISPLAYVALS
 
-VALID_Inst = 1;
-Decoded_opcode = lw;
-Decoded_Rd = 20;
-`ADVANCE_N_CYCLE(1);
-
-Decoded_opcode = sw;
-Decoded_Rd = 25;
-`ADVANCE_N_CYCLE(1);
-VALID_Inst = 0;
-`DISPLAYVALS
-
-// for the load
-CDB_ROBEN = 7;
-CDB_ROBEN_Write_Data = 999;
-`ADVANCE_N_CYCLE(1);
-`DISPLAYVALS
 
 /*
-for the store:
-    - explanation: what i did is i utilized the speculation bit as a second ready bit spicifically for the store instruction 
-    and the reason why the store needs a second bit to verify that it is ready 
-    is because the store has two things to forward the effective address used to access the memory and the data to write on the memory.
-    - if you noticed the store is the only one that needs two things before its actual execution and be ready to commit its result:
-        - the load just needs the address to complete its memory access and the data will come from the memory to write on the register
-        - the branch just needs the branch outcome from the CDB
-        - the ALU instructions needs the output of the FU and this will come also from the CDB
+TODO: trace the life time of the following instruction types:
+    - ALU: forwarding while in the RS, getting its results while in the ROB through the CDB, committing when in at the head of the ROB
+    - branch: forwarding while in the RS, deciding whether to branch or not after comparison(while in the CDB), flush decision when committing when in at the head of the ROB
+    - lw : go to the address unit calculate EA and pass it to the ld/st buffer, when its ready it reads from the memory and broadcast the result on the CDB
+    - sw : go to the address unit calculate EA and pass it to the ld/st buffer, when its ready it writes the value on the memory and broadcast on the CDB that it finished
+    - jr : after executing in the FU, it broadcast the target address on the CDB and effects the PC_src
+    - j  : it effects the PC_src in the decoding stage
+    - jal: it effects the PC_src in the decoding stage, and continue the road to write the return address on $ra ($31)
+    - hlt: it effects the PC_src in the decoding stage, and do nothing, when it reaches the head of the ROB it raises the hlt flag to hold the clk
 */
 
-// the following three scenarios worked for marking the store instruction as ready
-// this worked
-// CDB_ROBEN = 8;
-// CDB_ROBEN_Write_Data = 888;
-// `ADVANCE_N_CYCLE(1);
-// `DISPLAYVALS
-
-// Addr_Unit_ROBEN = 8;
-// Addr_Unit_Mem_Addr = 123;
-// `ADVANCE_N_CYCLE(1);
-// `DISPLAYVALS
-
-// and this worked
-// Addr_Unit_ROBEN = 8;
-// Addr_Unit_Mem_Addr = 123;
-// `ADVANCE_N_CYCLE(1);
-// `DISPLAYVALS
-
-// CDB_ROBEN = 8;
-// CDB_ROBEN_Write_Data = 888;
-// `ADVANCE_N_CYCLE(1);
-// `DISPLAYVALS
-
-// and this worked
-Addr_Unit_ROBEN = 8;
-Addr_Unit_Mem_Addr = 123;
-CDB_ROBEN = 8;
-CDB_ROBEN_Write_Data = 888;
-`ADVANCE_N_CYCLE(1);
-`DISPLAYVALS
-
-`ADVANCE_N_CYCLE(1);
-`DISPLAYVALS
-
-
-
-
 $finish;
-
 end
-
-
 endmodule
