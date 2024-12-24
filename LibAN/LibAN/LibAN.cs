@@ -2,7 +2,6 @@
 
 namespace LibAN
 {
-    // there is a message embedded in the code and who extract the message can tell me what it is in person or (nedalhaltam1@gmail.com)
     public static class LibAN
     {
         public static void assert(string msg)
