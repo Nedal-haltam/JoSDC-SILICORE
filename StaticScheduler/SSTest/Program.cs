@@ -2,17 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+//functions & libraries to add: raylib, get instructions, 
+            //input and reg validiation, equal instructions,
+            //get user instruction, random instructions
+
+//defining alu operations and instructions as enumerations/constants
 public enum Aluop
 {
     addition, subtraction, and, or, xor, sll, srl, slt, sgt
 }
-
 public enum Mnemonic
 {
     BEQ, BNE, BLTZ, BGEZ, J, JR, JAL, ADD, ADDI, ADDU, SUB, SUBU,
     AND, ANDI, OR, ORI, XOR, XORI, NOR, SRL, SLL, SLT, SLTI, SGT, LW, SW
 }
 
+//creating an instruction class, mainly R-format; check if we need other formats
 public class Instruction
 {
     public Mnemonic mnem;
@@ -20,6 +25,7 @@ public class Instruction
     public Aluop aluop;
     public int rd, rs1, rs2;
 
+    //constructor upon initialization 
     public Instruction(Mnemonic mnem, int pc, Aluop aluop, int rd, int rs1, int rs2)
     {
         this.mnem = mnem;
@@ -33,8 +39,8 @@ public class Instruction
 
 class Program
 {
-    static int pc = 0; // Reset counter for each new instruction
-
+    static int pc = 0; // Program counter for each program
+    
     static void Main()
     {
         List<Instruction> instructions = new List<Instruction>
@@ -50,6 +56,7 @@ class Program
 
         Console.WriteLine("\r");
 
+        //add the filepath of where you placed your output
         string filePath1 = @"C:";
         if (File.Exists(filePath1))
         {
@@ -59,15 +66,18 @@ class Program
 
         Console.WriteLine("\r");
 
+        //add the filepath of where you placed your output
         string filePath2 = @"C:";
-        if (File.Exists(filePath2))
+        if (File.Exists(filePath2)) //wouldn't run without this >:( 
         {
             List<Instruction> grouped = ReadInstructionsFromFile(filePath2);
             PrintInstructions(grouped);
         }
     }
 
-    static List<Instruction> ReadInstructionsFromFile(string filePath)
+    //next two functions is only to have the same formatting here but could be useful because 
+        //schedule function does not change the list of instructions
+    List<Instruction> ReadInstructionsFromFile(string filePath)
     {
         List<Instruction> instructions = new List<Instruction>();
         string[] lines = File.ReadAllLines(filePath);
@@ -103,13 +113,13 @@ class Program
             case "SRL": return Aluop.srl;
             case "SLT": return Aluop.slt;
             case "SGT": return Aluop.sgt;
-            default: return Aluop.addition; // Default case
+            default: return Aluop.addition; // perhaps we use a different default case or remove
         }
     }
 
     static Mnemonic GetMnemonicFromString(string mnem)
     {
-        return Enum.TryParse(mnem, out Mnemonic result) ? result : Mnemonic.ADD; // Default case
+        return Enum.TryParse(mnem, out Mnemonic result) ? result : Mnemonic.ADD;
     }
 
     static void Schedule(List<Instruction> instructions, string folder)
