@@ -15,22 +15,20 @@ clk_en = 1;
 
 module RegFile_tb;
 
-parameter ROB_EN_WIDTH = 5;
-
 reg clk = 1, rst = 0;
 reg WP1_Wen = 0, Decoded_WP1_Wen = 0;
-reg [ROB_EN_WIDTH - 1:0] WP1_ROBEN = 0, Decoded_WP1_ROBEN = 0;
+reg [4:0] WP1_ROBEN = 0, Decoded_WP1_ROBEN = 0;
 reg [4:0]                   WP1_DRindex = 0, Decoded_WP1_DRindex = 0;
 reg [31:0]                  WP1_Data;
 reg [4:0]   RP1_index1, RP1_index2;
 wire [31:0] RP1_Reg1, RP1_Reg2;
-wire [ROB_EN_WIDTH - 1 : 0] RP1_Reg1_ROBEN, RP1_Reg2_ROBEN;
+wire [4 : 0] RP1_Reg1_ROBEN, RP1_Reg2_ROBEN;
 
 
 reg [4:0] input_WP1_DRindex_test;
-wire [ROB_EN_WIDTH - 1 : 0] output_ROBEN_test;
+wire [4 : 0] output_ROBEN_test;
 
-RegFile #(.ROB_EN_WIDTH(ROB_EN_WIDTH)) dut  
+RegFile dut  
 (
 .clk(clk),
 .rst(rst),

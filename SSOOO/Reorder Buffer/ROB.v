@@ -31,10 +31,14 @@ module ROB
     output reg [31:0] Commit_Write_Data,
     output reg [2:0] Commit_Control_Signals,
 
-    output reg [3:0] Start_Index,
-    output reg [3:0] End_Index,
+    input [4:0] RP1_ROBEN1, RP1_ROBEN2,
+    output [31:0] RP1_Write_Data1, RP1_Write_Data2,
+    output RP1_Ready1, RP1_Ready2,
 
-    input  [4:0] index_test,
+    output reg [3:0] Start_Index,
+    output reg [3:0] End_Index
+
+    ,input  [4:0] index_test,
     output [11:0] Reg_opcode_test,
     output [4:0]  Reg_Rd_test,
     output [31:0] Reg_Write_Data_test,
@@ -76,7 +80,7 @@ wire Reg_Valid [15:0];
 `validbit(14);
 `validbit(15);
 
-
+//
 assign Reg_opcode_test = Reg_opcode[`I(index_test)];
 assign Reg_Rd_test = Reg_Rd[`I(index_test)];
 assign Reg_Write_Data_test = Reg_Write_Data[`I(index_test)];
@@ -85,10 +89,13 @@ assign Reg_Ready_test = Reg_Ready[`I(index_test)];
 assign Reg_Speculation_test = Reg_Speculation[`I(index_test)];
 assign Reg_Exception_test = Reg_Exception[`I(index_test)];
 assign Reg_Valid_test = Reg_Valid[`I(index_test)];
+//
 
-
-
-
+// TODO: see about the readeness of the instruction
+assign RP1_Write_Data1 = Reg_Write_Data[`I(RP1_ROBEN1) - 1'b1];
+assign RP1_Write_Data2 = Reg_Write_Data[`I(RP1_ROBEN2) - 1'b1];
+assign RP1_Ready1 = Reg_Ready[`I(RP1_ROBEN1) - 1'b1];
+assign RP1_Ready2 = Reg_Ready[`I(RP1_ROBEN2) - 1'b1];
 
 /*
 this block does the following:
@@ -126,7 +133,6 @@ always@(posedge clk) begin
                                                 CDB_Branch_Decision ^ Reg_Speculation[`I(CDB_ROBEN) - 1'b1][1];
         Reg_Ready[`I(CDB_ROBEN) - 1'b1] = 1'b1;
     end
-    
 end
 
 assign EXCEPTION_Flag = Reg_Busy[Start_Index] & Reg_Exception[Start_Index];

@@ -6,8 +6,8 @@
 `define DISPLAYVALS \
 $display("full = %b , valid = %b", FULL_FLAG, VALID_Inst); \
 clk_en = 0; \
-for (i = 0; i < 8; i = i + 1) begin \
-    input_index_test = i[3:0]; \
+for (i = 0; i < 16; i = i + 1) begin \
+    input_index_test = i[4:0]; \
     #`ONE_CLK $display("index %d: busy = %b , opcode = %d , ALUOP = %d , ROBEN1 = %d , ROBEN1_VAL = %d , ROBEN2 = %d , ROBEN2_VAL = %d , Immediate = %d", \
     input_index_test, busy_test, opcode_test, ALUOP_test, ROBEN1_test, ROBEN1_VAL_test, ROBEN2_test, ROBEN2_VAL_test, Immediate_test); \
 end \
@@ -35,13 +35,13 @@ reg VALID_Inst;
 reg FU_Is_Free;
 
 wire FULL_FLAG;
-wire [3:0] FU_RS_ID;
+wire [4:0] FU_RS_ID;
 wire [3:0] FU_ALUOP;
 wire [31:0] FU_Val1, FU_Val2;
 wire [31:0] FU_Immediate;
 
 
-reg [3:0] input_index_test;
+reg  [4:0] input_index_test;
 wire [11:0] opcode_test;
 wire [3:0] ALUOP_test;
 wire [4:0] ROBEN1_test, ROBEN2_test;
@@ -127,12 +127,12 @@ Immediate = 77 + 10;
 VALID_Inst = 1;
 `ADVANCE_N_CYCLE(1);
 VALID_Inst = 0;
-`DISPLAYVALS
+// `DISPLAYVALS
 
-// this is for testing the full flag, and it works
+// // this is for testing the full flag, and it works
 // opcode = 888;
 // VALID_Inst = 1;
-// `ADVANCE_N_CYCLE(6);
+// `ADVANCE_N_CYCLE(14);
 // VALID_Inst = 0;
 // `DISPLAYVALS
 // opcode = 999;

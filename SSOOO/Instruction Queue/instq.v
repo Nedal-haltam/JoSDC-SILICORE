@@ -1,11 +1,13 @@
 module InstQ
 (
+    input clk, rst,
     input  [31:0] PC,
     
-    output [ 11:0] opcode,
-    output [ 4:0] rs, rt, rd, shamt,
-    output [15:0] immediate,
-    output [25:0] address
+    output reg [ 11:0] opcode,
+    output reg [ 4:0] rs, rt, rd, shamt,
+    output reg [15:0] immediate,
+    output reg [25:0] address,
+    output reg VALID_Inst
 );
 
 
@@ -15,33 +17,45 @@ wire [31:0] inst;
 
 assign inst = InstMem[PC];
 
-assign opcode    = { inst[31:26], inst[5:0] };
-assign rs        = inst[25:21];
-assign rt        = inst[20:16];
-assign rd        = inst[15:11];
-assign shamt     = inst[10:6];
-assign immediate = inst[15:0];
-assign address   = inst[25:0];
 
+always@(posedge clk, posedge rst) begin
+    if (rst) begin
+        opcode = 0;
+        rs = 0;
+        rt = 0;
+        rd = 0;
+        shamt = 0;
+        immediate = 0;
+        address = 0;
+        VALID_Inst = 1'b0;
+    end
+    else begin
+        if (inst[31:26] == 0)
+            opcode    = { inst[31:26], inst[5:0] };
+        else
+            opcode    = { inst[31:26], 6'd0 };
+
+        rs        = inst[25:21];
+        rt        = inst[20:16];
+        rd        = inst[15:11];
+        shamt     = inst[10:6];
+        immediate = inst[15:0];
+        address   = inst[25:0];
+        VALID_Inst = 1'b1;
+    end
+end
 
 
 // here we initialze the instruction Memory using the Real time CAS
 initial begin
 
-InstMem[  0] <= 32'h20010064; // addi x1 x0 100       
-InstMem[  1] <= 32'hAC010001; // sw x1 x0 1           
-InstMem[  2] <= 32'h2020007B; // addi x0 x1 123       
-InstMem[  3] <= 32'h2002FFFE; // addi x2 x0 -2        
-InstMem[  4] <= 32'hAC420002; // sw x2 x2 2           
-InstMem[  5] <= 32'h00221820; // add x3 x1 x2         
-InstMem[  6] <= 32'hAC63FFA0; // sw x3 x3 -96         
-InstMem[  7] <= 32'h00220020; // add x0 x1 x2         
-InstMem[  8] <= 32'h00622022; // sub x4 x3 x2         
-InstMem[  9] <= 32'h00822022; // sub x4 x4 x2         
-InstMem[ 10] <= 32'hAC040003; // sw x4 x0 3           
-InstMem[ 11] <= 32'h00622823; // subu x5 x3 x2        
-InstMem[ 12] <= 32'h00223021; // addu x6 x1 x2        
-InstMem[ 13] <= 32'h00C23022; // sub x6 x6 x2         
+
+InstMem[  0] <= 32'h2001007B; // addi $1 $zero 123
+InstMem[  1] <= 32'h00211020; // add $2 $1 $1
+InstMem[  2] <= 32'h2042007B; // addi $2 $2 123
+InstMem[  3] <= 32'h20030000; // addi $3 $zero 0
+InstMem[  4] <= 32'h206303E7; // addi $3 $3 999
+InstMem[  5] <= 32'hFC000000; // hlt
 
 end
 

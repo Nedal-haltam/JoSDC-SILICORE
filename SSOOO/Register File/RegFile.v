@@ -1,12 +1,9 @@
 
-module RegFile#
-(
-    parameter ROB_EN_WIDTH = 4
-)
+module RegFile
 (
     input clk, rst,
     input WP1_Wen, Decoded_WP1_Wen,
-    input [ROB_EN_WIDTH - 1:0] WP1_ROBEN, Decoded_WP1_ROBEN, 
+    input [4:0] WP1_ROBEN, Decoded_WP1_ROBEN, 
     input [4:0]                   WP1_DRindex, Decoded_WP1_DRindex, 
     input [31:0]                  WP1_Data,
 
@@ -14,22 +11,24 @@ module RegFile#
 
     input [4:0]   RP1_index1, RP1_index2,
     output [31:0] RP1_Reg1, RP1_Reg2,
-    output [ROB_EN_WIDTH - 1 : 0] RP1_Reg1_ROBEN, RP1_Reg2_ROBEN
+    output [4:0] RP1_Reg1_ROBEN, RP1_Reg2_ROBEN
 
     // for testing purposes, 
     // it is important to separate the testing signal from any other signal in the module 
     // because it will effect the functionality in an unpredicted way even if the design is implemented correctly
     , input [4:0] input_WP1_DRindex_test
-    , output [ROB_EN_WIDTH - 1 : 0] output_ROBEN_test
+    , output [4:0] output_ROBEN_test
 );
 
 
-
 reg [31:0] Regs [31:0];
-reg [ROB_EN_WIDTH - 1 : 0] Reg_ROBEs [31:0];
+reg [4:0] Reg_ROBEs [31:0];
+
 
 // for testing purposes
+//
 assign output_ROBEN_test = Reg_ROBEs[input_WP1_DRindex_test];
+//
 
 assign RP1_Reg1 = Regs[RP1_index1];
 assign RP1_Reg2 = Regs[RP1_index2];
@@ -68,6 +67,16 @@ always@(posedge clk , posedge rst) begin : Update_ROB_Entries_Block
 end
 
 
+`ifdef vscode
+integer index;
+initial begin
+  #(`MAX_CLOCKS + `reset);
+  $display("Register file content : ");
+  for (index = 0; index <= 31; index = index + 1)
+    $display("index = %d , reg_out : signed = %d , unsigned = %d",index[31:0], $signed(Regs[index]), $unsigned(Regs[index]));
+
+end 
+`endif
 
 endmodule
 

@@ -1,10 +1,14 @@
 
-// these includes will generate an error if you simulate using quartus
-// but because i am using vscode (it's faster and simpler) i should include the module explicitly
+
+`define HALF_CYCLE 1
+`define ONE_CLK (2 * `HALF_CYCLE)
+`define ADVANCE_N_CYCLE(N) #(`ONE_CLK * N);
+
 `include "InstQ.v"
 
 module InstQ_tb;
 
+reg clk = 0, rst;
 reg [31:0] PC;
 wire [ 11:0] opcode;
 wire [ 4:0] rs, rt, rd, shamt;
@@ -13,6 +17,8 @@ wire [25:0] address;
 
 InstQ dut
 (
+    .clk(clk),
+    .rst(rst),
     .PC(PC),
     .opcode(opcode),
     .rs(rs),
@@ -23,6 +29,9 @@ InstQ dut
     .address(address)
 );
 
+always begin
+        #(`HALF_CYCLE) clk <= ~clk;
+end
 integer i, index;
 initial begin
 $dumpfile("testout.vcd");
@@ -33,12 +42,11 @@ $dumpvars;
 for (i = 0; i < `N; i++) begin
     PC = i; 
     index = i + 1;
-    #1;
-$display(
-    "Instruction: %d\nPC = %d\nopcode = %h\nrd = %d\nrs = %d\nrt = %d\nshamt = %d\nimmediate = %d\naddress = %d\n"
+    #`ONE_CLK $display("Instruction: %d\nPC = %d\nopcode = %h\nrd = %d\nrs = %d\nrt = %d\nshamt = %d\nimmediate = %d\naddress = %d\n"
          ,index,PC, opcode, rd, rs, rt, shamt, immediate, address);
 end
 
+$finish;
 end
 
 

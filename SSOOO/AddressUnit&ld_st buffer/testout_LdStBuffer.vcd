@@ -1,0 +1,276 @@
+$date
+	Wed Dec 25 18:03:13 2024
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module LoadBuffer_tb $end
+$var wire 12 ! out_opcode [11:0] $end
+$var wire 32 " out_Write_Data [31:0] $end
+$var wire 1 # out_VALID_Inst $end
+$var wire 5 $ out_Rd [4:0] $end
+$var wire 32 % out_ROBEN2_VAL [31:0] $end
+$var wire 5 & out_ROBEN2 [4:0] $end
+$var wire 32 ' out_ROBEN1_VAL [31:0] $end
+$var wire 5 ( out_ROBEN1 [4:0] $end
+$var wire 5 ) out_ROBEN [4:0] $end
+$var wire 32 * out_Immediate [31:0] $end
+$var wire 32 + out_EA [31:0] $end
+$var wire 4 , Start_Index [3:0] $end
+$var wire 12 - Reg_opcode_test [11:0] $end
+$var wire 32 . Reg_Write_Data_test [31:0] $end
+$var wire 1 / Reg_Ready_test $end
+$var wire 5 0 Reg_Rd_test [4:0] $end
+$var wire 5 1 Reg_ROBEN_test [4:0] $end
+$var wire 5 2 Reg_ROBEN2_test [4:0] $end
+$var wire 32 3 Reg_ROBEN2_VAL_test [31:0] $end
+$var wire 5 4 Reg_ROBEN1_test [4:0] $end
+$var wire 32 5 Reg_ROBEN1_VAL_test [31:0] $end
+$var wire 32 6 Reg_Immediate_test [31:0] $end
+$var wire 32 7 Reg_EA_test [31:0] $end
+$var wire 1 8 Reg_Busy_test $end
+$var wire 4 9 End_Index [3:0] $end
+$var reg 5 : CDB_ROBEN [4:0] $end
+$var reg 32 ; CDB_ROBEN_VAL [31:0] $end
+$var reg 32 < EA [31:0] $end
+$var reg 32 = Immediate [31:0] $end
+$var reg 5 > ROBEN [4:0] $end
+$var reg 5 ? ROBEN1 [4:0] $end
+$var reg 32 @ ROBEN1_VAL [31:0] $end
+$var reg 5 A ROBEN2 [4:0] $end
+$var reg 32 B ROBEN2_VAL [31:0] $end
+$var reg 5 C Rd [4:0] $end
+$var reg 1 D VALID_Inst $end
+$var reg 32 E Write_Data [31:0] $end
+$var reg 1 F clk $end
+$var reg 1 G clk_en $end
+$var reg 5 H index_test [4:0] $end
+$var reg 12 I opcode [11:0] $end
+$var reg 1 J rst $end
+$var integer 32 K i [31:0] $end
+$scope module dut $end
+$var wire 5 L CDB_ROBEN [4:0] $end
+$var wire 32 M CDB_ROBEN_VAL [31:0] $end
+$var wire 32 N EA [31:0] $end
+$var wire 32 O Immediate [31:0] $end
+$var wire 5 P ROBEN [4:0] $end
+$var wire 5 Q ROBEN1 [4:0] $end
+$var wire 32 R ROBEN1_VAL [31:0] $end
+$var wire 5 S ROBEN2 [4:0] $end
+$var wire 32 T ROBEN2_VAL [31:0] $end
+$var wire 5 U Rd [4:0] $end
+$var wire 1 8 Reg_Busy_test $end
+$var wire 32 V Reg_EA_test [31:0] $end
+$var wire 32 W Reg_Immediate_test [31:0] $end
+$var wire 32 X Reg_ROBEN1_VAL_test [31:0] $end
+$var wire 5 Y Reg_ROBEN1_test [4:0] $end
+$var wire 32 Z Reg_ROBEN2_VAL_test [31:0] $end
+$var wire 5 [ Reg_ROBEN2_test [4:0] $end
+$var wire 5 \ Reg_ROBEN_test [4:0] $end
+$var wire 5 ] Reg_Rd_test [4:0] $end
+$var wire 1 / Reg_Ready_test $end
+$var wire 32 ^ Reg_Write_Data_test [31:0] $end
+$var wire 12 _ Reg_opcode_test [11:0] $end
+$var wire 1 D VALID_Inst $end
+$var wire 32 ` Write_Data [31:0] $end
+$var wire 1 F clk $end
+$var wire 5 a index_test [4:0] $end
+$var wire 12 b opcode [11:0] $end
+$var wire 1 J rst $end
+$var reg 4 c End_Index [3:0] $end
+$var reg 4 d Start_Index [3:0] $end
+$var reg 5 e i [4:0] $end
+$var reg 5 f j [4:0] $end
+$var reg 5 g k [4:0] $end
+$var reg 32 h out_EA [31:0] $end
+$var reg 32 i out_Immediate [31:0] $end
+$var reg 5 j out_ROBEN [4:0] $end
+$var reg 5 k out_ROBEN1 [4:0] $end
+$var reg 32 l out_ROBEN1_VAL [31:0] $end
+$var reg 5 m out_ROBEN2 [4:0] $end
+$var reg 32 n out_ROBEN2_VAL [31:0] $end
+$var reg 5 o out_Rd [4:0] $end
+$var reg 1 # out_VALID_Inst $end
+$var reg 32 p out_Write_Data [31:0] $end
+$var reg 12 q out_opcode [11:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+bx q
+bx p
+bx o
+bx n
+bx m
+bx l
+bx k
+bx j
+bx i
+bx h
+b0 g
+bx f
+b0 e
+bx d
+bx c
+bx b
+bx a
+bx `
+bx _
+bx ^
+bx ]
+bx \
+bx [
+bx Z
+bx Y
+bx X
+bx W
+bx V
+bx U
+bx T
+bx S
+bx R
+bx Q
+bx P
+bx O
+bx N
+bx M
+bx L
+bx K
+0J
+bx I
+bx H
+1G
+0F
+bx E
+xD
+bx C
+bx B
+bx A
+bx @
+bx ?
+bx >
+bx =
+bx <
+bx ;
+bx :
+bx 9
+x8
+bx 7
+bx 6
+bx 5
+bx 4
+bx 3
+bx 2
+bx 1
+bx 0
+x/
+bx .
+bx -
+bx ,
+bx +
+bx *
+bx )
+bx (
+bx '
+bx &
+bx %
+bx $
+x#
+bx "
+bx !
+$end
+#1
+b10000 f
+0#
+1F
+#2
+0F
+b0 ,
+b0 d
+b10000 f
+b0 9
+b0 c
+b10000 e
+1J
+#3
+b10000 e
+b10000 f
+1F
+#4
+08
+b0 H
+b0 a
+b0 K
+0G
+0J
+#6
+b1 H
+b1 a
+b1 K
+#8
+b10 H
+b10 a
+b10 K
+#10
+b11 H
+b11 a
+b11 K
+#12
+b100 H
+b100 a
+b100 K
+#14
+b101 H
+b101 a
+b101 K
+#16
+b110 H
+b110 a
+b110 K
+#18
+b111 H
+b111 a
+b111 K
+#20
+b1000 H
+b1000 a
+b1000 K
+#22
+b1001 H
+b1001 a
+b1001 K
+#24
+b1010 H
+b1010 a
+b1010 K
+#26
+b1011 H
+b1011 a
+b1011 K
+#28
+b1100 H
+b1100 a
+b1100 K
+#30
+b1101 H
+b1101 a
+b1101 K
+#32
+b1110 H
+b1110 a
+b1110 K
+#34
+b1111 H
+b1111 a
+b1111 K
+#36
+0F
+1G
+b10000 K

@@ -8,6 +8,8 @@
 `define DISPLAYVALS \
 clk_en = 0; \
 $display("Start_Index = %d, End_Index = %d", Start_Index, End_Index); \
+#`ONE_CLK $display("RP1_ROBEN1 = %d, RP1_ROBEN2 = %d, RP1_Write_Data1 = %d, RP1_Write_Data2 = %d", \
+        RP1_ROBEN1, RP1_ROBEN2, RP1_Write_Data1, RP1_Write_Data2); \
 $display("FULL_FLAG = %d , EXCEPTION_Flag = %d , FLUSH_Flag = %d , Commit_opcode = %h , Commit_Rd = %d , Commit_Write_Data = %d , Commit_Control_Signals = %b", \
         FULL_FLAG, EXCEPTION_Flag, FLUSH_Flag, Commit_opcode, Commit_Rd, Commit_Write_Data, Commit_Control_Signals); \
 for (i = 0; i < 16; i = i + 1) begin \
@@ -44,6 +46,10 @@ wire [4:0] Commit_Rd;
 wire [31:0] Commit_Write_Data;
 wire [2:0] Commit_Control_Signals;
 
+reg [4:0] RP1_ROBEN1, RP1_ROBEN2;
+wire [31:0] RP1_Write_Data1, RP1_Write_Data2;
+wire RP1_Ready1, RP1_Ready2;
+
 wire [3:0] Start_Index, End_Index;
 
 reg  [4:0] index_test;
@@ -79,6 +85,13 @@ ROB dut
     .Commit_Write_Data(Commit_Write_Data),
     .Commit_Control_Signals(Commit_Control_Signals),
 
+    .RP1_ROBEN1(RP1_ROBEN1), 
+    .RP1_ROBEN2(RP1_ROBEN2),
+    .RP1_Write_Data1(RP1_Write_Data1), 
+    .RP1_Write_Data2(RP1_Write_Data2),
+    .RP1_Ready1(RP1_Ready1), 
+    .RP1_Ready2(RP1_Ready2),
+
     .Start_Index(Start_Index),
     .End_Index(End_Index),
 
@@ -104,6 +117,8 @@ $dumpvars;
 
 clk_en = 1;
 rst = 0; `ADVANCE_N_CYCLE(1); rst = 1; `ADVANCE_N_CYCLE(1); rst = 0;
+RP1_ROBEN1 = 1;
+RP1_ROBEN2 = 2;
 
 `DISPLAYVALS
 Decoded_opcode = add;
