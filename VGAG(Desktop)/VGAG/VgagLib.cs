@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Numerics;
 using System.Text;
 using Raylib_cs;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using static Raylib_cs.Raylib;
 using Color = Raylib_cs.Color;
 using Rectangle = Raylib_cs.Rectangle;
@@ -250,6 +252,23 @@ namespace VGAG
             }
         }
 
+        static void RemoveCharFromGrid(ref List<List<Cell>> grid, List<List<Color>> Char, Rectangle TextBoundary, int index)
+        {
+            for (int i = 0; i < Char.Count; i++)
+            {
+                for (int j = 0; j < Char[0].Count; j++)
+                {
+                    int indexy = ((index / (int)(TextBoundary.Width / CHARW)) * Char.Count + i);
+                    int indexx = (index * Char[0].Count + j);
+                    int indexygrid = (indexy + (int)TextBoundary.Y) % (int)TextBoundary.Height;
+                    int indexxgrid = (indexx + (int)TextBoundary.X) % (int)TextBoundary.Width;
+                    Cell temp = grid[indexygrid][indexxgrid];
+                    temp.color = Color.Black;
+                    grid[indexygrid][indexxgrid] = temp;
+                }
+            }
+        }
+
 
         static void _DrawText(Rectangle TextBoundary, ref List<List<Cell>> grid, string text)
         {
@@ -402,7 +421,8 @@ namespace VGAG
                     }
                     ret.Add(curr_char);
                     charcount++;
-                    if (charcount == N) return ret;
+                    if (charcount == N) 
+                        return ret;
                 }
             }
             return ret;
@@ -441,24 +461,45 @@ namespace VGAG
             VGAG(ref temp, $".\\characters\\CharacterMap12\\cursor.mif", 12);
             VGAG(ref temp, $".\\characters\\CharacterMap24\\cursor.mif", 24);
         }
-        static void ParseNumsAndSpecialInOneMIF(string source_path, string dest_path, int Wper, int Hper, int N)
+        static List<List<List<Color>>> GetCharsInOneFile(string source_path, int Wper, int Hper, int N)
         {
-            List<List<List<Color>>> NumMap = ParseMap(source_path, Wper, Hper, N);
-            List<List<Color>> destmap = [];
-            for (int i = 0; i < NumMap.Count; i++)
+            List<List<List<Color>>> map = [];
+            char c = 'a';
+            for (int i = 0; i < 26; i++)
             {
-                List<List<Color>> Num = NumMap[i];
-                for (int j = 0; j < Num.Count; j++)
+                List<List<Color>> CapLet = GetChar(CHARW, CHARH, c);
+                map.Add(CapLet);
+                c++;
+            }
+            c = 'A';
+            for (int i = 0; i < 26; i++)
+            {
+                List<List<Color>> SmallLet = GetChar(CHARW, CHARH, c);
+                map.Add(SmallLet);
+                c++;
+            }
+            return map;
+        }
+        static void ParseAllInOneFile(string source_path1, int N1, string source_path2, int N2, string dest_path, int Wper, int Hper)
+        {
+            List<List<List<List<Color>>>> maps = [
+                ParseMap(source_path2, Wper, Hper, N2),
+                //GetCharsInOneFile(source_path2, Wper, Hper, N2),
+                ParseMap(source_path1, Wper, Hper, N1),
+                ];
+            List<List<Color>> destmap = [];
+            for (int i = 0; i < maps.Count; i++)
+            {
+                for (int j = 0; j < maps[i].Count; j++)
                 {
-                    List<Color> temp = [];
-                    for (int k = 0; k < Num[0].Count; k++)
+                    List<List<Color>> map = maps[i][j];
+                    for (int k = 0; k < map.Count; k++)
                     {
-                        temp.Add(Num[j][k]);
+                        destmap.Add(map[k]);    
                     }
-                    destmap.Add(temp);
                 }
             }
-            VGAG(ref destmap, dest_path, 24);
+            VGAG(ref destmap, dest_path, 12);
         }
         static List<List<T>> RescaleGrid<T>(List<List<T>> grid, float factor)
         {
@@ -490,22 +531,22 @@ namespace VGAG
             }
         }
 
+        static void ParseMaps()
+        {
+            string AlphabetMap = "D:\\GitHub Repos\\JoSDC-SILICORE\\VGAG(Desktop)\\VGAG\\bin\\Debug\\net8.0-windows\\characters\\AlphabetMap.mif";
+            //ParseChars(AlphabetMap, CHARW, CHARH, 26 * 2); // AlphabetMap.mif
 
+            string NumbersAndSpecial = "D:\\GitHub Repos\\JoSDC-SILICORE\\VGAG(Desktop)\\VGAG\\bin\\Debug\\net8.0-windows\\characters\\NumbersAndSpecial.mif"; // NumbersAndSpecial.mif
+            //ParseNumsAndSpecial(NumbersAndSpecial, CHARW, CHARH, 12); // NumbersAndSpecial.mif
+            
+            string CharMem = "D:\\GitHub Repos\\JoSDC-SILICORE\\VGAG(Desktop)\\VGAG\\bin\\Debug\\net8.0-windows\\characters\\CharMem.mif"; // CharMem.mif;
+            ParseAllInOneFile(NumbersAndSpecial, 10, AlphabetMap, 52, CharMem, CHARW, CHARH);
+        }
         // TODO: -better UI (or usage (e.g. colors)), so we can draw beautiful things
         unsafe public static void main()
         {
-            // you should specify the differenct used paths here.
-
-            //string AlphabetMap = "D:\\GitHub Repos\\JoSDC-SSOOO-CPU\\VGAG\\bin\\Debug\\net8.0\\characters\\AlphabetMap.mif";
-            //ParseChars(AlphabetMap, CHARW, CHARH, 26 * 2); // AlphabetMap.mif
-
-            //string NumbersAndSpecial = "D:\\GitHub Repos\\JoSDC-SSOOO-CPU\\VGAG\\bin\\Debug\\net8.0\\characters\\NumbersAndSpecial.mif"; // NumbersAndSpecial.mif
-            //ParseNumsAndSpecial(NumbersAndSpecial, CHARW, CHARH, 12); // NumbersAndSpecial.mif
-
-            //string CharMem = "D:\\GitHub Repos\\JoSDC-SSOOO-CPU\\VGAG\\bin\\Debug\\net8.0\\characters\\CharMem.mif"; // CharMem.mif;
-            //ParseNumsAndSpecialInOneMIF(NumbersAndSpecial, CharMem, CHARW, CHARH, 12);
-
-
+            //ParseMaps();
+            //return;
             int w = 800; // for the application
             int h = 600; // for the application
             int commdiv = 1;
@@ -516,7 +557,7 @@ namespace VGAG
 
             SetConfigFlags(ConfigFlags.AlwaysRunWindow);
             InitWindow(w, h, "VGAG");
-            SetTargetFPS(0); // maximum FPS
+            SetTargetFPS(60); // maximum FPS
 
             int x = (w / 2 - (OrigW) / 2);
             int y = (h / 2 - (OrigH) / 2);
@@ -583,10 +624,13 @@ namespace VGAG
                     {
                         SaveFileDialog fileDialog = new SaveFileDialog();
                         fileDialog.AddExtension = true;
+                        fileDialog.DefaultExt = "mif";
                         DialogResult dialogResult = fileDialog.ShowDialog();
                         if (dialogResult == DialogResult.OK)
                         {
-                            string filepath = fileDialog.FileName + ".mif";
+                            string filepath = fileDialog.FileName;
+                            if (m == Mode.writing)
+                                RemoveCharFromGrid(ref grid, GetChar(CHARW, CHARH, ' '), TextBoundary, text.Length);
                             List<List<Color>> gridc = GetGridColor(ref grid);
                             VGAG(ref gridc, filepath, 12);
                         }
@@ -687,7 +731,7 @@ namespace VGAG
                     {
                         _DrawText(TextBoundary, ref grid, text);
                     }
-                    if (displaycursor)
+                    if (displaycursor && !(Ctrl && IsKeyPressed(KeyboardKey.S)))
                     {
                         List<List<Color>> Char = GetChar(CHARW, CHARH, '|');
                         AddCharToGrid(ref grid, Char, TextBoundary, text.Length);

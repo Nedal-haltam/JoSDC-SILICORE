@@ -3,21 +3,24 @@ module RS
     input clk, rst,
     input [11:0] opcode,
     input [3:0] ALUOP, 
-    input [4:0] ROBEN1, ROBEN2,
+    input [4:0] ROBEN, ROBEN1, ROBEN2,
     input [31:0] ROBEN1_VAL, ROBEN2_VAL,
     input [31:0] Immediate,
 
-    input [4:0] CDB_ROBEN,
-    input [31:0] CDB_ROBEN_VAL,
+    input [4:0] CDB_ROBEN1,
+    input [31:0] CDB_ROBEN1_VAL,
+    input [4:0] CDB_ROBEN2,
+    input [31:0] CDB_ROBEN2_VAL,
 
     input VALID_Inst,
     input FU_Is_Free,
     output FULL_FLAG,
 
-    output reg [4:0] FU_RS_ID,
-    output reg [3:0] FU_ALUOP,
-    output reg [31:0] FU_Val1, FU_Val2,
-    output reg [31:0] FU_Immediate
+    output reg [4:0] RS_FU_RS_ID, RS_FU_ROBEN,
+    output reg [11:0] RS_FU_opcode,
+    output reg [3:0] RS_FU_ALUOP,
+    output reg [31:0] RS_FU_Val1, RS_FU_Val2,
+    output reg [31:0] RS_FU_Immediate
 
 
 
@@ -38,6 +41,7 @@ module RS
 // RS buffers to store an instruction
 reg [11:0] Reg_opcode [15:0];
 reg [3:0] Reg_ALUOP [15:0];
+reg [4:0] Reg_ROBEN [15:0];
 reg [4:0] Reg_ROBEN1 [15:0];
 reg [4:0] Reg_ROBEN2 [15:0];
 reg [31:0] Reg_ROBEN1_VAL [15:0];
@@ -81,11 +85,13 @@ assign FULL_FLAG = ~(rst |
                         Reg_Busy[14] & 
                         Reg_Busy[15]
                     ));
-always@(posedge clk, posedge rst) begin
+always@(negedge clk, posedge rst) begin
 
     if (rst) begin
-        for (i = 0; i < 16; i = i + 1)
+        for (i = 0; i < 16; i = i + 1) begin
             Reg_Busy[i] = 0;
+            Reg_ROBEN[i] = 0;
+        end
         i = 0;
         Next_Free = 0;
     end
@@ -96,9 +102,10 @@ always@(posedge clk, posedge rst) begin
                 Next_Free = i + 1'b1;
         if (Next_Free != 0) begin
             // the new index to use to reserve for the instruction is (Next_Free - 1)
-            Reg_Busy[`I(Next_Free) - 1'b1] = 1'b1;
             Reg_opcode[`I(Next_Free) - 1'b1] = opcode;
+            Reg_Busy[`I(Next_Free) - 1'b1] = 1'b1;
             Reg_ALUOP[`I(Next_Free) - 1'b1] = ALUOP;
+            Reg_ROBEN[`I(Next_Free) - 1'b1] = ROBEN;
             Reg_ROBEN1 [`I(Next_Free) - 1'b1] = ROBEN1;
             Reg_ROBEN2 [`I(Next_Free) - 1'b1] = ROBEN2;
             Reg_ROBEN1_VAL [`I(Next_Free) - 1'b1] = ROBEN1_VAL;
@@ -116,13 +123,21 @@ reg [4:0] j;
 always@(posedge clk, posedge rst) begin
     for (j = 0; j < 16; j = j + 1) begin
         if (Reg_Busy[`I(j)]) begin
-            if (Reg_ROBEN1[`I(j)] == CDB_ROBEN) begin
-                Reg_ROBEN1_VAL[`I(j)] = CDB_ROBEN_VAL;
-                Reg_ROBEN1[`I(j)] = 0;
+            if (Reg_ROBEN1[`I(j)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
+                Reg_ROBEN1_VAL[`I(j)] <= CDB_ROBEN1_VAL;
+                Reg_ROBEN1[`I(j)] <= 0;
             end
-            if (Reg_ROBEN2[`I(j)] == CDB_ROBEN) begin
-                Reg_ROBEN2_VAL[`I(j)] = CDB_ROBEN_VAL;
-                Reg_ROBEN2[`I(j)] = 0;
+            else if (Reg_ROBEN1[`I(j)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
+                Reg_ROBEN1_VAL[`I(j)] <= CDB_ROBEN2_VAL;
+                Reg_ROBEN1[`I(j)] <= 0;
+            end
+            if (Reg_ROBEN2[`I(j)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
+                Reg_ROBEN2_VAL[`I(j)] <= CDB_ROBEN1_VAL;
+                Reg_ROBEN2[`I(j)] <= 0;
+            end
+            else if (Reg_ROBEN2[`I(j)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
+                Reg_ROBEN2_VAL[`I(j)] <= CDB_ROBEN2_VAL;
+                Reg_ROBEN2[`I(j)] <= 0;
             end
         end
     end
@@ -135,28 +150,38 @@ this block does the following:
     - if the FU is free it picks a ready instruction to execute it and once finish it releases the reserved entry by resetting the busy bit
 */
 reg [4:0] k;
-always@(posedge clk, posedge rst) begin
+always@(negedge clk, posedge rst) begin
     if (rst) begin
-        FU_RS_ID = 0;
+        RS_FU_RS_ID <= 0;
     end
     else if (FU_Is_Free) begin
+        // TODO: see about blocking vs non-blocking assignments if it will effect the functionality
+        RS_FU_opcode <= 0;
+        RS_FU_RS_ID <= 0;
+        RS_FU_ROBEN <= 0;
+        RS_FU_ALUOP <= 0;
+        RS_FU_Val1 <= 0;
+        RS_FU_Val2 <= 0;
+        RS_FU_Immediate <= 0;
         for (k = 0; k < 16; k = k + 1) begin
             // TODO: modify on the way of picking the ready instruction
             // (it is ok for now because of the small size of the station)
             if (Reg_Busy[`I(k)] && Reg_ROBEN1[`I(k)] == 0 && Reg_ROBEN2[`I(k)] == 0) begin
-                FU_RS_ID = k + 1'b1;
-                FU_ALUOP = Reg_ALUOP[`I(k)];
-                FU_Val1 = Reg_ROBEN1_VAL[`I(k)];
-                FU_Val2 = Reg_ROBEN2_VAL[`I(k)];
-                FU_Immediate = Reg_Immediate[`I(k)];
+                RS_FU_opcode <= Reg_opcode[`I(k)];
+                RS_FU_Val1 <= Reg_ROBEN1_VAL[`I(k)];
+                RS_FU_RS_ID <= k + 1'b1;
+                RS_FU_ROBEN <= Reg_ROBEN[`I(k)];
+                RS_FU_ALUOP <= Reg_ALUOP[`I(k)];
+                RS_FU_Val2 <= Reg_ROBEN2_VAL[`I(k)];
+                RS_FU_Immediate <= Reg_Immediate[`I(k)];
             end
         end
     end
 end
 
 always@(posedge FU_Is_Free) begin
-    if (FU_RS_ID != 0)
-        Reg_Busy[`I(FU_RS_ID) - 1'b1] = 1'b0;
+    if (RS_FU_RS_ID != 0)
+        Reg_Busy[`I(RS_FU_RS_ID) - 1'b1] <= 1'b0;
 end
 
 

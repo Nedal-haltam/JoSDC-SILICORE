@@ -29,31 +29,30 @@ module AddressUnit
 
 
 
-    output VALID_Inst,
-    output [4:0]  out_ROBEN,
-    output [4:0]  out_Rd,
-    output [11:0] out_opcode,
-    output [4:0]  out_ROBEN1, out_ROBEN2,
-    output [31:0] out_ROBEN1_VAL, out_ROBEN2_VAL,
-    output [31:0] out_Immediate,
-    output [31:0] out_EA, out_Write_Data
+    output AU_LdStB_VALID_Inst,
+    output [4:0]  AU_LdStB_ROBEN,
+    output [4:0]  AU_LdStB_Rd,
+    output [11:0] AU_LdStB_opcode,
+    output [4:0]  AU_LdStB_ROBEN1, AU_LdStB_ROBEN2,
+    output [31:0] AU_LdStB_ROBEN1_VAL, AU_LdStB_ROBEN2_VAL,
+    output [31:0] AU_LdStB_Immediate,
+    output [31:0] AU_LdStB_EA
 );
 
 
 
-assign VALID_Inst = Decoded_opcode == `lw || Decoded_opcode == `sw;
+assign AU_LdStB_VALID_Inst = Decoded_opcode == `lw || Decoded_opcode == `sw;
 
-assign out_EA = ROBEN1_VAL + Immediate;
-assign out_Write_Data = ROBEN2_VAL;            
+assign AU_LdStB_EA = ROBEN1_VAL + Immediate;
 
-assign out_ROBEN = Decoded_ROBEN;
-assign out_Rd = Decoded_Rd;
-assign out_opcode = Decoded_opcode;
-assign out_ROBEN1 = ROBEN1;
-assign out_ROBEN2 = ROBEN2;
-assign out_ROBEN1_VAL = ROBEN1_VAL;
-assign out_ROBEN2_VAL = ROBEN2_VAL;
-assign out_Immediate = Immediate;
+assign AU_LdStB_ROBEN = Decoded_ROBEN;
+assign AU_LdStB_Rd = Decoded_Rd;
+assign AU_LdStB_opcode = Decoded_opcode;
+assign AU_LdStB_ROBEN1 = ROBEN1;
+assign AU_LdStB_ROBEN2 = ROBEN2;
+assign AU_LdStB_ROBEN1_VAL = ROBEN1_VAL;
+assign AU_LdStB_ROBEN2_VAL = ROBEN2_VAL;
+assign AU_LdStB_Immediate = Immediate;
 
 
 

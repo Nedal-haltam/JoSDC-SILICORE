@@ -1,35 +1,11 @@
 ﻿
+using System.Security.AccessControl;
 using System.Text;
-using Raylib_cs;
-using static Raylib_cs.Raylib;
-using Color = Raylib_cs.Color;
 int pc = 0;
 string initinst = "addi x1, x0, 1\r\naddi x2, x0, 2\r\naddi x3, x0, 3\r\naddi x4, x0, 4\r\naddi x5, x0, 5\r\naddi x6, x0, 6\r\naddi x7, x0, 7\r\naddi x8, x0, 8\r\naddi x9, x0, 9\r\naddi x10, x0, 10\n";
 main();
 return;
 
-void cout(string str, params object[] args)
-{
-    Console.Write(str, args);
-}
-void coutline(string str, params object[] args)
-{
-    Console.WriteLine(str, args);
-}
-void raylib()
-{
-    SetConfigFlags(ConfigFlags.AlwaysRunWindow);
-    InitWindow(800, 600, "VGAG");
-    SetTargetFPS(0); // maximum FPS
-    while (!WindowShouldClose())
-    {
-        DrawText($"FPS: {GetFPS()}", 0, 0, 20, Color.White);
-        BeginDrawing();
-        ClearBackground(Color.DarkGray);
-        EndDrawing();
-    }
-    CloseWindow();
-}
 bool IsDep(Instruction a, Instruction b)
 {
     bool ardn0 = a.rd != 0; // a's rd is not zero
@@ -46,7 +22,7 @@ void PrintInstructions(List<Instruction> instructions)
     for (int i = 0; i < instructions.Count; i++)
     {
         Instruction inst = instructions[i];
-        cout($"PC = {inst.pc,2}: {inst.mnem,3}, x{inst.rd}, x{inst.rs1}, x{inst.rs2}\n");
+        Console.Write($"PC = {inst.pc,2}: {inst.mnem,3}, x{inst.rd}, x{inst.rs1}, x{inst.rs2}\n");
     }
 }
 StringBuilder GetInstructions(List<Instruction> instructions)
@@ -215,21 +191,29 @@ void WriteInstsToFile(List<Instruction> instructions, string FilePath)
 {
     File.WriteAllText(FilePath, GetInstructions(instructions).ToString());
 }
+void acl(string FilePath)
+{
+    if (!Directory.Exists(FilePath))
+        Directory.CreateDirectory(FilePath);
+    FileSecurity fileSecurity = new FileSecurity(FilePath, AccessControlSections.Owner);
+    fileSecurity.AddAccessRule(new FileSystemAccessRule("Lenovo", FileSystemRights.FullControl, AccessControlType.Allow));
+}
 void Schedule(List<Instruction> instructions, string Folder)
 {
     List<Instruction> backward = BackWardIter(instructions);
     List<Instruction> grouped = GroupMethod(instructions);
 
-    string OrigPath = $"C:\\Users\\Lenovo\\Desktop\\StaticSchedulerOutput\\{Folder}\\orig.txt";
+    string folder = $".\\{Folder}";
+    acl(folder);
+    string OrigPath = $"{Folder}\\orig.txt";
     WriteInstsToFile(instructions, OrigPath);
-    string BackWardPath = $"C:\\Users\\Lenovo\\Desktop\\StaticSchedulerOutput\\{Folder}\\backward.txt";
+    string BackWardPath = $"{Folder}\\backward.txt";
     WriteInstsToFile(backward, BackWardPath);
-    string GroupedPath = $"C:\\Users\\Lenovo\\Desktop\\StaticSchedulerOutput\\{Folder}\\grouped.txt";
+    string GroupedPath = $"{Folder}\\grouped.txt";
     WriteInstsToFile(grouped, GroupedPath);
 }
 void main()
 {
-    //raylib();
     List<Instruction> instructions = [];
 
     // this results in 9 cycles
@@ -239,19 +223,10 @@ void main()
                     new(Mnemonic.beq, 0, Aluop.addition, 0, 1, 0)
                     ];
     //PrintInstructions(instructions);
-    Schedule(instructions, "Testone");
+    Schedule(instructions, ".\\tests\\Testone");
 
     // this results in 8 cycles
     (instructions[2], instructions[1]) = (instructions[1], instructions[2]);
     //PrintInstructions(instructions);
-    Schedule(instructions, "Testtwo");
-
-
+    Schedule(instructions, ".\\tests\\Testtwo");
 }
-/*
-addi x1, x0, 1
-addi x2, x0, 3
-lw x1, x0, 0
-beq x1, x0, l
-l:
-*/

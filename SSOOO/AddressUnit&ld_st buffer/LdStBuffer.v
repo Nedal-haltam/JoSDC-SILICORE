@@ -18,7 +18,7 @@ module LdStBuffer
     input [4:0]  ROBEN1, ROBEN2,
     input [31:0] ROBEN1_VAL, ROBEN2_VAL,
     input [31:0] Immediate,
-    input [31:0] EA, Write_Data,
+    input [31:0] EA,
 
     input [4:0] CDB_ROBEN,
     input [31:0] CDB_ROBEN_VAL,
@@ -31,7 +31,7 @@ module LdStBuffer
     output reg [4:0]  out_ROBEN1, out_ROBEN2,
     output reg [31:0] out_ROBEN1_VAL, out_ROBEN2_VAL,
     output reg [31:0] out_Immediate,
-    output reg [31:0] out_EA, out_Write_Data,
+    output reg [31:0] out_EA,
 
     output reg [3:0] Start_Index,
     output reg [3:0] End_Index
@@ -61,7 +61,6 @@ wire Reg_Ready [15:0];
 
 reg [11:0] Reg_opcode [15:0];
 reg [4:0] Reg_Rd [15:0];
-reg [31:0] Reg_Write_Data [15:0];
 reg [31:0] Reg_EA [15:0];
 reg [4:0] Reg_ROBEN [15:0];
 reg [4:0] Reg_ROBEN1 [15:0];
@@ -95,7 +94,6 @@ assign Reg_Busy_test = Reg_Busy[`I(index_test)];
 assign Reg_Ready_test = Reg_Ready[`I(index_test)];
 assign Reg_opcode_test = Reg_opcode[`I(index_test)];
 assign Reg_Rd_test = Reg_Rd[`I(index_test)];
-assign Reg_Write_Data_test = Reg_Write_Data[`I(index_test)];
 assign Reg_EA_test = Reg_EA[`I(index_test)];
 assign Reg_ROBEN_test = Reg_ROBEN[`I(index_test)];
 assign Reg_ROBEN1_test = Reg_ROBEN1[`I(index_test)];
@@ -109,7 +107,7 @@ assign Reg_Immediate_test = Reg_Immediate[`I(index_test)];
 
 
 reg [4:0] i = 0;
-always@(posedge clk, posedge rst) begin
+always@(negedge clk, posedge rst) begin
     if (rst) begin
         for (i = 0; i < 16; i = i + 1) begin
             Reg_Busy[`I(i)] = 0;
@@ -121,7 +119,6 @@ always@(posedge clk, posedge rst) begin
 
         Reg_opcode[End_Index] = opcode;
         Reg_Rd[End_Index] = Rd;
-        Reg_Write_Data[End_Index] = Write_Data;
         Reg_EA[End_Index] = EA;
         Reg_ROBEN[End_Index] = ROBEN;
         Reg_ROBEN1[End_Index] = ROBEN1;
@@ -141,11 +138,12 @@ reg [4:0] j;
 always@(posedge clk, posedge rst) begin
     for (j = 0; j < 16; j = j + 1) begin
         if (Reg_Busy[`I(j)]) begin
-            if (Reg_ROBEN1[`I(j)] == CDB_ROBEN) begin
+            if (Reg_ROBEN1[`I(j)] == CDB_ROBEN && CDB_ROBEN != 0) begin
                 Reg_ROBEN1_VAL[`I(j)] = CDB_ROBEN_VAL;
+                Reg_EA[`I(j)] = CDB_ROBEN_VAL + Reg_Immediate[`I(j)];
                 Reg_ROBEN1[`I(j)] = 0;
             end
-            if (Reg_ROBEN2[`I(j)] == CDB_ROBEN) begin
+            if (Reg_ROBEN2[`I(j)] == CDB_ROBEN && CDB_ROBEN != 0) begin
                 Reg_ROBEN2_VAL[`I(j)] = CDB_ROBEN_VAL;
                 Reg_ROBEN2[`I(j)] = 0;
             end
@@ -155,7 +153,7 @@ end
 
 
 reg [4:0] k = 0;
-always@(posedge clk, posedge rst) begin
+always@(negedge clk, posedge rst) begin
     if (rst)
         Start_Index = 0;
 
@@ -170,7 +168,6 @@ always@(posedge clk, posedge rst) begin
         out_ROBEN2_VAL = Reg_ROBEN2_VAL[Start_Index];
         out_Immediate = Reg_Immediate[Start_Index];
         out_EA = Reg_EA[Start_Index]; 
-        out_Write_Data = Reg_Write_Data[Start_Index];
         
         Reg_Busy[Start_Index] = 0;
         Start_Index = Start_Index + 1'b1;

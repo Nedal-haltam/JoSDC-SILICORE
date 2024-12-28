@@ -18,44 +18,61 @@ wire [31:0] inst;
 assign inst = InstMem[PC];
 
 
-always@(posedge clk, posedge rst) begin
+always@(negedge clk, posedge rst) begin
     if (rst) begin
-        opcode = 0;
-        rs = 0;
-        rt = 0;
-        rd = 0;
-        shamt = 0;
-        immediate = 0;
-        address = 0;
-        VALID_Inst = 1'b0;
+        opcode <= 0;
+        rs <= 0;
+        rt <= 0;
+        rd <= 0;
+        shamt <= 0;
+        immediate <= 0;
+        address <= 0;
+        VALID_Inst <= 1'b0;
     end
     else begin
         if (inst[31:26] == 0)
-            opcode    = { inst[31:26], inst[5:0] };
+            opcode    <= { inst[31:26], inst[5:0] };
         else
-            opcode    = { inst[31:26], 6'd0 };
+            opcode    <= { inst[31:26], 6'd0 };
 
-        rs        = inst[25:21];
-        rt        = inst[20:16];
-        rd        = inst[15:11];
-        shamt     = inst[10:6];
-        immediate = inst[15:0];
-        address   = inst[25:0];
-        VALID_Inst = 1'b1;
+        rs        <= inst[25:21];
+        rt        <= inst[20:16];
+        rd        <= inst[15:11];
+        shamt     <= inst[10:6];
+        immediate <= inst[15:0];
+        address   <= inst[25:0];
+        VALID_Inst <= 1'b1;
     end
 end
 
 
-// here we initialze the instruction Memory using the Real time CAS
+
 initial begin
 
 
-InstMem[  0] <= 32'h2001007B; // addi $1 $zero 123
-InstMem[  1] <= 32'h00211020; // add $2 $1 $1
-InstMem[  2] <= 32'h2042007B; // addi $2 $2 123
-InstMem[  3] <= 32'h20030000; // addi $3 $zero 0
-InstMem[  4] <= 32'h206303E7; // addi $3 $3 999
-InstMem[  5] <= 32'hFC000000; // hlt
+
+
+InstMem[  0] <= 32'h20010064; // addi $1 $zero 100
+InstMem[  1] <= 32'h2042000A; // addi $2 $2 10
+InstMem[  2] <= 32'h10220002; // beq $1 $2 2
+InstMem[  3] <= 32'h1042FFFE; // beq $2 $2 -2
+InstMem[  4] <= 32'hFC000000; // hlt
+
+
+
+
+
+
+/* run the following to simulate in VS Code, note you should be in '\GitHub Repos\JoSDC-SILICORE\SSOOO' in the terminal
+> iverilog -o sim -D vscode .\OOO_CPU_Sim.v
+> vvp sim
+*/
+
+
+
+
+
+
 
 end
 

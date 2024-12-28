@@ -1,0 +1,106 @@
+module ALU
+(
+    input clk, rst,
+    input [4:0] ROBEN,
+    input [11:0] opcode,
+    input [31:0] A, B,
+    input [3:0] ALUOP,
+
+
+    output reg [31:0] FU_res,
+    output reg FU_Branch_Decision,
+    output reg [4:0] FU_ROBEN,
+    output reg [11:0] FU_opcode,
+    output reg FU_Is_Free
+);
+
+`include "opcodes.txt"
+  
+// ALUOP -> OP 
+// 0000   -> add
+// 0001   -> sub
+// 0010   -> and
+// 0011   -> or
+// 0100   -> xor
+// 0101   -> nor
+// 0110   -> shift left here we shift A, B times
+// 0111   -> shift right
+// 1000   -> if (A < B) then 1 else 0 (aka. slt)
+// 1001   -> if (A > B) then 1 else 0 (aka. sgt)
+// this module takes the opcode and based on it. it decides what operation the ALU should do.
+
+
+
+reg [31:0] Reg_res;
+always @(*) begin
+
+case (ALUOP)
+
+    4'b0000: begin
+    Reg_res <= A + B;
+    end
+    4'b0001: begin
+    Reg_res <= A - B;
+    end   
+    4'b0010: begin
+    Reg_res <= A & B;
+    end   
+    4'b0011: begin
+    Reg_res <= A | B;
+    end   
+    4'b0100: begin
+    Reg_res <= A ^ B;
+    end
+    4'b0101: begin
+	 Reg_res <= ~(A | B);
+    end
+    4'b0110: begin
+    Reg_res <= A << B;
+    end
+    4'b0111: begin
+    Reg_res <= A >> B;
+    end
+    4'b1000: begin
+    Reg_res <= ($signed(A) < $signed(B)) ? 32'd1 : 32'd0;
+    end
+    4'b1001: begin
+    Reg_res <= ($signed(A) > $signed(B)) ? 32'd1 : 32'd0;
+    end
+endcase
+end
+
+// TODO: see if we can remove the one cycle delay because we don't need it
+// and it introduces onc cycle delay to forward the data to the needed insts
+always@(posedge clk, posedge rst) begin
+    if (rst)
+        FU_Is_Free <= 1'b1;
+    else begin
+        if (FU_Is_Free) begin
+            if (ROBEN != 0)
+                FU_Is_Free <= 1'b0;
+            else
+                FU_Is_Free <= 1'b1;
+        end
+        else begin
+            FU_Is_Free <= 1'b1;
+        end
+    end
+end
+
+always@(negedge clk, posedge rst) begin
+    if (rst) begin
+        FU_res <= 0;
+        FU_opcode <= 0;
+        FU_ROBEN <= 0;
+        FU_Branch_Decision <= 0;
+    end
+    else begin
+        FU_res <= Reg_res;
+        FU_opcode <= opcode;
+        FU_ROBEN <= (~FU_Is_Free) ? ROBEN : 0;
+        FU_Branch_Decision <= (opcode == beq && A == B) || (opcode == bne && A != B);
+    end
+end
+
+
+endmodule

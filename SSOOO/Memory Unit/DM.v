@@ -1,18 +1,30 @@
-module DM(address, clock,  data,  rden,  wren,  q);
 
-input clock, rden, wren;
-input [31 : 0] address;
-input [31 : 0] data;
+
+module DM
+(
+    input clk, 
+    input [4:0] ROBEN,
+    input Read_en, Write_en,
+    input [31 : 0] address,
+    input [31 : 0] data,
+
+    output reg [4:0] MEMU_ROBEN,
+    output reg [31:0] MEMU_Result
+
+);
+
 
 
 integer i;
-output reg [31 : 0] q;
 reg [31 : 0] DataMem [1023 : 0];
-always @(posedge clock) begin
-    if (rden)
-        q <= DataMem[address[9:0]];
-    if (wren)
+always @(negedge clk) begin
+    if (Read_en) begin
+        MEMU_Result <= DataMem[address[9:0]];
+    end
+    if (Write_en) begin
         DataMem[address] <= data;
+    end
+    MEMU_ROBEN <= ROBEN;
 end
 initial begin
 for (i = 0; i < 1024; i = i + 1)

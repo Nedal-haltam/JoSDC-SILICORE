@@ -50,7 +50,7 @@ reg [4:0] RP1_ROBEN1, RP1_ROBEN2;
 wire [31:0] RP1_Write_Data1, RP1_Write_Data2;
 wire RP1_Ready1, RP1_Ready2;
 
-wire [3:0] Start_Index, End_Index;
+wire [4:0] Start_Index, End_Index;
 
 reg  [4:0] index_test;
 wire [11:0] Reg_opcode_test;

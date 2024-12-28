@@ -86,13 +86,12 @@ Decoded_WP1_DRindex = 5'd1;
 `DISPLAYVALS(msg_RP1_Reg1, RP1_index1, RP1_Reg1, 10);
 `DISPLAYVALS(msg_ROB_read, input_WP1_DRindex_test, output_ROBEN_test, 10);
 
+Decoded_WP1_ROBEN = 0;
 `ADVANCE_N_CYCLE(1); // after one positive edge and one negative edge, respectively
 // here the ROB entry is updated so it will try to udpate the register file 
 // and it will succeed because there is a match in the ROB entry numbers
 `DISPLAYVALS(msg_RP1_Reg1, RP1_index1, RP1_Reg1, 10);
 `DISPLAYVALS(msg_ROB_read, input_WP1_DRindex_test, output_ROBEN_test, 10);
-
-
 
 // TODO: testing to be continued for sure but this is a good indicator that the thing works
 
