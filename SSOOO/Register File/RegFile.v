@@ -53,7 +53,7 @@ always@(posedge clk , posedge rst) begin : Update_Registers_Block
     // TODO: here we decided to allow only the latest instruction to modify on its destination register (checking the last condition)
     // it may change. because we may want the register file to constantly update its values according to every instruction
     // that wants to udpate the register file. either way it will not effect the functionality of the system
-    else if (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN)
+    else if (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0/* && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN*/)
         Regs[WP1_DRindex] <= WP1_Data;
 end
 

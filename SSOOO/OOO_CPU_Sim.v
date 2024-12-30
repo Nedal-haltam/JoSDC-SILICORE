@@ -3,7 +3,7 @@
 `define ONE_CLK (2 * `HALF_CYCLE)
 `define ADVANCE_N_CYCLE(N) #(`ONE_CLK * N);
 
-`define MAX_CLOCKS (2 * 100)
+`define MAX_CLOCKS (2 * 2000)
 `define reset 2 * `ONE_CLK
 
 `ifndef vscode

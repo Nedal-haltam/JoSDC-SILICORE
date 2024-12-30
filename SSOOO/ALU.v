@@ -11,7 +11,7 @@ module ALU
     output reg FU_Branch_Decision,
     output reg [4:0] FU_ROBEN,
     output reg [11:0] FU_opcode,
-    output reg FU_Is_Free
+    output FU_Is_Free
 );
 
 `include "opcodes.txt"
@@ -71,22 +71,22 @@ end
 
 // TODO: see if we can remove the one cycle delay because we don't need it
 // and it introduces onc cycle delay to forward the data to the needed insts
-always@(posedge clk, posedge rst) begin
-    if (rst)
-        FU_Is_Free <= 1'b1;
-    else begin
-        if (FU_Is_Free) begin
-            if (ROBEN != 0)
-                FU_Is_Free <= 1'b0;
-            else
-                FU_Is_Free <= 1'b1;
-        end
-        else begin
-            FU_Is_Free <= 1'b1;
-        end
-    end
-end
-
+// always@(posedge clk, posedge rst) begin
+//     if (rst)
+//         FU_Is_Free <= 1'b1;
+//     else begin
+//         if (FU_Is_Free) begin
+//             if (ROBEN != 0)
+//                 FU_Is_Free <= 1'b0;
+//             else
+//                 FU_Is_Free <= 1'b1;
+//         end
+//         else begin
+//             FU_Is_Free <= 1'b1;
+//         end
+//     end
+// end
+assign FU_Is_Free = 1'b1;
 always@(negedge clk, posedge rst) begin
     if (rst) begin
         FU_res <= 0;
@@ -97,7 +97,8 @@ always@(negedge clk, posedge rst) begin
     else begin
         FU_res <= Reg_res;
         FU_opcode <= opcode;
-        FU_ROBEN <= (~FU_Is_Free) ? ROBEN : 0;
+        // FU_ROBEN <= (~FU_Is_Free) ? ROBEN : 0;
+        FU_ROBEN <= ROBEN;
         FU_Branch_Decision <= (opcode == beq && A == B) || (opcode == bne && A != B);
     end
 end

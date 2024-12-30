@@ -127,7 +127,7 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ROB_Commit_Write_Data :
 // assign PC = (PC_src) ? Branch_Target_Addr : PC_out + 1'b1;
 
 
-PC_register pcreg(PC, PC_out, 1'b1, clk, rst);
+PC_register pcreg(PC, PC_out, ~ROB_FULL_FLAG || ROB_FLUSH_Flag , clk, rst);
 
 InstQ instq
 (
@@ -150,7 +150,7 @@ always@(posedge clk, posedge rst) begin
     if (rst)
         ROB_HLT = 1'b1;
     else
-        ROB_HLT = InstQ_opcode == hlt_inst && ~ROB_FLUSH_Flag;
+        ROB_HLT = InstQ_opcode == hlt_inst;
 end
 
 RegFile regfile
@@ -161,8 +161,14 @@ RegFile regfile
     .WP1_Wen(ROB_Commit_Control_Signals[2]), 
     .Decoded_WP1_Wen((!(InstQ_opcode == jr || InstQ_opcode == sw || InstQ_opcode == beq || 
                         InstQ_opcode == bne || InstQ_opcode == j))),
-    .WP1_ROBEN(ROB_Start_Index - 1'b1), 
-    .Decoded_WP1_ROBEN(ROB_End_Index - 1'b1), 
+    .WP1_ROBEN
+    (
+        (ROB_Start_Index == 5'd1) ? 5'd16 : (ROB_Start_Index - 1'b1)
+    ), 
+    .Decoded_WP1_ROBEN
+    (
+        (ROB_FULL_FLAG || ROB_FLUSH_Flag) ? 5'd0 : ROB_End_Index
+    ), 
     .WP1_DRindex(ROB_Commit_Rd), 
     .Decoded_WP1_DRindex
     (
@@ -204,15 +210,11 @@ ROB rob
 
     .CDB_ROBEN2(CDB_ROBEN2),
     .CDB_ROBEN2_Write_Data(CDB_Write_Data2),
-
     .CDB_Branch_Decision(FU_Branch_Decision),
 
     .VALID_Inst
     (
-        (rst) ? 1'b0 : 
-        (
-            (ROB_HLT == 1'b0)
-        )
+        ~rst && ~ROB_HLT && ~ROB_FLUSH_Flag && ~ROB_FULL_FLAG 
     ),
 
     .FULL_FLAG(ROB_FULL_FLAG),
@@ -245,7 +247,7 @@ RS rs
     .rst(rst),
     .opcode(InstQ_opcode),
     .ALUOP(InstQ_ALUOP),
-    .ROBEN(ROB_End_Index - 1'b1),
+    .ROBEN((ROB_End_Index == 5'd1) ? 5'd16 : (ROB_End_Index - 1'b1)),
     .ROBEN1
     (
         (RegFile_RP1_Reg1_ROBEN == 0) ? 5'd0 : 
@@ -290,7 +292,7 @@ RS rs
 
     .VALID_Inst
     (
-        (((InstQ_opcode == hlt_inst) ? 0 : InstQ_VALID_Inst) && InstQ_opcode != lw && InstQ_opcode != sw) ? 1'b1 : 1'b0
+        InstQ_opcode != hlt_inst && InstQ_VALID_Inst && ~ROB_FULL_FLAG && ~ROB_FLUSH_Flag && InstQ_opcode != lw && InstQ_opcode != sw
     ),
     .FU_Is_Free(FU_Is_Free),
 

@@ -25,7 +25,7 @@ module ROB
     input CDB_Branch_Decision,
 
     input VALID_Inst,
-    output FULL_FLAG,
+    output reg FULL_FLAG,
     output EXCEPTION_Flag,
     output reg FLUSH_Flag,
 
@@ -105,7 +105,9 @@ this block does the following:
     - it resets the necessary registers
     - inserts an entry to the ROB
 */
-assign FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
+always@(negedge clk) 
+    FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
+    
 reg [4:0] i = 0;
 always@(posedge clk, posedge rst) begin
     if (rst) begin
@@ -136,17 +138,15 @@ end
 always@(posedge clk) begin
     if (Reg_Busy[`Imone(CDB_ROBEN1)] && CDB_ROBEN1 != 0) begin
         if (~Reg_Speculation[`Imone(CDB_ROBEN1)][0])
-            Reg_Write_Data[`Imone(CDB_ROBEN1)] = CDB_ROBEN1_Write_Data;
-        Reg_Speculation[`Imone(CDB_ROBEN1)][0] = Reg_Speculation[`Imone(CDB_ROBEN1)][0] & 
-                                                CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN1)][1];
-        Reg_Ready[`Imone(CDB_ROBEN1)] = 1'b1;
+            Reg_Write_Data[`Imone(CDB_ROBEN1)] <= CDB_ROBEN1_Write_Data;
+        Reg_Speculation[`Imone(CDB_ROBEN1)][0] <= Reg_Speculation[`Imone(CDB_ROBEN1)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN1)][1]);
+        Reg_Ready[`Imone(CDB_ROBEN1)] <= 1'b1;
     end
     if (Reg_Busy[`Imone(CDB_ROBEN2)] && CDB_ROBEN2 != 0) begin
         if (~Reg_Speculation[`Imone(CDB_ROBEN2)][0])
-            Reg_Write_Data[`Imone(CDB_ROBEN2)] = CDB_ROBEN2_Write_Data;
-        Reg_Speculation[`Imone(CDB_ROBEN2)][0] = Reg_Speculation[`Imone(CDB_ROBEN2)][0] & 
-                                                CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN2)][1];
-        Reg_Ready[`Imone(CDB_ROBEN2)] = 1'b1;
+            Reg_Write_Data[`Imone(CDB_ROBEN2)] <= CDB_ROBEN2_Write_Data;
+        Reg_Speculation[`Imone(CDB_ROBEN2)][0] <= Reg_Speculation[`Imone(CDB_ROBEN2)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN2)][1]);
+        Reg_Ready[`Imone(CDB_ROBEN2)] <= 1'b1;
     end
 end
 

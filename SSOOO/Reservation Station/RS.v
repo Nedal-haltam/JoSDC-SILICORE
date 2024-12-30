@@ -95,7 +95,7 @@ always@(negedge clk, posedge rst) begin
         i = 0;
         Next_Free = 0;
     end
-    else if (VALID_Inst && ~FULL_FLAG) begin
+    else if (VALID_Inst) begin
         Next_Free = 0;
         for (i = 0; i < 16; i = i + 1)
             if (~Reg_Busy[`I(i)])
@@ -121,6 +121,7 @@ this block does the following:
 */
 reg [4:0] j;
 always@(posedge clk, posedge rst) begin
+
     for (j = 0; j < 16; j = j + 1) begin
         if (Reg_Busy[`I(j)]) begin
             if (Reg_ROBEN1[`I(j)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
@@ -154,7 +155,8 @@ always@(negedge clk, posedge rst) begin
     if (rst) begin
         RS_FU_RS_ID <= 0;
     end
-    else if (FU_Is_Free) begin
+    // else if (FU_Is_Free) begin
+    else begin
         // TODO: see about blocking vs non-blocking assignments if it will effect the functionality
         RS_FU_opcode <= 0;
         RS_FU_RS_ID <= 0;
@@ -167,6 +169,7 @@ always@(negedge clk, posedge rst) begin
             // TODO: modify on the way of picking the ready instruction
             // (it is ok for now because of the small size of the station)
             if (Reg_Busy[`I(k)] && Reg_ROBEN1[`I(k)] == 0 && Reg_ROBEN2[`I(k)] == 0) begin
+                // $display("k = %d", k);
                 RS_FU_opcode <= Reg_opcode[`I(k)];
                 RS_FU_Val1 <= Reg_ROBEN1_VAL[`I(k)];
                 RS_FU_RS_ID <= k + 1'b1;
@@ -179,9 +182,13 @@ always@(negedge clk, posedge rst) begin
     end
 end
 
-always@(posedge FU_Is_Free) begin
-    if (RS_FU_RS_ID != 0)
-        Reg_Busy[`I(RS_FU_RS_ID) - 1'b1] <= 1'b0;
+always@(posedge clk) begin
+    if (RS_FU_RS_ID != 0) begin
+        // $display("RS_FU_RS_ID = %d , Reg_ROBEN = %d",RS_FU_RS_ID , Reg_ROBEN[`I(RS_FU_RS_ID) - 1'b1]);
+        Reg_Busy[`I(RS_FU_RS_ID) - 1'b1] <= 0;
+        Reg_ROBEN[`I(RS_FU_RS_ID) - 1'b1] <= 0;
+        RS_FU_RS_ID = 0;
+    end
 end
 
 

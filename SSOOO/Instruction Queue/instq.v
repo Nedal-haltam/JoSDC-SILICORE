@@ -50,13 +50,20 @@ end
 initial begin
 
 
-
-
-InstMem[  0] <= 32'h20010064; // addi $1 $zero 100
-InstMem[  1] <= 32'h2042000A; // addi $2 $2 10
-InstMem[  2] <= 32'h10220002; // beq $1 $2 2
-InstMem[  3] <= 32'h1042FFFE; // beq $2 $2 -2
+InstMem[  0] <= 32'h200100FF; // addi $1 $zero 255
+InstMem[  1] <= 32'h20420001; // addi $2 $2 1
+InstMem[  2] <= 32'h00000000; // nop
+InstMem[  3] <= 32'h1441FFFE; // bne $2 $1 -2
 InstMem[  4] <= 32'hFC000000; // hlt
+
+
+
+
+// InstMem[  0] <= 32'h20010064; // addi $1 $zero 100
+// InstMem[  1] <= 32'h2042000A; // addi $2 $2 10
+// InstMem[  2] <= 32'h10220002; // beq $1 $2 2
+// InstMem[  3] <= 32'h1042FFFE; // beq $2 $2 -2
+// InstMem[  4] <= 32'hFC000000; // hlt
 
 
 
