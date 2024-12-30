@@ -1,8 +1,11 @@
 module CLA_Adder(
     input [31:0] operand1,
     input [31:0] operand2,
+    input [ 4:0] ROBEN_in,
     input operation, // 0 for addition and 1 for subtraction
-    output [31:0] result
+    output [31:0] result,
+    output [ 4:0] ROBEN_out,
+    output flow // overflow and underflow flag
 );
     wire [7:0] C;
 
@@ -77,6 +80,12 @@ module CLA_Adder(
         .result(result[31:28]),
         .cout(C[7])
     );
+
+    // outputs ROBEN for the executed instruction
+    assign ROBEN_out = ROBEN_in;
+
+    // flag for overflow and underflow
+    assign flow = C[7] ^ C[6];
 
 endmodule
 
