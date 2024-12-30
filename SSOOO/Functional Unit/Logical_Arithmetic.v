@@ -12,10 +12,15 @@ module Logical_Arithmetic
 (   input [31:0] operand1,
     input [31:0] operand2,
     input [4:0]  shamt,
-    input [2:0] operation,
-    output reg [31:0] result
+    input [4:0]  ROBEN_in,
+    input [2:0]  operation,
+    output reg [31:0] result,
+    output [4:0] ROBEN_out
 );
 
+    // outputs ROBEN for the executed instruction
+    assign ROBEN_out = ROBEN_in;
+    
     always @ (*) begin
         case(operation)
         AND :   result <= operand1 &  operand2;
