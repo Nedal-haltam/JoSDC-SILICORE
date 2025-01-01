@@ -14,6 +14,7 @@ module RS
 
     input VALID_Inst,
     input FU_Is_Free,
+    input ROB_FLUSH_Flag,
     output FULL_FLAG,
 
     output reg [4:0] RS_FU_RS_ID, RS_FU_ROBEN,
@@ -95,17 +96,21 @@ always@(negedge clk, posedge rst) begin
         i = 0;
         Next_Free = 0;
     end
+    else if (ROB_FLUSH_Flag) begin
+        for (i = 0; i < 16; i = i + 1)
+            Reg_Busy[`I(i)] <= 0;
+    end
     else if (VALID_Inst) begin
         Next_Free = 0;
         for (i = 0; i < 16; i = i + 1)
             if (~Reg_Busy[`I(i)])
                 Next_Free = i + 1'b1;
         if (Next_Free != 0) begin
+            Reg_ROBEN[`I(Next_Free) - 1'b1] = ROBEN;
             // the new index to use to reserve for the instruction is (Next_Free - 1)
             Reg_opcode[`I(Next_Free) - 1'b1] = opcode;
             Reg_Busy[`I(Next_Free) - 1'b1] = 1'b1;
             Reg_ALUOP[`I(Next_Free) - 1'b1] = ALUOP;
-            Reg_ROBEN[`I(Next_Free) - 1'b1] = ROBEN;
             Reg_ROBEN1 [`I(Next_Free) - 1'b1] = ROBEN1;
             Reg_ROBEN2 [`I(Next_Free) - 1'b1] = ROBEN2;
             Reg_ROBEN1_VAL [`I(Next_Free) - 1'b1] = ROBEN1_VAL;
@@ -121,7 +126,6 @@ this block does the following:
 */
 reg [4:0] j;
 always@(posedge clk, posedge rst) begin
-
     for (j = 0; j < 16; j = j + 1) begin
         if (Reg_Busy[`I(j)]) begin
             if (Reg_ROBEN1[`I(j)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
@@ -169,7 +173,7 @@ always@(negedge clk, posedge rst) begin
             // TODO: modify on the way of picking the ready instruction
             // (it is ok for now because of the small size of the station)
             if (Reg_Busy[`I(k)] && Reg_ROBEN1[`I(k)] == 0 && Reg_ROBEN2[`I(k)] == 0) begin
-                // $display("k = %d", k);
+                
                 RS_FU_opcode <= Reg_opcode[`I(k)];
                 RS_FU_Val1 <= Reg_ROBEN1_VAL[`I(k)];
                 RS_FU_RS_ID <= k + 1'b1;
@@ -186,8 +190,9 @@ always@(posedge clk) begin
     if (RS_FU_RS_ID != 0) begin
         // $display("RS_FU_RS_ID = %d , Reg_ROBEN = %d",RS_FU_RS_ID , Reg_ROBEN[`I(RS_FU_RS_ID) - 1'b1]);
         Reg_Busy[`I(RS_FU_RS_ID) - 1'b1] <= 0;
-        Reg_ROBEN[`I(RS_FU_RS_ID) - 1'b1] <= 0;
-        RS_FU_RS_ID = 0;
+        // Reg_ROBEN[`I(RS_FU_RS_ID) - 1'b1] <= 0;
+        // RS_FU_RS_ID = 0;
+        // RS_FU_ROBEN = 0;
     end
 end
 

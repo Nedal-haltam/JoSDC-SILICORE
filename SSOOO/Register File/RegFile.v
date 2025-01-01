@@ -7,7 +7,7 @@ module RegFile
     input [4:0]                   WP1_DRindex, Decoded_WP1_DRindex, 
     input [31:0]                  WP1_Data,
 
-
+    input ROB_FLUSH_Flag,
 
     input [4:0]   RP1_index1, RP1_index2,
     output [31:0] RP1_Reg1, RP1_Reg2,
@@ -23,15 +23,6 @@ module RegFile
 
 reg [31:0] Regs [31:0];
 reg [4:0] Reg_ROBEs [31:0];
-
-/*
-1: 123 , 4
-
-4 : addi x0, x2, 3
-
-
-5 : addi x1, x1, x1
-*/
 
 
 // for testing purposes
@@ -50,9 +41,6 @@ always@(posedge clk , posedge rst) begin : Update_Registers_Block
             Regs[i] <= 0;
         end
     end
-    // TODO: here we decided to allow only the latest instruction to modify on its destination register (checking the last condition)
-    // it may change. because we may want the register file to constantly update its values according to every instruction
-    // that wants to udpate the register file. either way it will not effect the functionality of the system
     else if (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0/* && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN*/)
         Regs[WP1_DRindex] <= WP1_Data;
 end
@@ -66,7 +54,11 @@ always@(posedge clk , posedge rst) begin : Update_ROB_Entries_Block
             Reg_ROBEs[j] <= 0;
         end
     end
-
+    else if (ROB_FLUSH_Flag) begin
+        for(j = 0; j < 32; j = j + 1) begin
+            Reg_ROBEs[j] <= 0;
+        end
+    end
     else if (Decoded_WP1_DRindex == WP1_DRindex) begin
         if (Decoded_WP1_Wen && Decoded_WP1_DRindex != 0 && Decoded_WP1_ROBEN != 0) begin
             Reg_ROBEs[Decoded_WP1_DRindex] <= Decoded_WP1_ROBEN;
@@ -92,7 +84,11 @@ end
 
 
 always@(posedge clk) begin
-    if (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN) begin
+    if (ROB_FLUSH_Flag) begin
+        RP1_Reg1_ROBEN <= 0;
+        RP1_Reg2_ROBEN <= 0;
+    end
+    else if (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN) begin
         if (WP1_DRindex == RP1_index1)
             RP1_Reg1_ROBEN <= 0;
         else

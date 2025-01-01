@@ -3,7 +3,7 @@
 `define ONE_CLK (2 * `HALF_CYCLE)
 `define ADVANCE_N_CYCLE(N) #(`ONE_CLK * N);
 
-`define MAX_CLOCKS (2 * 2000)
+`define MAX_CLOCKS (2 * 200000)
 `define reset 2 * `ONE_CLK
 
 `ifndef vscode
@@ -24,7 +24,7 @@
 `include "ALU.v"
 `include "PC_register.v"
 
-`include "OOO_CPU.v"
+`include "SSOOO_CPU.v"
 
 `endif
 
@@ -47,12 +47,12 @@ $dumpvars;
 
 `else
 
-$dumpfile("OOO_Waveform.vcd");
+$dumpfile("SSOOO_Waveform.vcd");
 $dumpvars;
 
 `endif
 
-rst = 1; `ADVANCE_N_CYCLE(2); rst = 0;
+rst <= 1; #(`reset) rst <= 0;
 
 #(`MAX_CLOCKS + 1);
 $display("Number of cycles consumed: %d", cycles_consumed);

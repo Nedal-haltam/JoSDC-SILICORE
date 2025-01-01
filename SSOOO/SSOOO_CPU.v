@@ -28,6 +28,7 @@ wire [4:0] RegFile_RP1_Reg1_ROBEN, RegFile_RP1_Reg2_ROBEN;
 
 // ROB
 wire ROB_FULL_FLAG;
+wire ROB_SPECULATIVE_FLAG;
 wire ROB_EXCEPTION_Flag;
 wire ROB_FLUSH_Flag;
 wire [11:0] ROB_Commit_opcode;
@@ -114,14 +115,21 @@ end
 PC_src_mux:
     - change the PC_src value based on decoded or commit instruction
 TODO:
-    - consider: j, jal, jr
-    - what about FULL ROB what will happen
+    - jr in case of dependecy: it happens when you fetch the jr instruction and the register it needs to jump is unavailable
 */
 assign PC = (ROB_FLUSH_Flag == 1'b1) ? ROB_Commit_Write_Data :
 (
-    (InstQ_opcode == hlt_inst) ? PC_out : 
+    (InstQ_opcode == j || InstQ_opcode == jal) ? {6'd0,InstQ_address} : 
     (
-        (InstQ_opcode == beq || InstQ_opcode == bne) ? PC_out + {{16{InstQ_immediate[15]}},InstQ_immediate} : PC_out + 1'b1
+        (
+            (InstQ_opcode == jr) ? RegFile_RP1_Reg1 : 
+            (
+                (InstQ_opcode == hlt_inst) ? PC_out : 
+                (
+                    (InstQ_opcode == beq || InstQ_opcode == bne) ? PC_out + {{16{InstQ_immediate[15]}},InstQ_immediate} : PC_out + 1'b1
+                )
+            )
+        )
     )
 );
 // assign PC = (PC_src) ? Branch_Target_Addr : PC_out + 1'b1;
@@ -180,6 +188,7 @@ RegFile regfile
     .WP1_Data(ROB_Commit_Write_Data),
 
     // inputs
+    .ROB_FLUSH_Flag(ROB_FLUSH_Flag),
     .RP1_index1(InstQ_rs), 
     .RP1_index2(InstQ_rt),
     // outputs
@@ -198,8 +207,11 @@ ROB rob
     .Decoded_opcode(InstQ_opcode),
     .Decoded_Rd
     (
-        (InstQ_opcode == addi || InstQ_opcode == andi || InstQ_opcode == ori || InstQ_opcode == xori || 
-         InstQ_opcode == sll  || InstQ_opcode == srl  || InstQ_opcode == slti || InstQ_opcode == lw) ? InstQ_rt : InstQ_rd
+        (InstQ_opcode == jal) ? 5'd31 : 
+        (
+            (InstQ_opcode == addi || InstQ_opcode == andi || InstQ_opcode == ori || InstQ_opcode == xori || 
+            InstQ_opcode == slti || InstQ_opcode == lw) ? InstQ_rt : InstQ_rd
+        )
     ),
     .Decoded_prediction(InstQ_opcode == beq | InstQ_opcode == bne),
     .Branch_Target_Addr(PC_out + 1'b1),
@@ -214,9 +226,11 @@ ROB rob
 
     .VALID_Inst
     (
-        ~rst && ~ROB_HLT && ~ROB_FLUSH_Flag && ~ROB_FULL_FLAG 
+        ~rst && 
+         ~ROB_FLUSH_Flag && ~ROB_FULL_FLAG 
     ),
 
+    .SPECULATIVE_FLAG(ROB_SPECULATIVE_FLAG),
     .FULL_FLAG(ROB_FULL_FLAG),
     .EXCEPTION_Flag(ROB_EXCEPTION_Flag),
     .FLUSH_Flag(ROB_FLUSH_Flag),
@@ -250,7 +264,7 @@ RS rs
     .ROBEN((ROB_End_Index == 5'd1) ? 5'd16 : (ROB_End_Index - 1'b1)),
     .ROBEN1
     (
-        (RegFile_RP1_Reg1_ROBEN == 0) ? 5'd0 : 
+        (RegFile_RP1_Reg1_ROBEN == 0 || InstQ_opcode == sll || InstQ_opcode == srl || InstQ_opcode == jal) ? 5'd0 : 
         (
             (ROB_RP1_Ready1) ? 5'd0 : RegFile_RP1_Reg1_ROBEN
         )
@@ -258,7 +272,7 @@ RS rs
     .ROBEN2
     (
         (InstQ_opcode == addi || InstQ_opcode == andi || InstQ_opcode == ori || InstQ_opcode == xori || 
-         InstQ_opcode == sll  || InstQ_opcode == srl  || InstQ_opcode == slti) ? 5'd0 : 
+         InstQ_opcode == slti || InstQ_opcode == jal) ? 5'd0 : 
          (
             (RegFile_RP1_Reg2_ROBEN == 0) ? 5'd0 : 
             (
@@ -290,9 +304,10 @@ RS rs
     .CDB_ROBEN2(CDB_ROBEN2),
     .CDB_ROBEN2_VAL(CDB_Write_Data2),
 
+    .ROB_FLUSH_Flag(ROB_FLUSH_Flag),
     .VALID_Inst
     (
-        InstQ_opcode != hlt_inst && InstQ_VALID_Inst && ~ROB_FULL_FLAG && ~ROB_FLUSH_Flag && InstQ_opcode != lw && InstQ_opcode != sw
+        InstQ_opcode != hlt_inst && InstQ_VALID_Inst && ~ROB_FULL_FLAG && ~ROB_FLUSH_Flag && InstQ_opcode != lw && InstQ_opcode != sw && InstQ_opcode != jal
     ),
     .FU_Is_Free(FU_Is_Free),
 
@@ -314,7 +329,7 @@ ALU alu
     .rst(rst),
     .ROBEN(RS_FU_ROBEN),
     .opcode(RS_FU_opcode),
-    .A(RS_FU_Val1), 
+    .A((RS_FU_opcode == sll || RS_FU_opcode == srl) ? RS_FU_Val2 : RS_FU_Val1), 
     .B
     (
         (RS_FU_opcode == addi || RS_FU_opcode == andi || RS_FU_opcode == ori || RS_FU_opcode == xori || 
@@ -364,7 +379,7 @@ CDB cdb
 
 AddressUnit AU
 (
-    .Decoded_ROBEN(ROB_End_Index - 1'b1),
+    .Decoded_ROBEN((ROB_End_Index == 5'd1) ? 5'd16 : (ROB_End_Index - 1'b1)),
     .Decoded_Rd(InstQ_rt),
     .Decoded_opcode(InstQ_opcode),
     .ROBEN1
@@ -431,7 +446,7 @@ LdStBuffer ldstbuffer
 (
     .clk(clk), 
     .rst(rst),
-    .VALID_Inst(AU_LdStB_VALID_Inst),
+    .VALID_Inst(AU_LdStB_VALID_Inst && ~ROB_FULL_FLAG && ~ROB_FLUSH_Flag && ~rst),
     .ROBEN(AU_LdStB_ROBEN),
     .Rd(AU_LdStB_Rd),
     .opcode(AU_LdStB_opcode),
@@ -442,8 +457,13 @@ LdStBuffer ldstbuffer
     .Immediate(AU_LdStB_Immediate),
     .EA(AU_LdStB_EA),
 
-    .CDB_ROBEN(CDB_ROBEN1),
-    .CDB_ROBEN_VAL(CDB_Write_Data1),
+    .ROB_Start_Index(ROB_Start_Index),
+    .ROB_SPECULATIVE_FLAG(ROB_SPECULATIVE_FLAG),
+    .ROB_FLUSH_Flag(ROB_FLUSH_Flag),
+    .CDB_ROBEN1(CDB_ROBEN1),
+    .CDB_ROBEN1_VAL(CDB_Write_Data1),
+    .CDB_ROBEN2(CDB_ROBEN2),
+    .CDB_ROBEN2_VAL(CDB_Write_Data2),
 
 
     .out_VALID_Inst(LdStB_MEMU_VALID_Inst),
@@ -481,18 +501,6 @@ DM datamemory
     .MEMU_Result(MEMU_Result)
 
 );
-
-
-
-/*
-TODO:
-    - MemoryUnit
-    - CDB
-*/
-
-
-
-
 
 
 endmodule

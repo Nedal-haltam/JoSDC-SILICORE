@@ -20,8 +20,13 @@ module LdStBuffer
     input [31:0] Immediate,
     input [31:0] EA,
 
-    input [4:0] CDB_ROBEN,
-    input [31:0] CDB_ROBEN_VAL,
+    input [4:0] ROB_Start_Index,
+    input ROB_SPECULATIVE_FLAG,
+    input ROB_FLUSH_Flag,
+    input [4:0] CDB_ROBEN1,
+    input [31:0] CDB_ROBEN1_VAL,
+    input [4:0] CDB_ROBEN2,
+    input [31:0] CDB_ROBEN2_VAL,
 
 
     output reg out_VALID_Inst,
@@ -54,7 +59,7 @@ module LdStBuffer
 );
 
 
-
+`include "opcodes.txt"
 
 reg Reg_Busy [15:0];
 wire Reg_Ready [15:0];
@@ -114,6 +119,10 @@ always@(negedge clk, posedge rst) begin
         end
         End_Index = 0;
     end
+    else if (ROB_FLUSH_Flag) begin
+        for (i = 0; i < 16; i = i + 1)
+            Reg_Busy[`I(i)] <= 0;
+    end
     else if (VALID_Inst) begin
         Reg_Busy[End_Index] = 1'b1;
 
@@ -134,18 +143,27 @@ end
 
 
 
-reg [4:0] j;
+reg [4:0] ji;
 always@(posedge clk, posedge rst) begin
-    for (j = 0; j < 16; j = j + 1) begin
-        if (Reg_Busy[`I(j)]) begin
-            if (Reg_ROBEN1[`I(j)] == CDB_ROBEN && CDB_ROBEN != 0) begin
-                Reg_ROBEN1_VAL[`I(j)] = CDB_ROBEN_VAL;
-                Reg_EA[`I(j)] = CDB_ROBEN_VAL + Reg_Immediate[`I(j)];
-                Reg_ROBEN1[`I(j)] = 0;
+    for (ji = 0; ji < 16; ji = ji + 1) begin
+        if (Reg_Busy[`I(ji)]) begin
+            if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
+                Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN1_VAL;
+                Reg_EA[`I(ji)] <= CDB_ROBEN1_VAL + Reg_Immediate[`I(ji)];
+                Reg_ROBEN1[`I(ji)] <= 0;
             end
-            if (Reg_ROBEN2[`I(j)] == CDB_ROBEN && CDB_ROBEN != 0) begin
-                Reg_ROBEN2_VAL[`I(j)] = CDB_ROBEN_VAL;
-                Reg_ROBEN2[`I(j)] = 0;
+            else if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
+                Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN2_VAL;
+                Reg_EA[`I(ji)] <= CDB_ROBEN2_VAL + Reg_Immediate[`I(ji)];
+                Reg_ROBEN1[`I(ji)] <= 0;
+            end
+            if (Reg_ROBEN2[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
+                Reg_ROBEN2_VAL[`I(ji)] <= CDB_ROBEN1_VAL;
+                Reg_ROBEN2[`I(ji)] <= 0;
+            end
+            else if (Reg_ROBEN2[`I(ji)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
+                Reg_ROBEN2_VAL[`I(ji)] <= CDB_ROBEN2_VAL;
+                Reg_ROBEN2[`I(ji)] <= 0;
             end
         end
     end
@@ -157,7 +175,9 @@ always@(negedge clk, posedge rst) begin
     if (rst)
         Start_Index = 0;
 
-    if (Reg_Busy[Start_Index] && Reg_Ready[Start_Index]) begin
+    else if (ROB_FLUSH_Flag)
+        Start_Index = End_Index;
+    else if (Reg_Busy[Start_Index] && Reg_Ready[Start_Index]) begin
         out_VALID_Inst = 1'b1;
         out_ROBEN = Reg_ROBEN[Start_Index];
         out_Rd = Reg_Rd[Start_Index];

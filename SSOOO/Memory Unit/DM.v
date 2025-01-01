@@ -28,9 +28,9 @@ always @(negedge clk) begin
 end
 initial begin
 for (i = 0; i < 1024; i = i + 1)
-    DataMem[i] <= 0;
+    DataMem[i] = 0;
 
-// `include "DM_INIT.INIT"
+`include "DM_INIT.INIT"
 end
 
 

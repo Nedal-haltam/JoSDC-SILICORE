@@ -95,10 +95,10 @@ always@(negedge clk, posedge rst) begin
         FU_Branch_Decision <= 0;
     end
     else begin
+        FU_ROBEN <= ROBEN;
         FU_res <= Reg_res;
         FU_opcode <= opcode;
         // FU_ROBEN <= (~FU_Is_Free) ? ROBEN : 0;
-        FU_ROBEN <= ROBEN;
         FU_Branch_Decision <= (opcode == beq && A == B) || (opcode == bne && A != B);
     end
 end

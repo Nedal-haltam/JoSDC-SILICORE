@@ -25,6 +25,7 @@ module ROB
     input CDB_Branch_Decision,
 
     input VALID_Inst,
+    output SPECULATIVE_FLAG,
     output reg FULL_FLAG,
     output EXCEPTION_Flag,
     output reg FLUSH_Flag,
@@ -84,6 +85,26 @@ wire Reg_Valid [15:0];
 `validbit(14);
 `validbit(15);
 
+assign SPECULATIVE_FLAG = ~(rst | 
+                    ~(
+                        Reg_Speculation[0][0] | 
+                        Reg_Speculation[1][0] | 
+                        Reg_Speculation[2][0] | 
+                        Reg_Speculation[3][0] | 
+                        Reg_Speculation[4][0] | 
+                        Reg_Speculation[5][0] | 
+                        Reg_Speculation[6][0] | 
+                        Reg_Speculation[7][0] | 
+                        Reg_Speculation[8][0] | 
+                        Reg_Speculation[9][0] | 
+                        Reg_Speculation[10][0] | 
+                        Reg_Speculation[11][0] | 
+                        Reg_Speculation[12][0] | 
+                        Reg_Speculation[13][0] | 
+                        Reg_Speculation[14][0] | 
+                        Reg_Speculation[15][0]
+                    ));
+
 //
 assign Reg_opcode_test = Reg_opcode[`I(index_test)];
 assign Reg_Rd_test = Reg_Rd[`I(index_test)];
@@ -107,30 +128,31 @@ this block does the following:
 */
 always@(negedge clk) 
     FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
-    
+
 reg [4:0] i = 0;
 always@(posedge clk, posedge rst) begin
     if (rst) begin
         for (i = 0; i < 16; i = i + 1) begin
-            Reg_Busy[`I(i)] = 0;
-            Reg_Ready[`I(i)] = 0;
-            Reg_Speculation[`I(i)] = 0;
-            Reg_Exception[`I(i)] = 0;
+            Reg_Busy[`I(i)] <= 0;
+            Reg_Ready[`I(i)] <= 0;
+            Reg_Speculation[`I(i)] <= 0;
+            Reg_Exception[`I(i)] <= 0;
         end
-        End_Index = 1;
+        End_Index <= 1;
     end
     else if (VALID_Inst && ~FULL_FLAG) begin
-        Reg_opcode[`Imone(End_Index)] = Decoded_opcode;
-        Reg_Rd[`Imone(End_Index)] = Decoded_Rd;
-        Reg_Busy[`Imone(End_Index)] = 1'b1;
-        Reg_Ready[`Imone(End_Index)] = Decoded_opcode == hlt_inst;
-        Reg_Speculation[`Imone(End_Index)][0] = (Decoded_opcode == beq || Decoded_opcode == bne);
-        Reg_Speculation[`Imone(End_Index)][1] = Decoded_prediction;
-        Reg_Write_Data[`Imone(End_Index)] = Branch_Target_Addr;
-        Reg_Exception[`Imone(End_Index)] = 1'b0;
-        End_Index = End_Index + 1'b1;
-        if (End_Index == 5'd17)
-            End_Index = 1;
+        Reg_opcode[`Imone(End_Index)] <= Decoded_opcode;
+        Reg_Rd[`Imone(End_Index)] <= Decoded_Rd;
+        Reg_Busy[`Imone(End_Index)] <= 1'b1;
+        Reg_Ready[`Imone(End_Index)] <= Decoded_opcode == hlt_inst || Decoded_opcode == jal;
+        Reg_Speculation[`Imone(End_Index)][0] <= (Decoded_opcode == beq || Decoded_opcode == bne);
+        Reg_Speculation[`Imone(End_Index)][1] <= Decoded_prediction;
+        Reg_Write_Data[`Imone(End_Index)] <= Branch_Target_Addr;
+        Reg_Exception[`Imone(End_Index)] <= 1'b0;
+        if (End_Index + 1'b1 == 5'd17)
+            End_Index <= 1;
+        else 
+            End_Index <= End_Index + 1'b1;
     end
 end
 
@@ -164,17 +186,18 @@ always@(negedge clk, posedge rst) begin
     if (Reg_Busy[`Imone(Start_Index)]) begin
         if (Reg_Valid[`Imone(Start_Index)]) begin // handle ALU, lw, sw that are ready to commit (sw: do nothing, ALU/lw: write on the RegFile)
             if (Reg_Ready[`Imone(Start_Index)]) begin
-                Commit_opcode = Reg_opcode[`Imone(Start_Index)];
-                Commit_Rd = Reg_Rd[`Imone(Start_Index)];
-                Commit_Write_Data = Reg_Write_Data[`Imone(Start_Index)];
-                Commit_Control_Signals = { (!(Reg_opcode[`Imone(Start_Index)] == jr || Reg_opcode[`Imone(Start_Index)] == sw || Reg_opcode[`Imone(Start_Index)] == beq || 
+                Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
+                Commit_Rd <= Reg_Rd[`Imone(Start_Index)];
+                Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)];
+                Commit_Control_Signals <= { (!(Reg_opcode[`Imone(Start_Index)] == jr || Reg_opcode[`Imone(Start_Index)] == sw || Reg_opcode[`Imone(Start_Index)] == beq || 
                                               Reg_opcode[`Imone(Start_Index)] == bne || Reg_opcode[`Imone(Start_Index)] == j))
                                            , Reg_opcode[`Imone(Start_Index)] == lw , Reg_opcode[`Imone(Start_Index)] == sw};
-                Reg_Busy[`Imone(Start_Index)] = 0;
-                Reg_Ready[`Imone(Start_Index)] = 0;
-                Start_Index = Start_Index + 1'b1;
-                if (Start_Index == 5'd17)
-                    Start_Index = 1;
+                Reg_Busy[`Imone(Start_Index)] <= 0;
+                Reg_Ready[`Imone(Start_Index)] <= 0;
+                if (Start_Index + 1'b1 == 5'd17)
+                    Start_Index <= 1;
+                else 
+                    Start_Index <= Start_Index + 1'b1;
             end
         end
         else if (Reg_Speculation[`Imone(Start_Index)][0]) begin // handle branch insts
@@ -182,8 +205,10 @@ always@(negedge clk, posedge rst) begin
                 FLUSH_Flag = 1'b1;
                 Commit_opcode = Reg_opcode[`Imone(Start_Index)];
                 Commit_Write_Data = Reg_Write_Data[`Imone(Start_Index)]; // output the target address, and the above FLUSH_Flag is high
-                for (k = Start_Index; k <= End_Index; k = k + 1) begin // flush all insts
-                    Reg_Busy[`I(k)] = 1'b0;
+                for (k = 0; k < 16; k = k + 1) begin // flush all insts
+                    Reg_Busy[k] = 0;
+                    Reg_Speculation[k][0] = 0;
+                    Reg_Ready[k] = 0;
                 end
                 Start_Index = End_Index;
             end
