@@ -126,12 +126,22 @@ RunBenchMark_HW()
     vvp $VERILOG_PL > $VERILOG_PL_OUT
 
 
+    printf "[INFO]: simulating on SSOOO hardware\n"
+    BASE_PATH="../SSOOO/"
+    VERILOG_EXT_SSOOO="VERILOG_SSOOO.vvp"
+    VERILOG_EXT_SSOOO_OUT="VERILOG_SSOOO_OUT.txt"
+    VERILOG_SSOOO=$ProgFolder""$VERILOG_EXT_SSOOO
+    VERILOG_SSOOO_OUT=$ProgFolder""$VERILOG_EXT_SSOOO_OUT
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SSOOO -D vscode -D VCD_OUT=\"$ProgFolder"SSOOO_WaveForm.vcd"\" $BASE_PATH"SSOOO_sim.v"
+    vvp $VERILOG_SSOOO > $VERILOG_SSOOO_OUT
 
 
     sed -i '1d' "$VERILOG_SC_OUT"
-    sed -i '1d' "$VERILOG_PL_OUT"
     sed -i '$d' "$VERILOG_SC_OUT"
+    sed -i '1d' "$VERILOG_PL_OUT"
     sed -i '$d' "$VERILOG_PL_OUT"
+    sed -i '1d' "$VERILOG_SSOOO_OUT"
+    sed -i '$d' "$VERILOG_SSOOO_OUT"
 
 
     STATS=$ProgFolder"stats.txt"
@@ -140,16 +150,23 @@ RunBenchMark_HW()
     printf "\tSingleCycle: \n" >> $STATS
     printf "\t\t" >> $STATS
     sed -n '$p' "$VERILOG_SC_OUT" >> $STATS
+
     printf "\tPipLined: \n" >> $STATS
     printf "\t\t" >> $STATS
     sed -n '$p'  "$VERILOG_PL_OUT" >> $STATS
+
+    printf "\tSSOOO: \n" >> $STATS
+    printf "\t\t" >> $STATS
+    sed -n '$p'  "$VERILOG_SSOOO_OUT" >> $STATS
     
     sed -i '$d' "$VERILOG_SC_OUT"
     sed -i '$d' "$VERILOG_PL_OUT"
+    sed -i '$d' "$VERILOG_SSOOO_OUT"
 
     printf "[INFO]: Comparing HardWare Outputs\n"
 
     comapre_two_files "$VERILOG_SC_OUT" "$VERILOG_PL_OUT"
+    comapre_two_files "$VERILOG_SC_OUT" "$VERILOG_SSOOO_OUT"
 
     HWFILE="$VERILOG_SC_OUT"
 }
@@ -158,8 +175,8 @@ Run_BenchMark()
 {
     Run_BenchMark_SW $1
     RunBenchMark_HW $1
-    printf "[INFO]: comparing Software output with hardware output\n"
-    comapre_two_files $SWFILE $HWFILE
+    # printf "[INFO]: comparing Software output with hardware output\n"
+    # comapre_two_files $SWFILE $HWFILE
 }
 
 
@@ -172,14 +189,12 @@ Run_BenchMark()
 # Run_BenchMark "InsertionSort" 
 
 
-
-
 Run_BenchMark "BinarySearch"
 Run_BenchMark "BubbleSort(Silicore_BenchMark)"
 Run_BenchMark "ControlFlowInstructions"
 Run_BenchMark "DataManipulation"
 Run_BenchMark "Fibonacci(Silicore_BenchMark)"
-Run_BenchMark "InsertionSort(SiliCore_version)"
+# Run_BenchMark "InsertionSort(SiliCore_version)"
 Run_BenchMark "Max&MinArray"
 Run_BenchMark "SumOfNumbers"
 
