@@ -540,13 +540,13 @@ namespace VGAG
             //ParseNumsAndSpecial(NumbersAndSpecial, CHARW, CHARH, 12); // NumbersAndSpecial.mif
             
             string CharMem = "D:\\GitHub Repos\\JoSDC-SILICORE\\VGAG(Desktop)\\VGAG\\bin\\Debug\\net8.0-windows\\characters\\CharMem.mif"; // CharMem.mif;
-            ParseAllInOneFile(NumbersAndSpecial, 10, AlphabetMap, 52, CharMem, CHARW, CHARH);
+            ParseAllInOneFile(NumbersAndSpecial, 11, AlphabetMap, 52, CharMem, CHARW, CHARH);
         }
         // TODO: -better UI (or usage (e.g. colors)), so we can draw beautiful things
         unsafe public static void main()
         {
-            //ParseMaps();
-            //return;
+            ParseMaps();
+            return;
             int w = 800; // for the application
             int h = 600; // for the application
             int commdiv = 1;
