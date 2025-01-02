@@ -289,17 +289,6 @@ end
 `DISPLAYVALS
 
 
-/*
-TODO: trace the life time of the following instruction types:
-    - ALU: forwarding while in the RS, getting its results while in the ROB through the CDB, committing when in at the head of the ROB
-    - branch: forwarding while in the RS, deciding whether to branch or not after comparison(while in the CDB), flush decision when committing when in at the head of the ROB
-    - lw : go to the address unit calculate EA and pass it to the ld/st buffer, when its ready it reads from the memory and broadcast the result on the CDB
-    - sw : go to the address unit calculate EA and pass it to the ld/st buffer, when its ready it writes the value on the memory and broadcast on the CDB that it finished
-    - jr : after executing in the FU, it broadcast the target address on the CDB and effects the PC_src
-    - j  : it effects the PC_src in the decoding stage
-    - jal: it effects the PC_src in the decoding stage, and continue the road to write the return address on $ra ($31)
-    - hlt: it effects the PC_src in the decoding stage, and do nothing, when it reaches the head of the ROB it raises the hlt flag to hold the clk
-*/
 
 $finish;
 end

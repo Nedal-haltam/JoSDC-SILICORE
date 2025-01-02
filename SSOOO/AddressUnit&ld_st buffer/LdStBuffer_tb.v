@@ -132,7 +132,6 @@ clk_en = 1;
 rst = 0; `ADVANCE_N_CYCLE(1); rst = 1; `ADVANCE_N_CYCLE(1); rst = 0;
 
 `DISPLAYVALS
-// TODO: test it
 
 $finish;
 

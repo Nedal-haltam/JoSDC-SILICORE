@@ -146,7 +146,7 @@ end
 
 
 reg [4:0] ji;
-always@(posedge clk) begin
+always@(posedge clk, posedge rst) begin
     for (ji = 0; ji < 16; ji = ji + 1) begin
         if (Reg_Busy[`I(ji)]) begin
             if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin

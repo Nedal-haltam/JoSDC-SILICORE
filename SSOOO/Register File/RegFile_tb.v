@@ -93,7 +93,6 @@ Decoded_WP1_ROBEN = 0;
 `DISPLAYVALS(msg_RP1_Reg1, RP1_index1, RP1_Reg1, 10);
 `DISPLAYVALS(msg_ROB_read, input_WP1_DRindex_test, output_ROBEN_test, 10);
 
-// TODO: testing to be continued for sure but this is a good indicator that the thing works
 
 
 // it is important to put $stop or $finish to terminate the simulation because 

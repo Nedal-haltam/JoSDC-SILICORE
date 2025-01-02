@@ -2,7 +2,7 @@
 
 
 
-module OOO_CPU
+module SSOOO_CPU
 (
     input input_clk, rst,
     output reg [31:0] cycles_consumed
@@ -460,6 +460,8 @@ LdStBuffer ldstbuffer
     .ROB_Start_Index(ROB_Start_Index),
     .ROB_SPECULATIVE_FLAG(ROB_SPECULATIVE_FLAG),
     .ROB_FLUSH_Flag(ROB_FLUSH_Flag),
+
+    // TODO: get the rest of the sources
     .CDB_ROBEN1(CDB_ROBEN1),
     .CDB_ROBEN1_VAL(CDB_Write_Data1),
     .CDB_ROBEN2(CDB_ROBEN2),

@@ -1,0 +1,592 @@
+Analysis & Elaboration report for SSOOO_CPU
+Wed Jan  1 19:01:14 2025
+Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Analysis & Elaboration Summary
+  3. Parallel Compilation
+  4. Parameter Settings for User Entity Instance: SSOOO_CPU:cpu
+  5. Parameter Settings for User Entity Instance: SSOOO_CPU:cpu|PC_register:pcreg
+  6. Parameter Settings for User Entity Instance: SSOOO_CPU:cpu|ROB:rob
+  7. Parameter Settings for User Entity Instance: SSOOO_CPU:cpu|ALU_OPER:alu_op
+  8. Parameter Settings for User Entity Instance: SSOOO_CPU:cpu|ALU:alu
+  9. Parameter Settings for User Entity Instance: SSOOO_CPU:cpu|LdStBuffer:ldstbuffer
+ 10. Analysis & Elaboration Settings
+ 11. Port Connectivity Checks: "SSOOO_CPU:cpu|LdStBuffer:ldstbuffer"
+ 12. Port Connectivity Checks: "SSOOO_CPU:cpu|CDB:cdb"
+ 13. Port Connectivity Checks: "SSOOO_CPU:cpu|ALU:alu"
+ 14. Port Connectivity Checks: "SSOOO_CPU:cpu|RS:rs"
+ 15. Port Connectivity Checks: "SSOOO_CPU:cpu|ROB:rob"
+ 16. Port Connectivity Checks: "SSOOO_CPU:cpu|RegFile:regfile"
+ 17. Port Connectivity Checks: "SSOOO_CPU:cpu"
+ 18. Analysis & Elaboration Messages
+ 19. Analysis & Elaboration Suppressed Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2024  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel FPGA IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Intel and sold by Intel or its authorized distributors.  Please
+refer to the applicable agreement for further details, at
+https://fpgasoftware.intel.com/eula.
+
+
+
++-------------------------------------------------------------------------------------+
+; Analysis & Elaboration Summary                                                      ;
++------------------------------------+------------------------------------------------+
+; Analysis & Elaboration Status      ; Successful - Wed Jan  1 19:01:14 2025          ;
+; Quartus Prime Version              ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
+; Revision Name                      ; SSOOO_CPU                                      ;
+; Top-level Entity Name              ; SSOOO_Sim                                      ;
+; Family                             ; MAX 10                                         ;
+; Total logic elements               ; N/A until Partition Merge                      ;
+;     Total combinational functions  ; N/A until Partition Merge                      ;
+;     Dedicated logic registers      ; N/A until Partition Merge                      ;
+; Total registers                    ; N/A until Partition Merge                      ;
+; Total pins                         ; N/A until Partition Merge                      ;
+; Total virtual pins                 ; N/A until Partition Merge                      ;
+; Total memory bits                  ; N/A until Partition Merge                      ;
+; Embedded Multiplier 9-bit elements ; N/A until Partition Merge                      ;
+; Total PLLs                         ; N/A until Partition Merge                      ;
+; UFM blocks                         ; N/A until Partition Merge                      ;
+; ADC blocks                         ; N/A until Partition Merge                      ;
++------------------------------------+------------------------------------------------+
+
+
++------------------------------------------+
+; Parallel Compilation                     ;
++----------------------------+-------------+
+; Processors                 ; Number      ;
++----------------------------+-------------+
+; Number detected on machine ; 12          ;
+; Maximum allowed            ; 6           ;
+;                            ;             ;
+; Average used               ; 1.00        ;
+; Maximum used               ; 1           ;
+;                            ;             ;
+; Usage by Processor         ; % Time Used ;
+;     Processor 1            ; 100.0%      ;
++----------------------------+-------------+
+
+
++------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: SSOOO_CPU:cpu ;
++----------------+--------------+----------------------------+
+; Parameter Name ; Value        ; Type                       ;
++----------------+--------------+----------------------------+
+; add            ; 000000100000 ; Unsigned Binary            ;
+; addu           ; 000000100001 ; Unsigned Binary            ;
+; sub            ; 000000100010 ; Unsigned Binary            ;
+; subu           ; 000000100011 ; Unsigned Binary            ;
+; and_           ; 000000100100 ; Unsigned Binary            ;
+; or_            ; 000000100101 ; Unsigned Binary            ;
+; xor_           ; 000000100110 ; Unsigned Binary            ;
+; nor_           ; 000000100111 ; Unsigned Binary            ;
+; sll            ; 000000000000 ; Unsigned Binary            ;
+; srl            ; 000000000010 ; Unsigned Binary            ;
+; slt            ; 000000101010 ; Unsigned Binary            ;
+; sgt            ; 000000101011 ; Unsigned Binary            ;
+; jr             ; 000000001000 ; Unsigned Binary            ;
+; addi           ; 001000000000 ; Unsigned Binary            ;
+; andi           ; 001100000000 ; Unsigned Binary            ;
+; ori            ; 001101000000 ; Unsigned Binary            ;
+; xori           ; 001110000000 ; Unsigned Binary            ;
+; lw             ; 100011000000 ; Unsigned Binary            ;
+; sw             ; 101011000000 ; Unsigned Binary            ;
+; slti           ; 001010000000 ; Unsigned Binary            ;
+; beq            ; 000100000000 ; Unsigned Binary            ;
+; bne            ; 000101000000 ; Unsigned Binary            ;
+; j              ; 000010000000 ; Unsigned Binary            ;
+; jal            ; 000011000000 ; Unsigned Binary            ;
+; hlt_inst       ; 111111000000 ; Unsigned Binary            ;
++----------------+--------------+----------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: SSOOO_CPU:cpu|PC_register:pcreg ;
++----------------+-------+-----------------------------------------------------+
+; Parameter Name ; Value ; Type                                                ;
++----------------+-------+-----------------------------------------------------+
+; initialaddr    ; -1    ; Signed Integer                                      ;
++----------------+-------+-----------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: SSOOO_CPU:cpu|ROB:rob ;
++----------------+--------------+------------------------------------+
+; Parameter Name ; Value        ; Type                               ;
++----------------+--------------+------------------------------------+
+; add            ; 000000100000 ; Unsigned Binary                    ;
+; addu           ; 000000100001 ; Unsigned Binary                    ;
+; sub            ; 000000100010 ; Unsigned Binary                    ;
+; subu           ; 000000100011 ; Unsigned Binary                    ;
+; and_           ; 000000100100 ; Unsigned Binary                    ;
+; or_            ; 000000100101 ; Unsigned Binary                    ;
+; xor_           ; 000000100110 ; Unsigned Binary                    ;
+; nor_           ; 000000100111 ; Unsigned Binary                    ;
+; sll            ; 000000000000 ; Unsigned Binary                    ;
+; srl            ; 000000000010 ; Unsigned Binary                    ;
+; slt            ; 000000101010 ; Unsigned Binary                    ;
+; sgt            ; 000000101011 ; Unsigned Binary                    ;
+; jr             ; 000000001000 ; Unsigned Binary                    ;
+; addi           ; 001000000000 ; Unsigned Binary                    ;
+; andi           ; 001100000000 ; Unsigned Binary                    ;
+; ori            ; 001101000000 ; Unsigned Binary                    ;
+; xori           ; 001110000000 ; Unsigned Binary                    ;
+; lw             ; 100011000000 ; Unsigned Binary                    ;
+; sw             ; 101011000000 ; Unsigned Binary                    ;
+; slti           ; 001010000000 ; Unsigned Binary                    ;
+; beq            ; 000100000000 ; Unsigned Binary                    ;
+; bne            ; 000101000000 ; Unsigned Binary                    ;
+; j              ; 000010000000 ; Unsigned Binary                    ;
+; jal            ; 000011000000 ; Unsigned Binary                    ;
+; hlt_inst       ; 111111000000 ; Unsigned Binary                    ;
++----------------+--------------+------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: SSOOO_CPU:cpu|ALU_OPER:alu_op ;
++----------------+--------------+--------------------------------------------+
+; Parameter Name ; Value        ; Type                                       ;
++----------------+--------------+--------------------------------------------+
+; add            ; 000000100000 ; Unsigned Binary                            ;
+; addu           ; 000000100001 ; Unsigned Binary                            ;
+; sub            ; 000000100010 ; Unsigned Binary                            ;
+; subu           ; 000000100011 ; Unsigned Binary                            ;
+; and_           ; 000000100100 ; Unsigned Binary                            ;
+; or_            ; 000000100101 ; Unsigned Binary                            ;
+; xor_           ; 000000100110 ; Unsigned Binary                            ;
+; nor_           ; 000000100111 ; Unsigned Binary                            ;
+; sll            ; 000000000000 ; Unsigned Binary                            ;
+; srl            ; 000000000010 ; Unsigned Binary                            ;
+; slt            ; 000000101010 ; Unsigned Binary                            ;
+; sgt            ; 000000101011 ; Unsigned Binary                            ;
+; jr             ; 000000001000 ; Unsigned Binary                            ;
+; addi           ; 001000000000 ; Unsigned Binary                            ;
+; andi           ; 001100000000 ; Unsigned Binary                            ;
+; ori            ; 001101000000 ; Unsigned Binary                            ;
+; xori           ; 001110000000 ; Unsigned Binary                            ;
+; lw             ; 100011000000 ; Unsigned Binary                            ;
+; sw             ; 101011000000 ; Unsigned Binary                            ;
+; slti           ; 001010000000 ; Unsigned Binary                            ;
+; beq            ; 000100000000 ; Unsigned Binary                            ;
+; bne            ; 000101000000 ; Unsigned Binary                            ;
+; j              ; 000010000000 ; Unsigned Binary                            ;
+; jal            ; 000011000000 ; Unsigned Binary                            ;
+; hlt_inst       ; 111111000000 ; Unsigned Binary                            ;
++----------------+--------------+--------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: SSOOO_CPU:cpu|ALU:alu ;
++----------------+--------------+------------------------------------+
+; Parameter Name ; Value        ; Type                               ;
++----------------+--------------+------------------------------------+
+; add            ; 000000100000 ; Unsigned Binary                    ;
+; addu           ; 000000100001 ; Unsigned Binary                    ;
+; sub            ; 000000100010 ; Unsigned Binary                    ;
+; subu           ; 000000100011 ; Unsigned Binary                    ;
+; and_           ; 000000100100 ; Unsigned Binary                    ;
+; or_            ; 000000100101 ; Unsigned Binary                    ;
+; xor_           ; 000000100110 ; Unsigned Binary                    ;
+; nor_           ; 000000100111 ; Unsigned Binary                    ;
+; sll            ; 000000000000 ; Unsigned Binary                    ;
+; srl            ; 000000000010 ; Unsigned Binary                    ;
+; slt            ; 000000101010 ; Unsigned Binary                    ;
+; sgt            ; 000000101011 ; Unsigned Binary                    ;
+; jr             ; 000000001000 ; Unsigned Binary                    ;
+; addi           ; 001000000000 ; Unsigned Binary                    ;
+; andi           ; 001100000000 ; Unsigned Binary                    ;
+; ori            ; 001101000000 ; Unsigned Binary                    ;
+; xori           ; 001110000000 ; Unsigned Binary                    ;
+; lw             ; 100011000000 ; Unsigned Binary                    ;
+; sw             ; 101011000000 ; Unsigned Binary                    ;
+; slti           ; 001010000000 ; Unsigned Binary                    ;
+; beq            ; 000100000000 ; Unsigned Binary                    ;
+; bne            ; 000101000000 ; Unsigned Binary                    ;
+; j              ; 000010000000 ; Unsigned Binary                    ;
+; jal            ; 000011000000 ; Unsigned Binary                    ;
+; hlt_inst       ; 111111000000 ; Unsigned Binary                    ;
++----------------+--------------+------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: SSOOO_CPU:cpu|LdStBuffer:ldstbuffer ;
++----------------+--------------+--------------------------------------------------+
+; Parameter Name ; Value        ; Type                                             ;
++----------------+--------------+--------------------------------------------------+
+; add            ; 000000100000 ; Unsigned Binary                                  ;
+; addu           ; 000000100001 ; Unsigned Binary                                  ;
+; sub            ; 000000100010 ; Unsigned Binary                                  ;
+; subu           ; 000000100011 ; Unsigned Binary                                  ;
+; and_           ; 000000100100 ; Unsigned Binary                                  ;
+; or_            ; 000000100101 ; Unsigned Binary                                  ;
+; xor_           ; 000000100110 ; Unsigned Binary                                  ;
+; nor_           ; 000000100111 ; Unsigned Binary                                  ;
+; sll            ; 000000000000 ; Unsigned Binary                                  ;
+; srl            ; 000000000010 ; Unsigned Binary                                  ;
+; slt            ; 000000101010 ; Unsigned Binary                                  ;
+; sgt            ; 000000101011 ; Unsigned Binary                                  ;
+; jr             ; 000000001000 ; Unsigned Binary                                  ;
+; addi           ; 001000000000 ; Unsigned Binary                                  ;
+; andi           ; 001100000000 ; Unsigned Binary                                  ;
+; ori            ; 001101000000 ; Unsigned Binary                                  ;
+; xori           ; 001110000000 ; Unsigned Binary                                  ;
+; lw             ; 100011000000 ; Unsigned Binary                                  ;
+; sw             ; 101011000000 ; Unsigned Binary                                  ;
+; slti           ; 001010000000 ; Unsigned Binary                                  ;
+; beq            ; 000100000000 ; Unsigned Binary                                  ;
+; bne            ; 000101000000 ; Unsigned Binary                                  ;
+; j              ; 000010000000 ; Unsigned Binary                                  ;
+; jal            ; 000011000000 ; Unsigned Binary                                  ;
+; hlt_inst       ; 111111000000 ; Unsigned Binary                                  ;
++----------------+--------------+--------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------------------------------------------------+
+; Analysis & Elaboration Settings                                                                            ;
++------------------------------------------------------------------+--------------------+--------------------+
+; Option                                                           ; Setting            ; Default Value      ;
++------------------------------------------------------------------+--------------------+--------------------+
+; Device                                                           ; 10M50DAF484C7G     ;                    ;
+; Top-level entity name                                            ; SSOOO_Sim          ; SSOOO_CPU          ;
+; Family name                                                      ; MAX 10 FPGA        ; Cyclone V          ;
+; Use smart compilation                                            ; Off                ; Off                ;
+; Enable parallel Assembler and Timing Analyzer during compilation ; On                 ; On                 ;
+; Enable compact report table                                      ; Off                ; Off                ;
+; Restructure Multiplexers                                         ; Auto               ; Auto               ;
+; Create Debugging Nodes for IP Cores                              ; Off                ; Off                ;
+; Preserve fewer node names                                        ; On                 ; On                 ;
+; Intel FPGA IP Evaluation Mode                                    ; Enable             ; Enable             ;
+; Verilog Version                                                  ; Verilog_2001       ; Verilog_2001       ;
+; VHDL Version                                                     ; VHDL_1993          ; VHDL_1993          ;
+; State Machine Processing                                         ; Auto               ; Auto               ;
+; Safe State Machine                                               ; Off                ; Off                ;
+; Extract Verilog State Machines                                   ; On                 ; On                 ;
+; Extract VHDL State Machines                                      ; On                 ; On                 ;
+; Ignore Verilog initial constructs                                ; Off                ; Off                ;
+; Iteration limit for constant Verilog loops                       ; 5000               ; 5000               ;
+; Iteration limit for non-constant Verilog loops                   ; 250                ; 250                ;
+; Add Pass-Through Logic to Inferred RAMs                          ; On                 ; On                 ;
+; Infer RAMs from Raw Logic                                        ; On                 ; On                 ;
+; Parallel Synthesis                                               ; On                 ; On                 ;
+; DSP Block Balancing                                              ; Auto               ; Auto               ;
+; NOT Gate Push-Back                                               ; On                 ; On                 ;
+; Power-Up Don't Care                                              ; On                 ; On                 ;
+; Remove Redundant Logic Cells                                     ; Off                ; Off                ;
+; Remove Duplicate Registers                                       ; On                 ; On                 ;
+; Ignore CARRY Buffers                                             ; Off                ; Off                ;
+; Ignore CASCADE Buffers                                           ; Off                ; Off                ;
+; Ignore GLOBAL Buffers                                            ; Off                ; Off                ;
+; Ignore ROW GLOBAL Buffers                                        ; Off                ; Off                ;
+; Ignore LCELL Buffers                                             ; Off                ; Off                ;
+; Ignore SOFT Buffers                                              ; On                 ; On                 ;
+; Limit AHDL Integers to 32 Bits                                   ; Off                ; Off                ;
+; Optimization Technique                                           ; Balanced           ; Balanced           ;
+; Carry Chain Length                                               ; 70                 ; 70                 ;
+; Auto Carry Chains                                                ; On                 ; On                 ;
+; Auto Open-Drain Pins                                             ; On                 ; On                 ;
+; Perform WYSIWYG Primitive Resynthesis                            ; Off                ; Off                ;
+; Auto ROM Replacement                                             ; On                 ; On                 ;
+; Auto RAM Replacement                                             ; On                 ; On                 ;
+; Auto DSP Block Replacement                                       ; On                 ; On                 ;
+; Auto Shift Register Replacement                                  ; Auto               ; Auto               ;
+; Allow Shift Register Merging across Hierarchies                  ; Auto               ; Auto               ;
+; Auto Clock Enable Replacement                                    ; On                 ; On                 ;
+; Strict RAM Replacement                                           ; Off                ; Off                ;
+; Allow Synchronous Control Signals                                ; On                 ; On                 ;
+; Force Use of Synchronous Clear Signals                           ; Off                ; Off                ;
+; Auto RAM Block Balancing                                         ; On                 ; On                 ;
+; Auto RAM to Logic Cell Conversion                                ; Off                ; Off                ;
+; Auto Resource Sharing                                            ; Off                ; Off                ;
+; Allow Any RAM Size For Recognition                               ; Off                ; Off                ;
+; Allow Any ROM Size For Recognition                               ; Off                ; Off                ;
+; Allow Any Shift Register Size For Recognition                    ; Off                ; Off                ;
+; Use LogicLock Constraints during Resource Balancing              ; On                 ; On                 ;
+; Ignore translate_off and synthesis_off directives                ; Off                ; Off                ;
+; Timing-Driven Synthesis                                          ; On                 ; On                 ;
+; Report Parameter Settings                                        ; On                 ; On                 ;
+; Report Source Assignments                                        ; On                 ; On                 ;
+; Report Connectivity Checks                                       ; On                 ; On                 ;
+; Ignore Maximum Fan-Out Assignments                               ; Off                ; Off                ;
+; Synchronization Register Chain Length                            ; 2                  ; 2                  ;
+; Power Optimization During Synthesis                              ; Normal compilation ; Normal compilation ;
+; HDL message level                                                ; Level2             ; Level2             ;
+; Suppress Register Optimization Related Messages                  ; Off                ; Off                ;
+; Number of Removed Registers Reported in Synthesis Report         ; 5000               ; 5000               ;
+; Number of Swept Nodes Reported in Synthesis Report               ; 5000               ; 5000               ;
+; Number of Inverted Registers Reported in Synthesis Report        ; 100                ; 100                ;
+; Clock MUX Protection                                             ; On                 ; On                 ;
+; Auto Gated Clock Conversion                                      ; Off                ; Off                ;
+; Block Design Naming                                              ; Auto               ; Auto               ;
+; SDC constraint protection                                        ; Off                ; Off                ;
+; Synthesis Effort                                                 ; Auto               ; Auto               ;
+; Shift Register Replacement - Allow Asynchronous Clear Signal     ; On                 ; On                 ;
+; Pre-Mapping Resynthesis Optimization                             ; Off                ; Off                ;
+; Analysis & Synthesis Message Level                               ; Medium             ; Medium             ;
+; Disable Register Merging Across Hierarchies                      ; Auto               ; Auto               ;
+; Resource Aware Inference For Block RAM                           ; On                 ; On                 ;
++------------------------------------------------------------------+--------------------+--------------------+
+
+
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "SSOOO_CPU:cpu|LdStBuffer:ldstbuffer"                                                                                                                        ;
++---------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; Port                ; Type   ; Severity ; Details                                                                                                                                      ;
++---------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; out_Rd              ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; out_ROBEN1          ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; out_ROBEN2          ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; out_ROBEN1_VAL      ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; out_Immediate       ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; Start_Index         ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; End_Index           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; index_test          ; Input  ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND. ;
+; Reg_Busy_test       ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_Ready_test      ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_opcode_test     ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_Rd_test         ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_Write_Data_test ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_EA_test         ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_ROBEN_test      ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_ROBEN1_test     ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_ROBEN2_test     ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_ROBEN1_VAL_test ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_ROBEN2_VAL_test ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_Immediate_test  ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
++---------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+
+
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "SSOOO_CPU:cpu|CDB:cdb"                                                                                                                                  ;
++-----------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; Port            ; Type   ; Severity ; Details                                                                                                                                      ;
++-----------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; ROBEN3          ; Input  ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND. ;
+; Write_Data3     ; Input  ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND. ;
+; ROBEN4          ; Input  ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND. ;
+; Write_Data4     ; Input  ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND. ;
+; out_ROBEN3      ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; out_Write_Data3 ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; out_ROBEN4      ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; out_Write_Data4 ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
++-----------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+
+
++---------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "SSOOO_CPU:cpu|ALU:alu"                                                                   ;
++-----------+--------+----------+-------------------------------------------------------------------------------------+
+; Port      ; Type   ; Severity ; Details                                                                             ;
++-----------+--------+----------+-------------------------------------------------------------------------------------+
+; FU_opcode ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++-----------+--------+----------+-------------------------------------------------------------------------------------+
+
+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "SSOOO_CPU:cpu|RS:rs"                                                                                                                                     ;
++------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; Port             ; Type   ; Severity ; Details                                                                                                                                      ;
++------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; FULL_FLAG        ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; RS_FU_RS_ID      ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; input_index_test ; Input  ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND. ;
+; opcode_test      ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; ALUOP_test       ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; ROBEN1_test      ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; ROBEN2_test      ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; ROBEN1_VAL_test  ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; ROBEN2_VAL_test  ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Immediate_test   ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; busy_test        ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
++------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+
+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "SSOOO_CPU:cpu|ROB:rob"                                                                                                                                               ;
++------------------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; Port                         ; Type   ; Severity ; Details                                                                                                                                      ;
++------------------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; EXCEPTION_Flag               ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; Commit_Control_Signals[1..0] ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
+; index_test                   ; Input  ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND. ;
+; Reg_opcode_test              ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_Rd_test                  ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_Write_Data_test          ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_Busy_test                ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_Ready_test               ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_Speculation_test         ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_Exception_test           ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
+; Reg_Valid_test               ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
++------------------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+
+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "SSOOO_CPU:cpu|RegFile:regfile"                                                                                                                                 ;
++------------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; Port                   ; Type   ; Severity ; Details                                                                                                                                      ;
++------------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; input_WP1_DRindex_test ; Input  ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND. ;
+; output_ROBEN_test      ; Output ; Warning  ; Declared by entity but not connected by instance. Logic that only feeds a dangling port will be removed.                                     ;
++------------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+
+
++---------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "SSOOO_CPU:cpu"                                                                                 ;
++-----------------+--------+----------+-------------------------------------------------------------------------------------+
+; Port            ; Type   ; Severity ; Details                                                                             ;
++-----------------+--------+----------+-------------------------------------------------------------------------------------+
+; cycles_consumed ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++-----------------+--------+----------+-------------------------------------------------------------------------------------+
+
+
++---------------------------------+
+; Analysis & Elaboration Messages ;
++---------------------------------+
+Info: *******************************************************************
+Info: Running Quartus Prime Analysis & Elaboration
+    Info: Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
+    Info: Processing started: Wed Jan  1 19:01:03 2025
+Info: Command: quartus_map --read_settings_files=on --write_settings_files=off SSOOO_CPU -c SSOOO_CPU --analysis_and_elaboration
+Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
+Info (20030): Parallel compilation is enabled and will use 6 of the 6 processors detected
+Info (12021): Found 1 design units, including 1 entities, in source file ssooo_sim.v
+    Info (12023): Found entity 1: SSOOO_Sim File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_Sim.v Line: 31
+Info (12127): Elaborating entity "SSOOO_Sim" for the top level hierarchy
+Warning (10755): Verilog HDL warning at SSOOO_Sim.v(40): assignments to clk create a combinational loop File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_Sim.v Line: 40
+Warning (10175): Verilog HDL warning at SSOOO_Sim.v(50): ignoring unsupported system task File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_Sim.v Line: 50
+Warning (10175): Verilog HDL warning at SSOOO_Sim.v(51): ignoring unsupported system task File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_Sim.v Line: 51
+Info (10648): Verilog HDL Display System Task info at SSOOO_Sim.v(58): Number of cycles consumed:           0 File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_Sim.v Line: 58
+Warning (10175): Verilog HDL warning at SSOOO_Sim.v(59): ignoring unsupported system task File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_Sim.v Line: 59
+Warning (12125): Using design file ssooo_cpu.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: SSOOO_CPU File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 5
+Warning (10236): Verilog HDL Implicit Net warning at ssooo_cpu.v(225): created implicit net for "FU_Branch_Decision" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 225
+Info (12128): Elaborating entity "SSOOO_CPU" for hierarchy "SSOOO_CPU:cpu" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_Sim.v Line: 37
+Warning (10036): Verilog HDL or VHDL warning at ssooo_cpu.v(156): object "ROB_HLT" assigned a value but never read File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 156
+Warning (12125): Using design file pc_register.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: PC_register File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/pc_register.v Line: 2
+Info (12128): Elaborating entity "PC_register" for hierarchy "SSOOO_CPU:cpu|PC_register:pcreg" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 138
+Warning (12125): Using design file instruction queue/instq.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: InstQ File: d:/github repos/josdc-silicore/ssooo/instruction queue/instq.v Line: 1
+Info (12128): Elaborating entity "InstQ" for hierarchy "SSOOO_CPU:cpu|InstQ:instq" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 154
+Warning (10030): Net "InstMem.data_a" at instq.v(14) has no driver or initial value, using a default initial value '0' File: d:/github repos/josdc-silicore/ssooo/instruction queue/instq.v Line: 14
+Warning (10030): Net "InstMem.waddr_a" at instq.v(14) has no driver or initial value, using a default initial value '0' File: d:/github repos/josdc-silicore/ssooo/instruction queue/instq.v Line: 14
+Warning (10030): Net "InstMem.we_a" at instq.v(14) has no driver or initial value, using a default initial value '0' File: d:/github repos/josdc-silicore/ssooo/instruction queue/instq.v Line: 14
+Warning (12125): Using design file register file/regfile.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: RegFile File: d:/github repos/josdc-silicore/ssooo/register file/regfile.v Line: 2
+Info (12128): Elaborating entity "RegFile" for hierarchy "SSOOO_CPU:cpu|RegFile:regfile" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 199
+Warning (10240): Verilog HDL Always Construct warning at regfile.v(37): inferring latch(es) for variable "i", which holds its previous value in one or more paths through the always construct File: d:/github repos/josdc-silicore/ssooo/register file/regfile.v Line: 37
+Warning (12125): Using design file reorder buffer/rob.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: ROB File: d:/github repos/josdc-silicore/ssooo/reorder buffer/rob.v Line: 13
+Info (12128): Elaborating entity "ROB" for hierarchy "SSOOO_CPU:cpu|ROB:rob" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 253
+Warning (10230): Verilog HDL assignment warning at rob.v(141): truncated value with size 32 to match size of target (5) File: d:/github repos/josdc-silicore/ssooo/reorder buffer/rob.v Line: 141
+Warning (10230): Verilog HDL assignment warning at rob.v(220): truncated value with size 32 to match size of target (5) File: d:/github repos/josdc-silicore/ssooo/reorder buffer/rob.v Line: 220
+Warning (12125): Using design file functional unit/alu_oper.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: ALU_OPER File: d:/github repos/josdc-silicore/ssooo/functional unit/alu_oper.v Line: 15
+Info (12128): Elaborating entity "ALU_OPER" for hierarchy "SSOOO_CPU:cpu|ALU_OPER:alu_op" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 256
+Warning (10270): Verilog HDL Case Statement warning at alu_oper.v(25): incomplete case statement has no default case item File: d:/github repos/josdc-silicore/ssooo/functional unit/alu_oper.v Line: 25
+Warning (10240): Verilog HDL Always Construct warning at alu_oper.v(25): inferring latch(es) for variable "ALU_OP", which holds its previous value in one or more paths through the always construct File: d:/github repos/josdc-silicore/ssooo/functional unit/alu_oper.v Line: 25
+Info (10041): Inferred latch for "ALU_OP[0]" at alu_oper.v(25) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu_oper.v Line: 25
+Info (10041): Inferred latch for "ALU_OP[1]" at alu_oper.v(25) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu_oper.v Line: 25
+Info (10041): Inferred latch for "ALU_OP[2]" at alu_oper.v(25) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu_oper.v Line: 25
+Info (10041): Inferred latch for "ALU_OP[3]" at alu_oper.v(25) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu_oper.v Line: 25
+Warning (12125): Using design file reservation station/rs.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: RS File: d:/github repos/josdc-silicore/ssooo/reservation station/rs.v Line: 1
+Info (12128): Elaborating entity "RS" for hierarchy "SSOOO_CPU:cpu|RS:rs" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 324
+Warning (10230): Verilog HDL assignment warning at rs.v(92): truncated value with size 32 to match size of target (5) File: d:/github repos/josdc-silicore/ssooo/reservation station/rs.v Line: 92
+Warning (10230): Verilog HDL assignment warning at rs.v(109): truncated value with size 32 to match size of target (5) File: d:/github repos/josdc-silicore/ssooo/reservation station/rs.v Line: 109
+Warning (10230): Verilog HDL assignment warning at rs.v(136): truncated value with size 32 to match size of target (5) File: d:/github repos/josdc-silicore/ssooo/reservation station/rs.v Line: 136
+Warning (10230): Verilog HDL assignment warning at rs.v(177): truncated value with size 32 to match size of target (5) File: d:/github repos/josdc-silicore/ssooo/reservation station/rs.v Line: 177
+Warning (12125): Using design file functional unit/alu.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: ALU File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 1
+Info (12128): Elaborating entity "ALU" for hierarchy "SSOOO_CPU:cpu|ALU:alu" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 345
+Warning (10270): Verilog HDL Case Statement warning at alu.v(37): incomplete case statement has no default case item File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Warning (10240): Verilog HDL Always Construct warning at alu.v(37): inferring latch(es) for variable "Reg_res", which holds its previous value in one or more paths through the always construct File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[0]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[1]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[2]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[3]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[4]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[5]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[6]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[7]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[8]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[9]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[10]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[11]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[12]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[13]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[14]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[15]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[16]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[17]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[18]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[19]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[20]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[21]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[22]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[23]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[24]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[25]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[26]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[27]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[28]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[29]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[30]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Info (10041): Inferred latch for "Reg_res[31]" at alu.v(37) File: d:/github repos/josdc-silicore/ssooo/functional unit/alu.v Line: 37
+Warning (12125): Using design file common data bus/cdb.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: CDB File: d:/github repos/josdc-silicore/ssooo/common data bus/cdb.v Line: 15
+Info (12128): Elaborating entity "CDB" for hierarchy "SSOOO_CPU:cpu|CDB:cdb" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 376
+Warning (12125): Using design file addressunit&ld_st buffer/addressunit.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: AddressUnit File: d:/github repos/josdc-silicore/ssooo/addressunit&ld_st buffer/addressunit.v Line: 21
+Info (12128): Elaborating entity "AddressUnit" for hierarchy "SSOOO_CPU:cpu|AddressUnit:AU" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 423
+Warning (12125): Using design file addressunit&ld_st buffer/ldstbuffer.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: LdStBuffer File: d:/github repos/josdc-silicore/ssooo/addressunit&ld_st buffer/ldstbuffer.v Line: 11
+Info (12128): Elaborating entity "LdStBuffer" for hierarchy "SSOOO_CPU:cpu|LdStBuffer:ldstbuffer" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 484
+Warning (10036): Verilog HDL or VHDL warning at ldstbuffer.v(175): object "k" assigned a value but never read File: d:/github repos/josdc-silicore/ssooo/addressunit&ld_st buffer/ldstbuffer.v Line: 175
+Warning (10230): Verilog HDL assignment warning at ldstbuffer.v(117): truncated value with size 32 to match size of target (5) File: d:/github repos/josdc-silicore/ssooo/addressunit&ld_st buffer/ldstbuffer.v Line: 117
+Warning (10230): Verilog HDL assignment warning at ldstbuffer.v(123): truncated value with size 32 to match size of target (5) File: d:/github repos/josdc-silicore/ssooo/addressunit&ld_st buffer/ldstbuffer.v Line: 123
+Warning (10230): Verilog HDL assignment warning at ldstbuffer.v(150): truncated value with size 32 to match size of target (5) File: d:/github repos/josdc-silicore/ssooo/addressunit&ld_st buffer/ldstbuffer.v Line: 150
+Warning (10034): Output port "Reg_Write_Data_test" at ldstbuffer.v(51) has no driver File: d:/github repos/josdc-silicore/ssooo/addressunit&ld_st buffer/ldstbuffer.v Line: 51
+Warning (12125): Using design file memory unit/dm.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
+    Info (12023): Found entity 1: DM File: d:/github repos/josdc-silicore/ssooo/memory unit/dm.v Line: 3
+Info (12128): Elaborating entity "DM" for hierarchy "SSOOO_CPU:cpu|DM:datamemory" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/ssooo_cpu.v Line: 505
+Warning (12011): Net is missing source, defaulting to GND
+    Warning (12110): Net "clk" is missing source, defaulting to GND File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_Sim.v Line: 33
+Warning (12241): 5 hierarchies have connectivity warnings - see the Connectivity Checks report folder
+Info (144001): Generated suppressed messages file D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.map.smsg
+Info: Quartus Prime Analysis & Elaboration was successful. 0 errors, 41 warnings
+    Info: Peak virtual memory: 4766 megabytes
+    Info: Processing ended: Wed Jan  1 19:01:14 2025
+    Info: Elapsed time: 00:00:11
+    Info: Total CPU time (on all processors): 00:00:23
+
+
++--------------------------------------------+
+; Analysis & Elaboration Suppressed Messages ;
++--------------------------------------------+
+The suppressed messages can be found in D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.map.smsg.
+
+
