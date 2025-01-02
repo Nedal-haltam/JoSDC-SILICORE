@@ -130,10 +130,18 @@ always@(negedge clk)
     FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
 
 reg [4:0] i = 0;
-always@(posedge clk, posedge rst) begin
+
+`define C11 Reg_Busy[`Imone(CDB_ROBEN1)] && CDB_ROBEN1 != 0
+`define C12 ~Reg_Speculation[`Imone(CDB_ROBEN1)][0]
+`define C21 Reg_Busy[`Imone(CDB_ROBEN2)] && CDB_ROBEN2 != 0
+`define C22 ~Reg_Speculation[`Imone(CDB_ROBEN2)][0]
+always@(posedge clk) begin
+
     if (rst) begin
         for (i = 0; i < 16; i = i + 1) begin
+`ifdef vscode
             Reg_Busy[`I(i)] <= 0;
+`endif
             Reg_Ready[`I(i)] <= 0;
             Reg_Speculation[`I(i)] <= 0;
             Reg_Exception[`I(i)] <= 0;
@@ -143,7 +151,9 @@ always@(posedge clk, posedge rst) begin
     else if (VALID_Inst && ~FULL_FLAG) begin
         Reg_opcode[`Imone(End_Index)] <= Decoded_opcode;
         Reg_Rd[`Imone(End_Index)] <= Decoded_Rd;
+`ifdef vscode
         Reg_Busy[`Imone(End_Index)] <= 1'b1;
+`endif
         Reg_Ready[`Imone(End_Index)] <= Decoded_opcode == hlt_inst || Decoded_opcode == jal;
         Reg_Speculation[`Imone(End_Index)][0] <= (Decoded_opcode == beq || Decoded_opcode == bne);
         Reg_Speculation[`Imone(End_Index)][1] <= Decoded_prediction;
@@ -154,18 +164,15 @@ always@(posedge clk, posedge rst) begin
         else 
             End_Index <= End_Index + 1'b1;
     end
-end
 
-
-always@(posedge clk) begin
-    if (Reg_Busy[`Imone(CDB_ROBEN1)] && CDB_ROBEN1 != 0) begin
-        if (~Reg_Speculation[`Imone(CDB_ROBEN1)][0])
+    if (`C11) begin
+        if (`C12)
             Reg_Write_Data[`Imone(CDB_ROBEN1)] <= CDB_ROBEN1_Write_Data;
         Reg_Speculation[`Imone(CDB_ROBEN1)][0] <= Reg_Speculation[`Imone(CDB_ROBEN1)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN1)][1]);
         Reg_Ready[`Imone(CDB_ROBEN1)] <= 1'b1;
     end
-    if (Reg_Busy[`Imone(CDB_ROBEN2)] && CDB_ROBEN2 != 0) begin
-        if (~Reg_Speculation[`Imone(CDB_ROBEN2)][0])
+    if (`C21) begin
+        if (`C22)
             Reg_Write_Data[`Imone(CDB_ROBEN2)] <= CDB_ROBEN2_Write_Data;
         Reg_Speculation[`Imone(CDB_ROBEN2)][0] <= Reg_Speculation[`Imone(CDB_ROBEN2)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN2)][1]);
         Reg_Ready[`Imone(CDB_ROBEN2)] <= 1'b1;
@@ -175,9 +182,15 @@ end
 assign EXCEPTION_Flag = Reg_Busy[`Imone(Start_Index)] & Reg_Exception[`Imone(Start_Index)];
 reg [4:0] k = 0;
 always@(negedge clk, posedge rst) begin
-    if (rst)
+    if (rst) begin
+        Commit_opcode = 0;
+        Commit_Rd = 0;
+        Commit_Write_Data = 0;
+        Commit_Control_Signals = 0;
+        FLUSH_Flag = 0;
         Start_Index = 1;
-
+    end
+    else begin
     Commit_opcode = 0;
     Commit_Rd = 0;
     Commit_Write_Data = 0;
@@ -193,7 +206,6 @@ always@(negedge clk, posedge rst) begin
                                               Reg_opcode[`Imone(Start_Index)] == bne || Reg_opcode[`Imone(Start_Index)] == j))
                                            , Reg_opcode[`Imone(Start_Index)] == lw , Reg_opcode[`Imone(Start_Index)] == sw};
                 Reg_Busy[`Imone(Start_Index)] <= 0;
-                Reg_Ready[`Imone(Start_Index)] <= 0;
                 if (Start_Index + 1'b1 == 5'd17)
                     Start_Index <= 1;
                 else 
@@ -206,13 +218,12 @@ always@(negedge clk, posedge rst) begin
                 Commit_opcode = Reg_opcode[`Imone(Start_Index)];
                 Commit_Write_Data = Reg_Write_Data[`Imone(Start_Index)]; // output the target address, and the above FLUSH_Flag is high
                 for (k = 0; k < 16; k = k + 1) begin // flush all insts
-                    Reg_Busy[k] = 0;
-                    Reg_Speculation[k][0] = 0;
-                    Reg_Ready[k] = 0;
+                    Reg_Busy[k] <= 0;
                 end
                 Start_Index = End_Index;
             end
         end
+    end
     end
 end
 
