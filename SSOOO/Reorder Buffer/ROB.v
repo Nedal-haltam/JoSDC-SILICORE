@@ -26,7 +26,7 @@ module ROB
 
     input VALID_Inst,
     output SPECULATIVE_FLAG,
-    output reg FULL_FLAG,
+    output FULL_FLAG,
     output EXCEPTION_Flag,
     output reg FLUSH_Flag,
 
@@ -87,22 +87,22 @@ wire Reg_Valid [15:0];
 
 assign SPECULATIVE_FLAG = ~(rst | 
                     ~(
-                        Reg_Speculation[0][0] | 
-                        Reg_Speculation[1][0] | 
-                        Reg_Speculation[2][0] | 
-                        Reg_Speculation[3][0] | 
-                        Reg_Speculation[4][0] | 
-                        Reg_Speculation[5][0] | 
-                        Reg_Speculation[6][0] | 
-                        Reg_Speculation[7][0] | 
-                        Reg_Speculation[8][0] | 
-                        Reg_Speculation[9][0] | 
-                        Reg_Speculation[10][0] | 
-                        Reg_Speculation[11][0] | 
-                        Reg_Speculation[12][0] | 
-                        Reg_Speculation[13][0] | 
-                        Reg_Speculation[14][0] | 
-                        Reg_Speculation[15][0]
+                        (Reg_Speculation[0][0] & Reg_Busy[0]) | 
+                        (Reg_Speculation[1][0] & Reg_Busy[1]) | 
+                        (Reg_Speculation[2][0] & Reg_Busy[2]) | 
+                        (Reg_Speculation[3][0] & Reg_Busy[3]) | 
+                        (Reg_Speculation[4][0] & Reg_Busy[4]) | 
+                        (Reg_Speculation[5][0] & Reg_Busy[5]) | 
+                        (Reg_Speculation[6][0] & Reg_Busy[6]) | 
+                        (Reg_Speculation[7][0] & Reg_Busy[7]) | 
+                        (Reg_Speculation[8][0] & Reg_Busy[8]) | 
+                        (Reg_Speculation[9][0] & Reg_Busy[9]) | 
+                        (Reg_Speculation[10][0] & Reg_Busy[10]) | 
+                        (Reg_Speculation[11][0] & Reg_Busy[11]) | 
+                        (Reg_Speculation[12][0] & Reg_Busy[12]) | 
+                        (Reg_Speculation[13][0] & Reg_Busy[13]) | 
+                        (Reg_Speculation[14][0] & Reg_Busy[14]) | 
+                        (Reg_Speculation[15][0] & Reg_Busy[15])
                     ));
 
 //
@@ -126,8 +126,8 @@ this block does the following:
     - it resets the necessary registers
     - inserts an entry to the ROB
 */
-always@(negedge clk) 
-    FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
+// always@(negedge clk) 
+assign FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
 
 reg [4:0] i = 0;
 
@@ -135,7 +135,8 @@ reg [4:0] i = 0;
 `define C12 ~Reg_Speculation[`Imone(CDB_ROBEN1)][0]
 `define C21 Reg_Busy[`Imone(CDB_ROBEN2)] && CDB_ROBEN2 != 0
 `define C22 ~Reg_Speculation[`Imone(CDB_ROBEN2)][0]
-always@(posedge clk) begin
+// always@(posedge clk) begin
+always@(negedge clk) begin
 
     if (rst) begin
         for (i = 0; i < 16; i = i + 1) begin
@@ -146,6 +147,9 @@ always@(posedge clk) begin
             Reg_Speculation[`I(i)] <= 0;
             Reg_Exception[`I(i)] <= 0;
         end
+        End_Index <= 1;
+    end
+    else if (FLUSH_Flag) begin
         End_Index <= 1;
     end
     else if (VALID_Inst && ~FULL_FLAG) begin
@@ -164,7 +168,9 @@ always@(posedge clk) begin
         else 
             End_Index <= End_Index + 1'b1;
     end
+end
 
+always@(posedge clk) begin
     if (`C11) begin
         if (`C12)
             Reg_Write_Data[`Imone(CDB_ROBEN1)] <= CDB_ROBEN1_Write_Data;
@@ -214,13 +220,13 @@ always@(negedge clk, posedge rst) begin
         end
         else if (Reg_Speculation[`Imone(Start_Index)][0]) begin // handle branch insts
             if (Reg_Ready[`Imone(Start_Index)]) begin // if speculative and ready then prediction was wrong
-                FLUSH_Flag = 1'b1;
-                Commit_opcode = Reg_opcode[`Imone(Start_Index)];
-                Commit_Write_Data = Reg_Write_Data[`Imone(Start_Index)]; // output the target address, and the above FLUSH_Flag is high
+                FLUSH_Flag <= 1'b1;
+                Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
+                Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)]; // output the target address
                 for (k = 0; k < 16; k = k + 1) begin // flush all insts
                     Reg_Busy[k] <= 0;
                 end
-                Start_Index = End_Index;
+                Start_Index <= 1;
             end
         end
     end

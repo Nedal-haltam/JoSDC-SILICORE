@@ -18,6 +18,7 @@ wire [3:0] InstQ_ALUOP;
 wire [ 4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt;
 wire [15:0] InstQ_immediate;
 wire [25:0] InstQ_address;
+wire [31:0] InstQ_PC;
 wire InstQ_VALID_Inst;
 
 
@@ -112,8 +113,6 @@ end
 
 
 /*
-PC_src_mux:
-    - change the PC_src value based on decoded or commit instruction
 TODO:
     - jr in case of dependecy: it happens when you fetch the jr instruction and the register it needs to jump is unavailable
 */
@@ -132,7 +131,6 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ROB_Commit_Write_Data :
         )
     )
 );
-// assign PC = (PC_src) ? Branch_Target_Addr : PC_out + 1'b1;
 
 
 PC_register pcreg(PC, PC_out, ~ROB_FULL_FLAG || ROB_FLUSH_Flag , clk, rst);
@@ -150,16 +148,9 @@ InstQ instq
     .shamt(InstQ_shamt),
     .immediate(InstQ_immediate),
     .address(InstQ_address),
+    .pc(InstQ_PC),
     .VALID_Inst(InstQ_VALID_Inst)
 );
-
-reg ROB_HLT;
-always@(posedge clk, posedge rst) begin
-    if (rst)
-        ROB_HLT = 1'b1;
-    else
-        ROB_HLT = InstQ_opcode == hlt_inst;
-end
 
 RegFile regfile
 (
@@ -214,7 +205,7 @@ ROB rob
         )
     ),
     .Decoded_prediction(InstQ_opcode == beq | InstQ_opcode == bne),
-    .Branch_Target_Addr(PC_out + 1'b1),
+    .Branch_Target_Addr(InstQ_PC + 1'b1),
 
     // TODO: get the rest of the sources
     .CDB_ROBEN1(CDB_ROBEN1),
@@ -227,7 +218,7 @@ ROB rob
     .VALID_Inst
     (
         ~rst && 
-         ~ROB_FLUSH_Flag && ~ROB_FULL_FLAG 
+         ~ROB_FLUSH_Flag && ~ROB_FULL_FLAG && InstQ_VALID_Inst
     ),
 
     .SPECULATIVE_FLAG(ROB_SPECULATIVE_FLAG),
@@ -261,7 +252,8 @@ RS rs
     .rst(rst),
     .opcode(InstQ_opcode),
     .ALUOP(InstQ_ALUOP),
-    .ROBEN((ROB_End_Index == 5'd1) ? 5'd16 : (ROB_End_Index - 1'b1)),
+    // .ROBEN((ROB_End_Index == 5'd1) ? 5'd16 : (ROB_End_Index - 1'b1)),
+    .ROBEN(ROB_End_Index),
     .ROBEN1
     (
         (RegFile_RP1_Reg1_ROBEN == 0 || InstQ_opcode == sll || InstQ_opcode == srl || InstQ_opcode == jal) ? 5'd0 : 
@@ -379,7 +371,8 @@ CDB cdb
 
 AddressUnit AU
 (
-    .Decoded_ROBEN((ROB_End_Index == 5'd1) ? 5'd16 : (ROB_End_Index - 1'b1)),
+    // .Decoded_ROBEN((ROB_End_Index == 5'd1) ? 5'd16 : (ROB_End_Index - 1'b1)),
+    .Decoded_ROBEN(ROB_End_Index),
     .Decoded_Rd(InstQ_rt),
     .Decoded_opcode(InstQ_opcode),
     .ROBEN1

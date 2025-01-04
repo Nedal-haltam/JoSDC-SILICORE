@@ -30,7 +30,11 @@ initial begin
 for (i = 0; i < 1024; i = i + 1)
     DataMem[i] = 0;
 
+`ifndef test
 `include "DM_INIT.INIT"
+`endif 
+
+
 end
 
 

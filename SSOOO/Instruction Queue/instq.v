@@ -7,6 +7,7 @@ module InstQ
     output reg [ 4:0] rs, rt, rd, shamt,
     output reg [15:0] immediate,
     output reg [25:0] address,
+    output reg [31:0] pc,
     output reg VALID_Inst
 );
 
@@ -35,13 +36,14 @@ always@(negedge clk, posedge rst) begin
         else
             opcode    <= { inst[31:26], 6'd0 };
 
-        rs        <= inst[25:21];
-        rt        <= inst[20:16];
-        rd        <= inst[15:11];
-        shamt     <= inst[10:6];
-        immediate <= inst[15:0];
-        address   <= inst[25:0];
+        rs         <= inst[25:21];
+        rt         <= inst[20:16];
+        rd         <= inst[15:11];
+        shamt      <= inst[10:6];
+        immediate  <= inst[15:0];
+        address    <= inst[25:0];
         VALID_Inst <= 1'b1;
+        pc         <= PC;
     end
 end
 
@@ -53,7 +55,27 @@ for (i = 0; i < 1024; i = i + 1)
     InstMem[i] = 0;
 
 
+`ifndef test
 `include "IM_INIT.INIT"
+`else
+
+
+InstMem[  0] <= 32'h2001000A; // addi $1 $0 10
+InstMem[  1] <= 32'hAC210000; // sw $1 0 ( $1 )
+InstMem[  2] <= 32'h8C220000; // lw $2 0 ( $1 )
+InstMem[  3] <= 32'hFC000000; // hlt
+
+
+
+
+`endif
+
+
+
+
+
+
+
 
 
 

@@ -1,12 +1,10 @@
 .data
-// array: 2, 3, 45, 5, 3, 5, 5, 4, 43, 5, 4, 0, 5, 4, 5, 6, 44, 45, 65, 23
 Arr: .word 0x5, 0x7, 0x2, 0xF, 0xA, 0x10, 0x30, 0x1, 0xFF, 0x55
 
 
 .text
 
 main:
-// ADDI $20, $0, 20
 ADDI $20, $0, 10
 ADDI $1, $0, 2
 ADDi  $22, $0, -1
@@ -17,7 +15,6 @@ FOR_LOOP:
 
 SUB $31, $1, $20
 BGEZ $31, EXIT
-# BGE  $1, $20, EXIT
 LW   $8, 0($1)
 ADDI $2, $1, -1
 
