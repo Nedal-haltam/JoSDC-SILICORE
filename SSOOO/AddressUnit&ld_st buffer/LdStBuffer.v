@@ -182,9 +182,7 @@ always@(negedge clk, posedge rst) begin
         Start_Index <= 0;
         out_VALID_Inst <= 0;
     end
-    // else if (Reg_Busy[Start_Index] && Reg_Ready[Start_Index] && 
-    //         (Reg_opcode[Start_Index] == lw || (Reg_opcode[Start_Index] == sw && Reg_ROBEN[Start_Index] == ROB_Start_Index))) begin
-    else if (Reg_Busy[Start_Index] && Reg_Ready[Start_Index]) begin
+    else if (Reg_Busy[Start_Index] && Reg_Ready[Start_Index] && ~(Reg_opcode[Start_Index] == sw && Reg_ROBEN[Start_Index] != ROB_Start_Index)) begin
         out_VALID_Inst <= 1'b1;
         out_ROBEN <= Reg_ROBEN[Start_Index];
         out_Rd <= Reg_Rd[Start_Index];

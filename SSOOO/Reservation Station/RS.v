@@ -115,18 +115,19 @@ always@(negedge clk, posedge rst) begin
             // but if blocking assignmnents is used it consumes less cycles relative the non-blocking, 
             // and it rarely consumes more and if it does it will be by very small number
             // to see the effect run the script in the benchmark folder in both cases and see the differece in the stats file in each benchmark
-            Reg_ROBEN[`I(Next_Free) - 1'b1] = ROBEN;
+            `define assignn =
+            Reg_ROBEN[`I(Next_Free) - 1'b1] `assignn ROBEN;
             // the new index to use to reserve for the instruction is (Next_Free - 1)
-            Reg_opcode[`I(Next_Free) - 1'b1] = opcode;
-            Reg_ALUOP[`I(Next_Free) - 1'b1] = ALUOP;
+            Reg_opcode[`I(Next_Free) - 1'b1] `assignn opcode;
+            Reg_ALUOP[`I(Next_Free) - 1'b1] `assignn ALUOP;
 `ifdef vscode
-            Reg_Busy[`I(Next_Free) - 1'b1] = 1'b1;
-            Reg_ROBEN1 [`I(Next_Free) - 1'b1] = ROBEN1;
-            Reg_ROBEN2 [`I(Next_Free) - 1'b1] = ROBEN2;
-            Reg_ROBEN1_VAL [`I(Next_Free) - 1'b1] = ROBEN1_VAL;
-            Reg_ROBEN2_VAL [`I(Next_Free) - 1'b1] = ROBEN2_VAL;
+            Reg_Busy[`I(Next_Free) - 1'b1] `assignn 1'b1;
+            Reg_ROBEN1 [`I(Next_Free) - 1'b1] `assignn ROBEN1;
+            Reg_ROBEN2 [`I(Next_Free) - 1'b1] `assignn ROBEN2;
+            Reg_ROBEN1_VAL [`I(Next_Free) - 1'b1] `assignn ROBEN1_VAL;
+            Reg_ROBEN2_VAL [`I(Next_Free) - 1'b1] `assignn ROBEN2_VAL;
 `endif
-            Reg_Immediate [`I(Next_Free) - 1'b1] = Immediate;
+            Reg_Immediate [`I(Next_Free) - 1'b1] `assignn Immediate;
         end
     end
 end

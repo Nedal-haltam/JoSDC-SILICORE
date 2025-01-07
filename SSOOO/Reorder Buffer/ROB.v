@@ -56,11 +56,12 @@ module ROB
 
 reg [11:0] Reg_opcode [15:0];
 reg [4:0] Reg_Rd [15:0];
-reg [31:0] Reg_Write_Data [15:0];
+reg [1:0] Reg_Speculation [15:0];
 reg Reg_Busy [15:0];
 reg Reg_Ready [15:0];
-reg [1:0] Reg_Speculation [15:0];
 reg Reg_Exception [15:0];
+
+reg [31:0] Reg_Write_Data [15:0];
 
 
 wire Reg_Valid [15:0];
@@ -169,11 +170,11 @@ always@(negedge clk, posedge rst) begin
         Start_Index = 1;
     end
     else begin
-    Commit_opcode = 0;
-    Commit_Rd = 0;
-    Commit_Write_Data = 0;
-    Commit_Control_Signals = 0;
-    FLUSH_Flag = 0;
+    Commit_opcode <= 0;
+    Commit_Rd <= 0;
+    Commit_Write_Data <= 0;
+    Commit_Control_Signals <= 0;
+    FLUSH_Flag <= 0;
     if (Reg_Busy[`Imone(Start_Index)]) begin
         if (Reg_Valid[`Imone(Start_Index)]) begin // handle ALU, lw, sw that are ready to commit (sw: do nothing, ALU/lw: write on the RegFile)
             if (Reg_Ready[`Imone(Start_Index)]) begin

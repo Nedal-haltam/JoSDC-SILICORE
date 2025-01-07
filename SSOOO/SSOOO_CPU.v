@@ -383,7 +383,21 @@ AddressUnit AU
 );
 
 
+/*
+option 0:
+we let the store enter the ldstbuffer but we let them write to the memory once they commit from the ROB 
+and if there is a memory dependency we forward the data to the load once they are ready from within the ldstbuffer
 
+option 1:
+we separate the ld/st buffer into load buffer and store buffer:
+
+option 2:
+we make it a load buffer and store instructions can write to the memory once they commit from the ROB, but in this case 
+    - we should modify the ROB so it can update the dependent fields of the store instruction to be ready and currently it doesn't support that
+    - if there is a memory dependecy we should check every previous store instruction for similarity in the effective address (EA) and forward the data from there 
+    or wait until it write to the memory
+    - 
+*/
 
 LdStBuffer ldstbuffer
 (
