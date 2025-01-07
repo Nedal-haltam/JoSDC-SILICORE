@@ -110,101 +110,86 @@ assign Reg_Immediate_test = Reg_Immediate[`I(index_test)];
 
 
 
-reg [4:0] i = 0;
+reg [4:0] i;
+reg [4:0] ji;
+reg [4:0] k = 0;
 always@(negedge clk, posedge rst) begin
     if (rst) begin
         for (i = 0; i < 16; i = i + 1) begin
             Reg_Busy[`I(i)] = 0;
         end
+        Start_Index <= 0;
         End_Index = 0;
     end
-    else if (ROB_FLUSH_Flag) begin
-        for (i = 0; i < 16; i = i + 1)
-            Reg_Busy[`I(i)] <= 0;
-        End_Index <= 0;
-    end
-    else if (VALID_Inst) begin
-        Reg_Busy[End_Index] <= 1'b1;
+    else begin
+        if (ROB_FLUSH_Flag) begin
+            for (i = 0; i < 16; i = i + 1)
+                Reg_Busy[`I(i)] <= 0;
+            End_Index <= 0;
+        end
+        else if (VALID_Inst) begin
+            Reg_Busy[End_Index] <= 1'b1;
 
-        Reg_opcode[End_Index] <= opcode;
-        Reg_Rd[End_Index] <= Rd;
-`ifdef vscode
-        Reg_EA[End_Index] <= EA;
-        Reg_ROBEN1[End_Index] <= ROBEN1;
-        Reg_ROBEN2[End_Index] <= ROBEN2;
-        Reg_ROBEN1_VAL[End_Index] <= ROBEN1_VAL;
-        Reg_ROBEN2_VAL[End_Index] <= ROBEN2_VAL;
-`endif
-        Reg_ROBEN[End_Index] <= ROBEN;
-        Reg_Immediate[End_Index] <= Immediate;
+            Reg_opcode[End_Index] <= opcode;
+            Reg_Rd[End_Index] <= Rd;
+            Reg_EA[End_Index] <= EA;
+            Reg_ROBEN1[End_Index] <= ROBEN1;
+            Reg_ROBEN2[End_Index] <= ROBEN2;
+            Reg_ROBEN1_VAL[End_Index] <= ROBEN1_VAL;
+            Reg_ROBEN2_VAL[End_Index] <= ROBEN2_VAL;
+            Reg_ROBEN[End_Index] <= ROBEN;
+            Reg_Immediate[End_Index] <= Immediate;
 
-        End_Index <= End_Index + 1'b1;
-    end
-end
+            End_Index <= End_Index + 1'b1;
+        end
 
-
-
-
-reg [4:0] ji;
-always@(posedge clk) begin
-    for (ji = 0; ji < 16; ji = ji + 1) begin
-        if (Reg_Busy[`I(ji)]) begin
-            if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
-                Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN1_VAL;
-                Reg_EA[`I(ji)] <= CDB_ROBEN1_VAL + Reg_Immediate[`I(ji)];
-                Reg_ROBEN1[`I(ji)] <= 0;
-            end
-            else if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
-                Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN2_VAL;
-                Reg_EA[`I(ji)] <= CDB_ROBEN2_VAL + Reg_Immediate[`I(ji)];
-                Reg_ROBEN1[`I(ji)] <= 0;
-            end
-            if (Reg_ROBEN2[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
-                Reg_ROBEN2_VAL[`I(ji)] <= CDB_ROBEN1_VAL;
-                Reg_ROBEN2[`I(ji)] <= 0;
-            end
-            else if (Reg_ROBEN2[`I(ji)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
-                Reg_ROBEN2_VAL[`I(ji)] <= CDB_ROBEN2_VAL;
-                Reg_ROBEN2[`I(ji)] <= 0;
+        if (ROB_FLUSH_Flag) begin
+            out_ROBEN <= 0;
+            Start_Index <= 0;
+            out_VALID_Inst <= 0;
+        end
+        else if (Reg_Busy[Start_Index] && Reg_Ready[Start_Index] && ~(Reg_opcode[Start_Index] == sw && Reg_ROBEN[Start_Index] != ROB_Start_Index)) begin
+            out_VALID_Inst <= 1'b1;
+            out_ROBEN <= Reg_ROBEN[Start_Index];
+            out_Rd <= Reg_Rd[Start_Index];
+            out_opcode <= Reg_opcode[Start_Index];
+            out_ROBEN1 <= Reg_ROBEN1[Start_Index]; 
+            out_ROBEN2 <= Reg_ROBEN2[Start_Index];
+            out_ROBEN1_VAL <= Reg_ROBEN1_VAL[Start_Index]; 
+            out_ROBEN2_VAL <= Reg_ROBEN2_VAL[Start_Index];
+            out_Immediate <= Reg_Immediate[Start_Index];
+            out_EA <= Reg_EA[Start_Index]; 
+            Reg_Busy[Start_Index] <= 0;
+            Start_Index <= Start_Index + 1'b1;
+        end
+        else begin
+            out_ROBEN <= 0;
+            out_VALID_Inst <= 1'b0;
+        end
+        for (ji = 0; ji < 16; ji = ji + 1) begin
+            if (Reg_Busy[`I(ji)]) begin
+                if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
+                    Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN1_VAL;
+                    Reg_EA[`I(ji)] <= CDB_ROBEN1_VAL + Reg_Immediate[`I(ji)];
+                    Reg_ROBEN1[`I(ji)] <= 0;
+                end
+                else if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
+                    Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN2_VAL;
+                    Reg_EA[`I(ji)] <= CDB_ROBEN2_VAL + Reg_Immediate[`I(ji)];
+                    Reg_ROBEN1[`I(ji)] <= 0;
+                end
+                if (Reg_ROBEN2[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
+                    Reg_ROBEN2_VAL[`I(ji)] <= CDB_ROBEN1_VAL;
+                    Reg_ROBEN2[`I(ji)] <= 0;
+                end
+                else if (Reg_ROBEN2[`I(ji)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
+                    Reg_ROBEN2_VAL[`I(ji)] <= CDB_ROBEN2_VAL;
+                    Reg_ROBEN2[`I(ji)] <= 0;
+                end
             end
         end
     end
 end
-
-
-reg [4:0] k = 0;
-always@(negedge clk, posedge rst) begin
-    if (rst)
-        Start_Index <= 0;
-
-    else if (ROB_FLUSH_Flag) begin
-        out_ROBEN <= 0;
-        Start_Index <= 0;
-        out_VALID_Inst <= 0;
-    end
-    else if (Reg_Busy[Start_Index] && Reg_Ready[Start_Index] && ~(Reg_opcode[Start_Index] == sw && Reg_ROBEN[Start_Index] != ROB_Start_Index)) begin
-        out_VALID_Inst <= 1'b1;
-        out_ROBEN <= Reg_ROBEN[Start_Index];
-        out_Rd <= Reg_Rd[Start_Index];
-        out_opcode <= Reg_opcode[Start_Index];
-        out_ROBEN1 <= Reg_ROBEN1[Start_Index]; 
-        out_ROBEN2 <= Reg_ROBEN2[Start_Index];
-        out_ROBEN1_VAL <= Reg_ROBEN1_VAL[Start_Index]; 
-        out_ROBEN2_VAL <= Reg_ROBEN2_VAL[Start_Index];
-        out_Immediate <= Reg_Immediate[Start_Index];
-        out_EA <= Reg_EA[Start_Index]; 
-`ifdef vscode
-        Reg_Busy[Start_Index] <= 0;
-`endif
-        Start_Index <= Start_Index + 1'b1;
-    end
-    else begin
-        out_ROBEN <= 0;
-        out_VALID_Inst <= 1'b0;
-    end
-end
-
-
 
 endmodule
 
