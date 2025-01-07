@@ -161,7 +161,8 @@ RegFile regfile
                         InstQ_opcode == bne || InstQ_opcode == j))),
     .WP1_ROBEN
     (
-        (ROB_Start_Index == 5'd1) ? 5'd16 : (ROB_Start_Index - 1'b1)
+        // (ROB_Start_Index == 5'd1) ? 5'd16 : (ROB_Start_Index - 1'b1)
+        ROB_Start_Index
     ), 
     .Decoded_WP1_ROBEN
     (

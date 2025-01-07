@@ -65,7 +65,8 @@ this block is does the following:
     - resetting the Busy buffer to start with a clean RS
     - and if there is a new instruction is coming it enters it in the Next_Free index if there is and raise the full flag if there is no Next_Free index
 */
-reg [4:0] i = 0;
+reg [4:0] i;
+reg [4:0] j;
 reg [4:0] Next_Free = 0;
 assign FULL_FLAG = ~(rst | 
                     ~(
@@ -90,45 +91,64 @@ always@(negedge clk, posedge rst) begin
 
     if (rst) begin
         for (i = 0; i < 16; i = i + 1) begin
-`ifdef vscode
             Reg_Busy[i] <= 0;
-`endif
             Reg_ROBEN[i] <= 0;
         end
-        i <= 0;
         Next_Free <= 0;
     end
-    else if (ROB_FLUSH_Flag) begin
-`ifdef vscode
-        for (i = 0; i < 16; i = i + 1)
-            Reg_Busy[`I(i)] <= 0;
-`endif
-    end
-    else if (VALID_Inst) begin
-        Next_Free = 0;
-        for (i = 0; i < 16; i = i + 1)
-            if (~Reg_Busy[`I(i)])
-                Next_Free = i + 1'b1;
-        if (Next_Free != 0) begin
-            // TODO: should investigate in this wierd behaviour
-            // making the following assignments as non-blocking increase the number of cycles consumed
-            // but if blocking assignmnents is used it consumes less cycles relative the non-blocking, 
-            // and it rarely consumes more and if it does it will be by very small number
-            // to see the effect run the script in the benchmark folder in both cases and see the differece in the stats file in each benchmark
-            `define assignn =
-            Reg_ROBEN[`I(Next_Free) - 1'b1] `assignn ROBEN;
-            // the new index to use to reserve for the instruction is (Next_Free - 1)
-            Reg_opcode[`I(Next_Free) - 1'b1] `assignn opcode;
-            Reg_ALUOP[`I(Next_Free) - 1'b1] `assignn ALUOP;
-`ifdef vscode
-            Reg_Busy[`I(Next_Free) - 1'b1] `assignn 1'b1;
-            Reg_ROBEN1 [`I(Next_Free) - 1'b1] `assignn ROBEN1;
-            Reg_ROBEN2 [`I(Next_Free) - 1'b1] `assignn ROBEN2;
-            Reg_ROBEN1_VAL [`I(Next_Free) - 1'b1] `assignn ROBEN1_VAL;
-            Reg_ROBEN2_VAL [`I(Next_Free) - 1'b1] `assignn ROBEN2_VAL;
-`endif
-            Reg_Immediate [`I(Next_Free) - 1'b1] `assignn Immediate;
+    else begin
+        if (ROB_FLUSH_Flag) begin
+            for (i = 0; i < 16; i = i + 1)
+                Reg_Busy[`I(i)] <= 0;
         end
+        else if (VALID_Inst) begin
+            Next_Free = 0;
+            for (i = 0; i < 16; i = i + 1)
+                if (~Reg_Busy[`I(i)])
+                    Next_Free = i + 1'b1;
+            if (Next_Free != 0) begin
+                // TODO: should investigate in this wierd behaviour
+                // making the following assignments as non-blocking increase the number of cycles consumed
+                // but if blocking assignmnents is used it consumes less cycles relative the non-blocking, 
+                // and it rarely consumes more and if it does it will be by very small number
+                // to see the effect run the script in the benchmark folder in both cases and see the differece in the stats file in each benchmark
+                Reg_ROBEN[`I(Next_Free) - 1'b1] <= ROBEN;
+                // the new index to use to reserve for the instruction is (Next_Free - 1)
+                Reg_opcode[`I(Next_Free) - 1'b1] <= opcode;
+                Reg_ALUOP[`I(Next_Free) - 1'b1] <= ALUOP;
+                Reg_Busy[`I(Next_Free) - 1'b1] <= 1'b1;
+    `ifdef vscode
+                Reg_ROBEN1 [`I(Next_Free) - 1'b1] <= ROBEN1;
+                Reg_ROBEN2 [`I(Next_Free) - 1'b1] <= ROBEN2;
+                Reg_ROBEN1_VAL [`I(Next_Free) - 1'b1] <= ROBEN1_VAL;
+                Reg_ROBEN2_VAL [`I(Next_Free) - 1'b1] <= ROBEN2_VAL;
+    `endif
+                Reg_Immediate [`I(Next_Free) - 1'b1] <= Immediate;
+            end
+        end
+        if (RS_FU_RS_ID != 0) begin
+            Reg_Busy[`I(RS_FU_RS_ID) - 1'b1] <= 0;
+        end
+        // for (j = 0; j < 16; j = j + 1) begin
+        //     if (Reg_Busy[`I(j)]) begin
+        //         if (Reg_ROBEN1[`I(j)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
+        //             Reg_ROBEN1_VAL[`I(j)] <= CDB_ROBEN1_VAL;
+        //             Reg_ROBEN1[`I(j)] <= 0;
+        //         end
+        //         else if (Reg_ROBEN1[`I(j)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
+        //             Reg_ROBEN1_VAL[`I(j)] <= CDB_ROBEN2_VAL;
+        //             Reg_ROBEN1[`I(j)] <= 0;
+        //         end
+        //         if (Reg_ROBEN2[`I(j)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
+        //             Reg_ROBEN2_VAL[`I(j)] <= CDB_ROBEN1_VAL;
+        //             Reg_ROBEN2[`I(j)] <= 0;
+        //         end
+        //         else if (Reg_ROBEN2[`I(j)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
+        //             Reg_ROBEN2_VAL[`I(j)] <= CDB_ROBEN2_VAL;
+        //             Reg_ROBEN2[`I(j)] <= 0;
+        //         end
+        //     end
+        // end
     end
 end
 
@@ -136,9 +156,7 @@ end
 this block does the following:
     - monitors the CDB to see if there is a match with RS ID that they are waiting for and take their value to be ready
 */
-reg [4:0] j;
 always@(posedge clk) begin
-
     for (j = 0; j < 16; j = j + 1) begin
         if (Reg_Busy[`I(j)]) begin
             if (Reg_ROBEN1[`I(j)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
@@ -168,7 +186,7 @@ this block does the following:
     - if the FU is free it picks a ready instruction to execute it and once finish it releases the reserved entry by resetting the busy bit
 */
 reg [4:0] k;
-always@(negedge clk, posedge rst) begin
+always@(posedge clk, posedge rst) begin
     if (rst) begin
         RS_FU_RS_ID <= 0;
     end
@@ -195,11 +213,11 @@ always@(negedge clk, posedge rst) begin
     end
 end
 
-always@(posedge clk) begin
-    if (RS_FU_RS_ID != 0) begin
-        Reg_Busy[`I(RS_FU_RS_ID) - 1'b1] <= 0;
-    end
-end
+// always@(posedge clk) begin
+//     if (RS_FU_RS_ID != 0) begin
+//         Reg_Busy[`I(RS_FU_RS_ID) - 1'b1] <= 0;
+//     end
+// end
 
 
 

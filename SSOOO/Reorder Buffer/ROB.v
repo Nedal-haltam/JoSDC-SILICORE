@@ -25,7 +25,8 @@ module ROB
     input CDB_Branch_Decision,
 
     input VALID_Inst,
-    output FULL_FLAG,
+    // output FULL_FLAG,
+    output reg FULL_FLAG,
     output EXCEPTION_Flag,
     output reg FLUSH_Flag,
 
@@ -102,7 +103,9 @@ assign RP1_Write_Data2 = Reg_Write_Data[`Imone(RP1_ROBEN2)];
 assign RP1_Ready1 = Reg_Ready[`Imone(RP1_ROBEN1)];
 assign RP1_Ready2 = Reg_Ready[`Imone(RP1_ROBEN2)];
 
-assign FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
+// assign FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
+always@(posedge clk)
+    FULL_FLAG <= ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
 assign EXCEPTION_Flag = Reg_Busy[`Imone(Start_Index)] & Reg_Exception[`Imone(Start_Index)];
 
 
@@ -111,30 +114,12 @@ reg [4:0] i = 0;
 always@(negedge clk) begin
 
     if (rst) begin
-        for (i = 0; i < 16; i = i + 1) begin
-`ifdef vscode
-            Reg_Busy[`I(i)] <= 0;
-`endif
-            Reg_Ready[`I(i)] <= 0;
-            Reg_Speculation[`I(i)] <= 0;
-            Reg_Exception[`I(i)] <= 0;
-        end
         End_Index <= 1;
     end
     else if (FLUSH_Flag) begin
         End_Index <= 1;
     end
     else if (VALID_Inst && ~FULL_FLAG) begin
-        Reg_opcode[`Imone(End_Index)] <= Decoded_opcode;
-        Reg_Rd[`Imone(End_Index)] <= Decoded_Rd;
-`ifdef vscode
-        Reg_Busy[`Imone(End_Index)] <= 1'b1;
-`endif
-        Reg_Ready[`Imone(End_Index)] <= Decoded_opcode == hlt_inst || Decoded_opcode == jal;
-        Reg_Speculation[`Imone(End_Index)][0] <= (Decoded_opcode == beq || Decoded_opcode == bne);
-        Reg_Speculation[`Imone(End_Index)][1] <= Decoded_prediction;
-        Reg_Write_Data[`Imone(End_Index)] <= Branch_Target_Addr;
-        Reg_Exception[`Imone(End_Index)] <= 1'b0;
         if (End_Index + 1'b1 == 5'd17)
             End_Index <= 1;
         else 
@@ -142,19 +127,60 @@ always@(negedge clk) begin
     end
 end
 
-
-always@(posedge clk) begin
-    if (Reg_Busy[`Imone(CDB_ROBEN1)] && CDB_ROBEN1 != 0) begin
-        if (~Reg_Speculation[`Imone(CDB_ROBEN1)][0])
-            Reg_Write_Data[`Imone(CDB_ROBEN1)] <= CDB_ROBEN1_Write_Data;
-        Reg_Speculation[`Imone(CDB_ROBEN1)][0] <= Reg_Speculation[`Imone(CDB_ROBEN1)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN1)][1]);
-        Reg_Ready[`Imone(CDB_ROBEN1)] <= 1'b1;
+always@(posedge clk, posedge rst) begin
+    if (rst) begin
+        for (i = 0; i < 16; i = i + 1) begin
+            Reg_Busy[`I(i)] <= 0;
+            Reg_Ready[`I(i)] <= 0;
+            Reg_Speculation[`I(i)] <= 0;
+            Reg_Exception[`I(i)] <= 0;
+        end
+        Start_Index <= 1;
     end
-    if (Reg_Busy[`Imone(CDB_ROBEN2)] && CDB_ROBEN2 != 0) begin
-        if (~Reg_Speculation[`Imone(CDB_ROBEN2)][0])
-            Reg_Write_Data[`Imone(CDB_ROBEN2)] <= CDB_ROBEN2_Write_Data;
-        Reg_Speculation[`Imone(CDB_ROBEN2)][0] <= Reg_Speculation[`Imone(CDB_ROBEN2)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN2)][1]);
-        Reg_Ready[`Imone(CDB_ROBEN2)] <= 1'b1;
+    else begin
+        if (VALID_Inst && ~FULL_FLAG) begin
+            Reg_opcode[`Imone(End_Index)] <= Decoded_opcode;
+            Reg_Rd[`Imone(End_Index)] <= Decoded_Rd;
+            Reg_Busy[`Imone(End_Index)] <= 1'b1;
+            Reg_Ready[`Imone(End_Index)] <= Decoded_opcode == hlt_inst || Decoded_opcode == jal;
+            Reg_Speculation[`Imone(End_Index)][0] <= (Decoded_opcode == beq || Decoded_opcode == bne);
+            Reg_Speculation[`Imone(End_Index)][1] <= Decoded_prediction;
+            Reg_Write_Data[`Imone(End_Index)] <= Branch_Target_Addr;
+            Reg_Exception[`Imone(End_Index)] <= 1'b0;
+        end
+
+        if (Reg_Busy[`Imone(CDB_ROBEN1)] && CDB_ROBEN1 != 0) begin
+            if (~Reg_Speculation[`Imone(CDB_ROBEN1)][0])
+                Reg_Write_Data[`Imone(CDB_ROBEN1)] <= CDB_ROBEN1_Write_Data;
+            Reg_Speculation[`Imone(CDB_ROBEN1)][0] <= Reg_Speculation[`Imone(CDB_ROBEN1)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN1)][1]);
+            Reg_Ready[`Imone(CDB_ROBEN1)] <= 1'b1;
+        end
+        if (Reg_Busy[`Imone(CDB_ROBEN2)] && CDB_ROBEN2 != 0) begin
+            if (~Reg_Speculation[`Imone(CDB_ROBEN2)][0])
+                Reg_Write_Data[`Imone(CDB_ROBEN2)] <= CDB_ROBEN2_Write_Data;
+            Reg_Speculation[`Imone(CDB_ROBEN2)][0] <= Reg_Speculation[`Imone(CDB_ROBEN2)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN2)][1]);
+            Reg_Ready[`Imone(CDB_ROBEN2)] <= 1'b1;
+        end
+
+        if (Reg_Busy[`Imone(Start_Index)]) begin
+            if (Reg_Valid[`Imone(Start_Index)]) begin // handle ALU, lw, sw that are ready to commit (sw: do nothing, ALU/lw: write on the RegFile)
+                if (Reg_Ready[`Imone(Start_Index)]) begin
+                    Reg_Busy[`Imone(Start_Index)] <= 0;
+                    if (Start_Index + 1'b1 == 5'd17)
+                        Start_Index <= 1;
+                    else 
+                        Start_Index <= Start_Index + 1'b1;
+                end
+            end
+            else if (Reg_Speculation[`Imone(Start_Index)][0]) begin // handle branch insts
+                if (Reg_Ready[`Imone(Start_Index)]) begin // if speculative and ready then prediction was wrong
+                    for (k = 0; k < 16; k = k + 1) begin // flush all insts
+                        Reg_Busy[k] <= 0;
+                    end
+                    Start_Index <= 1;
+                end
+            end
+        end
     end
 end
 
@@ -162,47 +188,37 @@ end
 reg [4:0] k = 0;
 always@(negedge clk, posedge rst) begin
     if (rst) begin
-        Commit_opcode = 0;
-        Commit_Rd = 0;
-        Commit_Write_Data = 0;
-        Commit_Control_Signals = 0;
-        FLUSH_Flag = 0;
-        Start_Index = 1;
+        Commit_opcode <= 0;
+        Commit_Rd <= 0;
+        Commit_Write_Data <= 0;
+        Commit_Control_Signals <= 0;
+        FLUSH_Flag <= 0;
     end
     else begin
-    Commit_opcode <= 0;
-    Commit_Rd <= 0;
-    Commit_Write_Data <= 0;
-    Commit_Control_Signals <= 0;
-    FLUSH_Flag <= 0;
-    if (Reg_Busy[`Imone(Start_Index)]) begin
-        if (Reg_Valid[`Imone(Start_Index)]) begin // handle ALU, lw, sw that are ready to commit (sw: do nothing, ALU/lw: write on the RegFile)
-            if (Reg_Ready[`Imone(Start_Index)]) begin
-                Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
-                Commit_Rd <= Reg_Rd[`Imone(Start_Index)];
-                Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)];
-                Commit_Control_Signals <= { (!(Reg_opcode[`Imone(Start_Index)] == jr || Reg_opcode[`Imone(Start_Index)] == sw || Reg_opcode[`Imone(Start_Index)] == beq || 
-                                              Reg_opcode[`Imone(Start_Index)] == bne || Reg_opcode[`Imone(Start_Index)] == j))
-                                           , Reg_opcode[`Imone(Start_Index)] == lw , Reg_opcode[`Imone(Start_Index)] == sw};
-                Reg_Busy[`Imone(Start_Index)] <= 0;
-                if (Start_Index + 1'b1 == 5'd17)
-                    Start_Index <= 1;
-                else 
-                    Start_Index <= Start_Index + 1'b1;
-            end
-        end
-        else if (Reg_Speculation[`Imone(Start_Index)][0]) begin // handle branch insts
-            if (Reg_Ready[`Imone(Start_Index)]) begin // if speculative and ready then prediction was wrong
-                FLUSH_Flag <= 1'b1;
-                Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
-                Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)]; // output the target address
-                for (k = 0; k < 16; k = k + 1) begin // flush all insts
-                    Reg_Busy[k] <= 0;
+        Commit_opcode <= 0;
+        Commit_Rd <= 0;
+        Commit_Write_Data <= 0;
+        Commit_Control_Signals <= 0;
+        FLUSH_Flag <= 0;
+        if (Reg_Busy[`Imone(Start_Index)]) begin
+            if (Reg_Valid[`Imone(Start_Index)]) begin // handle ALU, lw, sw that are ready to commit (sw: do nothing, ALU/lw: write on the RegFile)
+                if (Reg_Ready[`Imone(Start_Index)]) begin
+                    Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
+                    Commit_Rd <= Reg_Rd[`Imone(Start_Index)];
+                    Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)];
+                    Commit_Control_Signals <= { (!(Reg_opcode[`Imone(Start_Index)] == jr || Reg_opcode[`Imone(Start_Index)] == sw || Reg_opcode[`Imone(Start_Index)] == beq || 
+                                                Reg_opcode[`Imone(Start_Index)] == bne || Reg_opcode[`Imone(Start_Index)] == j))
+                                            , Reg_opcode[`Imone(Start_Index)] == lw , Reg_opcode[`Imone(Start_Index)] == sw};
                 end
-                Start_Index <= 1;
+            end
+            else if (Reg_Speculation[`Imone(Start_Index)][0]) begin // handle branch insts
+                if (Reg_Ready[`Imone(Start_Index)]) begin // if speculative and ready then prediction was wrong
+                    FLUSH_Flag <= 1'b1;
+                    Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
+                    Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)]; // output the target address
+                end
             end
         end
-    end
     end
 end
 
