@@ -60,10 +60,13 @@ for (i = 0; i < 1024; i = i + 1)
 `else
 
 
-InstMem[  0] <= 32'h2001000A; // addi $1 $0 10
-InstMem[  1] <= 32'hAC210000; // sw $1 0 ( $1 )
-InstMem[  2] <= 32'h8C220000; // lw $2 0 ( $1 )
-InstMem[  3] <= 32'hFC000000; // hlt
+InstMem[  0] <= 32'h2001007B; // addi $1 $0 123
+InstMem[  1] <= 32'h10200003; // beq $1 $0 3
+InstMem[  2] <= 32'hAC010000; // sw $1 0 ( $0 )
+InstMem[  3] <= 32'h10210002; // beq $1 $1 2
+InstMem[  4] <= 32'hAC010001; // sw $1 1 ( $zero )
+InstMem[  5] <= 32'hFC000000; // hlt
+
 
 
 

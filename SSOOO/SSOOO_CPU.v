@@ -29,7 +29,6 @@ wire [4:0] RegFile_RP1_Reg1_ROBEN, RegFile_RP1_Reg2_ROBEN;
 
 // ROB
 wire ROB_FULL_FLAG;
-wire ROB_SPECULATIVE_FLAG;
 wire ROB_EXCEPTION_Flag;
 wire ROB_FLUSH_Flag;
 wire [11:0] ROB_Commit_opcode;
@@ -114,7 +113,7 @@ end
 
 /*
 TODO:
-    - jr in case of dependecy: it happens when you fetch the jr instruction and the register it needs to jump is unavailable
+    - jr in case of dependecy: it happens when you fetch the jr instruction and the register it needs to get the target address is unavailable
 */
 assign PC = (ROB_FLUSH_Flag == 1'b1) ? ROB_Commit_Write_Data :
 (
@@ -210,7 +209,6 @@ ROB rob
     // TODO: get the rest of the sources
     .CDB_ROBEN1(CDB_ROBEN1),
     .CDB_ROBEN1_Write_Data(CDB_Write_Data1),
-
     .CDB_ROBEN2(CDB_ROBEN2),
     .CDB_ROBEN2_Write_Data(CDB_Write_Data2),
     .CDB_Branch_Decision(FU_Branch_Decision),
@@ -221,7 +219,6 @@ ROB rob
          ~ROB_FLUSH_Flag && ~ROB_FULL_FLAG && InstQ_VALID_Inst
     ),
 
-    .SPECULATIVE_FLAG(ROB_SPECULATIVE_FLAG),
     .FULL_FLAG(ROB_FULL_FLAG),
     .EXCEPTION_Flag(ROB_EXCEPTION_Flag),
     .FLUSH_Flag(ROB_FLUSH_Flag),
@@ -339,36 +336,6 @@ ALU alu
 
 
 
-CDB cdb
-(
-    .ROBEN1(FU_ROBEN),
-    .Write_Data1(FU_Result),
-
-    .ROBEN2(MEMU_ROBEN),
-    .Write_Data2(MEMU_Result),
-
-    // input [4:0] ROBEN3,
-    // input [31:0] Write_Data3,
-
-    // input [4:0] ROBEN4,
-    // input [31:0] Write_Data4,
-
-
-    .out_ROBEN1(CDB_ROBEN1),
-    .out_Write_Data1(CDB_Write_Data1),
-
-    .out_ROBEN2(CDB_ROBEN2),
-    .out_Write_Data2(CDB_Write_Data2)
-
-    // output [4:0] out_ROBEN3,
-    // output [31:0] out_Write_Data3,
-
-    // output [4:0] out_ROBEN4,
-    // output [31:0] out_Write_Data4
-);
-
-
-
 AddressUnit AU
 (
     // .Decoded_ROBEN((ROB_End_Index == 5'd1) ? 5'd16 : (ROB_End_Index - 1'b1)),
@@ -417,24 +384,7 @@ AddressUnit AU
 
 
 
-/*
-TOOD: 
-    - we may separate the LdSt Buffer to load buffer and store buffer but two things should be taken into consideration
-        
-        - for both lw, sw we should forward the needed registers (lw: register to calc EA, sw: register to calc EA, and another to store in the MEM)
-        so if the register is available there is no problem otherwise:
-            - case 1: we take the ROBEN from the ROB
-        
-        - secondly: (lw,sw) memory dependencies through similar EA 
-        we should check for similar EA once we enter the load/store buffers if we are `ready`
-        or once the needed register for calc the EA is forwarded to us from the CDB.
-        we should find the last sw that wants to write on the same EA 
-        and based on him we take its register and call ourself `ready` or take its ROBEN if its unavailable and wait for it
-            we care about the following three cases if there is similar EAs
-            - RAW: we forward the register to be written to the memory from the store instruction or take its ROBEN.......
-            - WAW:
-            - WAR:
-*/
+
 LdStBuffer ldstbuffer
 (
     .clk(clk), 
@@ -451,7 +401,6 @@ LdStBuffer ldstbuffer
     .EA(AU_LdStB_EA),
 
     .ROB_Start_Index(ROB_Start_Index),
-    .ROB_SPECULATIVE_FLAG(ROB_SPECULATIVE_FLAG),
     .ROB_FLUSH_Flag(ROB_FLUSH_Flag),
 
     // TODO: get the rest of the sources
@@ -496,6 +445,41 @@ DM datamemory
     .MEMU_Result(MEMU_Result)
 
 );
+
+
+
+
+CDB cdb
+(
+    .ROBEN1(FU_ROBEN),
+    .Write_Data1(FU_Result),
+
+    .ROBEN2(MEMU_ROBEN),
+    .Write_Data2(MEMU_Result),
+
+    // input [4:0] ROBEN3,
+    // input [31:0] Write_Data3,
+
+    // input [4:0] ROBEN4,
+    // input [31:0] Write_Data4,
+
+
+    .out_ROBEN1(CDB_ROBEN1),
+    .out_Write_Data1(CDB_Write_Data1),
+
+    .out_ROBEN2(CDB_ROBEN2),
+    .out_Write_Data2(CDB_Write_Data2)
+
+    // output [4:0] out_ROBEN3,
+    // output [31:0] out_Write_Data3,
+
+    // output [4:0] out_ROBEN4,
+    // output [31:0] out_Write_Data4
+);
+
+
+
+
 
 
 endmodule

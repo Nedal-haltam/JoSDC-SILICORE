@@ -95,7 +95,7 @@ namespace Epsilon
         }
         void GenBinExpr(NodeBinExpr binExpr)
         {
-            // TODO: add an instruction to ISA to enable us to evaluate (`==`, `!=`) operators
+            // TODO: add an instruction to ISA to enable us to evaluate (`==`, `!=`), like the (seq, sneq)
             if (binExpr.type == NodeBinExpr.NodeBinExprType.add)
             {
                 string source_reg1 = "$1", source_reg2 = "$2";

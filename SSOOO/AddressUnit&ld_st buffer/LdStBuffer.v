@@ -21,7 +21,6 @@ module LdStBuffer
     input [31:0] EA,
 
     input [4:0] ROB_Start_Index,
-    input ROB_SPECULATIVE_FLAG,
     input ROB_FLUSH_Flag,
     input [4:0] CDB_ROBEN1,
     input [31:0] CDB_ROBEN1_VAL,

@@ -25,7 +25,6 @@ module ROB
     input CDB_Branch_Decision,
 
     input VALID_Inst,
-    output SPECULATIVE_FLAG,
     output FULL_FLAG,
     output EXCEPTION_Flag,
     output reg FLUSH_Flag,
@@ -85,25 +84,6 @@ wire Reg_Valid [15:0];
 `validbit(14);
 `validbit(15);
 
-assign SPECULATIVE_FLAG = ~(rst | 
-                    ~(
-                        (Reg_Speculation[0][0] & Reg_Busy[0]) | 
-                        (Reg_Speculation[1][0] & Reg_Busy[1]) | 
-                        (Reg_Speculation[2][0] & Reg_Busy[2]) | 
-                        (Reg_Speculation[3][0] & Reg_Busy[3]) | 
-                        (Reg_Speculation[4][0] & Reg_Busy[4]) | 
-                        (Reg_Speculation[5][0] & Reg_Busy[5]) | 
-                        (Reg_Speculation[6][0] & Reg_Busy[6]) | 
-                        (Reg_Speculation[7][0] & Reg_Busy[7]) | 
-                        (Reg_Speculation[8][0] & Reg_Busy[8]) | 
-                        (Reg_Speculation[9][0] & Reg_Busy[9]) | 
-                        (Reg_Speculation[10][0] & Reg_Busy[10]) | 
-                        (Reg_Speculation[11][0] & Reg_Busy[11]) | 
-                        (Reg_Speculation[12][0] & Reg_Busy[12]) | 
-                        (Reg_Speculation[13][0] & Reg_Busy[13]) | 
-                        (Reg_Speculation[14][0] & Reg_Busy[14]) | 
-                        (Reg_Speculation[15][0] & Reg_Busy[15])
-                    ));
 
 //
 assign Reg_opcode_test = Reg_opcode[`I(index_test)];
@@ -121,21 +101,12 @@ assign RP1_Write_Data2 = Reg_Write_Data[`Imone(RP1_ROBEN2)];
 assign RP1_Ready1 = Reg_Ready[`Imone(RP1_ROBEN1)];
 assign RP1_Ready2 = Reg_Ready[`Imone(RP1_ROBEN2)];
 
-/*
-this block does the following:
-    - it resets the necessary registers
-    - inserts an entry to the ROB
-*/
-// always@(negedge clk) 
 assign FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
+assign EXCEPTION_Flag = Reg_Busy[`Imone(Start_Index)] & Reg_Exception[`Imone(Start_Index)];
+
+
 
 reg [4:0] i = 0;
-
-`define C11 Reg_Busy[`Imone(CDB_ROBEN1)] && CDB_ROBEN1 != 0
-`define C12 ~Reg_Speculation[`Imone(CDB_ROBEN1)][0]
-`define C21 Reg_Busy[`Imone(CDB_ROBEN2)] && CDB_ROBEN2 != 0
-`define C22 ~Reg_Speculation[`Imone(CDB_ROBEN2)][0]
-// always@(posedge clk) begin
 always@(negedge clk) begin
 
     if (rst) begin
@@ -170,22 +141,23 @@ always@(negedge clk) begin
     end
 end
 
+
 always@(posedge clk) begin
-    if (`C11) begin
-        if (`C12)
+    if (Reg_Busy[`Imone(CDB_ROBEN1)] && CDB_ROBEN1 != 0) begin
+        if (~Reg_Speculation[`Imone(CDB_ROBEN1)][0])
             Reg_Write_Data[`Imone(CDB_ROBEN1)] <= CDB_ROBEN1_Write_Data;
         Reg_Speculation[`Imone(CDB_ROBEN1)][0] <= Reg_Speculation[`Imone(CDB_ROBEN1)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN1)][1]);
         Reg_Ready[`Imone(CDB_ROBEN1)] <= 1'b1;
     end
-    if (`C21) begin
-        if (`C22)
+    if (Reg_Busy[`Imone(CDB_ROBEN2)] && CDB_ROBEN2 != 0) begin
+        if (~Reg_Speculation[`Imone(CDB_ROBEN2)][0])
             Reg_Write_Data[`Imone(CDB_ROBEN2)] <= CDB_ROBEN2_Write_Data;
         Reg_Speculation[`Imone(CDB_ROBEN2)][0] <= Reg_Speculation[`Imone(CDB_ROBEN2)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN2)][1]);
         Reg_Ready[`Imone(CDB_ROBEN2)] <= 1'b1;
     end
 end
 
-assign EXCEPTION_Flag = Reg_Busy[`Imone(Start_Index)] & Reg_Exception[`Imone(Start_Index)];
+
 reg [4:0] k = 0;
 always@(negedge clk, posedge rst) begin
     if (rst) begin
