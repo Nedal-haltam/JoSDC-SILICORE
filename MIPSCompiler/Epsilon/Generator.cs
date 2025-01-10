@@ -1,24 +1,39 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 #pragma warning disable CS8500
 
 
 namespace Epsilon
 {
+    public struct Var
+    {
+        public Var(string value, int size)
+        {
+            Value = value;
+            Size = size;
+        }
+        public string Value { get; set; }
+        public int Size { get; set; }
+    }
+    public struct Vars
+    {
+        public Vars()
+        {
+            m_vars = [];
+        }
+        public List<Var> m_vars = [];
+    }
     class Generator
     {
         public NodeProg m_prog;
-        StringBuilder m_outputcode = new StringBuilder();
-        List<string> m_vars = new List<string>();
-        List<int> m_scopes = new List<int>();
+        StringBuilder m_outputcode = new();
+        public Vars vars = new();
+        List<int> m_scopes = [];
         int m_labels_count = 0;
         int StackSize = 0;
-        //Dictionary<string, int> m_Vars = new Dictionary<string, int>();
-        //int m_VarCount = 0;
-        //int m_RegsIndex = 1;
-        //Dictionary<string, int> m_RegVars = new Dictionary<string, int>();
-        //Dictionary<string, int> m_MemVars = new Dictionary<string, int>();
         public Generator(NodeProg prog)
         {
             m_prog = prog;
@@ -33,7 +48,7 @@ namespace Epsilon
 
         void GenPush(string reg)
         {
-            m_outputcode.Append($"SW {reg}, $sp, 0\n");
+            m_outputcode.Append($"SW {reg}, 0($sp)\n");
             m_outputcode.Append("ADDI $sp, $sp, -1\n");
             StackSize++;
         }
@@ -41,22 +56,28 @@ namespace Epsilon
         void GenPop(string reg)
         {
             m_outputcode.Append("ADDI $sp, $sp, 1\n");
-            m_outputcode.Append($"LW {reg}, $sp, 0\n");
-            //m_Vars.RemoveAt(m_Vars.Count - 1);
+            m_outputcode.Append($"LW {reg}, 0($sp)\n");
             StackSize--;
         }
         void BeginScope()
         {
             m_outputcode.Append("# begin scope\n");
-            m_scopes.Add(m_vars.Count);
+            m_scopes.Add(vars.m_vars.Count);
         }
         void EndScope()
         {
             m_outputcode.Append("# end scope\n");
-            int popcount = m_vars.Count - m_scopes[^1];
+            int Vars_topop = vars.m_vars.Count - m_scopes[^1];
+            int i = vars.m_vars.Count - 1;
+            int iterations = Vars_topop;
+            int popcount = 0;
+            while (iterations-- > 0)
+            {
+                popcount += vars.m_vars[i--].Size;
+            }
             m_outputcode.Append($"ADDi $sp, $sp, {popcount}\n");
             StackSize -= popcount;
-            m_vars.RemoveRange(m_vars.Count - popcount, popcount);
+            vars.m_vars.RemoveRange(vars.m_vars.Count - Vars_topop, Vars_topop);
             m_scopes.RemoveAt(m_scopes.Count - 1);
         }
         void GenScope(NodeScope scope)
@@ -68,7 +89,25 @@ namespace Epsilon
             }
             EndScope();
         }
-
+        bool IsVariableDeclared(string name)
+        {
+            for (int i = 0; i < vars.m_vars.Count; i++)
+                if (vars.m_vars[i].Value == name)
+                    return true;
+            return false;
+        }
+        int VariableLocation(string name)
+        {
+            int index = 0;
+            for (int i = 0; i < vars.m_vars.Count; i++)
+            {
+                if (vars.m_vars[i].Value == name)
+                    break;
+                else
+                    index += vars.m_vars[i].Size;
+            }
+            return index;
+        }
         void GenTerm(NodeTerm term)
         {
             if (term.type == NodeTerm.NodeTermType.intlit)
@@ -79,13 +118,13 @@ namespace Epsilon
             }
             else if (term.type == NodeTerm.NodeTermType.ident)
             {
-                if (!m_vars.Contains(term.ident.ident.Value))
+                if (!IsVariableDeclared(term.ident.ident.Value))
                 {
                     Error($"variable {term.ident.ident.Value} is not declared", term.ident.ident.Line);
                 }
                 string dest_reg = "$1";
-                int rel_loc = StackSize - m_vars.IndexOf(term.ident.ident.Value);
-                m_outputcode.Append($"LW {dest_reg}, $sp, {rel_loc}\n");
+                int rel_loc = StackSize - VariableLocation(term.ident.ident.Value);
+                m_outputcode.Append($"LW {dest_reg}, {rel_loc}($sp)\n");
                 GenPush(dest_reg);
             }
             else if (term.type == NodeTerm.NodeTermType.paren)
@@ -279,27 +318,70 @@ namespace Epsilon
         }
         void GenStmtDeclare(NodeStmtDeclare declare)
         {
-            Token ident = declare.ident;
-            if (m_vars.Contains(ident.Value))
+            if (declare.type == NodeStmtDeclare.NodeStmtDeclareType.SingleVar)
             {
-                Error($"variable {ident.Value} is already declared", ident.Line);
+                Token ident = declare.singlevar.ident;
+                if (IsVariableDeclared(ident.Value))
+                {
+                    Error($"variable {ident.Value} is already declared", ident.Line);
+                }
+                else
+                {
+                    vars.m_vars.Add(new(ident.Value, 1));
+                    GenExpr(declare.singlevar.expr);
+                }
             }
-            else
-                m_vars.Add(ident.Value);
-            GenExpr(declare.expr);
+            else if (declare.type == NodeStmtDeclare.NodeStmtDeclareType.Array)
+            {
+                Token ident = declare.array.ident;
+                if (IsVariableDeclared(ident.Value))
+                {
+                    Error($"variable {ident.Value} is already declared", ident.Line);
+                }
+                else
+                {
+                    vars.m_vars.Add(new(ident.Value, declare.array.values.Count));
+                    for (int i = 0; i < declare.array.values.Count; i++)
+                    {
+                        GenExpr(declare.array.values[i].expr);
+                    }
+                }
+            }
         }
         void GenStmtAssign(NodeStmtAssign assign)
         {
-            Token ident = assign.ident;
-            if (!m_vars.Contains(ident.Value))
+            if (assign.type == NodeStmtAssign.NodeStmtAssignType.SingleVar)
             {
-                Error($"variable {ident.Value} is not declared", ident.Line);
+                Token ident = assign.singlevar.ident;
+                if (!IsVariableDeclared(ident.Value))
+                {
+                    Error($"variable {ident.Value} is not declared", ident.Line);
+                }
+                int relative_location = StackSize - VariableLocation(ident.Value);
+                GenExpr(assign.singlevar.expr);
+                string reg = "$1";
+                GenPop(reg);
+                m_outputcode.Append($"SW {reg}, {relative_location}($sp)\n");
             }
-            GenExpr(assign.expr);
-            string reg = "$1";
-            GenPop(reg);
-            int relative_location = StackSize - m_vars.IndexOf(ident.Value);
-            m_outputcode.Append($"SW {reg}, $sp, {relative_location}\n");
+            else if (assign.type == NodeStmtAssign.NodeStmtAssignType.Array)
+            {
+                Token ident = assign.array.ident;
+                if (!IsVariableDeclared(ident.Value))
+                {
+                    Error($"variable {ident.Value} is not declared", ident.Line);
+                }
+                int relative_location = StackSize - VariableLocation(ident.Value);
+                // we save $sp + relative_location - index in $2 to use it as an address
+                GenExpr(assign.array.index);
+                GenExpr(assign.array.expr);
+                string reg_addr = "$2";
+                string reg_data = "$1";
+                GenPop(reg_data);
+                GenPop(reg_addr);
+                m_outputcode.Append($"ADDI $3, $sp, {relative_location}\n");
+                m_outputcode.Append($"SUB {reg_addr}, $3, $2\n");
+                m_outputcode.Append($"SW {reg_data}, 0({reg_addr})\n");
+            }
         }
         void GenElifs(NodeIfElifs elifs, string label_end)
         {
@@ -363,7 +445,6 @@ namespace Epsilon
             BeginScope();
             if (forr.pred.init.HasValue)
             {
-                // TODO: pop the initialization variables
                 m_outputcode.Append("# begin init\n");
                 if (forr.pred.init.Value.type == NodeForInit.NodeForInitType.declare)
                     GenStmtDeclare(forr.pred.init.Value.declare);

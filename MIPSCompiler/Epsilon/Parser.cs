@@ -2,6 +2,7 @@
 
 
 
+using Microsoft.VisualBasic;
 using System.Linq.Expressions;
 using System.Net.Sockets;
 using System.Reflection.Metadata;
@@ -63,8 +64,7 @@ namespace Epsilon
         }
         bool IsStmtAssign()
         {
-            return peek(TokenType.Ident).HasValue &&
-                   peek(TokenType.Equal, 1).HasValue;
+            return peek(TokenType.Ident).HasValue;
         }
         bool IsStmtIF()
         {
@@ -333,12 +333,8 @@ namespace Epsilon
             if (IsStmtDeclare())
             {
                 Token vartype = consume();
-                NodeStmtDeclare declare = new NodeStmtDeclare();
-                if (vartype.Type == TokenType.Int)
-                {
-                    declare.type = NodeStmtDeclare.NodeStmtDeclareType.Int;
-                }
-                else
+                NodeStmtDeclareSingleVar declare = new();
+                if (vartype.Type != TokenType.Int)
                 {
                     ErrorExpected("variable type");
                 }
@@ -370,18 +366,19 @@ namespace Epsilon
                 try_consume_err(TokenType.SemiColon);
                 NodeForInit forinit = new NodeForInit();
                 forinit.type = NodeForInit.NodeForInitType.declare;
-                forinit.declare = declare;
+                forinit.declare.type = NodeStmtDeclare.NodeStmtDeclareType.SingleVar;
+                forinit.declare.singlevar = declare;
                 return forinit;
             }
             else if (IsStmtAssign())
             {
-                NodeStmtAssign assign = new NodeStmtAssign();
-                assign.ident = consume();
+                NodeStmtAssignSingleVar singlevar = new();
+                singlevar.ident = consume();
                 consume();
                 NodeExpr? expr = ParseExpr();
                 if (expr.HasValue)
                 {
-                    assign.expr = expr.Value;
+                    singlevar.expr = expr.Value;
                 }
                 else
                 {
@@ -390,7 +387,8 @@ namespace Epsilon
                 try_consume_err(TokenType.SemiColon);
                 NodeForInit forinit = new NodeForInit();
                 forinit.type = NodeForInit.NodeForInitType.assign;
-                forinit.assign = assign;
+                forinit.assign.type = NodeStmtAssign.NodeStmtAssignType.SingleVar;
+                forinit.assign.singlevar = singlevar;
                 return forinit;
             }
             return null;
@@ -415,18 +413,21 @@ namespace Epsilon
         {
             if (IsStmtAssign())
             {
-                NodeStmtAssign assign = new NodeStmtAssign();
-                assign.ident = consume();
+                NodeStmtAssignSingleVar singlevar = new();
+                singlevar.ident = consume();
                 consume();
                 NodeExpr? expr = ParseExpr();
                 if (expr.HasValue)
                 {
-                    assign.expr = expr.Value;
+                    singlevar.expr = expr.Value;
                 }
                 else
                 {
                     ErrorExpected("expression");
                 }
+                NodeStmtAssign assign = new();
+                assign.type = NodeStmtAssign.NodeStmtAssignType.SingleVar;
+                assign.singlevar = singlevar;
                 return assign;
             }
             else
@@ -481,71 +482,165 @@ namespace Epsilon
             }
             return pred;
         }
-        NodeStmt? ParseStmt()
+        NodeStmt? ParseDeclareSingleVar(Token ident)
         {
-            // see what possible statements you have and parse it (stmts: declare, assign, if, for)
-            if (IsStmtDeclare())
+            NodeStmtDeclareSingleVar declare = new();
+            declare.ident = ident;
+            if (peek(TokenType.Equal).HasValue)
             {
-                Token vartype = consume();
-                NodeStmtDeclare declare = new NodeStmtDeclare();
-                if (vartype.Type == TokenType.Int)
-                {
-                    declare.type = NodeStmtDeclare.NodeStmtDeclareType.Int;
-                }
-                else
-                {
-                    ErrorExpected("variable type");
-                }
-                declare.ident = consume();
-                if (peek(TokenType.Equal).HasValue)
-                {
-                    consume();
-                    NodeExpr? expr = ParseExpr();
-                    if (expr.HasValue)
-                    {
-                        declare.expr = expr.Value;
-                    }
-                    else
-                    {
-                        ErrorExpected("expression");
-                    }
-                }
-                else
-                {
-                    NodeExpr expr = new()
-                    {
-                        type = NodeExpr.NodeExprType.term
-                    };
-                    expr.term.type = NodeTerm.NodeTermType.intlit;
-                    expr.term.intlit.intlit.Type = TokenType.Int;
-                    expr.term.intlit.intlit.Value = "0";
-                    declare.expr = expr;
-                }
-                try_consume_err(TokenType.SemiColon);
-                NodeStmt stmt = new NodeStmt();
-                stmt.type = NodeStmt.NodeStmtType.declare;
-                stmt.declare = declare;
-                return stmt;
-            }
-            else if (IsStmtAssign())
-            {
-                NodeStmtAssign assign = new NodeStmtAssign();
-                assign.ident = consume();
                 consume();
                 NodeExpr? expr = ParseExpr();
                 if (expr.HasValue)
                 {
-                    assign.expr = expr.Value;
+                    declare.expr = expr.Value;
                 }
                 else
                 {
                     ErrorExpected("expression");
                 }
-                try_consume_err(TokenType.SemiColon);
-                NodeStmt stmt = new NodeStmt();
-                stmt.type = NodeStmt.NodeStmtType.assign;
-                stmt.assign = assign;
-                return stmt;
+            }
+            else
+            {
+                NodeExpr expr = new()
+                {
+                    type = NodeExpr.NodeExprType.term
+                };
+                expr.term.type = NodeTerm.NodeTermType.intlit;
+                expr.term.intlit.intlit.Type = TokenType.Int;
+                expr.term.intlit.intlit.Value = "0";
+                declare.expr = expr;
+            }
+            try_consume_err(TokenType.SemiColon);
+            NodeStmt stmt = new();
+            stmt.type = NodeStmt.NodeStmtType.declare;
+            stmt.declare.type = NodeStmtDeclare.NodeStmtDeclareType.SingleVar;
+            stmt.declare.singlevar = declare;
+            return stmt;
+        }
+        NodeExpr ExprZero()
+        {
+            NodeExpr expr = new()
+            {
+                type = NodeExpr.NodeExprType.term
+            };
+            expr.term.type = NodeTerm.NodeTermType.intlit;
+            expr.term.intlit.intlit.Type = TokenType.Int;
+            expr.term.intlit.intlit.Value = "0";
+            return expr;
+        }
+        NodeStmt? ParseDeclareArray(Token ident)
+        {
+            NodeStmtDeclareArray declare = new();
+            declare.ident = ident;
+            consume();
+            Token size_token = consume();
+            if (!int.TryParse(size_token.Value, out int size))
+            {
+                ErrorExpected("a constant size for the array");
+            }
+            try_consume_err(TokenType.CloseSquare);
+            try_consume_err(TokenType.SemiColon);
+            declare.values = [];
+            NodeExpr expr = ExprZero();
+            for (int i = 0; i < size; i++)
+            {
+                declare.values.Add(new() { ident = new() { Line = ident.Line, Type = ident.Type, Value = ident.Value + $"{i}" }, expr = expr });
+            }
+            NodeStmt stmt = new();
+            stmt.type = NodeStmt.NodeStmtType.declare;
+            stmt.declare.type = NodeStmtDeclare.NodeStmtDeclareType.Array;
+            stmt.declare.array = declare;
+            return stmt;
+        }
+        NodeStmt? ParseAssignSingleVar()
+        {
+            NodeStmtAssignSingleVar singlevar = new();
+            singlevar.ident = consume();
+            consume();
+            NodeExpr? expr = ParseExpr();
+            if (expr.HasValue)
+            {
+                singlevar.expr = expr.Value;
+            }
+            else
+            {
+                ErrorExpected("expression");
+            }
+            try_consume_err(TokenType.SemiColon);
+            NodeStmt stmt = new NodeStmt();
+            stmt.type = NodeStmt.NodeStmtType.assign;
+            stmt.assign.type = NodeStmtAssign.NodeStmtAssignType.SingleVar;
+            stmt.assign.singlevar = singlevar;
+            return stmt;
+        }
+        NodeStmt? ParseAssignArray()
+        {
+            NodeStmtAssignArray array = new();
+            array.ident = consume();
+            consume();
+            NodeExpr? index = ParseExpr();
+            if (index.HasValue)
+            {
+                array.index = index.Value;
+            }
+            else
+            {
+                ErrorExpected("expression");
+            }
+            try_consume_err(TokenType.CloseSquare);
+            try_consume_err(TokenType.Equal);
+            NodeExpr? expr = ParseExpr();
+            if (expr.HasValue)
+            {
+                array.expr = expr.Value;
+            }
+            else
+            {
+                ErrorExpected("expression");
+            }
+            try_consume_err(TokenType.SemiColon);
+            NodeStmt stmt = new NodeStmt();
+            stmt.type = NodeStmt.NodeStmtType.assign;
+            stmt.assign.type = NodeStmtAssign.NodeStmtAssignType.Array;
+            stmt.assign.array = array;
+            return stmt;
+        }
+        NodeStmt? ParseStmt()
+        {
+            // see what possible statements you have and parse it
+            // - declare
+            // - assign
+            // - if
+            // - for
+            // - exit
+
+            if (IsStmtDeclare())
+            {
+                Token vartype = consume();
+                if (vartype.Type != TokenType.Int)
+                {
+                    ErrorExpected("variable type");
+                }
+                Token ident = consume();
+                if (peek(TokenType.OpenSquare).HasValue)
+                {
+                    return ParseDeclareArray(ident);
+                }
+                else
+                {
+                    return ParseDeclareSingleVar(ident);
+                }
+            }
+            else if (IsStmtAssign())
+            {
+                if (peek(TokenType.OpenSquare, 1).HasValue)
+                {
+                    return ParseAssignArray();
+                }
+                else if (peek(TokenType.Equal, 1).HasValue)
+                {
+                    return ParseAssignSingleVar();
+                }
             }
             else if (IsStmtIF())
             {

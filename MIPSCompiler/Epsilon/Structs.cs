@@ -107,22 +107,48 @@ namespace Epsilon
             elifs = null;
         }
     }
-
-    public struct NodeStmtAssign
+    public struct NodeStmtAssignSingleVar
     {
         public Token ident;
         public NodeExpr expr;
+    }
+    public struct NodeStmtAssignArray
+    {
+        public Token ident;
+        public NodeExpr index;
+        public NodeExpr expr;
+    }
+    public struct NodeStmtAssign
+    {
+        public enum NodeStmtAssignType
+        {
+            SingleVar, Array
+        }
+        public NodeStmtAssignType type;
+        public NodeStmtAssignSingleVar singlevar;
+        public NodeStmtAssignArray array;
+    }
+    public struct NodeStmtDeclareSingleVar
+    {
+        public Token ident;
+        public NodeExpr expr;
+    }
+    public struct NodeStmtDeclareArray
+    {
+        public Token ident;
+        public List<NodeStmtDeclareSingleVar> values;
     }
 
     public struct NodeStmtDeclare
     {
         public enum NodeStmtDeclareType
         {
-            Int
+            SingleVar, Array
         }
         public NodeStmtDeclareType type;
-        public Token ident;
-        public NodeExpr expr;
+        public NodeStmtDeclareSingleVar singlevar;
+        public NodeStmtDeclareArray array;
+
     }
     public struct NodeForInit
     {
