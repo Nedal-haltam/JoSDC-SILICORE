@@ -1,7 +1,7 @@
 ﻿
 
-using System.Net.WebSockets;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Epsilon
 {
@@ -12,7 +12,7 @@ namespace Epsilon
             string inputcode = File.ReadAllText("./input.e");
 
             Tokenizer tokenizer = new(inputcode);
-            List<Token> Tprog = tokenizer.Tokinze(); // tokenized program
+            List<Token> Tprog = tokenizer.Tokenize(); // tokenized program
 
             Parser parser = new(Tprog);
             NodeProg Pprog = parser.ParseProg(); // parsed program
