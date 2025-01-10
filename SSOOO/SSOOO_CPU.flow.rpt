@@ -1,5 +1,5 @@
 Flow report for SSOOO_CPU
-Wed Jan  8 00:05:59 2025
+Wed Jan  8 00:12:23 2025
 Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
 
 
@@ -41,24 +41,24 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------------+
 ; Flow Summary                                                                        ;
 +------------------------------------+------------------------------------------------+
-; Flow Status                        ; Successful - Wed Jan  8 00:05:59 2025          ;
+; Flow Status                        ; Flow Failed - Wed Jan  8 00:12:23 2025         ;
 ; Quartus Prime Version              ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
 ; Revision Name                      ; SSOOO_CPU                                      ;
 ; Top-level Entity Name              ; SSOOO_CPU                                      ;
 ; Family                             ; MAX 10                                         ;
 ; Device                             ; 10M50DAF484C7G                                 ;
 ; Timing Models                      ; Final                                          ;
-; Total logic elements               ; N/A until Partition Merge                      ;
-;     Total combinational functions  ; N/A until Partition Merge                      ;
-;     Dedicated logic registers      ; N/A until Partition Merge                      ;
-; Total registers                    ; N/A until Partition Merge                      ;
-; Total pins                         ; N/A until Partition Merge                      ;
-; Total virtual pins                 ; N/A until Partition Merge                      ;
-; Total memory bits                  ; N/A until Partition Merge                      ;
-; Embedded Multiplier 9-bit elements ; N/A until Partition Merge                      ;
-; Total PLLs                         ; N/A until Partition Merge                      ;
-; UFM blocks                         ; N/A until Partition Merge                      ;
-; ADC blocks                         ; N/A until Partition Merge                      ;
+; Total logic elements               ; 48,311 / 49,760 ( 97 % )                       ;
+;     Total combinational functions  ; 32,586 / 49,760 ( 65 % )                       ;
+;     Dedicated logic registers      ; 38,105 / 49,760 ( 77 % )                       ;
+; Total registers                    ; 38105                                          ;
+; Total pins                         ; 34 / 360 ( 9 % )                               ;
+; Total virtual pins                 ; 0                                              ;
+; Total memory bits                  ; 0 / 1,677,312 ( 0 % )                          ;
+; Embedded Multiplier 9-bit elements ; 0 / 288 ( 0 % )                                ;
+; Total PLLs                         ; 0 / 4 ( 0 % )                                  ;
+; UFM blocks                         ; 0 / 1 ( 0 % )                                  ;
+; ADC blocks                         ; 0 / 2 ( 0 % )                                  ;
 +------------------------------------+------------------------------------------------+
 
 
@@ -67,7 +67,7 @@ https://fpgasoftware.intel.com/eula.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 01/08/2025 00:05:48 ;
+; Start date & time ; 01/08/2025 00:09:20 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; SSOOO_CPU           ;
 +-------------------+---------------------+
@@ -78,7 +78,7 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
 ; Assignment Name                     ; Value                                  ; Default Value ; Entity Name ; Section Id ;
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
-; COMPILER_SIGNATURE_ID               ; 92384138571169.173628394705332         ; --            ; --          ; --         ;
+; COMPILER_SIGNATURE_ID               ; 92384138571169.173628416033452         ; --            ; --          ; --         ;
 ; MAX_CORE_JUNCTION_TEMP              ; 85                                     ; --            ; --          ; --         ;
 ; MIN_CORE_JUNCTION_TEMP              ; 0                                      ; --            ; --          ; --         ;
 ; PARTITION_COLOR                     ; -- (Not supported for targeted family) ; --            ; --          ; Top        ;
@@ -89,29 +89,32 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
 
 
-+----------------------------------------------------------------------------------------------------------------------------+
-; Flow Elapsed Time                                                                                                          ;
-+------------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Module Name            ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
-+------------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Elaboration ; 00:00:12     ; 1.0                     ; 4794 MB             ; 00:00:25                           ;
-; Total                  ; 00:00:12     ; --                      ; --                  ; 00:00:25                           ;
-+------------------------+--------------+-------------------------+---------------------+------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------+
+; Flow Elapsed Time                                                                                                        ;
++----------------------+--------------+-------------------------+---------------------+------------------------------------+
+; Module Name          ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
++----------------------+--------------+-------------------------+---------------------+------------------------------------+
+; Analysis & Synthesis ; 00:01:21     ; 1.0                     ; 5206 MB             ; 00:01:31                           ;
+; Fitter               ; 00:01:31     ; 1.0                     ; 5980 MB             ; 00:01:28                           ;
+; Total                ; 00:02:52     ; --                      ; --                  ; 00:02:59                           ;
++----------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
-+--------------------------------------------------------------------------------------+
-; Flow OS Summary                                                                      ;
-+------------------------+------------------+------------+------------+----------------+
-; Module Name            ; Machine Hostname ; OS Name    ; OS Version ; Processor type ;
-+------------------------+------------------+------------+------------+----------------+
-; Analysis & Elaboration ; DESKTOP-E5177QH  ; Windows 10 ; 10.0       ; x86_64         ;
-+------------------------+------------------+------------+------------+----------------+
++------------------------------------------------------------------------------------+
+; Flow OS Summary                                                                    ;
++----------------------+------------------+------------+------------+----------------+
+; Module Name          ; Machine Hostname ; OS Name    ; OS Version ; Processor type ;
++----------------------+------------------+------------+------------+----------------+
+; Analysis & Synthesis ; DESKTOP-E5177QH  ; Windows 10 ; 10.0       ; x86_64         ;
+; Fitter               ; DESKTOP-E5177QH  ; Windows 10 ; 10.0       ; x86_64         ;
++----------------------+------------------+------------+------------+----------------+
 
 
 ------------
 ; Flow Log ;
 ------------
-quartus_map --read_settings_files=on --write_settings_files=off SSOOO_CPU -c SSOOO_CPU --analysis_and_elaboration
+quartus_map --read_settings_files=on --write_settings_files=off SSOOO_CPU -c SSOOO_CPU
+quartus_fit --read_settings_files=off --write_settings_files=off SSOOO_CPU -c SSOOO_CPU
 
 
 
