@@ -1,4 +1,5 @@
 using System.Text;
+using static System.Text.RegularExpressions.Regex;
 using static LibAN.LibAN;
 namespace RealTimeCAS
 {
@@ -25,10 +26,10 @@ namespace RealTimeCAS
             CAS, TB_copy
         }
 
-        void Assemble(string[] input)
+        void Assemble()
         {
             MIPSASSEMBLER.MIPSASSEMBLER assembler = new();
-            MIPSASSEMBLER.Program? program = assembler.ASSEMBLE([.. input]);
+            MIPSASSEMBLER.Program? program = assembler.ASSEMBLE(curr_text_dir);
             if (program.HasValue)
             {
                 m_prog = program.Value;
@@ -49,11 +50,10 @@ namespace RealTimeCAS
         }
         (int, LibCPU.MIPS.Exceptions, LibCPU.MIPS.CPU) SimulateCPU(List<string> mc)
         {
-            (_, List<string> dm_vals) = assemble_data_dir(curr_data_dir);
             LibCPU.MIPS.CPU cpu = new LibCPU.MIPS.CPU().Init();
             if (curr_cpu == LibCPU.CPU_type.SingleCycle)
             {
-                LibCPU.SingleCycle sc = new LibCPU.SingleCycle(mc, dm_vals);
+                LibCPU.SingleCycle sc = new LibCPU.SingleCycle(mc, curr_data);
                 (int cycles, LibCPU.MIPS.Exceptions excep) = sc.Run();
                 cpu.regs = sc.regs;
                 cpu.DM = sc.DM;
@@ -61,7 +61,7 @@ namespace RealTimeCAS
             }
             else if (curr_cpu == LibCPU.CPU_type.PipeLined)
             {
-                LibCPU.CPU5STAGE pl = new LibCPU.CPU5STAGE(mc, dm_vals);
+                LibCPU.CPU5STAGE pl = new LibCPU.CPU5STAGE(mc, curr_data);
                 (int cycles, LibCPU.MIPS.Exceptions excep) = pl.Run();
                 cpu.regs = pl.regs;
                 cpu.DM = pl.DM;
@@ -87,6 +87,13 @@ namespace RealTimeCAS
             else if (excep == LibCPU.MIPS.Exceptions.INF_LOOP)
             {
                 lblErrInfloop.Visible = true;
+                lblcycles.Text = "0";
+                StringBuilder toout = new StringBuilder();
+                toout.Append("Reg file : \n");
+                for (int i = 0; i < 32; i++) toout.Append($"index = {i,2} , signed = {0,10} , unsigned = {(uint)0,10}\n");
+                toout.Append("Data Memory : \n");
+                for (int i = 0; i < 20; i++) toout.Append($"Mem[{i,2}] = {0,10}\n");
+                output.Lines = toout.ToString().Split('\n');
             }
             else if (excep == LibCPU.MIPS.Exceptions.NONE && cycles != 0)
             {
@@ -160,6 +167,12 @@ namespace RealTimeCAS
             lbldatamifdepth.Location = new System.Drawing.Point(cmbdatadepth.Location.X, cmbdatadepth.Location.Y - lbldatamifdepth.Size.Height);
 
 
+            int j = 0;
+            for (int i = 0; i < errors.Length; i++)
+            {
+                if (errors[i].Visible)
+                    errors[i].Location = locations[j++];
+            }
 
         }
         private void Form1_Resize(object sender, EventArgs e)
@@ -205,9 +218,16 @@ namespace RealTimeCAS
             curr_data_dir = data_dir;
             curr_text_dir = text_dir;
 
-            Assemble([.. curr_text_dir]);
-            (_, List<string> temp) = assemble_data_dir(curr_data_dir);
-            curr_data = temp;
+            (_, List<string> dm_vals, List<KeyValuePair<string, int>> addresses) = assemble_data_dir(curr_data_dir);
+            foreach (KeyValuePair<string, int> address in addresses)
+            {
+                for (int i = 0; i < curr_text_dir.Count; i++)
+                {
+                    curr_text_dir[i] = Replace(curr_text_dir[i], $@"\b{Escape(address.Key)}\b", address.Value.ToString());
+                }
+            }
+            Assemble();
+            curr_data = dm_vals;
 
             (int cycles, LibCPU.MIPS.Exceptions excep, LibCPU.MIPS.CPU cpu) = SimulateCPU(m_prog.mc);
 
