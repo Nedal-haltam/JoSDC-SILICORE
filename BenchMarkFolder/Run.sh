@@ -200,7 +200,7 @@ Run_BenchMark "SumOfNumbers"
 Run_BenchMark "RemoveDuplicates"
 Run_BenchMark "SelectionSort"
 Run_BenchMark "SparseMatrixCount"
-
+Run_BenchMark "Swapping"
 
 
 
