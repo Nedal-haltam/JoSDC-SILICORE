@@ -104,7 +104,20 @@ namespace Epsilon
             else if (peek(TokenType.Ident).HasValue)
             {
                 term.type = NodeTerm.NodeTermType.ident;
+                term.ident = new();
                 term.ident.ident = consume();
+                term.ident.index = null;
+                if (peek(TokenType.OpenSquare).HasValue)
+                {
+                    consume();
+                    NodeExpr? index = ParseExpr();
+                    if (!index.HasValue)
+                    {
+                        ErrorExpected("expression");
+                    }
+                    term.ident.index = index;
+                    try_consume_err(TokenType.CloseSquare);
+                }
                 return term;
             }
             else if (peek(TokenType.OpenParen).HasValue)

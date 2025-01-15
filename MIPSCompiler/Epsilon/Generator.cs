@@ -116,16 +116,34 @@ namespace Epsilon
                 m_outputcode.Append($"ADDI {reg}, $zero, {term.intlit.intlit.Value}\n");
                 GenPush(reg);
             }
-            else if (term.type == NodeTerm.NodeTermType.ident)
+            else if (term.type == NodeTerm.NodeTermType.ident) 
             {
-                if (!IsVariableDeclared(term.ident.ident.Value))
+                NodeTermIdent ident = term.ident;
+                if (!IsVariableDeclared(ident.ident.Value))
                 {
-                    Error($"variable {term.ident.ident.Value} is not declared", term.ident.ident.Line);
+                    Error($"variable {ident.ident.Value} is not declared", ident.ident.Line);
                 }
-                string dest_reg = "$1";
-                int rel_loc = StackSize - VariableLocation(term.ident.ident.Value);
-                m_outputcode.Append($"LW {dest_reg}, {rel_loc}($sp)\n");
-                GenPush(dest_reg);
+                if (!ident.index.HasValue)
+                {
+                    string dest_reg = "$1";
+                    int relative_location = StackSize - VariableLocation(ident.ident.Value);
+                    m_outputcode.Append($"LW {dest_reg}, {relative_location}($sp)\n");
+                    GenPush(dest_reg);
+                }
+                else
+                {
+                    string dest_reg = "$1";
+                    // we save $sp + relative_location - index in $2 to use it as an address
+                    int relative_location = StackSize - VariableLocation(ident.ident.Value);
+                    string reg_addr = "$2";
+                    GenExpr(ident.index.Value);
+                    GenPop(reg_addr);
+                    m_outputcode.Append($"ADDI $3, $sp, {relative_location}\n");
+                    m_outputcode.Append($"SUB {reg_addr}, $3, {reg_addr}\n");
+                    m_outputcode.Append($"LW {dest_reg}, 0({reg_addr})\n");
+                    GenPush(dest_reg);
+                }
+
             }
             else if (term.type == NodeTerm.NodeTermType.paren)
             {
@@ -379,7 +397,7 @@ namespace Epsilon
                 GenPop(reg_data);
                 GenPop(reg_addr);
                 m_outputcode.Append($"ADDI $3, $sp, {relative_location}\n");
-                m_outputcode.Append($"SUB {reg_addr}, $3, $2\n");
+                m_outputcode.Append($"SUB {reg_addr}, $3, {reg_addr}\n");
                 m_outputcode.Append($"SW {reg_data}, 0({reg_addr})\n");
             }
         }

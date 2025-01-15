@@ -10,9 +10,15 @@ namespace Epsilon
     {
         public Token intlit;
     }
-    public struct NodeTermIdent
+    public class NodeTermIdent
     {
+        // TODO: add a term corresponds to an array element 
         public Token ident;
+        public NodeExpr? index;
+        public NodeTermIdent()
+        {
+            index = null;
+        }
     }
     public class NodeTermParen
     {
