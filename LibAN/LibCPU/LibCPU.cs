@@ -1,4 +1,4 @@
-﻿
+
 using System.Text;
 using System.Collections.Generic;
 
@@ -7,7 +7,7 @@ namespace LibCPU
 {
     public enum CPU_type
     {
-        PipeLined, SingleCycle
+        PipeLined, SingleCycle, OOO
     }
     public static class MIPS
     {
@@ -447,9 +447,9 @@ namespace LibCPU
     
     public class OOO 
     {
-        public int PC;
-        public bool hlt;
-        public int targetaddress;
+        static public int PC;
+        static public bool hlt;
+        static public int targetaddress;
 
         public enum PCsrc { PCplus1, branchTarget, exception, none }
         public PCsrc pcsrc;
@@ -462,14 +462,13 @@ namespace LibCPU
         public List<string> IM; // Instruction Mem
 
         // ROB
-        public bool ROBfullFlag, flush;
-        public int ROBendIndex, ROBstartIndex;
+        static public bool ROBfullFlag, flush;
+        static public int ROBendIndex, ROBstartIndex;
 
         public struct ROBregister {
 
             public Mnemonic type;
             public int Rd;
-            public string Speculation;
             public bool busy;
             public bool ready;
             public bool exception;
@@ -485,10 +484,10 @@ namespace LibCPU
             }
         }
 
-        public List<ROBregister> ROB;
+        static public List<ROBregister> ROB;
 
         // Reservation Station
-        public bool RSfullFlag;
+        static public bool RSfullFlag;
 
         public struct RSregister {
             
@@ -504,20 +503,20 @@ namespace LibCPU
             public RSregister(Aluop ALUop) {
                 this.ALUop       = ALUop;
                 this.ROBEN       = 0;
-                this.ROBEN1      = new string('0', 5);
-                this.ROBEN2      = new string('0', 5);
-                this.ROBEN1_val  = new string('0', 32);
-                this.ROBEN2_val  = new string('0', 32);
-                this.immediate = new string('0', 32);
+                this.ROBEN1      = 0;
+                this.ROBEN2      = 0;
+                this.ROBEN1_val  = 0;
+                this.ROBEN2_val  = 0;
+                this.immediate = 0;
                 this.busy = false;
             }
         }
 
-        public List<RSregister> reservationStation;
+        static public List<RSregister> reservationStation;
 
         // Load Store Buffer
-        public bool LSfullFlag;
-        public int LSendIndex, LSstartIndex;
+        static public bool LSfullFlag;
+        static public int LSendIndex, LSstartIndex;
 
         public struct LSregister {
             public Mnemonic type;
@@ -547,7 +546,7 @@ namespace LibCPU
             }
         }
 
-        public List<LSregister> LSbuffer;
+        static public List<LSregister> LSbuffer;
 
         public OOO(List<string> insts, List<string> data_mem_init) {
             PC              = -1;
@@ -577,7 +576,7 @@ namespace LibCPU
             RSfullFlag = false;
 
             // initializing the LS buffer
-            LSbuffer = new List<LSregister>;
+            LSbuffer = new List<LSregister>();
             for (int i = 0; i < 16; i++)
                 LSbuffer.Add(new LSregister(Mnemonic.nop));
 
@@ -648,8 +647,8 @@ namespace LibCPU
         // dispatch instruction from instruction queue
         public void dispatch(Instruction currInstruction) {
             // halts the CPU if the fetched instruction is empty (end of IM)
-            if (currInstruction.mnem == Mnemonic.hlt) hlt = 1; // This condition is wrong
-            else if(!currInstruction.mnem = Mnemonic.lw && !currInstruction.mnem = Mnemonic.sw && !ROBfullFlag && !RSfullFlag) {
+            if (currInstruction.mnem == Mnemonic.hlt) hlt = true; // This condition is wrong
+            else if(!(currInstruction.mnem == Mnemonic.lw) && !(currInstruction.mnem == Mnemonic.sw) && !ROBfullFlag && !RSfullFlag) {
                 // places the instruction in the ROB
                 ROBendIndex = (ROBendIndex + 1) % 16;
                 ROBregister currROBregister = ROB[ROBendIndex];
@@ -658,7 +657,6 @@ namespace LibCPU
                 // assigns the values of the ROB register
                 currROBregister.type        = currInstruction.mnem;
                 currROBregister.Rd          = currInstruction.rdind;
-                currROBregister.Speculation = 
                 currROBregister.busy        = true;
                 currROBregister.ready       = false;
                 currROBregister.exception   = false;
@@ -674,7 +672,6 @@ namespace LibCPU
                         currRSregister.ROBEN        = currROBEN;
                         currRSregister.busy         = true;
                         if(currInstruction.format == "R") {
-                            currRSregister.ROBEN1       = regs_ROBENS[currInstruction.rsind];
                             currRSregister.ROBEN2       = regs_ROBENS[currInstruction.rtind];
                             currRSregister.ROBEN1_val   = currInstruction.oper1;
                             currRSregister.ROBEN2_val   = currInstruction.oper2;
@@ -699,13 +696,14 @@ namespace LibCPU
                 // updates register file ROBEN
                 regs_ROBENS[currInstruction.rdind] = currROBEN;
             }
-            else if(currInstruction.mnem = Mnemonic.lw && currInstruction.mnem = Mnemonic.sw && !ROBfullFlag && !LSfullFlag) {
-                for int(in = 0)
+            else if((currInstruction.mnem == Mnemonic.lw) && (currInstruction.mnem == Mnemonic.sw) && !ROBfullFlag && !LSfullFlag) {
+                for (int i = 0; i < 16; i++) {
+
+                }
             }
         }
 
-        public (int, string) execute(Aluop ALUop, int operand1, int operand2, string ROBEN) {
-            int result;
+        public (int, int) execute(Aluop ALUop, int operand1, int operand2, int ROBEN) {
             switch (ALUop) {
                 case Aluop.add: return (operand1 + operand2, ROBEN);
                 case Aluop.sub: return (operand1 - operand2, ROBEN);
@@ -713,15 +711,15 @@ namespace LibCPU
                 case Aluop.or : return (operand1 | operand2, ROBEN);
                 case Aluop.xor: return (operand1 ^ operand2, ROBEN);
                 case Aluop.nor: return (~(operand1 | operand2), ROBEN);
-                case Aluop.slt: return (operand1 < operand2) ? 1 : 0;
-                case Aluop.sgt: return (operand1 > operand2) ? 1 : 0;
-                case Aluop.sll: return operand1 << operand2;
+                case Aluop.slt: return (((operand1 < operand2) ? 1 : 0), ROBEN);
+                case Aluop.sgt: return (((operand1 > operand2) ? 1 : 0), ROBEN);
+                case Aluop.sll: return (operand1 << operand2, ROBEN);
                 case Aluop.srl: {
                         if (operand2 == 0)
-                            return operand1;
-                        return Math.Abs(operand1 >> operand2);
+                            return (operand1, ROBEN);
+                        return (Math.Abs(operand1 >> operand2), ROBEN);
                     };
-                default: return (0, "00000");
+                default: return (0, 0);
             }
         }
 
@@ -731,13 +729,13 @@ namespace LibCPU
                 RSregister currRSregister = reservationStation[i];
                 if(currRSregister.busy) {
                     // updates first operand
-                    if(currRSregister.ROBEN1 == CDB_ROBEN && CDB_ROBEN != 0) { 
-                        currRSregister.ROBEN1_val = CDB_val 
+                    if(currRSregister.ROBEN1 == resultROBEN && resultROBEN != 0) { 
+                        currRSregister.ROBEN1_val = result; 
                         currRSregister.ROBEN1 = 0;
                     }
                     // updates second operand
-                    if(currRSregister.ROBEN2 == CDB_ROBEN && CDB_ROBEN != 0) { 
-                        currRSregister.ROBEN2_val = CDB_val;
+                    if(currRSregister.ROBEN2 == resultROBEN && resultROBEN != 0) { 
+                        currRSregister.ROBEN2_val = result;
                         currRSregister.ROBEN2 = 0;
                     }
                 }
@@ -760,7 +758,7 @@ namespace LibCPU
             for(int i = 0; i < 16; i++) {
                 RSregister currRSregister = reservationStation[i];
                 if(currRSregister.busy && currRSregister.ROBEN1 == 0 && currRSregister.ROBEN2 == 0) {
-                    (int result, string resultROBEN) = execute(currRSregister.ALUop, currRSregister.ROBEN1_val, currRSregister.ROBEN2_val, currRSregister.ROBEN);
+                    (int result, int resultROBEN) = execute(currRSregister.ALUop, currRSregister.ROBEN1_val, currRSregister.ROBEN2_val, currRSregister.ROBEN);
                     update(result, resultROBEN);
                     return;
                 }
@@ -771,14 +769,14 @@ namespace LibCPU
         public void flushRegisters() {
             for(int i = 0; i < 16; i++){
                 RSregister currRSregister = reservationStation[i];
-                currRSregister.busy = 0;
+                currRSregister.busy = false;
                 currRSregister.ROBEN = 0;
                 currRSregister.ROBEN1 = 0;
                 currRSregister.ROBEN2 = 0;
             }
 
-            ROBfullFlag = 0;
-            flush = 0;
+            ROBfullFlag = false;
+            flush = false;
             ROBstartIndex = 0;
             ROBendIndex = 0;
         }
@@ -786,7 +784,7 @@ namespace LibCPU
         public void commit() {
             ROBregister currROBregister = ROB[ROBstartIndex];
             // if empty
-            if((ROBstartIndex == ROBendIndex) && currROBregister.busy == 0) return;
+            if((ROBstartIndex == ROBendIndex) && currROBregister.busy == false) return;
 
             if(currROBregister.ready) {
                 if(currROBregister.type == Mnemonic.beq || currROBregister.type == Mnemonic.beq) {
@@ -798,7 +796,7 @@ namespace LibCPU
                 } 
 
                 ROBstartIndex = (ROBstartIndex + 1) % 16;
-                ROBfullFlag = 0;
+                ROBfullFlag = false;
             }
         }
 
@@ -806,15 +804,18 @@ namespace LibCPU
             if (pcsrc == PCsrc.none) { return; }
             else if (pcsrc == PCsrc.PCplus1) { PC += 1; }
             else if (pcsrc == PCsrc.branchTarget) { PC = targetaddress; }
-            else if (pcsrc == PCsrc.exception) { PC = }
         }
 
         void consumeInstruction() {
 
             string mc = IM[PC]; // fetch the instructon
             Instruction inst = decodemc(mc, PC); // decode the instruction
-            void dispatch(inst);
             // 
+        }
+
+        public int Run() {
+            consumeInstruction();
+            return 0;
         }
 
         public void print_regs() { MIPS.print_regs(regs); }
