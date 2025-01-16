@@ -26,9 +26,21 @@ namespace LibAN
 
             }
         }
-        public static (List<string>, List<string>) assemble_data_dir(List<string> data_dir)
+        public static (List<string>, List<string>, List<KeyValuePair<string, int>>) assemble_data_dir(List<string> data_dir)
         {
             List<string> data = [];
+            List<KeyValuePair<string, int>> addresses = [];
+            int address = 0;
+            for (int i = 0; i < data_dir.Count; i++)
+            {
+                if (data_dir[i].IndexOf(":") == -1)
+                    continue;
+                string name = data_dir[i].Substring(0, data_dir[i].IndexOf(":"));
+                name = name.Trim();
+                int addr = address;
+                address += data_dir[i].Count(s => s == ',') + 1;
+                addresses.Add(new KeyValuePair<string, int>(name, addr));
+            }
             for (int i = 0; i < data_dir.Count; i++)
             {
                 int index = data_dir[i].IndexOf(':');
@@ -52,12 +64,11 @@ namespace LibAN
                         catch (Exception)
                         {
                             number = 0;
+                            //throw new Exception("invalid number");
                         }
                         data.Add(number.ToString());
                     }
-
                 }
-
             }
             List<string> DM_INIT = [];
             List<string> DM_vals = [];
@@ -68,7 +79,7 @@ namespace LibAN
                 DM_INIT.Add(temp);
             }
 
-            return (DM_INIT, DM_vals);
+            return (DM_INIT, DM_vals, addresses);
         }
         public static (List<string> , List<string>) Get_directives(List<string> src)
         {

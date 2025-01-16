@@ -37,18 +37,18 @@ module RS
 
 
 `define I(i) i[3:0]
-
+`define RS_SIZE 16
 // the ROBEN of a an instruction is the index of that instruction in the buffer plus one to avoid ROBEN value of zero
 // RS buffers to store an instruction
-reg [11:0] Reg_opcode [15:0];
-reg [3:0] Reg_ALUOP [15:0];
-reg [4:0] Reg_ROBEN [15:0];
-reg [4:0] Reg_ROBEN1 [15:0];
-reg [4:0] Reg_ROBEN2 [15:0];
-reg [31:0] Reg_ROBEN1_VAL [15:0];
-reg [31:0] Reg_ROBEN2_VAL [15:0];
-reg [31:0] Reg_Immediate [15:0];
-reg Reg_Busy [15:0];
+reg [11:0] Reg_opcode [(`RS_SIZE - 1):0];
+reg [3:0] Reg_ALUOP [(`RS_SIZE - 1):0];
+reg [4:0] Reg_ROBEN [(`RS_SIZE - 1):0];
+reg [4:0] Reg_ROBEN1 [(`RS_SIZE - 1):0];
+reg [4:0] Reg_ROBEN2 [(`RS_SIZE - 1):0];
+reg [31:0] Reg_ROBEN1_VAL [(`RS_SIZE - 1):0];
+reg [31:0] Reg_ROBEN2_VAL [(`RS_SIZE - 1):0];
+reg [31:0] Reg_Immediate [(`RS_SIZE - 1):0];
+reg Reg_Busy [(`RS_SIZE - 1):0];
 
 
 assign opcode_test = Reg_opcode[`I(input_index_test)];
@@ -68,28 +68,44 @@ this block is does the following:
 reg [4:0] i;
 reg [4:0] j;
 reg [4:0] Next_Free = 0;
-assign FULL_FLAG = ~(rst | 
-                    ~(
-                        Reg_Busy[0] & 
-                        Reg_Busy[1] & 
-                        Reg_Busy[2] & 
-                        Reg_Busy[3] & 
-                        Reg_Busy[4] & 
-                        Reg_Busy[5] & 
-                        Reg_Busy[6] & 
-                        Reg_Busy[7] & 
-                        Reg_Busy[8] & 
-                        Reg_Busy[9] & 
-                        Reg_Busy[10] & 
-                        Reg_Busy[11] & 
-                        Reg_Busy[12] & 
-                        Reg_Busy[13] & 
-                        Reg_Busy[14] & 
-                        Reg_Busy[15]
-                    ));
+// assign FULL_FLAG = ~(rst | 
+// ~(
+//     Reg_Busy[0] & 
+//     Reg_Busy[1] & 
+//     Reg_Busy[2] & 
+//     Reg_Busy[3] & 
+//     Reg_Busy[4] & 
+//     Reg_Busy[5] & 
+//     Reg_Busy[6] & 
+//     Reg_Busy[7] & 
+//     Reg_Busy[8] & 
+//     Reg_Busy[9] & 
+//     Reg_Busy[10] & 
+//     Reg_Busy[11] & 
+//     Reg_Busy[12] & 
+//     Reg_Busy[13] & 
+//     Reg_Busy[14] & 
+//     Reg_Busy[(`RS_SIZE - 1)]
+// ));
+
+wire [`RS_SIZE-1:0] and_result;
+
+genvar gen_index;
+generate
+    for (gen_index = 0; gen_index < `RS_SIZE; gen_index = gen_index + 1) begin : generate_and
+        if (gen_index == 0) begin
+            assign and_result[gen_index] = Reg_Busy[gen_index];
+        end else begin
+            assign and_result[gen_index] = and_result[gen_index-1] & Reg_Busy[gen_index];
+        end
+    end
+endgenerate
+
+assign FULL_FLAG = ~(rst | ~and_result[`RS_SIZE-1]);
+
 always@(negedge clk, posedge rst) begin
     if (rst) begin
-        for (i = 0; i < 16; i = i + 1) begin
+        for (i = 0; i < `RS_SIZE; i = i + 1) begin
             Reg_Busy[i] <= 0;
             Reg_ROBEN[i] <= 0;
         end
@@ -97,12 +113,12 @@ always@(negedge clk, posedge rst) begin
     end
     else begin
         if (ROB_FLUSH_Flag) begin
-            for (i = 0; i < 16; i = i + 1)
+            for (i = 0; i < `RS_SIZE; i = i + 1)
                 Reg_Busy[`I(i)] <= 0;
         end
         else if (VALID_Inst) begin
             Next_Free = 0;
-            for (i = 0; i < 16; i = i + 1)
+            for (i = 0; i < `RS_SIZE; i = i + 1)
                 if (~Reg_Busy[`I(i)])
                     Next_Free = i + 1'b1;
             if (Next_Free != 0) begin
@@ -121,7 +137,7 @@ always@(negedge clk, posedge rst) begin
         if (RS_FU_RS_ID != 0) begin
             Reg_Busy[`I(RS_FU_RS_ID) - 1'b1] <= 0;
         end
-        for (j = 0; j < 16; j = j + 1) begin
+        for (j = 0; j < `RS_SIZE; j = j + 1) begin
             if (Reg_Busy[`I(j)]) begin
                 if (Reg_ROBEN1[`I(j)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
                     Reg_ROBEN1_VAL[`I(j)] <= CDB_ROBEN1_VAL;
@@ -163,7 +179,7 @@ always@(posedge clk, posedge rst) begin
         RS_FU_Val1 <= 0;
         RS_FU_Val2 <= 0;
         RS_FU_Immediate <= 0;
-        for (k = 0; k < 16; k = k + 1) begin
+        for (k = 0; k < `RS_SIZE; k = k + 1) begin
             if (Reg_Busy[`I(k)] && Reg_ROBEN1[`I(k)] == 0 && Reg_ROBEN2[`I(k)] == 0) begin
                 
                 RS_FU_opcode <= Reg_opcode[`I(k)];

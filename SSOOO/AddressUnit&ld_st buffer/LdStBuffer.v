@@ -59,38 +59,45 @@ module LdStBuffer
 
 
 `include "opcodes.txt"
-
-reg Reg_Busy [15:0];
-wire Reg_Ready [15:0];
-
-reg [11:0] Reg_opcode [15:0];
-reg [4:0] Reg_Rd [15:0];
-reg [31:0] Reg_EA [15:0];
-reg [4:0] Reg_ROBEN [15:0];
-reg [4:0] Reg_ROBEN1 [15:0];
-reg [4:0] Reg_ROBEN2 [15:0];
-reg [31:0] Reg_ROBEN1_VAL [15:0];
-reg [31:0] Reg_ROBEN2_VAL [15:0];
-reg [31:0] Reg_Immediate [15:0];
-
 `define I(i) i[3:0]
+`define LDST_SIZE 16
 `define readybit(i) assign Reg_Ready[i] = Reg_ROBEN1[i] == 0 && Reg_ROBEN2[i] == 0
-`readybit(0);
-`readybit(1);
-`readybit(2);
-`readybit(3);
-`readybit(4);
-`readybit(5);
-`readybit(6);
-`readybit(7);
-`readybit(8);
-`readybit(9);
-`readybit(10);
-`readybit(11);
-`readybit(12);
-`readybit(13);
-`readybit(14);
-`readybit(15);
+
+reg Reg_Busy [(`LDST_SIZE - 1):0];
+wire Reg_Ready [(`LDST_SIZE - 1):0];
+
+reg [11:0] Reg_opcode [(`LDST_SIZE - 1):0];
+reg [4:0] Reg_Rd [(`LDST_SIZE - 1):0];
+reg [31:0] Reg_EA [(`LDST_SIZE - 1):0];
+reg [4:0] Reg_ROBEN [(`LDST_SIZE - 1):0];
+reg [4:0] Reg_ROBEN1 [(`LDST_SIZE - 1):0];
+reg [4:0] Reg_ROBEN2 [(`LDST_SIZE - 1):0];
+reg [31:0] Reg_ROBEN1_VAL [(`LDST_SIZE - 1):0];
+reg [31:0] Reg_ROBEN2_VAL [(`LDST_SIZE - 1):0];
+reg [31:0] Reg_Immediate [(`LDST_SIZE - 1):0];
+
+generate
+genvar gen_index;
+for (gen_index = 0; gen_index < `LDST_SIZE; gen_index = gen_index + 1) begin
+`readybit(gen_index);
+end
+endgenerate
+// `readybit(0);
+// `readybit(1);
+// `readybit(2);
+// `readybit(3);
+// `readybit(4);
+// `readybit(5);
+// `readybit(6);
+// `readybit(7);
+// `readybit(8);
+// `readybit(9);
+// `readybit(10);
+// `readybit(11);
+// `readybit(12);
+// `readybit(13);
+// `readybit(14);
+// `readybit((`LDST_SIZE - 1));
 
 
 
@@ -115,7 +122,7 @@ reg [4:0] ji;
 reg [4:0] k = 0;
 always@(negedge clk, posedge rst) begin
     if (rst) begin
-        for (i = 0; i < 16; i = i + 1) begin
+        for (i = 0; i < `LDST_SIZE; i = i + 1) begin
             Reg_Busy[`I(i)] = 0;
         end
         Start_Index <= 0;
@@ -123,7 +130,7 @@ always@(negedge clk, posedge rst) begin
     end
     else begin
         if (ROB_FLUSH_Flag) begin
-            for (i = 0; i < 16; i = i + 1)
+            for (i = 0; i < `LDST_SIZE; i = i + 1)
                 Reg_Busy[`I(i)] <= 0;
             End_Index <= 0;
         end
@@ -166,7 +173,7 @@ always@(negedge clk, posedge rst) begin
             out_ROBEN <= 0;
             out_VALID_Inst <= 1'b0;
         end
-        for (ji = 0; ji < 16; ji = ji + 1) begin
+        for (ji = 0; ji < `LDST_SIZE; ji = ji + 1) begin
             if (Reg_Busy[`I(ji)]) begin
                 if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
                     Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN1_VAL;

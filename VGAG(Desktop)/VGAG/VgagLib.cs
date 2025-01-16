@@ -545,8 +545,6 @@ namespace VGAG
         // TODO: -better UI (or usage (e.g. colors)), so we can draw beautiful things
         unsafe public static void main()
         {
-            ParseMaps();
-            return;
             int w = 800; // for the application
             int h = 600; // for the application
             int commdiv = 1;

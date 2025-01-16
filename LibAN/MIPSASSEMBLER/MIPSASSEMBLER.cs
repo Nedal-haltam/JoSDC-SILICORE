@@ -205,7 +205,7 @@ namespace MIPSASSEMBLER
                         + "00000"
                         + funct;
                 }
-            }
+            } 
             return mc;
         }
         string? GetImmed(string immed)
@@ -419,18 +419,16 @@ namespace MIPSASSEMBLER
 
         string? Is_valid_label(Instruction label)
         {
-            if (label.m_tokens.Count == 1)
+            if (label.m_tokens.Count > 0 && label.m_tokens[0].m_value.Contains(':'))
             {
                 return label.m_tokens[0].m_value[..^1];
             }
-            else if (label.m_tokens.Count == 2 && label.m_tokens[1].m_value == ":")
+            else if (label.m_tokens.Count > 1 && label.m_tokens[1].m_value.Contains(':'))
             {
                 return label.m_tokens[0].m_value;
             }
             else
-            {
                 return null;
-            }
         }
         private void Subtitute_labels(ref Program program)
         {
@@ -447,11 +445,35 @@ namespace MIPSASSEMBLER
                         if (!labels.TryAdd(label, index))
                             lblmultlabels |= true;
                     }
+                    for (int j = 0; j < inst.m_tokens.Count; j++)
+                    {
+                        if (inst.m_tokens[j].m_value.Contains(':') && j != inst.m_tokens.Count - 1)
+                        {
+                            index++;
+                            break;
+                        }
+                    }
                 }
                 else
                     index++;
             }
-            program.instructions.RemoveAll(inst => inst.m_tokens.Any(token => token.m_value.Contains(':')));
+            for (int i = 0; i < program.instructions.Count; i++)
+            {
+                int indexx = -1;
+                for (int j = 0; j < program.instructions[i].m_tokens.Count; j++)
+                {
+                    if (program.instructions[i].m_tokens[j].m_value.Contains(':'))
+                    {
+                        indexx = j;
+                        break;
+                    }
+                }
+                if (indexx != -1)
+                {
+                    program.instructions[i].m_tokens.RemoveRange(0, indexx + 1);
+                }
+            }
+            program.instructions.RemoveAll(inst => inst.m_tokens.Count == 0);
         }
         
         Instruction? TokenizeInst()
@@ -491,6 +513,17 @@ namespace MIPSASSEMBLER
                     instruction.m_tokens.Add(new Token(buffer.ToString()));
                     consume();
                     buffer.Clear();
+                }
+                else if (c == ':')
+                {
+                    buffer.Append(char.ToLower(c));
+                    if (buffer.Length > 0)
+                    {
+                        instruction.m_tokens.Add(new Token(buffer.ToString()));
+                        buffer.Clear();
+                    }
+                    consume();
+
                 }
                 else
                 {

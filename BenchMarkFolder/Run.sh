@@ -197,6 +197,10 @@ Run_BenchMark "ControlFlowInstructions"
 Run_BenchMark "DataManipulation"
 Run_BenchMark "Fibonacci(Silicore_BenchMark)"
 Run_BenchMark "SumOfNumbers"
+Run_BenchMark "RemoveDuplicates"
+Run_BenchMark "SelectionSort"
+Run_BenchMark "SparseMatrixCount"
+Run_BenchMark "Swapping"
 
 
 

@@ -54,40 +54,46 @@ module ROB
 );
 
 `include "opcodes.txt"
-
-reg [11:0] Reg_opcode [15:0];
-reg [4:0] Reg_Rd [15:0];
-reg [1:0] Reg_Speculation [15:0];
-reg Reg_Busy [15:0];
-reg Reg_Ready [15:0];
-reg Reg_Exception [15:0];
-
-reg [31:0] Reg_Write_Data [15:0];
-
-
-wire Reg_Valid [15:0];
 `define I(i) i[3:0]
 `define Imone(i) `I(i) - 1'b1
 `define validbit(i) assign Reg_Valid[i] = ~(Reg_Speculation[i][0] | Reg_Exception[i]) // ~speculative && ~excepted
-`validbit(0);
-`validbit(1);
-`validbit(2);
-`validbit(3);
-`validbit(4);
-`validbit(5);
-`validbit(6);
-`validbit(7);
-`validbit(8);
-`validbit(9);
-`validbit(10);
-`validbit(11);
-`validbit(12);
-`validbit(13);
-`validbit(14);
-`validbit(15);
+`define ROB_SIZE 16
+
+reg [11:0] Reg_opcode [(`ROB_SIZE - 1):0];
+reg [4:0] Reg_Rd [(`ROB_SIZE - 1):0];
+reg [1:0] Reg_Speculation [(`ROB_SIZE - 1):0];
+reg Reg_Busy [(`ROB_SIZE - 1):0];
+reg Reg_Ready [(`ROB_SIZE - 1):0];
+reg Reg_Exception [(`ROB_SIZE - 1):0];
+
+reg [31:0] Reg_Write_Data [(`ROB_SIZE - 1):0];
 
 
-//
+wire Reg_Valid [(`ROB_SIZE - 1):0];
+generate
+genvar gen_index;
+for (gen_index = 0; gen_index < `LDST_SIZE; gen_index = gen_index + 1) begin
+`validbit(gen_index);
+end
+endgenerate
+// `validbit(0);
+// `validbit(1);
+// `validbit(2);
+// `validbit(3);
+// `validbit(4);
+// `validbit(5);
+// `validbit(6);
+// `validbit(7);
+// `validbit(8);
+// `validbit(9);
+// `validbit(10);
+// `validbit(11);
+// `validbit(12);
+// `validbit(13);
+// `validbit(14);
+// `validbit((`ROB_SIZE - 1));
+
+
 assign Reg_opcode_test = Reg_opcode[`I(index_test)];
 assign Reg_Rd_test = Reg_Rd[`I(index_test)];
 assign Reg_Write_Data_test = Reg_Write_Data[`I(index_test)];
@@ -120,7 +126,7 @@ always@(negedge clk) begin
         End_Index <= 1;
     end
     else if (VALID_Inst && ~FULL_FLAG) begin
-        if (End_Index + 1'b1 == 5'd17)
+        if (End_Index + 1'b1 == (`ROB_SIZE + 1'b1))
             End_Index <= 1;
         else 
             End_Index <= End_Index + 1'b1;
@@ -129,7 +135,7 @@ end
 
 always@(posedge clk, posedge rst) begin
     if (rst) begin
-        for (i = 0; i < 16; i = i + 1) begin
+        for (i = 0; i < `ROB_SIZE; i = i + 1) begin
             Reg_Busy[`I(i)] <= 0;
             Reg_Ready[`I(i)] <= 0;
             Reg_Speculation[`I(i)] <= 0;
@@ -166,7 +172,7 @@ always@(posedge clk, posedge rst) begin
             if (Reg_Valid[`Imone(Start_Index)]) begin // handle ALU, lw, sw that are ready to commit (sw: do nothing, ALU/lw: write on the RegFile)
                 if (Reg_Ready[`Imone(Start_Index)]) begin
                     Reg_Busy[`Imone(Start_Index)] <= 0;
-                    if (Start_Index + 1'b1 == 5'd17)
+                    if (Start_Index + 1'b1 == (`ROB_SIZE + 1'b1))
                         Start_Index <= 1;
                     else 
                         Start_Index <= Start_Index + 1'b1;
@@ -174,7 +180,7 @@ always@(posedge clk, posedge rst) begin
             end
             else if (Reg_Speculation[`Imone(Start_Index)][0]) begin // handle branch insts
                 if (Reg_Ready[`Imone(Start_Index)]) begin // if speculative and ready then prediction was wrong
-                    for (k = 0; k < 16; k = k + 1) begin // flush all insts
+                    for (k = 0; k < `ROB_SIZE; k = k + 1) begin // flush all insts
                         Reg_Busy[k] <= 0;
                     end
                     Start_Index <= 1;

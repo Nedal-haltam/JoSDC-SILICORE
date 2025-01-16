@@ -1,6 +1,8 @@
 
 
+using System.Collections.Generic;
 using System.Text;
+using static System.Text.RegularExpressions.Regex;
 using static LibAN.LibAN;
 namespace MIPSAssembler
 {
@@ -29,10 +31,17 @@ namespace MIPSAssembler
                 ];
         // this is the entry point of the entire process because we want to process the input only if the input is changed
 
-        void Assemble(string[] input)
+        void Assemble(List<KeyValuePair<string, int>> addresses)
         {
+            foreach (KeyValuePair<string, int> address in addresses)
+            {
+                for (int i = 0; i < curr_text_dir.Count; i++)
+                {
+                    curr_text_dir[i] = Replace(curr_text_dir[i], $@"\b{Escape(address.Key)}\b", address.Value.ToString());
+                }
+            }
             MIPSASSEMBLER.MIPSASSEMBLER assembler = new();
-            MIPSASSEMBLER.Program? program = assembler.ASSEMBLE([.. input]);
+            MIPSASSEMBLER.Program? program = assembler.ASSEMBLE(curr_text_dir);
             if (program.HasValue)
             {
                 m_prog = program.Value;
@@ -64,8 +73,8 @@ namespace MIPSAssembler
 
 
             List<string> to_out = [];
-            //(to_out, _ ) = assemble_data_dir(curr_data_dir);
-            Assemble([.. curr_text_dir]);
+            (_ , _, List<KeyValuePair<string, int>> addresses) = assemble_data_dir(curr_data_dir);
+            Assemble(addresses);
 
             to_out.AddRange(m_prog.mc);
             output.Lines = [.. to_out];
@@ -138,6 +147,7 @@ namespace MIPSAssembler
             string? IM_MIF_filepath = PopF(ref args);
             string? DM_MIF_filepath = PopF(ref args);
 
+            List<string> DM_INIT = [], DM = [];
             if (source_filepath != null)
             {
                 List<string> src = File.ReadAllLines(source_filepath).ToList();
@@ -145,11 +155,14 @@ namespace MIPSAssembler
                 (List<string> data_dir, List<string> text_dir) = Get_directives(src);
                 curr_data_dir = data_dir;
                 curr_text_dir = text_dir;
-                Assemble([.. curr_text_dir]);
+                (List<string> DM_INIT1, List<string> DM1, List<KeyValuePair<string, int>> addresses) = assemble_data_dir(curr_data_dir);
+                DM_INIT = DM_INIT1;
+                DM = DM1;
+                Assemble(addresses);
             }
 
             List<string> mc = [];
-            (List<string> DM_INIT, List<string> DM) = assemble_data_dir(curr_data_dir);
+            
             if (lblNoErr.Visible)
             {
                 mc.AddRange(m_prog.mc);
