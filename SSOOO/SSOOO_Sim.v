@@ -25,7 +25,7 @@
 `include "./Functional Unit/ALU_OPER.v"
 `include "./Functional Unit/ALU.v"
 `include "PC_register.v"
-
+`include "BranchPredictor.v"
 `include "SSOOO_CPU.v"
 
 `endif

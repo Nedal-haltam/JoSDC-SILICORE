@@ -30,6 +30,7 @@ module ROB
     output reg FULL_FLAG,
     output EXCEPTION_Flag,
     output reg FLUSH_Flag,
+    output reg Wrong_prediction,
 
     output reg [11:0] Commit_opcode,
     output reg [4:0] Commit_Rd,
@@ -204,6 +205,7 @@ always@(negedge clk, posedge rst) begin
         Commit_Write_Data <= 0;
         Commit_Control_Signals <= 0;
         FLUSH_Flag <= 0;
+        Wrong_prediction <= 0;
     end
     else begin
         Commit_opcode <= 0;
@@ -211,6 +213,7 @@ always@(negedge clk, posedge rst) begin
         Commit_Write_Data <= 0;
         Commit_Control_Signals <= 0;
         FLUSH_Flag <= 0;
+        Wrong_prediction <= 0;
         if (Reg_Busy[`Imone(Start_Index)]) begin
             if (Reg_Valid[`Imone(Start_Index)]) begin // handle ALU, lw, sw that are ready to commit (sw: do nothing, ALU/lw: write on the RegFile)
                 if (Reg_Ready[`Imone(Start_Index)]) begin
@@ -225,6 +228,7 @@ always@(negedge clk, posedge rst) begin
             else if (Reg_Speculation[`Imone(Start_Index)][0]) begin // handle branch insts
                 if (Reg_Ready[`Imone(Start_Index)]) begin // if speculative and ready then prediction was wrong
                     FLUSH_Flag <= 1'b1;
+                    Wrong_prediction <= 1'b1;
                     Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
                     Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)]; // output the target address
                 end

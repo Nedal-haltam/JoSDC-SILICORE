@@ -30,6 +30,7 @@ wire [4:0] RegFile_RP1_Reg1_ROBEN, RegFile_RP1_Reg2_ROBEN;
 wire ROB_FULL_FLAG;
 wire ROB_EXCEPTION_Flag;
 wire ROB_FLUSH_Flag;
+wire ROB_Wrong_prediction;
 wire [11:0] ROB_Commit_opcode;
 wire [4:0] ROB_Commit_Rd;
 wire [31:0] ROB_Commit_Write_Data;
@@ -119,13 +120,11 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ROB_Commit_Write_Data :
 (
     (InstQ_opcode == j || InstQ_opcode == jal) ? {6'd0,InstQ_address} : 
     (
+        (InstQ_opcode == jr) ? RegFile_RP1_Reg1 : 
         (
-            (InstQ_opcode == jr) ? RegFile_RP1_Reg1 : 
+            (InstQ_opcode == hlt_inst) ? PC_out : 
             (
-                (InstQ_opcode == hlt_inst) ? PC_out : 
-                (
-                    (InstQ_opcode == beq || InstQ_opcode == bne) ? PC_out + {{16{InstQ_immediate[15]}},InstQ_immediate} : PC_out + 1'b1
-                )
+                ((InstQ_opcode == beq || InstQ_opcode == bne) && predicted) ? PC_out + {{16{InstQ_immediate[15]}},InstQ_immediate} : PC_out + 1'b1
             )
         )
     )
@@ -150,6 +149,7 @@ InstQ instq
     .pc(InstQ_PC),
     .VALID_Inst(InstQ_VALID_Inst)
 );
+
 
 RegFile regfile
 (
@@ -189,6 +189,22 @@ RegFile regfile
 );
 
 
+wire [11:0] Decoded_opcode, Commit_opcode;
+wire [1:0] state;  // 2-bit state (00 NT | 01 NT | 10 T | 11 T)
+wire predicted; // prediction (1 = taken, 0 = not taken)
+
+
+BranchPredictor BPU
+(
+    .rst(rst), 
+    .clk(clk), 
+    .Wrong_prediction(ROB_Wrong_prediction), 
+
+    .Decoded_opcode(InstQ_opcode),
+    .Commit_opcode(ROB_Commit_opcode),
+    .state(state),  // 2-bit state (00 NT | 01 NT | 10 T | 11 T)
+    .predicted(predicted)  // prediction (1 = taken, 0 = not taken)
+);
 
 ROB rob
 (
@@ -203,8 +219,8 @@ ROB rob
             InstQ_opcode == slti || InstQ_opcode == lw) ? InstQ_rt : InstQ_rd
         )
     ),
-    .Decoded_prediction(InstQ_opcode == beq | InstQ_opcode == bne),
-    .Branch_Target_Addr(InstQ_PC + 1'b1),
+    .Decoded_prediction(predicted),
+    .Branch_Target_Addr((predicted || InstQ_opcode == jal) ? InstQ_PC + 1'b1 : InstQ_PC + {{16{InstQ_immediate[15]}},InstQ_immediate}),
 
     // TODO: get the rest of the sources
     .CDB_ROBEN1(CDB_ROBEN1),
@@ -216,12 +232,13 @@ ROB rob
     .VALID_Inst
     (
         ~rst && 
-         ~ROB_FLUSH_Flag && ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) && InstQ_VALID_Inst
+         ~ROB_FLUSH_Flag && ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) && InstQ_VALID_Inst && InstQ_opcode != j
     ),
 
     .FULL_FLAG(ROB_FULL_FLAG),
     .EXCEPTION_Flag(ROB_EXCEPTION_Flag),
     .FLUSH_Flag(ROB_FLUSH_Flag),
+    .Wrong_prediction(ROB_Wrong_prediction),
 
     .Commit_opcode(ROB_Commit_opcode),
     .Commit_Rd(ROB_Commit_Rd),
@@ -296,7 +313,8 @@ RS rs
     .ROB_FLUSH_Flag(ROB_FLUSH_Flag),
     .VALID_Inst
     (
-        InstQ_opcode != hlt_inst && InstQ_VALID_Inst && ~ROB_FULL_FLAG && ~ROB_FLUSH_Flag && InstQ_opcode != lw && InstQ_opcode != sw && InstQ_opcode != jal
+        InstQ_opcode != hlt_inst && InstQ_VALID_Inst && ~ROB_FULL_FLAG && ~ROB_FLUSH_Flag && 
+        InstQ_opcode != lw && InstQ_opcode != sw && InstQ_opcode != jal && InstQ_opcode != j
     ),
     .FU_Is_Free(FU_Is_Free),
 
