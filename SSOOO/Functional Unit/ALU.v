@@ -14,8 +14,11 @@ module ALU
     output FU_Is_Free
 );
 
+`ifdef vscode
 `include "opcodes.txt"
-  
+`else
+`include "../opcodes.txt"
+`endif  
 // ALUOP -> OP 
 // 0000   -> add
 // 0001   -> sub

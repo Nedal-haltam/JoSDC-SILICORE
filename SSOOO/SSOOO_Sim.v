@@ -6,6 +6,8 @@
 `define MAX_CLOCKS (2 * 200000)
 `define reset 2 * `ONE_CLK
 
+
+
 `ifndef vscode
 `timescale 1ns/1ps
 `endif

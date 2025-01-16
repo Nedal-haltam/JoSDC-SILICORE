@@ -18,8 +18,11 @@ module ALU_OPER(opcode, ALU_OP);
 	
 	output reg [3:0] ALU_OP;
 	
+`ifdef vscode
 `include "opcodes.txt"
-
+`else
+`include "../opcodes.txt"
+`endif  
 	always@(*) begin
 
 		case (opcode) 

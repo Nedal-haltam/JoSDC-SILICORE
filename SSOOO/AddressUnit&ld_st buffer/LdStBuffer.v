@@ -27,7 +27,7 @@ module LdStBuffer
     input [4:0] CDB_ROBEN2,
     input [31:0] CDB_ROBEN2_VAL,
 
-
+    output reg out_FULL_FLAG,
     output reg out_VALID_Inst,
     output reg [4:0]  out_ROBEN,
     output reg [4:0]  out_Rd,
@@ -37,8 +37,8 @@ module LdStBuffer
     output reg [31:0] out_Immediate,
     output reg [31:0] out_EA,
 
-    output reg [3:0] Start_Index,
-    output reg [3:0] End_Index
+    output reg [2:0] Start_Index,
+    output reg [2:0] End_Index
 
 
 
@@ -58,9 +58,17 @@ module LdStBuffer
 );
 
 
+`ifdef vscode
 `include "opcodes.txt"
-`define I(i) i[3:0]
-`define LDST_SIZE 16
+`else
+`include "../opcodes.txt"
+`endif  
+
+`define BUFFER_SIZE_bits (3)
+`define BUFFER_SIZE (1 << `BUFFER_SIZE_bits)
+`define I(i) i[`BUFFER_SIZE_bits - 1:0]
+`define LDST_SIZE (`BUFFER_SIZE)
+
 `define readybit(i) assign Reg_Ready[i] = Reg_ROBEN1[i] == 0 && Reg_ROBEN2[i] == 0
 
 reg Reg_Busy [(`LDST_SIZE - 1):0];
@@ -78,7 +86,7 @@ reg [31:0] Reg_Immediate [(`LDST_SIZE - 1):0];
 
 generate
 genvar gen_index;
-for (gen_index = 0; gen_index < `LDST_SIZE; gen_index = gen_index + 1) begin
+for (gen_index = 0; gen_index < `LDST_SIZE; gen_index = gen_index + 1) begin : required_block_name
 `readybit(gen_index);
 end
 endgenerate
@@ -115,11 +123,13 @@ assign Reg_Immediate_test = Reg_Immediate[`I(index_test)];
 
 
 
+always@(posedge clk)
+    out_FULL_FLAG <= ~(rst | ~(End_Index == Start_Index && (Reg_Busy[Start_Index])));
+
 
 
 reg [4:0] i;
 reg [4:0] ji;
-reg [4:0] k = 0;
 always@(negedge clk, posedge rst) begin
     if (rst) begin
         for (i = 0; i < `LDST_SIZE; i = i + 1) begin
@@ -134,7 +144,7 @@ always@(negedge clk, posedge rst) begin
                 Reg_Busy[`I(i)] <= 0;
             End_Index <= 0;
         end
-        else if (VALID_Inst) begin
+        else if (VALID_Inst && ~out_FULL_FLAG) begin
             Reg_Busy[End_Index] <= 1'b1;
 
             Reg_opcode[End_Index] <= opcode;

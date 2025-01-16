@@ -55,47 +55,11 @@ initial begin
 for (i = 0; i < 1024; i = i + 1)
     InstMem[i] = 0;
 
-
-`ifndef test
-`include "IM_INIT.INIT"
+`ifdef test
+`include "./Instruction Queue/IM_INIT.INIT"
 `else
-
-
-InstMem[  0] <= 32'h2001007B; // addi $1 $0 123
-InstMem[  1] <= 32'h10200003; // beq $1 $0 3
-InstMem[  2] <= 32'hAC010000; // sw $1 0 ( $0 )
-InstMem[  3] <= 32'h10210002; // beq $1 $1 2
-InstMem[  4] <= 32'hAC010001; // sw $1 1 ( $zero )
-InstMem[  5] <= 32'hFC000000; // hlt
-
-
-
-
-
+`include "IM_INIT.INIT"
 `endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* run the following to simulate in VS Code, note you should be in '\GitHub Repos\JoSDC-SILICORE\SSOOO' in the terminal
-> iverilog -o sim -D vscode .\SSOOO_Sim.v
-> vvp sim
-*/
-
-
-
-
-
 
 
 end

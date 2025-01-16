@@ -10,6 +10,7 @@ inputs:
 outputs:
     - the head of the buffer to commit its result and go to the next one
 */
+
 module ROB
 (
     input clk, rst,
@@ -54,10 +55,14 @@ module ROB
 );
 
 `include "opcodes.txt"
-`define I(i) i[3:0]
+
+`define BUFFER_SIZE_bits (4)
+`define BUFFER_SIZE (1 << `BUFFER_SIZE_bits)
+`define I(i) i[`BUFFER_SIZE_bits - 1:0]
+`define ROB_SIZE (`BUFFER_SIZE)
+
 `define Imone(i) `I(i) - 1'b1
 `define validbit(i) assign Reg_Valid[i] = ~(Reg_Speculation[i][0] | Reg_Exception[i]) // ~speculative && ~excepted
-`define ROB_SIZE 16
 
 reg [11:0] Reg_opcode [(`ROB_SIZE - 1):0];
 reg [4:0] Reg_Rd [(`ROB_SIZE - 1):0];
@@ -72,7 +77,7 @@ reg [31:0] Reg_Write_Data [(`ROB_SIZE - 1):0];
 wire Reg_Valid [(`ROB_SIZE - 1):0];
 generate
 genvar gen_index;
-for (gen_index = 0; gen_index < `LDST_SIZE; gen_index = gen_index + 1) begin
+for (gen_index = 0; gen_index < `ROB_SIZE; gen_index = gen_index + 1) begin : required_block_name
 `validbit(gen_index);
 end
 endgenerate
@@ -102,7 +107,6 @@ assign Reg_Ready_test = Reg_Ready[`I(index_test)];
 assign Reg_Speculation_test = Reg_Speculation[`I(index_test)];
 assign Reg_Exception_test = Reg_Exception[`I(index_test)];
 assign Reg_Valid_test = Reg_Valid[`I(index_test)];
-//
 
 assign RP1_Write_Data1 = Reg_Write_Data[`Imone(RP1_ROBEN1)];
 assign RP1_Write_Data2 = Reg_Write_Data[`Imone(RP1_ROBEN2)];
@@ -117,6 +121,7 @@ assign EXCEPTION_Flag = Reg_Busy[`Imone(Start_Index)] & Reg_Exception[`Imone(Sta
 
 
 reg [4:0] i = 0;
+reg [4:0] k = 0;
 always@(negedge clk) begin
 
     if (rst) begin
@@ -191,7 +196,7 @@ always@(posedge clk, posedge rst) begin
 end
 
 
-reg [4:0] k = 0;
+
 always@(negedge clk, posedge rst) begin
     if (rst) begin
         Commit_opcode <= 0;

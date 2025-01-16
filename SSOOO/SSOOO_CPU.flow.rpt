@@ -1,5 +1,5 @@
 Flow report for SSOOO_CPU
-Wed Jan  8 00:12:23 2025
+Thu Jan 16 16:10:33 2025
 Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
 
 
@@ -41,24 +41,24 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------------+
 ; Flow Summary                                                                        ;
 +------------------------------------+------------------------------------------------+
-; Flow Status                        ; Flow Failed - Wed Jan  8 00:12:23 2025         ;
+; Flow Status                        ; Successful - Thu Jan 16 16:10:33 2025          ;
 ; Quartus Prime Version              ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
 ; Revision Name                      ; SSOOO_CPU                                      ;
-; Top-level Entity Name              ; SSOOO_CPU                                      ;
+; Top-level Entity Name              ; SSOOO_Sim                                      ;
 ; Family                             ; MAX 10                                         ;
 ; Device                             ; 10M50DAF484C7G                                 ;
 ; Timing Models                      ; Final                                          ;
-; Total logic elements               ; 48,311 / 49,760 ( 97 % )                       ;
-;     Total combinational functions  ; 32,586 / 49,760 ( 65 % )                       ;
-;     Dedicated logic registers      ; 38,105 / 49,760 ( 77 % )                       ;
-; Total registers                    ; 38105                                          ;
-; Total pins                         ; 34 / 360 ( 9 % )                               ;
-; Total virtual pins                 ; 0                                              ;
-; Total memory bits                  ; 0 / 1,677,312 ( 0 % )                          ;
-; Embedded Multiplier 9-bit elements ; 0 / 288 ( 0 % )                                ;
-; Total PLLs                         ; 0 / 4 ( 0 % )                                  ;
-; UFM blocks                         ; 0 / 1 ( 0 % )                                  ;
-; ADC blocks                         ; 0 / 2 ( 0 % )                                  ;
+; Total logic elements               ; N/A until Partition Merge                      ;
+;     Total combinational functions  ; N/A until Partition Merge                      ;
+;     Dedicated logic registers      ; N/A until Partition Merge                      ;
+; Total registers                    ; N/A until Partition Merge                      ;
+; Total pins                         ; N/A until Partition Merge                      ;
+; Total virtual pins                 ; N/A until Partition Merge                      ;
+; Total memory bits                  ; N/A until Partition Merge                      ;
+; Embedded Multiplier 9-bit elements ; N/A until Partition Merge                      ;
+; Total PLLs                         ; N/A until Partition Merge                      ;
+; UFM blocks                         ; N/A until Partition Merge                      ;
+; ADC blocks                         ; N/A until Partition Merge                      ;
 +------------------------------------+------------------------------------------------+
 
 
@@ -67,54 +67,75 @@ https://fpgasoftware.intel.com/eula.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 01/08/2025 00:09:20 ;
+; Start date & time ; 01/16/2025 16:10:24 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; SSOOO_CPU           ;
 +-------------------+---------------------+
 
 
-+-------------------------------------------------------------------------------------------------------------------------+
-; Flow Non-Default Global Settings                                                                                        ;
-+-------------------------------------+----------------------------------------+---------------+-------------+------------+
-; Assignment Name                     ; Value                                  ; Default Value ; Entity Name ; Section Id ;
-+-------------------------------------+----------------------------------------+---------------+-------------+------------+
-; COMPILER_SIGNATURE_ID               ; 92384138571169.173628416033452         ; --            ; --          ; --         ;
-; MAX_CORE_JUNCTION_TEMP              ; 85                                     ; --            ; --          ; --         ;
-; MIN_CORE_JUNCTION_TEMP              ; 0                                      ; --            ; --          ; --         ;
-; PARTITION_COLOR                     ; -- (Not supported for targeted family) ; --            ; --          ; Top        ;
-; PARTITION_FITTER_PRESERVATION_LEVEL ; -- (Not supported for targeted family) ; --            ; --          ; Top        ;
-; PARTITION_NETLIST_TYPE              ; -- (Not supported for targeted family) ; --            ; --          ; Top        ;
-; POWER_BOARD_THERMAL_MODEL           ; None (CONSERVATIVE)                    ; --            ; --          ; --         ;
-; POWER_PRESET_COOLING_SOLUTION       ; 23 MM HEAT SINK WITH 200 LFPM AIRFLOW  ; --            ; --          ; --         ;
-+-------------------------------------+----------------------------------------+---------------+-------------+------------+
++------------------------------------------------------------------------------------------------------------------------------+
+; Flow Non-Default Global Settings                                                                                             ;
++--------------------------------------+----------------------------------------+---------------+-------------+----------------+
+; Assignment Name                      ; Value                                  ; Default Value ; Entity Name ; Section Id     ;
++--------------------------------------+----------------------------------------+---------------+-------------+----------------+
+; COMPILER_SIGNATURE_ID                ; 92384138571169.173703302418648         ; --            ; --          ; --             ;
+; EDA_DESIGN_INSTANCE_NAME             ; NA                                     ; --            ; --          ; SSOOO_Sim      ;
+; EDA_NATIVELINK_SIMULATION_TEST_BENCH ; SSOOO_Sim                              ; --            ; --          ; eda_simulation ;
+; EDA_OUTPUT_DATA_FORMAT               ; Verilog Hdl                            ; --            ; --          ; eda_simulation ;
+; EDA_SIMULATION_TOOL                  ; Questa Intel FPGA (Verilog)            ; <None>        ; --          ; --             ;
+; EDA_TEST_BENCH_ENABLE_STATUS         ; TEST_BENCH_MODE                        ; --            ; --          ; eda_simulation ;
+; EDA_TEST_BENCH_FILE                  ; SSOOO_Sim.v                            ; --            ; --          ; SSOOO_Sim      ;
+; EDA_TEST_BENCH_MODULE_NAME           ; SSOOO_Sim                              ; --            ; --          ; SSOOO_Sim      ;
+; EDA_TEST_BENCH_NAME                  ; SSOOO_Sim                              ; --            ; --          ; eda_simulation ;
+; EDA_TIME_SCALE                       ; 1 ps                                   ; --            ; --          ; eda_simulation ;
+; MAX_CORE_JUNCTION_TEMP               ; 85                                     ; --            ; --          ; --             ;
+; MIN_CORE_JUNCTION_TEMP               ; 0                                      ; --            ; --          ; --             ;
+; MISC_FILE                            ; DataMemory_IP.bsf                      ; --            ; --          ; --             ;
+; MISC_FILE                            ; DataMemory_IP_bb.v                     ; --            ; --          ; --             ;
+; OUTPUT_IO_TIMING_FAR_END_VMEAS       ; Half Signal Swing                      ; --            ; --          ; --             ;
+; OUTPUT_IO_TIMING_FAR_END_VMEAS       ; Half Signal Swing                      ; --            ; --          ; --             ;
+; OUTPUT_IO_TIMING_NEAR_END_VMEAS      ; Half Vccio                             ; --            ; --          ; --             ;
+; OUTPUT_IO_TIMING_NEAR_END_VMEAS      ; Half Vccio                             ; --            ; --          ; --             ;
+; PARTITION_COLOR                      ; -- (Not supported for targeted family) ; --            ; SSOOO_Sim   ; Top            ;
+; PARTITION_FITTER_PRESERVATION_LEVEL  ; -- (Not supported for targeted family) ; --            ; SSOOO_Sim   ; Top            ;
+; PARTITION_NETLIST_TYPE               ; -- (Not supported for targeted family) ; --            ; SSOOO_Sim   ; Top            ;
+; POWER_BOARD_THERMAL_MODEL            ; None (CONSERVATIVE)                    ; --            ; --          ; --             ;
+; POWER_PRESET_COOLING_SOLUTION        ; 23 MM HEAT SINK WITH 200 LFPM AIRFLOW  ; --            ; --          ; --             ;
+; SEARCH_PATH                          ; reorder buffer                         ; --            ; --          ; --             ;
+; SEARCH_PATH                          ; reservation station                    ; --            ; --          ; --             ;
+; SEARCH_PATH                          ; register file                          ; --            ; --          ; --             ;
+; SEARCH_PATH                          ; memory unit                            ; --            ; --          ; --             ;
+; SEARCH_PATH                          ; instruction queue                      ; --            ; --          ; --             ;
+; SEARCH_PATH                          ; functional unit                        ; --            ; --          ; --             ;
+; SEARCH_PATH                          ; common data bus                        ; --            ; --          ; --             ;
+; SEARCH_PATH                          ; addressunit&ld_st buffer               ; --            ; --          ; --             ;
+; TOP_LEVEL_ENTITY                     ; SSOOO_Sim                              ; SSOOO_CPU     ; --          ; --             ;
++--------------------------------------+----------------------------------------+---------------+-------------+----------------+
 
 
-+--------------------------------------------------------------------------------------------------------------------------+
-; Flow Elapsed Time                                                                                                        ;
-+----------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Module Name          ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
-+----------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Synthesis ; 00:01:21     ; 1.0                     ; 5206 MB             ; 00:01:31                           ;
-; Fitter               ; 00:01:31     ; 1.0                     ; 5980 MB             ; 00:01:28                           ;
-; Total                ; 00:02:52     ; --                      ; --                  ; 00:02:59                           ;
-+----------------------+--------------+-------------------------+---------------------+------------------------------------+
++----------------------------------------------------------------------------------------------------------------------------+
+; Flow Elapsed Time                                                                                                          ;
++------------------------+--------------+-------------------------+---------------------+------------------------------------+
+; Module Name            ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
++------------------------+--------------+-------------------------+---------------------+------------------------------------+
+; Analysis & Elaboration ; 00:00:09     ; 1.0                     ; 4787 MB             ; 00:00:23                           ;
+; Total                  ; 00:00:09     ; --                      ; --                  ; 00:00:23                           ;
++------------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
-+------------------------------------------------------------------------------------+
-; Flow OS Summary                                                                    ;
-+----------------------+------------------+------------+------------+----------------+
-; Module Name          ; Machine Hostname ; OS Name    ; OS Version ; Processor type ;
-+----------------------+------------------+------------+------------+----------------+
-; Analysis & Synthesis ; DESKTOP-E5177QH  ; Windows 10 ; 10.0       ; x86_64         ;
-; Fitter               ; DESKTOP-E5177QH  ; Windows 10 ; 10.0       ; x86_64         ;
-+----------------------+------------------+------------+------------+----------------+
++--------------------------------------------------------------------------------------+
+; Flow OS Summary                                                                      ;
++------------------------+------------------+------------+------------+----------------+
+; Module Name            ; Machine Hostname ; OS Name    ; OS Version ; Processor type ;
++------------------------+------------------+------------+------------+----------------+
+; Analysis & Elaboration ; DESKTOP-E5177QH  ; Windows 10 ; 10.0       ; x86_64         ;
++------------------------+------------------+------------+------------+----------------+
 
 
 ------------
 ; Flow Log ;
 ------------
-quartus_map --read_settings_files=on --write_settings_files=off SSOOO_CPU -c SSOOO_CPU
-quartus_fit --read_settings_files=off --write_settings_files=off SSOOO_CPU -c SSOOO_CPU
+quartus_map --read_settings_files=on --write_settings_files=off SSOOO_CPU -c SSOOO_CPU --analysis_and_elaboration
 
 
 

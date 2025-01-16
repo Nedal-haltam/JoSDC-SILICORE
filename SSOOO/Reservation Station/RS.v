@@ -35,9 +35,11 @@ module RS
 
 );
 
+`define BUFFER_SIZE_bits (3)
+`define BUFFER_SIZE (1 << `BUFFER_SIZE_bits)
+`define I(i) i[`BUFFER_SIZE_bits - 1:0]
+`define RS_SIZE `BUFFER_SIZE
 
-`define I(i) i[3:0]
-`define RS_SIZE 16
 // the ROBEN of a an instruction is the index of that instruction in the buffer plus one to avoid ROBEN value of zero
 // RS buffers to store an instruction
 reg [11:0] Reg_opcode [(`RS_SIZE - 1):0];

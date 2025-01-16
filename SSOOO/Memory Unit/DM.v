@@ -7,16 +7,19 @@ module DM
     input Read_en, Write_en,
     input [31 : 0] address,
     input [31 : 0] data,
-
     output reg [4:0] MEMU_ROBEN,
+`ifdef vscode
     output reg [31:0] MEMU_Result
-
+`else
+    output [31:0] MEMU_Result
+`endif
 );
-
-
-
 integer i;
-reg [31 : 0] DataMem [1023 : 0];
+
+
+
+`ifdef vscode
+reg [31 : 0] DataMem [0 : 1023];
 always @(negedge clk) begin
     if (Read_en) begin
         MEMU_Result <= DataMem[address[9:0]];
@@ -30,12 +33,28 @@ initial begin
 for (i = 0; i < 1024; i = i + 1)
     DataMem[i] = 0;
 
-`ifndef test
+`ifdef test
+`include "./Memory Unit/DM_INIT.INIT"
+`else
 `include "DM_INIT.INIT"
 `endif 
-
-
 end
+
+`else
+always@(negedge clk) begin
+    MEMU_ROBEN <= ROBEN;
+end
+DataMemory_IP DataMemory
+(
+	address[9:0],
+	~clk,
+	data,
+	Write_en,
+	MEMU_Result
+);
+
+`endif
+
 
 
 

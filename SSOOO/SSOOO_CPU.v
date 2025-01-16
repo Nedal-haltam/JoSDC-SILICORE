@@ -1,7 +1,6 @@
 
 
 
-
 module SSOOO_CPU
 (
     input input_clk, rst,
@@ -71,6 +70,7 @@ wire [31:0] AU_LdStB_EA, AU_LdStB_Write_Data;
 
 // Load Store Buffer
 wire LdStB_MEMU_VALID_Inst;
+wire LdStB_FULL_FLAG;
 wire [4:0]  LdStB_MEMU_ROBEN;
 wire [4:0]  LdStB_MEMU_Rd;
 wire [11:0] LdStB_MEMU_opcode;
@@ -78,8 +78,8 @@ wire [4:0]  LdStB_MEMU_ROBEN1, LdStB_MEMU_ROBEN2;
 wire [31:0] LdStB_MEMU_ROBEN1_VAL, LdStB_MEMU_ROBEN2_VAL;
 wire [31:0] LdStB_MEMU_Immediate;
 wire [31:0] LdStB_MEMU_EA, LdStB_MEMU_Write_Data;
-wire [3:0] LdStB_Start_Index;
-wire [3:0] LdStB_End_Index;
+wire [2:0] LdStB_Start_Index;
+wire [2:0] LdStB_End_Index;
 
 // Memory Unit
 wire [4:0] MEMU_ROBEN;
@@ -132,7 +132,7 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ROB_Commit_Write_Data :
 );
 
 
-PC_register pcreg(PC, PC_out, ~ROB_FULL_FLAG || ROB_FLUSH_Flag , clk, rst);
+PC_register pcreg(PC, PC_out, ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag , clk, rst);
 
 InstQ instq
 (
@@ -165,7 +165,7 @@ RegFile regfile
     ), 
     .Decoded_WP1_ROBEN
     (
-        (ROB_FULL_FLAG || ROB_FLUSH_Flag) ? 5'd0 : ROB_End_Index
+        ((ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag) ? 5'd0 : ROB_End_Index
     ), 
     .WP1_DRindex(ROB_Commit_Rd), 
     .Decoded_WP1_DRindex
@@ -216,7 +216,7 @@ ROB rob
     .VALID_Inst
     (
         ~rst && 
-         ~ROB_FLUSH_Flag && ~ROB_FULL_FLAG && InstQ_VALID_Inst
+         ~ROB_FLUSH_Flag && ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) && InstQ_VALID_Inst
     ),
 
     .FULL_FLAG(ROB_FULL_FLAG),
@@ -423,7 +423,7 @@ LdStBuffer ldstbuffer
     .CDB_ROBEN2(CDB_ROBEN2),
     .CDB_ROBEN2_VAL(CDB_Write_Data2),
 
-
+    .out_FULL_FLAG(LdStB_FULL_FLAG),
     .out_VALID_Inst(LdStB_MEMU_VALID_Inst),
     .out_ROBEN(LdStB_MEMU_ROBEN),
     .out_Rd(LdStB_MEMU_Rd),
