@@ -1,5 +1,6 @@
 ﻿
 using System.Text;
+using System.Collections.Generic;
 
 using static LibCPU.MIPS;
 namespace LibCPU
@@ -62,6 +63,7 @@ namespace LibCPU
                 aluout = 0;
                 memout = 0;
                 prediction = false;
+                valid = true;
                 return this;
             }
             public string mc;
@@ -86,6 +88,7 @@ namespace LibCPU
             public int aluout;
             public int memout;
             public bool prediction;
+            public bool valid;
         }
             
 
@@ -440,8 +443,388 @@ namespace LibCPU
             return mnemonicmap.ContainsKey(inst.opcode + inst.funct);
         }
 
+    }
+    
+    public class OOO 
+    {
+        public int PC;
+        public bool hlt;
+        public int targetaddress;
+
+        public enum PCsrc { PCplus1, branchTarget, exception, none }
+        public PCsrc pcsrc;
+
+        public enum handlerAddress { overflow = 100, underflow = 110, invalidAddress = 120 } // todo: change these to the right ones
+
+        public List<string> DM; // Data Mem
+        public List<int> regs; // register file
+        public List<int> regs_ROBENS; // register file entries ROBENs
+        public List<string> IM; // Instruction Mem
+
+        // ROB
+        public bool ROBfullFlag, flush;
+        public int ROBendIndex, ROBstartIndex;
+
+        public struct ROBregister {
+
+            public Mnemonic type;
+            public int Rd;
+            public string Speculation;
+            public bool busy;
+            public bool ready;
+            public bool exception;
+            public int writeData; 
+
+            public ROBregister(Mnemonic type) {
+                this.type        = type;      
+                this.Rd          = 0;
+                this.busy        = false;
+                this.ready       = false;
+                this.exception   = false;
+                this.writeData   = 0;
+            }
+        }
+
+        public List<ROBregister> ROB;
+
+        // Reservation Station
+        public bool RSfullFlag;
+
+        public struct RSregister {
+            
+            public Aluop ALUop;
+            public int ROBEN;
+            public int ROBEN1;
+            public int ROBEN2;
+            public int ROBEN1_val;
+            public int ROBEN2_val;
+            public int immediate;
+            public bool busy;
+
+            public RSregister(Aluop ALUop) {
+                this.ALUop       = ALUop;
+                this.ROBEN       = 0;
+                this.ROBEN1      = new string('0', 5);
+                this.ROBEN2      = new string('0', 5);
+                this.ROBEN1_val  = new string('0', 32);
+                this.ROBEN2_val  = new string('0', 32);
+                this.immediate = new string('0', 32);
+                this.busy = false;
+            }
+        }
+
+        public List<RSregister> reservationStation;
+
+        // Load Store Buffer
+        public bool LSfullFlag;
+        public int LSendIndex, LSstartIndex;
+
+        public struct LSregister {
+            public Mnemonic type;
+            public bool ready;
+            public bool busy;
+            public int Rd;
+            public int effectiveAddress;
+            public int ROBEN;
+            public int ROBEN1;
+            public int ROBEN2;
+            public int ROBEN1_val;
+            public int ROBEN2_val;
+            public int immediate;
+
+            public LSregister(Mnemonic type) {
+                this.type = type;
+                this.ready = false;
+                this.busy = false;
+                this.Rd = 0;
+                this.effectiveAddress = 0;
+                this.ROBEN = 0;
+                this.ROBEN1 = 0;
+                this.ROBEN2 = 0;
+                this.ROBEN1_val = 0;
+                this.ROBEN2_val = 0;
+                this.immediate = 0;
+            }
+        }
+
+        public List<LSregister> LSbuffer;
+
+        public OOO(List<string> insts, List<string> data_mem_init) {
+            PC              = -1;
+            hlt             = false;
+            targetaddress   = 0;
+            flush           = false;
+    
+            (IM, DM, regs) = InitMipsCPU(insts, data_mem_init);
+            
+            for (int i = 0; i < 32; i++) 
+                regs_ROBENS .Add(0);
+
+            // initializing ROB 
+            ROB = new List<ROBregister>();
+            for (int i = 0; i < 16; i++) 
+                ROB.Add(new ROBregister(Mnemonic.nop));
+
+            ROBendIndex     = 0;
+            ROBstartIndex   = 0;
+            ROBfullFlag     = false;
+
+            // initializing reservation station
+            reservationStation = new List<RSregister>();
+            for (int i = 0; i < 16; i++) 
+                reservationStation.Add(new RSregister(Aluop.add));
+            
+            RSfullFlag = false;
+
+            // initializing the LS buffer
+            LSbuffer = new List<LSregister>;
+            for (int i = 0; i < 16; i++)
+                LSbuffer.Add(new LSregister(Mnemonic.nop));
+
+            LSfullFlag = false;
+            LSendIndex = 0;
+            LSstartIndex = 0;
+
+        }
+
+        public string fetchInstruction() {
+            string fetched = "";
+            if (PC >= IM.Count) return fetched.PadLeft(32, '0');
+            fetched = IM[PC];
+            return fetched;
+        }
+
+        Instruction decodemc(string mc, int pc)
+        {
+            Instruction inst = GetNewInst();
+            inst.mc = mc;
+            inst.PC = pc;
+            inst.opcode = mc.Substring(mc.Length - (1 + 31), 6);
+            inst.rsind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 25), 5), 2);
+            inst.rtind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 20), 5), 2);
+            inst.rdind = Convert.ToInt32(mc.Substring(mc.Length - (1 + 15), 5), 2);
+            inst.shamt = mc.Substring(mc.Length - (1 + 10), 5);
+            inst.funct = mc.Substring(mc.Length - (1 + 5), 6);
+            inst.immeds = Convert.ToInt32(sx(mc.Substring(mc.Length - (1 + 15), 16)), 2);
+            inst.immedz = Convert.ToInt32(zx(mc.Substring(mc.Length - (1 + 15), 16)), 2);
+            inst.address = Convert.ToInt32(zx(mc.Substring(mc.Length - (1 + 25), 26)), 2);
+
+            // mips integer instruction map for formats (R, I, J)
+            inst.rs = regs[inst.rsind];
+            inst.rt = regs[inst.rtind];
+
+
+            if (inst.opcode != "000000")
+                inst.funct = "000000";
+            if (!mnemonicmap.TryGetValue(inst.opcode + inst.funct, out Mnemonic value))
+            {
+                Exception e = new Exception(EXCEPTION)
+                {
+                    Source = DECODE
+                };
+                throw e;
+            }
+            else
+            {
+                if (mc == "".PadLeft(32, '0'))
+                    inst.mnem = Mnemonic.nop;
+                inst.mnem = value;
+            }
+            inst.aluop = get_inst_aluop(inst.mnem);
+            inst.format = get_format(inst.mnem);
+            inst.oper1 = get_oper1(inst);
+            inst.oper2 = get_oper2(inst);
+            if (inst.format == "I")
+            {
+                inst.rdind = inst.rtind;
+            }
+            if (inst.format == "J")
+            {
+                inst.rdind = 31;
+            }
+            return inst;
+        }
+
+        // dispatch instruction from instruction queue
+        public void dispatch(Instruction currInstruction) {
+            // halts the CPU if the fetched instruction is empty (end of IM)
+            if (currInstruction.mnem == Mnemonic.hlt) hlt = 1; // This condition is wrong
+            else if(!currInstruction.mnem = Mnemonic.lw && !currInstruction.mnem = Mnemonic.sw && !ROBfullFlag && !RSfullFlag) {
+                // places the instruction in the ROB
+                ROBendIndex = (ROBendIndex + 1) % 16;
+                ROBregister currROBregister = ROB[ROBendIndex];
+                int currROBEN = ROBendIndex; // for the reservation station ROBEN
+                
+                // assigns the values of the ROB register
+                currROBregister.type        = currInstruction.mnem;
+                currROBregister.Rd          = currInstruction.rdind;
+                currROBregister.Speculation = 
+                currROBregister.busy        = true;
+                currROBregister.ready       = false;
+                currROBregister.exception   = false;
+
+                // assigns the full flag after it inserts the element
+                if((ROBendIndex + 1) % 16 == ROBstartIndex) { ROBfullFlag = true; }
+
+                // places the instruction in the RS
+                for(int i = 0; i < 16; i++) {
+                    RSregister currRSregister = reservationStation[i];
+                    if(!currRSregister.busy) {
+                        currRSregister.ALUop        = currInstruction.aluop;
+                        currRSregister.ROBEN        = currROBEN;
+                        currRSregister.busy         = true;
+                        if(currInstruction.format == "R") {
+                            currRSregister.ROBEN1       = regs_ROBENS[currInstruction.rsind];
+                            currRSregister.ROBEN2       = regs_ROBENS[currInstruction.rtind];
+                            currRSregister.ROBEN1_val   = currInstruction.oper1;
+                            currRSregister.ROBEN2_val   = currInstruction.oper2;
+                            // search for operand in ROB
+                        }
+                        else if(currInstruction.format == "I") {
+                            currRSregister.ROBEN1       = regs_ROBENS[currInstruction.rsind];
+                            currRSregister.ROBEN2       = 0;
+                            currRSregister.ROBEN1_val   = currInstruction.oper1;
+                            currRSregister.ROBEN2_val   = currInstruction.oper2;
+                        }
+                        else if(currInstruction.format == "J") {
+                            currRSregister.ROBEN1       = regs_ROBENS[currInstruction.rsind];
+                            currRSregister.ROBEN2       = 0;
+                            currRSregister.ROBEN1_val   = currInstruction.oper1;
+                            currRSregister.ROBEN2_val   = currInstruction.oper2;
+                        }
+                        break;
+                    }
+                }
+
+                // updates register file ROBEN
+                regs_ROBENS[currInstruction.rdind] = currROBEN;
+            }
+            else if(currInstruction.mnem = Mnemonic.lw && currInstruction.mnem = Mnemonic.sw && !ROBfullFlag && !LSfullFlag) {
+                for int(in = 0)
+            }
+        }
+
+        public (int, string) execute(Aluop ALUop, int operand1, int operand2, string ROBEN) {
+            int result;
+            switch (ALUop) {
+                case Aluop.add: return (operand1 + operand2, ROBEN);
+                case Aluop.sub: return (operand1 - operand2, ROBEN);
+                case Aluop.and: return (operand1 & operand2, ROBEN);
+                case Aluop.or : return (operand1 | operand2, ROBEN);
+                case Aluop.xor: return (operand1 ^ operand2, ROBEN);
+                case Aluop.nor: return (~(operand1 | operand2), ROBEN);
+                case Aluop.slt: return (operand1 < operand2) ? 1 : 0;
+                case Aluop.sgt: return (operand1 > operand2) ? 1 : 0;
+                case Aluop.sll: return operand1 << operand2;
+                case Aluop.srl: {
+                        if (operand2 == 0)
+                            return operand1;
+                        return Math.Abs(operand1 >> operand2);
+                    };
+                default: return (0, "00000");
+            }
+        }
+
+        public void update(int result, int resultROBEN) {
+            // updates RS operands from CDB
+            for(int i = 0; i < 16; i++){
+                RSregister currRSregister = reservationStation[i];
+                if(currRSregister.busy) {
+                    // updates first operand
+                    if(currRSregister.ROBEN1 == CDB_ROBEN && CDB_ROBEN != 0) { 
+                        currRSregister.ROBEN1_val = CDB_val 
+                        currRSregister.ROBEN1 = 0;
+                    }
+                    // updates second operand
+                    if(currRSregister.ROBEN2 == CDB_ROBEN && CDB_ROBEN != 0) { 
+                        currRSregister.ROBEN2_val = CDB_val;
+                        currRSregister.ROBEN2 = 0;
+                    }
+                }
+            }
+            
+            // updates ROB 
+            for(int i = 0; i < 16; i++){ 
+                ROBregister currROBregister = ROB[i];
+                if(i == resultROBEN) { 
+                    currROBregister.writeData   = result;
+                    currROBregister.ready       = true;
+                }
+            }
+
+            // updates load store buffer
+            
+        }
+
+        public void executeAndBroadcast(){
+            for(int i = 0; i < 16; i++) {
+                RSregister currRSregister = reservationStation[i];
+                if(currRSregister.busy && currRSregister.ROBEN1 == 0 && currRSregister.ROBEN2 == 0) {
+                    (int result, string resultROBEN) = execute(currRSregister.ALUop, currRSregister.ROBEN1_val, currRSregister.ROBEN2_val, currRSregister.ROBEN);
+                    update(result, resultROBEN);
+                    return;
+                }
+            }
+            // load store 
+        }
+
+        public void flushRegisters() {
+            for(int i = 0; i < 16; i++){
+                RSregister currRSregister = reservationStation[i];
+                currRSregister.busy = 0;
+                currRSregister.ROBEN = 0;
+                currRSregister.ROBEN1 = 0;
+                currRSregister.ROBEN2 = 0;
+            }
+
+            ROBfullFlag = 0;
+            flush = 0;
+            ROBstartIndex = 0;
+            ROBendIndex = 0;
+        }
+
+        public void commit() {
+            ROBregister currROBregister = ROB[ROBstartIndex];
+            // if empty
+            if((ROBstartIndex == ROBendIndex) && currROBregister.busy == 0) return;
+
+            if(currROBregister.ready) {
+                if(currROBregister.type == Mnemonic.beq || currROBregister.type == Mnemonic.beq) {
+
+                }
+                else {
+                    regs_ROBENS[currROBregister.Rd] = 0;
+                    regs[currROBregister.Rd] = currROBregister.writeData;
+                } 
+
+                ROBstartIndex = (ROBstartIndex + 1) % 16;
+                ROBfullFlag = 0;
+            }
+        }
+
+        public void update_PC() {
+            if (pcsrc == PCsrc.none) { return; }
+            else if (pcsrc == PCsrc.PCplus1) { PC += 1; }
+            else if (pcsrc == PCsrc.branchTarget) { PC = targetaddress; }
+            else if (pcsrc == PCsrc.exception) { PC = }
+        }
+
+        void consumeInstruction() {
+
+            string mc = IM[PC]; // fetch the instructon
+            Instruction inst = decodemc(mc, PC); // decode the instruction
+            void dispatch(inst);
+            // 
+        }
+
+        public void print_regs() { MIPS.print_regs(regs); }
+        public void print_DM() { MIPS.print_DM(DM); }
 
     }
+
+
+
+
     public class CPU5STAGE
     {
         int PC;
@@ -996,6 +1379,7 @@ namespace LibCPU
             MIPS.print_DM(DM);
         }
     }
+    
     public class SingleCycle
     {
         public int PC;

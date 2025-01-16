@@ -100,6 +100,15 @@ namespace main
                 //sb.Append($"Exception Type : {excep.ToString()}");
                 sb.Append($"Number of cycles consumed : {cycles,10}\n");
             }
+            else if (cpu_type == LibCPU.CPU_type.OOO)
+            {
+                LibCPU.OOO cpu = new(mcs, data_mem_init);
+                (int cycles, LibCPU.MIPS.Exceptions excep) = cpu.Run();
+                sb.Append(LibCPU.MIPS.get_regs(cpu.regs));
+                sb.Append(LibCPU.MIPS.get_DM(cpu.DM));
+                //sb.Append($"Exception Type : {excep.ToString()}");
+                sb.Append($"Number of cycles consumed : {cycles,10}\n");
+            }
             if (!command)
                 Console.WriteLine( sb.ToString() );
 
