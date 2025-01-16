@@ -70,25 +70,6 @@ this block is does the following:
 reg [4:0] i;
 reg [4:0] j;
 reg [4:0] Next_Free = 0;
-// assign FULL_FLAG = ~(rst | 
-// ~(
-//     Reg_Busy[0] & 
-//     Reg_Busy[1] & 
-//     Reg_Busy[2] & 
-//     Reg_Busy[3] & 
-//     Reg_Busy[4] & 
-//     Reg_Busy[5] & 
-//     Reg_Busy[6] & 
-//     Reg_Busy[7] & 
-//     Reg_Busy[8] & 
-//     Reg_Busy[9] & 
-//     Reg_Busy[10] & 
-//     Reg_Busy[11] & 
-//     Reg_Busy[12] & 
-//     Reg_Busy[13] & 
-//     Reg_Busy[14] & 
-//     Reg_Busy[(`RS_SIZE - 1)]
-// ));
 
 wire [`RS_SIZE-1:0] and_result;
 

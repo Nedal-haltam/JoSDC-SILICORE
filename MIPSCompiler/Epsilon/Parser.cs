@@ -545,20 +545,41 @@ namespace Epsilon
         {
             NodeStmtDeclareArray declare = new();
             declare.ident = ident;
+            declare.values = [];
             consume();
             Token size_token = consume();
-            if (!int.TryParse(size_token.Value, out int size))
+            if (!uint.TryParse(size_token.Value, out uint size))
             {
                 ErrorExpected("a constant size for the array");
             }
             try_consume_err(TokenType.CloseSquare);
-            try_consume_err(TokenType.SemiColon);
-            declare.values = [];
-            NodeExpr expr = ExprZero();
-            for (int i = 0; i < size; i++)
+            if (peek(TokenType.Equal).HasValue)
             {
-                declare.values.Add(new() { ident = new() { Line = ident.Line, Type = ident.Type, Value = ident.Value + $"{i}" }, expr = expr });
+                consume();
+                try_consume_err(TokenType.OpenCurly);
+                for (int i = 0; i < size; i++)
+                {
+                    NodeExpr? expr = ParseExpr();
+                    if (!expr.HasValue)
+                        ErrorExpected("expression");
+                    declare.values.Add(new() { ident = new() { Line = ident.Line, Type = ident.Type, Value = ident.Value + $"{i}" }, expr = expr.Value });
+                    if (peek(TokenType.CloseCurly).HasValue)
+                    {
+                        consume();
+                        break;
+                    }
+                    try_consume_err(TokenType.Comma);
+                }
             }
+            else
+            {
+                NodeExpr expr = ExprZero();
+                for (int i = 0; i < size; i++)
+                {
+                    declare.values.Add(new() { ident = new() { Line = ident.Line, Type = ident.Type, Value = ident.Value + $"{i}" }, expr = expr });
+                }
+            }
+            try_consume_err(TokenType.SemiColon);
             NodeStmt stmt = new();
             stmt.type = NodeStmt.NodeStmtType.declare;
             stmt.declare.type = NodeStmtDeclare.NodeStmtDeclareType.Array;

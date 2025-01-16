@@ -82,22 +82,6 @@ for (gen_index = 0; gen_index < `ROB_SIZE; gen_index = gen_index + 1) begin : re
 `validbit(gen_index);
 end
 endgenerate
-// `validbit(0);
-// `validbit(1);
-// `validbit(2);
-// `validbit(3);
-// `validbit(4);
-// `validbit(5);
-// `validbit(6);
-// `validbit(7);
-// `validbit(8);
-// `validbit(9);
-// `validbit(10);
-// `validbit(11);
-// `validbit(12);
-// `validbit(13);
-// `validbit(14);
-// `validbit((`ROB_SIZE - 1));
 
 
 assign Reg_opcode_test = Reg_opcode[`I(index_test)];

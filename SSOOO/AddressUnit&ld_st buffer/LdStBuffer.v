@@ -90,24 +90,6 @@ for (gen_index = 0; gen_index < `LDST_SIZE; gen_index = gen_index + 1) begin : r
 `readybit(gen_index);
 end
 endgenerate
-// `readybit(0);
-// `readybit(1);
-// `readybit(2);
-// `readybit(3);
-// `readybit(4);
-// `readybit(5);
-// `readybit(6);
-// `readybit(7);
-// `readybit(8);
-// `readybit(9);
-// `readybit(10);
-// `readybit(11);
-// `readybit(12);
-// `readybit(13);
-// `readybit(14);
-// `readybit((`LDST_SIZE - 1));
-
-
 
 assign Reg_Busy_test = Reg_Busy[`I(index_test)];
 assign Reg_Ready_test = Reg_Ready[`I(index_test)];

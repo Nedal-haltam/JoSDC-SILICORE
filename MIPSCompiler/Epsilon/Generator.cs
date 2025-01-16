@@ -132,9 +132,9 @@ namespace Epsilon
                 }
                 else
                 {
-                    string dest_reg = "$1";
                     // we save $sp + relative_location - index in $2 to use it as an address
                     int relative_location = StackSize - VariableLocation(ident.ident.Value);
+                    string dest_reg = "$1";
                     string reg_addr = "$2";
                     GenExpr(ident.index.Value);
                     GenPop(reg_addr);

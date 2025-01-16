@@ -8,13 +8,17 @@ int special = ((x + 97) << ((108 - 97))) + (110) - 111 + (117 - 100); // 219152
 #define SIZE 5
 
 
-int arr[SIZE];
+// int arr[SIZE];
+// arr[0] = 12;
+// arr[1] = 3;
+// arr[2] = 6;
+// arr[3] = 0;
+// arr[4] = 100;
 
-arr[0] = 12;
-arr[1] = 3;
-arr[2] = 6;
-arr[3] = 0;
-arr[4] = 100;
+// using array initialization
+int arr[SIZE] = { 444, 33, 5, 6, 0 };
+
+
 
 // this my friend is selection sort written using Epsilon
 for (int i = 0; i < SIZE - 1; i = i + 1) {

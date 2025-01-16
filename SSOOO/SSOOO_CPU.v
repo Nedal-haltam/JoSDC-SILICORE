@@ -114,7 +114,7 @@ end
 
 /*
 TODO:
-    - jr in case of dependecy: it happens when you fetch the jr instruction and the register it needs to get the target address is unavailable
+    - jr in case of dependecy: it happens when you fetch the jr instruction and the register it needs to get the target address from is unavailable
 */
 assign PC = (ROB_FLUSH_Flag == 1'b1) ? ROB_Commit_Write_Data :
 (
