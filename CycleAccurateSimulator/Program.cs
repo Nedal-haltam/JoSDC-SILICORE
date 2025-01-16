@@ -1,4 +1,3 @@
-﻿
 using System.Text;
 
 namespace main
@@ -103,7 +102,7 @@ namespace main
             else if (cpu_type == LibCPU.CPU_type.OOO)
             {
                 LibCPU.OOO cpu = new(mcs, data_mem_init);
-                (int cycles, LibCPU.MIPS.Exceptions excep) = cpu.Run();
+                int cycles = cpu.Run();
                 sb.Append(LibCPU.MIPS.get_regs(cpu.regs));
                 sb.Append(LibCPU.MIPS.get_DM(cpu.DM));
                 //sb.Append($"Exception Type : {excep.ToString()}");
