@@ -85,14 +85,16 @@ wire [2:0] LdStB_End_Index;
 // Memory Unit
 wire [4:0] MEMU_ROBEN;
 wire [31:0] MEMU_Result;
-
+wire MEMU_invalid_address;
 
 
 // CDB
 wire [4:0] CDB_ROBEN1;
 wire [31:0] CDB_Write_Data1;
+wire CDB_EXCEPTION1;
 wire [4:0] CDB_ROBEN2;
 wire [31:0] CDB_Write_Data2;
+wire CDB_EXCEPTION2;
 
 
 
@@ -116,7 +118,8 @@ end
 TODO:
     - jr in case of dependecy: it happens when you fetch the jr instruction and the register it needs to get the target address from is unavailable
 */
-assign PC = (ROB_FLUSH_Flag == 1'b1) ? ROB_Commit_Write_Data :
+`define exception_handler 32'd1000
+assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_Write_Data : `exception_handler) : 
 (
     (InstQ_opcode == j || InstQ_opcode == jal) ? {6'd0,InstQ_address} : 
     (
@@ -222,12 +225,14 @@ ROB rob
     .Decoded_prediction(predicted),
     .Branch_Target_Addr((predicted || InstQ_opcode == jal) ? InstQ_PC + 1'b1 : InstQ_PC + {{16{InstQ_immediate[15]}},InstQ_immediate}),
 
-    // TODO: get the rest of the sources
     .CDB_ROBEN1(CDB_ROBEN1),
     .CDB_ROBEN1_Write_Data(CDB_Write_Data1),
+    .CDB_Branch_Decision(FU_Branch_Decision),
+    .CDB_EXCEPTION1(CDB_EXCEPTION1),
+
     .CDB_ROBEN2(CDB_ROBEN2),
     .CDB_ROBEN2_Write_Data(CDB_Write_Data2),
-    .CDB_Branch_Decision(FU_Branch_Decision),
+    .CDB_EXCEPTION2(CDB_EXCEPTION2),
 
     .VALID_Inst
     (
@@ -304,7 +309,6 @@ RS rs
             )
         )
     ),
-    // TODO: get the rest of the sources
     .CDB_ROBEN1(CDB_ROBEN1),
     .CDB_ROBEN1_VAL(CDB_Write_Data1),
     .CDB_ROBEN2(CDB_ROBEN2),
@@ -435,7 +439,6 @@ LdStBuffer ldstbuffer
     .ROB_Start_Index(ROB_Start_Index),
     .ROB_FLUSH_Flag(ROB_FLUSH_Flag),
 
-    // TODO: get the rest of the sources
     .CDB_ROBEN1(CDB_ROBEN1),
     .CDB_ROBEN1_VAL(CDB_Write_Data1),
     .CDB_ROBEN2(CDB_ROBEN2),
@@ -472,7 +475,7 @@ DM datamemory
     ), 
     .address(LdStB_MEMU_EA),
     .data(LdStB_MEMU_ROBEN2_VAL),
-
+    .MEMU_invalid_address(MEMU_invalid_address),
     .MEMU_ROBEN(MEMU_ROBEN),
     .MEMU_Result(MEMU_Result)
 
@@ -485,9 +488,11 @@ CDB cdb
 (
     .ROBEN1(FU_ROBEN),
     .Write_Data1(FU_Result),
+    .EXCEPTION1(1'b0),
 
     .ROBEN2(MEMU_ROBEN),
     .Write_Data2(MEMU_Result),
+    .EXCEPTION2(MEMU_invalid_address),
 
     // input [4:0] ROBEN3,
     // input [31:0] Write_Data3,
@@ -498,9 +503,11 @@ CDB cdb
 
     .out_ROBEN1(CDB_ROBEN1),
     .out_Write_Data1(CDB_Write_Data1),
+    .out_EXCEPTION1(CDB_EXCEPTION1),    
 
     .out_ROBEN2(CDB_ROBEN2),
-    .out_Write_Data2(CDB_Write_Data2)
+    .out_Write_Data2(CDB_Write_Data2),
+    .out_EXCEPTION2(CDB_EXCEPTION2)
 
     // output [4:0] out_ROBEN3,
     // output [31:0] out_Write_Data3,

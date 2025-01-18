@@ -21,9 +21,11 @@ module ROB
 
     input [4:0] CDB_ROBEN1,
     input [31:0] CDB_ROBEN1_Write_Data,
+    input CDB_Branch_Decision,
+    input CDB_EXCEPTION1,
     input [4:0] CDB_ROBEN2,
     input [31:0] CDB_ROBEN2_Write_Data,
-    input CDB_Branch_Decision,
+    input CDB_EXCEPTION2,
 
     input VALID_Inst,
     // output FULL_FLAG,
@@ -150,12 +152,14 @@ always@(posedge clk, posedge rst) begin
                 Reg_Write_Data[`Imone(CDB_ROBEN1)] <= CDB_ROBEN1_Write_Data;
             Reg_Speculation[`Imone(CDB_ROBEN1)][0] <= Reg_Speculation[`Imone(CDB_ROBEN1)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN1)][1]);
             Reg_Ready[`Imone(CDB_ROBEN1)] <= 1'b1;
+            Reg_Exception[`Imone(CDB_ROBEN1)] <= CDB_EXCEPTION1;
         end
         if (Reg_Busy[`Imone(CDB_ROBEN2)] && CDB_ROBEN2 != 0) begin
             if (~Reg_Speculation[`Imone(CDB_ROBEN2)][0])
                 Reg_Write_Data[`Imone(CDB_ROBEN2)] <= CDB_ROBEN2_Write_Data;
             Reg_Speculation[`Imone(CDB_ROBEN2)][0] <= Reg_Speculation[`Imone(CDB_ROBEN2)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN2)][1]);
             Reg_Ready[`Imone(CDB_ROBEN2)] <= 1'b1;
+            Reg_Exception[`Imone(CDB_ROBEN2)] <= CDB_EXCEPTION2;
         end
 
         if (Reg_Busy[`Imone(Start_Index)]) begin
@@ -175,6 +179,12 @@ always@(posedge clk, posedge rst) begin
                     end
                     Start_Index <= 1;
                 end
+            end
+            else if (Reg_Exception[`Imone(Start_Index)]) begin // handle branch insts
+                for (k = 0; k < `ROB_SIZE; k = k + 1) begin // flush all insts
+                    Reg_Busy[k] <= 0;
+                end
+                Start_Index <= 1;
             end
         end
     end
@@ -216,6 +226,10 @@ always@(negedge clk, posedge rst) begin
                     Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
                     Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)]; // output the target address
                 end
+            end
+            else if (Reg_Exception[`Imone(Start_Index)]) begin
+                FLUSH_Flag <= 1'b1;
+                Commit_opcode <= Reg_opcode[`Imone(Start_Index)];               
             end
         end
     end

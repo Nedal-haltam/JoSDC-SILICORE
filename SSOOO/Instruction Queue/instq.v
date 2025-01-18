@@ -13,7 +13,7 @@ module InstQ
 );
 
 
-reg [31:0] InstMem [1023:0];
+reg [31:0] InstMem [0:1023];
 
 wire [31:0] inst;
 

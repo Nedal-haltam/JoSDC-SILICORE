@@ -7,6 +7,7 @@ module DM
     input Read_en, Write_en,
     input [31 : 0] address,
     input [31 : 0] data,
+    output MEMU_invalid_address,
     output reg [4:0] MEMU_ROBEN,
 `ifdef vscode
     output reg [31:0] MEMU_Result
@@ -21,13 +22,15 @@ integer i;
 `ifdef vscode
 reg [31 : 0] DataMem [0 : 1023];
 always @(negedge clk) begin
-    if (Read_en) begin
-        MEMU_Result <= DataMem[address[9:0]];
+    if (~MEMU_invalid_address) begin
+        if (Read_en) begin
+            MEMU_Result <= DataMem[address[9:0]];
+        end
+        if (Write_en) begin
+            DataMem[address] <= data;
+        end
+        MEMU_ROBEN <= ROBEN;
     end
-    if (Write_en) begin
-        DataMem[address] <= data;
-    end
-    MEMU_ROBEN <= ROBEN;
 end
 initial begin
 for (i = 0; i < 1024; i = i + 1)
@@ -56,7 +59,7 @@ DataMemory_IP DataMemory
 `endif
 
 
-
+assign MEMU_invalid_address = ~(32'd0 <= address && address <= 32'd1023);
 
 
 `ifdef vscode
