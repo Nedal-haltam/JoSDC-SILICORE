@@ -117,6 +117,7 @@ end
 /*
 TODO:
     - jr in case of dependecy: it happens when you fetch the jr instruction and the register it needs to get the target address from is unavailable
+    - unify the exception handler in the MIF & INIT files
 */
 `define exception_handler 32'd1000
 assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_Write_Data : `exception_handler) : 

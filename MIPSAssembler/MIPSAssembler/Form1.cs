@@ -19,6 +19,7 @@ namespace MIPSAssembler
         List<string> curr_data_dir = [];
         List<string> curr_insts = [];
         MIPSASSEMBLER.Program m_prog = new();
+        int HANDLER_ADDR = 1000;
         private readonly List<string> excep_mc = [
                     "11111100000000000000000000000000", // hlt
                     "00100000000111111111111111111111", // addi x31 x0 -1
@@ -220,7 +221,7 @@ namespace MIPSAssembler
             sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
             sb.Append(ToMIFentries(0, m_prog.mc, width, from_base));
             sb.Append($"[{m_prog.mc.Count:X}..{(depth - excep_mc.Count - 1):X}] : 0;\n");
-            sb.Append(ToMIFentries(depth - excep_mc.Count, excep_mc, width, from_base));
+            sb.Append(ToMIFentries(HANDLER_ADDR - 1, excep_mc, width, from_base));
             sb.Append(GetMIFTail());
 
             return sb;
@@ -237,7 +238,7 @@ namespace MIPSAssembler
             {
                 IM_INIT.Add(get_entry_IM_INIT(mc[i], curr_insts[i], i));
             }
-            int HANDLER_ADDR = 1000;
+            
             for (int i = 0; i < excep_mc.Count; i++)
             {
                 IM_INIT.Add(get_entry_IM_INIT(excep_mc[i], curr_insts[mc.Count + i], HANDLER_ADDR - 1 + i));
