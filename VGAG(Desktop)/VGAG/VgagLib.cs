@@ -542,7 +542,6 @@ namespace VGAG
             string CharMem = "D:\\GitHub Repos\\JoSDC-SILICORE\\VGAG(Desktop)\\VGAG\\bin\\Debug\\net8.0-windows\\characters\\CharMem.mif"; // CharMem.mif;
             ParseAllInOneFile(NumbersAndSpecial, 11, AlphabetMap, 52, CharMem, CHARW, CHARH);
         }
-        // TODO: -better UI (or usage (e.g. colors)), so we can draw beautiful things
         unsafe public static void main()
         {
             int w = 800; // for the application

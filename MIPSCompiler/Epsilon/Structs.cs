@@ -12,7 +12,6 @@ namespace Epsilon
     }
     public class NodeTermIdent
     {
-        // TODO: add a term corresponds to an array element 
         public Token ident;
         public NodeExpr? index;
         public NodeTermIdent()
