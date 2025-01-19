@@ -3,6 +3,8 @@
 
 
 using Microsoft.VisualBasic;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Linq.Expressions;
 using System.Net.Sockets;
 using System.Reflection.Metadata;
@@ -14,6 +16,7 @@ namespace Epsilon
     {
         private List<Token> m_tokens;
         private int m_curr_index = 0;
+        private Dictionary<string, List<NodeTermIntLit>> m_Arraydims = [];
         public Parser(List<Token> tokens)
         {
             m_tokens = tokens;
@@ -91,7 +94,17 @@ namespace Epsilon
                    peek(TokenType.GreaterThan).HasValue;
         }
 
-
+        NodeExpr? parseindex()
+        {
+            consume();
+            NodeExpr? index = ParseExpr();
+            if (!index.HasValue)
+            {
+                ErrorExpected("expression");
+            }
+            try_consume_err(TokenType.CloseSquare);
+            return index;
+        }
         NodeTerm? ParseTerm()
         {
             NodeTerm term = new NodeTerm();
@@ -106,17 +119,15 @@ namespace Epsilon
                 term.type = NodeTerm.NodeTermType.ident;
                 term.ident = new();
                 term.ident.ident = consume();
-                term.ident.index = null;
+                term.ident.index1 = null;
+                term.ident.index2 = null;
+                if (peek(TokenType.OpenSquare).HasValue)
+                    term.ident.index1 = parseindex();
                 if (peek(TokenType.OpenSquare).HasValue)
                 {
-                    consume();
-                    NodeExpr? index = ParseExpr();
-                    if (!index.HasValue)
-                    {
-                        ErrorExpected("expression");
-                    }
-                    term.ident.index = index;
-                    try_consume_err(TokenType.CloseSquare);
+                    term.ident.index2 = parseindex();
+                    term.ident.dim1 = m_Arraydims[term.ident.ident.Value][0];
+                    term.ident.dim2 = m_Arraydims[term.ident.ident.Value][1];
                 }
                 return term;
             }
@@ -541,44 +552,107 @@ namespace Epsilon
             expr.term.intlit.intlit.Value = "0";
             return expr;
         }
-        NodeStmt? ParseDeclareArray(Token ident)
+        Token parsedimension()
         {
-            NodeStmtDeclareArray declare = new();
-            declare.ident = ident;
-            declare.values = [];
             consume();
             Token size_token = consume();
-            if (!uint.TryParse(size_token.Value, out uint size))
+            if (!uint.TryParse(size_token.Value, out uint _))
             {
                 ErrorExpected("a constant size for the array");
             }
             try_consume_err(TokenType.CloseSquare);
+            return size_token;
+        }
+        List<NodeExpr> ParseArrayInit(int dim)
+        {
+            List<NodeExpr> values = [];
+            try_consume_err(TokenType.OpenCurly);
+            for (int i = 0; i < dim; i++)
+            {
+                NodeExpr? expr = ParseExpr();
+                if (!expr.HasValue)
+                    ErrorExpected("expression");
+                values.Add(expr.Value);
+                if (peek(TokenType.CloseCurly).HasValue)
+                {
+                    consume();
+                    break;
+                }
+                try_consume_err(TokenType.Comma);
+            }
+            return values;
+        }
+        List<NodeExpr> ParseArrayInit1D(int dim)
+        {
+            List<NodeExpr> values = [];
             if (peek(TokenType.Equal).HasValue)
             {
                 consume();
-                try_consume_err(TokenType.OpenCurly);
-                for (int i = 0; i < size; i++)
+                values = ParseArrayInit(dim);
+            }
+            else
+            {
+                NodeExpr expr = ExprZero();
+                for (int i = 0; i < dim; i++)
                 {
-                    NodeExpr? expr = ParseExpr();
-                    if (!expr.HasValue)
-                        ErrorExpected("expression");
-                    declare.values.Add(new() { ident = new() { Line = ident.Line, Type = ident.Type, Value = ident.Value + $"{i}" }, expr = expr.Value });
-                    if (peek(TokenType.CloseCurly).HasValue)
-                    {
-                        consume();
-                        break;
-                    }
-                    try_consume_err(TokenType.Comma);
+                    values.Add(expr);
+                }
+            }
+            return values;
+        }
+        List<List<NodeExpr>> ParseArrayInit2D(int dim1, int dim2)
+        {
+            List<List<NodeExpr>> values = [];
+            if (peek(TokenType.Equal).HasValue)
+            {
+                consume();
+                for (int i = 0; i < dim1; i++)
+                {
+                    values.Add(ParseArrayInit1D(dim2));
                 }
             }
             else
             {
                 NodeExpr expr = ExprZero();
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < dim1; i++)
                 {
-                    declare.values.Add(new() { ident = new() { Line = ident.Line, Type = ident.Type, Value = ident.Value + $"{i}" }, expr = expr });
+                    List<NodeExpr> temp = [];
+                    for (int j = 0; j < dim2; j++)
+                    {
+                        temp.Add(expr);
+                    }
+                    values.Add(temp);
                 }
             }
+            return values;
+        }
+        NodeStmt? ParseDeclareArray(Token ident)
+        {
+            NodeStmtDeclareArray declare = new();
+            declare.ident = ident;
+            declare.values1 = [];
+            declare.values2 = [];
+            if (peek(TokenType.OpenSquare).HasValue)
+            {
+                Token dim = parsedimension();
+                declare.dim1 = new() { intlit = dim };
+            }
+            if (peek(TokenType.OpenSquare).HasValue)
+            {
+                Token dim = parsedimension();
+                declare.dim2 = new() { intlit = dim };
+                m_Arraydims.Add(ident.Value, [declare.dim1, declare.dim2.Value]);
+            }
+
+            int dim1 = Convert.ToInt32(declare.dim1.intlit.Value);
+            if (declare.dim2.HasValue)
+            {
+                int dim2 = Convert.ToInt32(declare.dim2.Value.intlit.Value);
+                declare.values2 = ParseArrayInit2D(dim1, dim2);
+            }
+            else
+                declare.values1 = ParseArrayInit1D(dim1);
+
             try_consume_err(TokenType.SemiColon);
             NodeStmt stmt = new();
             stmt.type = NodeStmt.NodeStmtType.declare;
@@ -611,17 +685,22 @@ namespace Epsilon
         {
             NodeStmtAssignArray array = new();
             array.ident = consume();
-            consume();
-            NodeExpr? index = ParseExpr();
-            if (index.HasValue)
+            if (peek(TokenType.OpenSquare).HasValue)
             {
-                array.index = index.Value;
+                array.index1 = parseindex().Value;
             }
-            else
+
+            if (peek(TokenType.OpenSquare).HasValue)
             {
-                ErrorExpected("expression");
+                array.index2 = parseindex().Value;
+                if (!m_Arraydims.ContainsKey(array.ident.Value))
+                {
+                    ErrorExpected($"undeclared identifier : {array.ident.Value}");
+                }
+                array.dim1 = m_Arraydims[array.ident.Value][0];
+                array.dim2 = m_Arraydims[array.ident.Value][1];
             }
-            try_consume_err(TokenType.CloseSquare);
+
             try_consume_err(TokenType.Equal);
             NodeExpr? expr = ParseExpr();
             if (expr.HasValue)

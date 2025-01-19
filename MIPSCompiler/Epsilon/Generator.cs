@@ -108,6 +108,38 @@ namespace Epsilon
             }
             return index;
         }
+        void GenArray1DAddrData(NodeStmtAssignArray array, string reg_addr, string reg_data)
+        {
+            int relative_location = StackSize - VariableLocation(array.ident.Value);
+            GenExpr(array.index1);
+            GenExpr(array.expr);
+            GenPop(reg_data);
+            GenPop(reg_addr);
+            m_outputcode.Append($"ADDI $3, $sp, {relative_location}\n");
+            m_outputcode.Append($"SUB {reg_addr}, $3, {reg_addr}\n");
+        }
+        void GenArray2DAddrData(NodeStmtAssignArray array, string reg_addr, string? reg_data)
+        {
+            string index2 = "$2";
+            if (array.index2.HasValue)
+                GenExpr(array.index2.Value);
+            GenExpr(array.index1);
+            if (reg_data != null)
+            {
+                GenExpr(array.expr);
+                GenPop(reg_data);
+            }
+            GenPop(reg_addr);
+            GenPop(index2);
+            if (array.dim2.HasValue)
+                GenMult(reg_addr, array.dim2.Value.intlit.Value);
+
+            int relative_location = StackSize - VariableLocation(array.ident.Value);
+            m_outputcode.Append($"ADD {reg_addr}, {reg_addr}, {index2}\n");
+            m_outputcode.Append($"SUB {reg_addr}, $zero, {reg_addr}\n");
+            m_outputcode.Append($"ADDI {reg_addr}, {reg_addr}, {relative_location}\n");
+            m_outputcode.Append($"ADD {reg_addr}, {reg_addr}, $sp\n");
+        }
         void GenTerm(NodeTerm term)
         {
             if (term.type == NodeTerm.NodeTermType.intlit)
@@ -123,7 +155,7 @@ namespace Epsilon
                 {
                     Error($"variable {ident.ident.Value} is not declared", ident.ident.Line);
                 }
-                if (!ident.index.HasValue)
+                if (!ident.index1.HasValue)
                 {
                     string dest_reg = "$1";
                     int relative_location = StackSize - VariableLocation(ident.ident.Value);
@@ -132,16 +164,41 @@ namespace Epsilon
                 }
                 else
                 {
-                    // we save $sp + relative_location - index in $2 to use it as an address
-                    int relative_location = StackSize - VariableLocation(ident.ident.Value);
-                    string dest_reg = "$1";
-                    string reg_addr = "$2";
-                    GenExpr(ident.index.Value);
-                    GenPop(reg_addr);
-                    m_outputcode.Append($"ADDI $3, $sp, {relative_location}\n");
-                    m_outputcode.Append($"SUB {reg_addr}, $3, {reg_addr}\n");
-                    m_outputcode.Append($"LW {dest_reg}, 0({reg_addr})\n");
-                    GenPush(dest_reg);
+                    if (ident.index2.HasValue)
+                    {
+                        string reg_addr = "$1";
+                        string reg_data = "$3";
+                        string index2 = "$2";
+                        if (ident.index2.HasValue)
+                            GenExpr(ident.index2.Value);
+                        GenExpr(ident.index1.Value);
+                        GenPop(reg_addr);
+                        GenPop(index2);
+                        if (ident.dim2.HasValue)
+                            GenMult(reg_addr, ident.dim2.Value.intlit.Value);
+
+                        int relative_location = StackSize - VariableLocation(ident.ident.Value);
+                        m_outputcode.Append($"ADD {reg_addr}, {reg_addr}, {index2}\n");
+                        m_outputcode.Append($"SUB {reg_addr}, $zero, {reg_addr}\n");
+                        m_outputcode.Append($"ADDI {reg_addr}, {reg_addr}, {relative_location}\n");
+                        m_outputcode.Append($"ADD {reg_addr}, {reg_addr}, $sp\n");
+                        m_outputcode.Append($"LW {reg_data}, 0({reg_addr})\n");
+                        GenPush(reg_data);
+                    }
+                    else
+                    {
+                        string reg_addr = "$1";
+                        string reg_data = "$2";
+                        int relative_location = StackSize - VariableLocation(ident.ident.Value);
+                        GenExpr(ident.index1.Value);
+                        GenPop(reg_addr);
+                        m_outputcode.Append($"SUB {reg_addr}, $zero, {reg_addr}\n");
+                        m_outputcode.Append($"ADDI {reg_addr}, {reg_addr}, {relative_location}\n");
+                        m_outputcode.Append($"ADD {reg_addr}, {reg_addr}, $sp\n");
+                        m_outputcode.Append($"LW {reg_data}, 0({reg_addr})\n");
+                        GenPush(reg_data);
+                    }
+
                 }
 
             }
@@ -334,6 +391,20 @@ namespace Epsilon
             }
             return null;
         }
+        void GenArrayInit1D(List<NodeExpr> init)
+        {
+            for (int i = 0; i < init.Count; i++)
+            {
+                GenExpr(init[i]);
+            }
+        }
+        void GenArrayInit2D(List<List<NodeExpr>> init)
+        {
+            for (int i = 0; i < init.Count; i++)
+            {
+                GenArrayInit1D(init[i]);
+            }
+        }
         void GenStmtDeclare(NodeStmtDeclare declare)
         {
             if (declare.type == NodeStmtDeclare.NodeStmtDeclareType.SingleVar)
@@ -358,13 +429,53 @@ namespace Epsilon
                 }
                 else
                 {
-                    vars.m_vars.Add(new(ident.Value, declare.array.values.Count));
-                    for (int i = 0; i < declare.array.values.Count; i++)
+                    
+                    if (declare.array.dim2.HasValue)
                     {
-                        GenExpr(declare.array.values[i].expr);
+                        int dim1 = Convert.ToInt32(declare.array.dim1.intlit.Value);
+                        int dim2 = Convert.ToInt32(declare.array.dim2.Value.intlit.Value);
+                        GenArrayInit2D(declare.array.values2);
+                        vars.m_vars.Add(new(ident.Value, dim1*dim2));
+                    }
+                    else
+                    {
+                        GenArrayInit1D(declare.array.values1);
+                        vars.m_vars.Add(new(ident.Value, declare.array.values1.Count));
                     }
                 }
             }
+        }
+        void GenMult(string reg, string intlit)
+        {
+            string count = "$8";
+            string temp = "$9";
+            m_outputcode.Append($"ADDI {count}, $zero, {intlit}\n");
+            m_outputcode.Append($"ADD {temp}, $zero, {reg}\n");
+            string label_start = $"LABEL{m_labels_count++}_START";
+            string label_end = $"LABEL{m_labels_count++}_END";
+
+            m_outputcode.Append($"{label_start}:\n");
+            m_outputcode.Append($"ADDI {count}, {count}, -1\n");
+            m_outputcode.Append($"BEQ {count}, $zero, {label_end}\n");
+            m_outputcode.Append($"ADD {reg}, {reg}, {temp}\n");
+            m_outputcode.Append($"J {label_start}\n");
+            m_outputcode.Append($"{label_end}:\n");
+        }
+
+        void GenArrayAssign1D(NodeStmtAssignArray array)
+        {
+            // we save $sp + relative_location - index in $2 to use it as an address
+            string reg_addr = "$2";
+            string reg_data = "$1";
+            GenArray1DAddrData(array, reg_addr, reg_data);
+            m_outputcode.Append($"SW {reg_data}, 0({reg_addr})\n");
+        }
+        void GenArrayAssign2D(NodeStmtAssignArray array)
+        {
+            string reg_addr = "$1";
+            string reg_data = "$3";
+            GenArray2DAddrData(array, reg_addr, reg_data);
+            m_outputcode.Append($"SW {reg_data}, 0({reg_addr})\n");
         }
         void GenStmtAssign(NodeStmtAssign assign)
         {
@@ -388,17 +499,12 @@ namespace Epsilon
                 {
                     Error($"variable {ident.Value} is not declared", ident.Line);
                 }
-                int relative_location = StackSize - VariableLocation(ident.Value);
-                // we save $sp + relative_location - index in $2 to use it as an address
-                GenExpr(assign.array.index);
-                GenExpr(assign.array.expr);
-                string reg_addr = "$2";
-                string reg_data = "$1";
-                GenPop(reg_data);
-                GenPop(reg_addr);
-                m_outputcode.Append($"ADDI $3, $sp, {relative_location}\n");
-                m_outputcode.Append($"SUB {reg_addr}, $3, {reg_addr}\n");
-                m_outputcode.Append($"SW {reg_data}, 0({reg_addr})\n");
+                if (assign.array.index2.HasValue)
+                {
+                    GenArrayAssign2D(assign.array);
+                }
+                else
+                    GenArrayAssign1D(assign.array);
             }
         }
         void GenElifs(NodeIfElifs elifs, string label_end)

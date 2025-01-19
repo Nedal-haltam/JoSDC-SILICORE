@@ -13,10 +13,14 @@ namespace Epsilon
     public class NodeTermIdent
     {
         public Token ident;
-        public NodeExpr? index;
+        public NodeExpr? index1;
+        public NodeExpr? index2;
+        public NodeTermIntLit? dim1;
+        public NodeTermIntLit? dim2;
         public NodeTermIdent()
         {
-            index = null;
+            index1 = null;
+            index2 = null;
         }
     }
     public class NodeTermParen
@@ -120,8 +124,17 @@ namespace Epsilon
     public struct NodeStmtAssignArray
     {
         public Token ident;
-        public NodeExpr index;
+        public NodeExpr index1;
+        public NodeExpr? index2;
         public NodeExpr expr;
+        public NodeTermIntLit? dim1;
+        public NodeTermIntLit? dim2;
+        public NodeStmtAssignArray()
+        {
+            index2 = null;
+            dim1 = null;
+            dim2 = null;
+        }
     }
     public struct NodeStmtAssign
     {
@@ -141,7 +154,16 @@ namespace Epsilon
     public struct NodeStmtDeclareArray
     {
         public Token ident;
-        public List<NodeStmtDeclareSingleVar> values;
+        public NodeTermIntLit dim1;
+        public NodeTermIntLit? dim2;
+        public List<NodeExpr> values1;
+        public List<List<NodeExpr>> values2;
+        public NodeStmtDeclareArray()
+        {
+            dim2 = null;
+            values1 = [];
+            values2 = [];
+        }
     }
 
     public struct NodeStmtDeclare
