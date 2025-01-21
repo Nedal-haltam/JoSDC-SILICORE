@@ -116,7 +116,7 @@ end
 
 /*
 TODO:
-    - jr in case of dependecy: it happens when you fetch the jr instruction and the register it needs to get the target address from is unavailable
+    - the jr dependency is solved but we can do better in terms of forwarding it from the ROB or the CDB, but it works
 */
 
 `define exception_handler 32'd1000
@@ -124,7 +124,7 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_Writ
 (
     (InstQ_opcode == j || InstQ_opcode == jal) ? {6'd0,InstQ_address} : 
     (
-        (InstQ_opcode == jr) ? RegFile_RP1_Reg1 : 
+        (InstQ_opcode == jr) ? ((RegFile_RP1_Reg1_ROBEN == 0) ? RegFile_RP1_Reg1 : PC_out) : 
         (
             (InstQ_opcode == hlt_inst) ? PC_out : 
             (
