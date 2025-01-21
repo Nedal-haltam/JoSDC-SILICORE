@@ -20,6 +20,7 @@ integer i;
 
 
 `ifdef vscode
+
 reg [31 : 0] DataMem [0 : 1023];
 always @(negedge clk) begin
     if (~MEMU_invalid_address) begin
@@ -44,9 +45,10 @@ for (i = 0; i < 1024; i = i + 1)
 end
 
 `else
+
 always@(negedge clk) begin
     MEMU_ROBEN <= ROBEN;
-    MEMU_invalid_address <= ~(32'd0 <= address && address <= 32'd1023);
+//    MEMU_invalid_address <= ~(32'd0 <= address && address <= 32'd1023);
 end
 DataMemory_IP DataMemory
 (

@@ -9,7 +9,8 @@ module InstQ
     output reg [15:0] immediate,
     output reg [25:0] address,
     output reg [31:0] pc,
-    output reg VALID_Inst
+    output reg VALID_Inst,
+    output reg InstQ_FLUSH_Flag
 );
 
 
@@ -30,6 +31,7 @@ always@(negedge clk, posedge rst) begin
         immediate <= 0;
         address <= 0;
         VALID_Inst <= 1'b0;
+        InstQ_FLUSH_Flag <= 1'b0;
     end
     else begin
         if (inst[31:26] == 0)
@@ -43,7 +45,10 @@ always@(negedge clk, posedge rst) begin
         shamt      <= inst[10:6];
         immediate  <= inst[15:0];
         address    <= inst[25:0];
-        VALID_Inst <= 1'b1;
+        if (0 <= PC && PC <= 1023) begin
+        end
+        VALID_Inst <= (0 <= PC && PC <= 1023);
+        InstQ_FLUSH_Flag <= ~(0 <= PC && PC <= 1023);
         pc         <= PC;
     end
 end

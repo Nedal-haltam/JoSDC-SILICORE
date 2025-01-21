@@ -26,7 +26,7 @@ module AddressUnit
     input [4:0]  ROBEN1, ROBEN2,
     input [31:0] ROBEN1_VAL, ROBEN2_VAL,
     input [31:0] Immediate,
-
+    input InstQ_VALID_Inst,
 
 
     output AU_LdStB_VALID_Inst,
@@ -41,7 +41,7 @@ module AddressUnit
 
 
 
-assign AU_LdStB_VALID_Inst = Decoded_opcode == `lw || Decoded_opcode == `sw;
+assign AU_LdStB_VALID_Inst = (Decoded_opcode == `lw || Decoded_opcode == `sw) && InstQ_VALID_Inst;
 
 assign AU_LdStB_EA = ROBEN1_VAL + Immediate;
 

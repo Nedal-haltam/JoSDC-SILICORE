@@ -19,6 +19,7 @@ wire [15:0] InstQ_immediate;
 wire [25:0] InstQ_address;
 wire [31:0] InstQ_PC;
 wire InstQ_VALID_Inst;
+wire InstQ_FLUSH_Flag;
 
 
 // RegFile
@@ -120,7 +121,7 @@ TODO:
 */
 
 `define exception_handler 32'd1000
-assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_Write_Data : `exception_handler) : 
+assign PC = (ROB_FLUSH_Flag == 1'b1 || InstQ_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_Write_Data : `exception_handler) : 
 (
     (InstQ_opcode == j || InstQ_opcode == jal) ? {6'd0,InstQ_address} : 
     (
@@ -151,6 +152,7 @@ InstQ instq
     .immediate(InstQ_immediate),
     .address(InstQ_address),
     .pc(InstQ_PC),
+    .InstQ_FLUSH_Flag(InstQ_FLUSH_Flag),
     .VALID_Inst(InstQ_VALID_Inst)
 );
 
@@ -391,7 +393,7 @@ AddressUnit AU
         (RegFile_RP1_Reg2_ROBEN == 0) ? RegFile_RP1_Reg2 : ROB_RP1_Write_Data2
     ), 
     .Immediate({{16{InstQ_immediate[15]}},InstQ_immediate}),
-
+    .InstQ_VALID_Inst(InstQ_VALID_Inst),
 
     .AU_LdStB_VALID_Inst(AU_LdStB_VALID_Inst),
     .AU_LdStB_ROBEN(AU_LdStB_ROBEN),
