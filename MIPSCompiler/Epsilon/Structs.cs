@@ -5,66 +5,13 @@ using System.Runtime.InteropServices;
 
 namespace Epsilon
 {
-
-    public struct NodeTermIntLit
+    public struct NodeProg
     {
-        public Token intlit;
-    }
-    public class NodeTermIdent
-    {
-        public Token ident;
-        public NodeExpr? index1;
-        public NodeExpr? index2;
-        public NodeTermIntLit? dim1;
-        public NodeTermIntLit? dim2;
-        public NodeTermIdent()
+        public NodeScope scope;
+        public NodeProg()
         {
-            index1 = null;
-            index2 = null;
+            scope = new();
         }
-    }
-    public class NodeTermParen
-    {
-        public NodeExpr expr;
-    }
-    public struct NodeTerm
-    {
-        public enum NodeTermType
-        {
-            intlit, ident, paren
-        }
-        public NodeTermType type;
-        public NodeTermIntLit intlit;
-        public NodeTermIdent ident;
-        public NodeTermParen paren;
-    }
-
-    public class NodeBinExpr 
-    {
-        public enum NodeBinExprType
-        {
-            add, sub, sll, srl, equalequal, notequal, lessthan, greaterthan
-        }
-        public NodeBinExprType type;
-        public NodeExpr lhs;
-        public NodeExpr rhs;
-    }
-
-    public struct NodeExpr
-    {
-        public enum NodeExprType
-        {
-            term, binExpr
-        }
-        public NodeExprType type;
-        public NodeTerm term;
-        public NodeBinExpr binexpr;
-    }
-
-
-    public struct NodeStmtExit
-    {
-        public NodeExpr expr;
     }
     public struct NodeScope
     {
@@ -74,46 +21,57 @@ namespace Epsilon
             stmts = [];
         }
     }
-    public struct NodeIfPredicate
+    public struct NodeStmt
     {
-        public NodeExpr cond;
-        public NodeScope scope;
-    }
-    public class NodeElif
-    {
-        public NodeIfPredicate pred;
-        public NodeIfElifs? elifs;
-    }
-    public struct NodeElse
-    {
-        public NodeScope scope;
-    }
-
-    public struct NodeIfElifs
-    {
-        public enum NodeIfElifsType
+        public enum NodeStmtType
         {
-            elif, elsee
+            declare, assign, iff, forr, Exit
         }
-        public NodeIfElifsType type;
-        public NodeElif elif;
-        public NodeElse elsee;
-        public NodeIfElifs()
-        {
-            type = NodeIfElifsType.elsee;
-            elif = new NodeElif();
-            elsee = new NodeElse();
-        }
+        public NodeStmtType type;
+        public NodeStmtDeclare declare;
+        public NodeStmtAssign assign;
+        public NodeStmtIF iff;
+        public NodeStmtFor forr;
+        public NodeStmtExit Exit;
     }
-
-    public class NodeStmtIF
+    public struct NodeStmtDeclare
     {
-        public NodeIfPredicate pred;
-        public NodeIfElifs? elifs;
-        public NodeStmtIF()
+        public enum NodeStmtDeclareType
         {
-            pred = new NodeIfPredicate();
-            elifs = null;
+            SingleVar, Array
+        }
+        public NodeStmtDeclareType type;
+        public NodeStmtDeclareSingleVar singlevar;
+        public NodeStmtDeclareArray array;
+    }
+    public struct NodeStmtAssign
+    {
+        public enum NodeStmtAssignType
+        {
+            SingleVar, Array
+        }
+        public NodeStmtAssignType type;
+        public NodeStmtAssignSingleVar singlevar;
+        public NodeStmtAssignArray array;
+    }
+    
+    public struct NodeStmtDeclareSingleVar
+    {
+        public Token ident;
+        public NodeExpr expr;
+    }
+    public struct NodeStmtDeclareArray
+    {
+        public Token ident;
+        public NodeTermIntLit dim1;
+        public NodeTermIntLit? dim2;
+        public List<NodeExpr> values1;
+        public List<List<NodeExpr>> values2;
+        public NodeStmtDeclareArray()
+        {
+            dim2 = null;
+            values1 = [];
+            values2 = [];
         }
     }
     public struct NodeStmtAssignSingleVar
@@ -136,46 +94,68 @@ namespace Epsilon
             dim2 = null;
         }
     }
-    public struct NodeStmtAssign
+
+
+
+
+    public class NodeStmtIF
     {
-        public enum NodeStmtAssignType
+        public NodeIfPredicate pred;
+        public NodeIfElifs? elifs;
+        public NodeStmtIF()
         {
-            SingleVar, Array
+            pred = new NodeIfPredicate();
+            elifs = null;
         }
-        public NodeStmtAssignType type;
-        public NodeStmtAssignSingleVar singlevar;
-        public NodeStmtAssignArray array;
     }
-    public struct NodeStmtDeclareSingleVar
+    public struct NodeIfPredicate
     {
-        public Token ident;
-        public NodeExpr expr;
+        public NodeExpr cond;
+        public NodeScope scope;
     }
-    public struct NodeStmtDeclareArray
+    public struct NodeIfElifs
     {
-        public Token ident;
-        public NodeTermIntLit dim1;
-        public NodeTermIntLit? dim2;
-        public List<NodeExpr> values1;
-        public List<List<NodeExpr>> values2;
-        public NodeStmtDeclareArray()
+        public enum NodeIfElifsType
         {
-            dim2 = null;
-            values1 = [];
-            values2 = [];
+            elif, elsee
         }
+        public NodeIfElifsType type;
+        public NodeElif elif;
+        public NodeElse elsee;
+        public NodeIfElifs()
+        {
+            type = NodeIfElifsType.elsee;
+            elif = new NodeElif();
+            elsee = new NodeElse();
+        }
+    }
+    public class NodeElif
+    {
+        public NodeIfPredicate pred;
+        public NodeIfElifs? elifs;
+    }
+    public struct NodeElse
+    {
+        public NodeScope scope;
     }
 
-    public struct NodeStmtDeclare
-    {
-        public enum NodeStmtDeclareType
-        {
-            SingleVar, Array
-        }
-        public NodeStmtDeclareType type;
-        public NodeStmtDeclareSingleVar singlevar;
-        public NodeStmtDeclareArray array;
 
+
+
+
+
+
+
+    public struct NodeStmtFor
+    {
+        public NodeForPredicate pred;
+    }
+    public struct NodeForPredicate
+    {
+        public NodeForInit? init;
+        public NodeForCond? cond;
+        public NodeForUpdate? udpate;
+        public NodeScope scope;
     }
     public struct NodeForInit
     {
@@ -195,36 +175,145 @@ namespace Epsilon
     {
         public List<NodeStmtAssign> udpates;
     }
-    public struct NodeForPredicate
+
+
+
+
+    public struct NodeStmtExit
     {
-        public NodeForInit? init;
-        public NodeForCond? cond;
-        public NodeForUpdate? udpate;
-        public NodeScope scope;
+        public NodeExpr expr;
     }
-    public struct NodeStmtFor
+
+
+
+
+
+
+    public struct NodeExpr
     {
-        public NodeForPredicate pred;
-    }
-    public struct NodeStmt
-    {
-        public enum NodeStmtType
+        public enum NodeExprType
         {
-            declare, assign, iff, forr, Exit
+            term, binExpr
         }
-        public NodeStmtType type;
-        public NodeStmtDeclare declare;
-        public NodeStmtAssign assign;
-        public NodeStmtIF iff;
-        public NodeStmtFor forr;
-        public NodeStmtExit Exit;
+        public NodeExprType type;
+        public NodeTerm term;
+        public NodeBinExpr binexpr;
     }
-    public struct NodeProg
+    public struct NodeTerm
     {
-        public NodeScope scope;
-        public NodeProg()
+        public enum NodeTermType
         {
-            scope = new();
+            intlit, ident, paren
+        }
+        public NodeTermType type;
+        public NodeTermIntLit intlit;
+        public NodeTermIdent ident;
+        public NodeTermParen paren;
+    }
+    public struct NodeTermIntLit
+    {
+        public Token intlit;
+    }
+    public class NodeTermIdent
+    {
+        public Token ident;
+        public NodeExpr? index1;
+        public NodeExpr? index2;
+        public NodeTermIntLit? dim1;
+        public NodeTermIntLit? dim2;
+        public NodeTermIdent()
+        {
+            index1 = null;
+            index2 = null;
         }
     }
+    public class NodeTermParen
+    {
+        public NodeExpr expr;
+    }
+
+
+    public class NodeBinExpr 
+    {
+        public enum NodeBinExprType
+        {
+            add, sub, sll, srl, equalequal, notequal, lessthan, greaterthan
+        }
+        public NodeBinExprType type;
+        public NodeExpr lhs;
+        public NodeExpr rhs;
+    }
+
+
+
+    /*
+    L[] -> means a list of that thing
+    prog ->
+        - scope
+    scope ->
+        - L[stmt]
+    stmt ->
+        [declare]
+        [assign]
+        [if]
+        [for]
+        [exit]
+    declare ->
+        int ident = [expr];
+        int ident[intlit]; / int ident[intlit] = {[expr], [expr], ...};
+        int ident[intlit][intlit]; / int ident[intlit][intlit] = {{[expr], [expr], ...}, {[expr], [expr], ...}, ...};
+    assign ->
+        ident = [expr];
+        ident[ [expr] ] = [expr];
+        ident[ [expr] ][ [expr] ] = [expr];
+    if ->
+        if ([expr])[scope][elifs]
+    elifs ->
+        elif([expr])[scope][elifs]
+        else[scope]
+    for ->
+        for([forinit]; [forcond]; [forupdate])[scope]
+    forinit ->
+        [declare]
+        [assign]
+    forcond ->
+        [expr]
+    forupdate ->
+        L[assign]
+    exit ->
+        [expr]
+    expr ->
+        [term]
+        [binexpr]
+    term ->
+        intlit
+        ident
+        [termparen]
+    binexpr ->
+        [expr] + [expr]
+        [expr] - [expr]
+        [expr] << [expr]
+        [expr] >> [expr]
+        [expr] == [expr]
+        [expr] != [expr]
+        [expr] < [expr]
+        [expr] > [expr]
+
+    termparen ->
+        [expr]
+    */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -23,7 +23,7 @@ for (int i = 0; i < SIZE1D - 1; i = i + 1) {
 
 #define SIZE2D 2
 
-int arr2d[SIZE2D][SIZE2D] = {{1, 2}, {3, 4};
+int arr2d[SIZE2D][SIZE2D] = {{1, 2}, {3, 4}};
 // int count = 1;
 // for (int i = 0; i < SIZE2D; i = i + 1)
 // {
