@@ -33,7 +33,7 @@ namespace Epsilon
         public Vars vars = new();
         List<int> m_scopes = [];
         int m_labels_count = 0;
-        int StackSize = 0;
+        int m_StackSize = 0;
         public Generator(NodeProg prog)
         {
             m_prog = prog;
@@ -50,14 +50,14 @@ namespace Epsilon
         {
             m_outputcode.Append($"SW {reg}, 0($sp)\n");
             m_outputcode.Append("ADDI $sp, $sp, -1\n");
-            StackSize++;
+            m_StackSize++;
         }
 
         void GenPop(string reg)
         {
             m_outputcode.Append("ADDI $sp, $sp, 1\n");
             m_outputcode.Append($"LW {reg}, 0($sp)\n");
-            StackSize--;
+            m_StackSize--;
         }
         void BeginScope()
         {
@@ -76,7 +76,7 @@ namespace Epsilon
                 popcount += vars.m_vars[i--].Size;
             }
             m_outputcode.Append($"ADDi $sp, $sp, {popcount}\n");
-            StackSize -= popcount;
+            m_StackSize -= popcount;
             vars.m_vars.RemoveRange(vars.m_vars.Count - Vars_topop, Vars_topop);
             m_scopes.RemoveAt(m_scopes.Count - 1);
         }
@@ -110,7 +110,7 @@ namespace Epsilon
         }
         void GenArray1DAddrData(NodeStmtAssignArray array, string reg_addr, string reg_data)
         {
-            int relative_location = StackSize - VariableLocation(array.ident.Value);
+            int relative_location = m_StackSize - VariableLocation(array.ident.Value);
             GenExpr(array.index1);
             GenExpr(array.expr);
             GenPop(reg_data);
@@ -134,7 +134,7 @@ namespace Epsilon
             if (array.dim2.HasValue)
                 GenMult(reg_addr, array.dim2.Value.intlit.Value);
 
-            int relative_location = StackSize - VariableLocation(array.ident.Value);
+            int relative_location = m_StackSize - VariableLocation(array.ident.Value);
             m_outputcode.Append($"ADD {reg_addr}, {reg_addr}, {index2}\n");
             m_outputcode.Append($"SUB {reg_addr}, $zero, {reg_addr}\n");
             m_outputcode.Append($"ADDI {reg_addr}, {reg_addr}, {relative_location}\n");
@@ -158,7 +158,7 @@ namespace Epsilon
                 if (!ident.index1.HasValue)
                 {
                     string dest_reg = "$1";
-                    int relative_location = StackSize - VariableLocation(ident.ident.Value);
+                    int relative_location = m_StackSize - VariableLocation(ident.ident.Value);
                     m_outputcode.Append($"LW {dest_reg}, {relative_location}($sp)\n");
                     GenPush(dest_reg);
                 }
@@ -177,7 +177,7 @@ namespace Epsilon
                         if (ident.dim2.HasValue)
                             GenMult(reg_addr, ident.dim2.Value.intlit.Value);
 
-                        int relative_location = StackSize - VariableLocation(ident.ident.Value);
+                        int relative_location = m_StackSize - VariableLocation(ident.ident.Value);
                         m_outputcode.Append($"ADD {reg_addr}, {reg_addr}, {index2}\n");
                         m_outputcode.Append($"SUB {reg_addr}, $zero, {reg_addr}\n");
                         m_outputcode.Append($"ADDI {reg_addr}, {reg_addr}, {relative_location}\n");
@@ -189,7 +189,7 @@ namespace Epsilon
                     {
                         string reg_addr = "$1";
                         string reg_data = "$2";
-                        int relative_location = StackSize - VariableLocation(ident.ident.Value);
+                        int relative_location = m_StackSize - VariableLocation(ident.ident.Value);
                         GenExpr(ident.index1.Value);
                         GenPop(reg_addr);
                         m_outputcode.Append($"SUB {reg_addr}, $zero, {reg_addr}\n");
@@ -434,13 +434,30 @@ namespace Epsilon
                     {
                         int dim1 = Convert.ToInt32(declare.array.dim1.intlit.Value);
                         int dim2 = Convert.ToInt32(declare.array.dim2.Value.intlit.Value);
-                        GenArrayInit2D(declare.array.values2);
+                        if (declare.array.values2.Count == 0)
+                        {
+                            m_outputcode.Append($"ADDI $sp, $sp, -{dim1*dim2}\n");
+                            m_StackSize += (dim1 * dim2);
+                        }
+                        else
+                        {
+                            GenArrayInit2D(declare.array.values2);
+                        }
                         vars.m_vars.Add(new(ident.Value, dim1*dim2));
                     }
                     else
                     {
-                        GenArrayInit1D(declare.array.values1);
-                        vars.m_vars.Add(new(ident.Value, declare.array.values1.Count));
+                        int dim1 = Convert.ToInt32(declare.array.dim1.intlit.Value);
+                        if (declare.array.values1.Count == 0)
+                        {
+                            m_outputcode.Append($"ADDI $sp, $sp, -{dim1}\n");
+                            m_StackSize += (dim1);
+                        }
+                        else
+                        {
+                            GenArrayInit1D(declare.array.values1);
+                        }
+                        vars.m_vars.Add(new(ident.Value, dim1));
                     }
                 }
             }
@@ -486,7 +503,7 @@ namespace Epsilon
                 {
                     Error($"variable {ident.Value} is not declared", ident.Line);
                 }
-                int relative_location = StackSize - VariableLocation(ident.Value);
+                int relative_location = m_StackSize - VariableLocation(ident.Value);
                 GenExpr(assign.singlevar.expr);
                 string reg = "$1";
                 GenPop(reg);
