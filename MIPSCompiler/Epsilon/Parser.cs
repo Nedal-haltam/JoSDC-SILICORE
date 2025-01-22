@@ -585,44 +585,22 @@ namespace Epsilon
         List<NodeExpr> ParseArrayInit1D(int dim)
         {
             List<NodeExpr> values = [];
-            if (peek(TokenType.Equal).HasValue)
-            {
-                consume();
-                values = ParseArrayInit(dim);
-            }
-            else
-            {
-                NodeExpr expr = ExprZero();
-                for (int i = 0; i < dim; i++)
-                {
-                    values.Add(expr);
-                }
-            }
+            values = ParseArrayInit(dim);
             return values;
         }
         List<List<NodeExpr>> ParseArrayInit2D(int dim1, int dim2)
         {
             List<List<NodeExpr>> values = [];
-            if (peek(TokenType.Equal).HasValue)
+            try_consume_err(TokenType.OpenCurly);
+            for (int i = 0; i < dim1; i++)
             {
-                consume();
-                for (int i = 0; i < dim1; i++)
+                values.Add(ParseArrayInit1D(dim2));
+                if (peek(TokenType.CloseCurly).HasValue)
                 {
-                    values.Add(ParseArrayInit1D(dim2));
+                    consume();
+                    break;
                 }
-            }
-            else
-            {
-                NodeExpr expr = ExprZero();
-                for (int i = 0; i < dim1; i++)
-                {
-                    List<NodeExpr> temp = [];
-                    for (int j = 0; j < dim2; j++)
-                    {
-                        temp.Add(expr);
-                    }
-                    values.Add(temp);
-                }
+                try_consume_err(TokenType.Comma);
             }
             return values;
         }
@@ -645,13 +623,17 @@ namespace Epsilon
             }
 
             int dim1 = Convert.ToInt32(declare.dim1.intlit.Value);
-            if (declare.dim2.HasValue)
+            if (peek(TokenType.Equal).HasValue)
             {
-                int dim2 = Convert.ToInt32(declare.dim2.Value.intlit.Value);
-                declare.values2 = ParseArrayInit2D(dim1, dim2);
+                consume();
+                if (declare.dim2.HasValue)
+                {
+                    int dim2 = Convert.ToInt32(declare.dim2.Value.intlit.Value);
+                    declare.values2 = ParseArrayInit2D(dim1, dim2);
+                }
+                else
+                    declare.values1 = ParseArrayInit1D(dim1);
             }
-            else
-                declare.values1 = ParseArrayInit1D(dim1);
 
             try_consume_err(TokenType.SemiColon);
             NodeStmt stmt = new();
