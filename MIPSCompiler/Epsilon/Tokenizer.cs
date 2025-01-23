@@ -1,7 +1,9 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Linq.Expressions;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Schema;
 #pragma warning disable CS8629 // Nullable value type may be null.
 
 
@@ -19,7 +21,7 @@ namespace Epsilon
         // `(` , `)` , `[` , `]` , `,` , (+, -, <, >, &, |, ^, ~|, <<, >>) , `=` , `;` , `\n` (for line increament) , else invalid token
         OpenParen, CloseParen, OpenSquare, CloseSquare, OpenCurly, CloseCurly, Comma, Plus,
         Minus, And, Or, Xor, Nor, Sll, Srl, EqualEqual, NotEqual, Equal, SemiColon, NewLine,
-        Int, Ident, For, Iff, Elif, Else, IntLit, Exit, fslash, star, LessThan, GreaterThan, Hash, Define
+        Int, Ident, For, Iff, Elif, Else, IntLit, Exit, fslash, star, LessThan, GreaterThan
     }
     class Tokenizer(string thecode)
     {
@@ -59,12 +61,25 @@ namespace Epsilon
         {
             return Peek('/').HasValue && Peek('/', 1).HasValue;
         }
-
+        bool IsMacro()
+        {
+            if (Peek('#', 0).HasValue && Peek('d', 1).HasValue && Peek('e', 2).HasValue && Peek('f', 3).HasValue && Peek('i', 4).HasValue && Peek('n', 5).HasValue && Peek('e', 6).HasValue)
+            {
+                Consume();
+                Consume();
+                Consume();
+                Consume();
+                Consume();
+                Consume();
+                Consume();
+                return true;
+            }
+            return false;
+        }
+        private Dictionary<string, List<Token>> macro = [];
         public List<Token> Tokenize()
         {
             m_tokens = [];
-            //m_hashdefs = [];
-            //PreTokenize(); this step was moved to the parser so we can handle correctly, because it interferes with other tokens
             StringBuilder buffer = new(); // this buffer is for multiple letter tokens
             int line = 1;
             while (Peek().HasValue)
@@ -82,7 +97,12 @@ namespace Epsilon
                     // and then check if it is one of the supported keywords or not and it may be the follwing
                     // reg , mem , identifier (aka. var) , hlt (exit), if , elif , else , for , 
                     string word = buffer.ToString();
-                    if (word == "int")
+                    if (macro.ContainsKey(word))
+                    {
+                        List<Token> tokens = macro[word];
+                        m_tokens.AddRange(tokens);
+                    }
+                    else if (word == "int")
                     {
                         m_tokens.Add(new() { Value = word, Type = TokenType.Int, Line = line });
                     }
@@ -105,10 +125,6 @@ namespace Epsilon
                     else if (word == "exit")
                     {
                         m_tokens.Add(new() { Value = word, Type = TokenType.Exit, Line = line });
-                    }
-                    else if (word == "define")
-                    {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.Define, Line = line });
                     }
                     else // else it is a variable (identifier)
                     {
@@ -197,8 +213,39 @@ namespace Epsilon
                 }
                 else if (curr_token == '#')
                 {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Hash, Line = line });
+                    if (IsMacro())
+                    {
+                        // aready consumed, now we get the name and the value
+                        while (Peek(' ').HasValue) Consume();
+                        while (!Peek(' ').HasValue)
+                        {
+                            buffer.Append(Consume());
+                        }
+                        Consume();
+                        string macroname = buffer.ToString();
+                        buffer.Clear();
+                        while (!Peek('\n').HasValue)
+                        {
+                            buffer.Append(Consume());
+                        }
+                        Consume();
+                        Tokenizer temp = new(buffer.ToString());
+                        List<Token> macrovalue = temp.Tokenize();
+                        for (int i = 0; i < macrovalue.Count; i++)
+                        {
+                            if (macro.ContainsKey(macrovalue[i].Value))
+                            {
+                                Token t = macrovalue[i];
+                                macrovalue.RemoveAt(i);
+                                macrovalue.InsertRange(i, macro[t.Value]);
+                            }
+                        }
+                        macro.Add(macroname, macrovalue);
+                    }
+                    else
+                    {
+                        Error(curr_token);
+                    }
                 }
                 // operators
                 else if (curr_token == '+')

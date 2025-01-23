@@ -45,56 +45,6 @@ namespace Epsilon
         }
 
 
-        //private int m_comp_index = 0;
-        //private List<HashDef> m_hashdefs = [];
-        //public struct HashDef
-        //{
-        //    public HashDef(Token macroname, Token macrovalue)
-        //    {
-        //        MacroName = macroname;
-        //        MacroValue = macrovalue;
-        //    }
-        //    public Token MacroName;
-        //    public Token MacroValue;
-        //}
-        //Token? Peek_comp(int offset = 0)
-        //{
-        //    if (m_comp_index + offset < m_tokens.Count)
-        //    {
-        //        return m_tokens[m_comp_index + offset];
-        //    }
-        //    return null;
-        //}
-        //Token? Peek_comp(TokenType type, int offset = 0)
-        //{
-        //    Token? token = Peek_comp(offset);
-        //    if (token.HasValue && token.Value.Type == type)
-        //    {
-        //        return token;
-        //    }
-        //    return null;
-        //}
-        //Token Consume_comp()
-        //{
-        //    Token ret = m_tokens.ElementAt(m_comp_index);
-        //    m_tokens.RemoveAt(m_comp_index);
-        //    return ret;
-        //}
-        bool IsStmtHashdef()
-        {
-            return peek(TokenType.Hash, 0).HasValue &&
-                   peek(TokenType.Define, 1).HasValue;
-        }
-        void ReplaceMacro(NodeStmtMacro macro)
-        {
-            for (int i = 0; i < m_tokens.Count; i++)
-            {
-                if (m_tokens[i].Value == macro.name.Value)
-                {
-                    m_tokens[i] = macro.value;
-                }
-            }
-        }
         Token? try_consume_err(TokenType type)
         {
             if (peek(type).HasValue)
@@ -768,20 +718,7 @@ namespace Epsilon
             // - if
             // - for
             // - exit
-            if (IsStmtHashdef())
-            {
-                consume();
-                consume();
-                NodeStmtMacro macro = new();
-                macro.name = consume();
-                macro.value = consume();
-                ReplaceMacro(macro);
-                NodeStmt stmt = new();
-                stmt.type = NodeStmt.NodeStmtType.macro;
-                stmt.macro = macro;
-                return stmt;
-            }
-            else if (IsStmtDeclare())
+            if (IsStmtDeclare())
             {
                 Token vartype = consume();
                 if (vartype.Type != TokenType.Int)
@@ -883,8 +820,7 @@ namespace Epsilon
                 NodeStmt? stmt = ParseStmt();
                 if (stmt.HasValue)
                 {
-                    if (stmt.Value.type != NodeStmt.NodeStmtType.macro) // may expand to a function
-                        prog.scope.stmts.Add(stmt.Value);
+                    prog.scope.stmts.Add(stmt.Value);
                 }
                 else
                     ErrorExpected($"statement");
