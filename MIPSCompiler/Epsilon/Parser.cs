@@ -638,6 +638,10 @@ namespace Epsilon
         {
             List<NodeExpr> values = [];
             values = ParseArrayInit(dim);
+            if (values.Count != dim)
+            {
+                ErrorExpected("dimensions are not aligned");
+            }
             return values;
         }
         List<List<NodeExpr>> ParseArrayInit2D(int dim1, int dim2)
@@ -653,6 +657,10 @@ namespace Epsilon
                     break;
                 }
                 try_consume_err(TokenType.Comma);
+            }
+            if (values.Count != dim1)
+            {
+                ErrorExpected("dimensions are not aligned");
             }
             return values;
         }
