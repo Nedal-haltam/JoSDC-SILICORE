@@ -19,11 +19,12 @@ for (int i = 0; i < SIZE1D - 1; i = i + 1) {
     // arr[i]       = arr[i] ^ arr[min_idx];
 }
 
+
 #define SIZEy 3
 #define SIZEx 2
 
 #define size (SIZEx+SIZEy)
-
+#define macrocount (count + 1)
 
 int sizy = size + 123;
 
@@ -33,7 +34,7 @@ for (int i = 0; i < SIZEx; i = i + 1)
 {
     for (int j = 0; j < SIZEy; j = j + 1)
     {
-        arr2d[i][j] = count;
+        arr2d[i][j] = macrocount;
         count = count + 1;
     }
 }

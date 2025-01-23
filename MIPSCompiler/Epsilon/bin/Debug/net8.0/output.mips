@@ -336,7 +336,17 @@ ADDI $sp, $sp, -1
 LW $1, 3($sp)
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
-LW $1, 5($sp)
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+LW $1, 6($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
 ADDI $sp, $sp, 1
