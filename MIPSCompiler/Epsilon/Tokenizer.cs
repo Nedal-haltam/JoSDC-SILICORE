@@ -14,30 +14,18 @@ namespace Epsilon
         public string Value;
         public int Line;
     }
-    public struct HashDef
-    {
-        public HashDef(string macroname, string macrovalue)
-        {
-            MacroName = macroname;
-            MacroValue = macrovalue;
-        }
-        public string MacroName;
-        public string MacroValue;
-    }
     public enum TokenType
     {
         // `(` , `)` , `[` , `]` , `,` , (+, -, <, >, &, |, ^, ~|, <<, >>) , `=` , `;` , `\n` (for line increament) , else invalid token
         OpenParen, CloseParen, OpenSquare, CloseSquare, OpenCurly, CloseCurly, Comma, Plus,
         Minus, And, Or, Xor, Nor, Sll, Srl, EqualEqual, NotEqual, Equal, SemiColon, NewLine,
-        Int, Ident, For, Iff, Elif, Else, IntLit, Exit, fslash, star, LessThan, GreaterThan
+        Int, Ident, For, Iff, Elif, Else, IntLit, Exit, fslash, star, LessThan, GreaterThan, Hash, Define
     }
     class Tokenizer(string thecode)
     {
         private string m_thecode = thecode;
         private int m_curr_index = 0;
-        private int m_comp_index = 0;
         private List<Token> m_tokens = [];
-        private List<HashDef> m_hashdefs = [];
         void Error(char curr_token)
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -62,90 +50,21 @@ namespace Epsilon
             }
             return null;
         }
-        char? Peek_comp(int offset = 0)
-        {
-            if (m_comp_index + offset < m_thecode.Length)
-            {
-                return m_thecode[m_comp_index + offset];
-            }
-            return null;
-        }
-        char? Peek_comp(char type, int offset = 0)
-        {
-            char? token = Peek_comp(offset);
-            if (token.HasValue && token.Value == type)
-            {
-                return token;
-            }
-            return null;
-        }
         char Consume()
         {
             return m_thecode.ElementAt(m_curr_index++);
-        }
-        char Consume_comp()
-        {
-            char ret = m_thecode.ElementAt(m_comp_index);
-            m_thecode = m_thecode.Remove(m_comp_index, 1);
-            return ret;
         }
 
         bool IsComment()
         {
             return Peek('/').HasValue && Peek('/', 1).HasValue;
         }
-        bool IsTokenHashdef()
-        {
-            string def = "#define ";
-            for (int i = 0; i < 8; i++)
-                if (Peek_comp().HasValue && !Peek_comp(def[i], i).HasValue)
-                    return false;
-            return true;
-        }
-        void PreTokenize()
-        {
-            StringBuilder buffer = new();
-            while (Peek_comp().HasValue)
-            {
-                char curr_token = Peek_comp().Value;
-                if (IsTokenHashdef())
-                {
-                    while (!Peek_comp(' ').HasValue)
-                        Consume_comp();
-                }
-                else
-                {
-                    m_comp_index++;
-                    continue;
-                }
-                while (Peek_comp(' ').HasValue)
-                    Consume_comp();
-                while (Peek_comp().HasValue && (char.IsAsciiLetterOrDigit(Peek_comp().Value) || Peek_comp('_').HasValue))
-                {
-                    buffer.Append(Consume_comp());
-                }
-                string MacroName = buffer.ToString();
-                buffer.Clear();
-                while (Peek_comp(' ').HasValue)
-                    Consume_comp();
-                while (Peek_comp().HasValue && (char.IsAsciiLetterOrDigit(Peek_comp().Value) || Peek_comp('_').HasValue))
-                {
-                    buffer.Append(Consume_comp());
-                }
-                string MacroValue = buffer.ToString();
-                buffer.Clear();
-                m_hashdefs.Add(new(MacroName, MacroValue));
-            }
-            foreach (HashDef hashDef in m_hashdefs)
-            {
-                m_thecode = Regex.Replace(m_thecode, $@"\b{Regex.Escape(hashDef.MacroName)}\b", hashDef.MacroValue);
-            }
-        }
+
         public List<Token> Tokenize()
         {
             m_tokens = [];
-            m_hashdefs = [];
-            PreTokenize();
+            //m_hashdefs = [];
+            //PreTokenize(); this step was moved to the parser so we can handle correctly, because it interferes with other tokens
             StringBuilder buffer = new(); // this buffer is for multiple letter tokens
             int line = 1;
             while (Peek().HasValue)
@@ -186,6 +105,10 @@ namespace Epsilon
                     else if (word == "exit")
                     {
                         m_tokens.Add(new() { Value = word, Type = TokenType.Exit, Line = line });
+                    }
+                    else if (word == "define")
+                    {
+                        m_tokens.Add(new() { Value = word, Type = TokenType.Define, Line = line });
                     }
                     else // else it is a variable (identifier)
                     {
@@ -271,6 +194,11 @@ namespace Epsilon
                 {
                     buffer.Append(Consume());
                     m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Comma, Line = line });
+                }
+                else if (curr_token == '#')
+                {
+                    buffer.Append(Consume());
+                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Hash, Line = line });
                 }
                 // operators
                 else if (curr_token == '+')

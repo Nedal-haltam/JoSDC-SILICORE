@@ -25,7 +25,7 @@ namespace Epsilon
     {
         public enum NodeStmtType
         {
-            declare, assign, iff, forr, Exit
+            declare, assign, iff, forr, Exit, macro
         }
         public NodeStmtType type;
         public NodeStmtDeclare declare;
@@ -33,6 +33,7 @@ namespace Epsilon
         public NodeStmtIF iff;
         public NodeStmtFor forr;
         public NodeStmtExit Exit;
+        public NodeStmtMacro macro;
     }
     public struct NodeStmtDeclare
     {
@@ -183,6 +184,11 @@ namespace Epsilon
     {
         public NodeExpr expr;
     }
+    public struct NodeStmtMacro
+    {
+        public Token name;
+        public Token value;
+    }
 
 
 
@@ -243,6 +249,9 @@ namespace Epsilon
         public NodeExpr lhs;
         public NodeExpr rhs;
     }
+
+
+
 
 
 

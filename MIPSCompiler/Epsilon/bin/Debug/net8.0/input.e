@@ -1,4 +1,3 @@
-
 /*
 #define SIZE1D 5
 int arr[SIZE1D] = { 444, 33, 5, 6, 1 };
@@ -21,15 +20,16 @@ for (int i = 0; i < SIZE1D - 1; i = i + 1) {
 }
 */
 
-#define SIZE2D 2
+#define SIZEy 3
+#define SIZEx 2
 
-int arr2d[SIZE2D][SIZE2D] = {{1, 2}, {3, 4}};
-// int count = 1;
-// for (int i = 0; i < SIZE2D; i = i + 1)
-// {
-//     for (int j = 0; j < SIZE2D; j = j + 1)
-//     {
-//         arr2d[i][j] = count;
-//         count = count + 1;
-//     }
-// }
+int arr2d[SIZEx][SIZEy] = {{1, 2, 1}, {3, 4, 1}};
+int count = 1;
+for (int i = 0; i < SIZEx; i = i + 1)
+{
+    for (int j = 0; j < SIZEy; j = j + 1)
+    {
+        arr2d[i][j] = count;
+        count = count + 1;
+    }
+}
