@@ -169,12 +169,12 @@ always@(negedge clk, posedge rst) begin
             if (Reg_Busy[`I(ji)]) begin
                 if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
                     Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN1_VAL;
-                    Reg_EA[`I(ji)] <= CDB_ROBEN1_VAL + Reg_Immediate[`I(ji)];
+                    Reg_EA[`I(ji)] <= CDB_ROBEN1_VAL[9:0] + Reg_Immediate[`I(ji)][9:0];
                     Reg_ROBEN1[`I(ji)] <= 0;
                 end
                 else if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
                     Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN2_VAL;
-                    Reg_EA[`I(ji)] <= CDB_ROBEN2_VAL + Reg_Immediate[`I(ji)];
+                    Reg_EA[`I(ji)] <= CDB_ROBEN2_VAL[9:0] + Reg_Immediate[`I(ji)][9:0];
                     Reg_ROBEN1[`I(ji)] <= 0;
                 end
                 if (Reg_ROBEN2[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin

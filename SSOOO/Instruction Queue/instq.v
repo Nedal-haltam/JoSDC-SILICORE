@@ -45,8 +45,6 @@ always@(negedge clk, posedge rst) begin
         shamt      <= inst[10:6];
         immediate  <= inst[15:0];
         address    <= inst[25:0];
-        if (0 <= PC && PC <= 1023) begin
-        end
         VALID_Inst <= (0 <= PC && PC <= 1023);
         InstQ_FLUSH_Flag <= ~(0 <= PC && PC <= 1023);
         pc         <= PC;

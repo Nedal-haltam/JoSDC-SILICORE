@@ -87,7 +87,7 @@ module DataMemory_IP (
 	defparam
 		altsyncram_component.clock_enable_input_a = "BYPASS",
 		altsyncram_component.clock_enable_output_a = "BYPASS",
-		altsyncram_component.init_file = "DataMemory.MIF",
+		altsyncram_component.init_file = "DataMemory_IP1PORT_MIF.MIF",
 		altsyncram_component.intended_device_family = "MAX 10",
 		altsyncram_component.lpm_hint = "ENABLE_RUNTIME_MOD=NO",
 		altsyncram_component.lpm_type = "altsyncram",

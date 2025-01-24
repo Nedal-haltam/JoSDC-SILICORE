@@ -118,14 +118,22 @@ end
 /*
 TODO:
     - the jr dependency is solved but we can do better in terms of forwarding it from the ROB or the CDB, but it works
+    - support flags from FU: OF, UF
+    - better branch predictor
+    - multiple FU
 */
+
+reg isjr;
+always@(negedge clk, posedge rst) begin
+    isjr <= (rst) ? 1'b0 : ((isjr) ? 1'b0 : InstQ_opcode == jr);
+end
 
 `define exception_handler 32'd1000
 assign PC = (ROB_FLUSH_Flag == 1'b1 || InstQ_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_Write_Data : `exception_handler) : 
 (
     (InstQ_opcode == j || InstQ_opcode == jal) ? {6'd0,InstQ_address} : 
     (
-        (InstQ_opcode == jr) ? ((RegFile_RP1_Reg1_ROBEN == 0) ? RegFile_RP1_Reg1 : PC_out) : 
+        (InstQ_opcode == jr) ? ((~isjr) ? PC_out : ((RegFile_RP1_Reg1_ROBEN == 0) ? RegFile_RP1_Reg1 : PC_out)) : 
         (
             (InstQ_opcode == hlt_inst) ? PC_out : 
             (

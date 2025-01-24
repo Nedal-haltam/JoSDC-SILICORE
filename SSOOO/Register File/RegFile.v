@@ -10,7 +10,8 @@ module RegFile
     input ROB_FLUSH_Flag,
 
     input [4:0]   RP1_index1, RP1_index2,
-    output [31:0] RP1_Reg1, RP1_Reg2,
+    // output [31:0] RP1_Reg1, RP1_Reg2,
+    output reg [31:0] RP1_Reg1, RP1_Reg2,
     output reg [4:0] RP1_Reg1_ROBEN, RP1_Reg2_ROBEN
 
     // for testing purposes, 
@@ -30,8 +31,19 @@ reg [4:0] Reg_ROBEs [31:0];
 assign output_ROBEN_test = Reg_ROBEs[input_WP1_DRindex_test];
 //
 
-assign RP1_Reg1 = Regs[RP1_index1];
-assign RP1_Reg2 = Regs[RP1_index2];
+// assign RP1_Reg1 = Regs[RP1_index1];
+// assign RP1_Reg2 = Regs[RP1_index2];
+
+always@(posedge clk, posedge rst) begin
+    if (rst) begin
+        RP1_Reg1 <= 0;
+        RP1_Reg2 <= 0;
+    end
+    else begin
+        RP1_Reg1 <= (RP1_index1 == WP1_DRindex && WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0) ? WP1_Data : Regs[RP1_index1];
+        RP1_Reg2 <= (RP1_index2 == WP1_DRindex && WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0) ? WP1_Data : Regs[RP1_index2];
+    end
+end
 
 integer i;
 always@(posedge clk , posedge rst) begin : Update_Registers_Block
@@ -84,23 +96,18 @@ end
 
 
 always@(posedge clk) begin
-    if (ROB_FLUSH_Flag) begin
+    if (ROB_FLUSH_Flag || (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN && WP1_DRindex == RP1_index1)) begin
         RP1_Reg1_ROBEN <= 0;
-        RP1_Reg2_ROBEN <= 0;
-    end
-    else if (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN) begin
-        if (WP1_DRindex == RP1_index1)
-            RP1_Reg1_ROBEN <= 0;
-        else
-            RP1_Reg1_ROBEN <= Reg_ROBEs[RP1_index1];
-
-        if (WP1_DRindex == RP1_index2)
-            RP1_Reg2_ROBEN <= 0;
-        else
-            RP1_Reg2_ROBEN <= Reg_ROBEs[RP1_index2];
     end
     else begin
         RP1_Reg1_ROBEN <= Reg_ROBEs[RP1_index1];
+    end
+end
+always@(posedge clk) begin
+    if (ROB_FLUSH_Flag || (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN && WP1_DRindex == RP1_index2)) begin
+        RP1_Reg2_ROBEN <= 0;
+    end
+    else begin
         RP1_Reg2_ROBEN <= Reg_ROBEs[RP1_index2];
     end
 end

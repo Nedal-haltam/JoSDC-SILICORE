@@ -62,7 +62,8 @@ DataMemory_IP DataMemory
 `endif
 
 always@(posedge clk) begin
-    MEMU_invalid_address <= ~(32'd0 <= address && address <= 32'd1023);
+    MEMU_invalid_address <= ~(0 <= address && address <= 1023);
+    // MEMU_invalid_address <= 1'b0;
 end
 
 
