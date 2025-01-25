@@ -110,11 +110,11 @@ namespace Epsilon
         }
         void GenArray1DAddrData(NodeStmtAssignArray array, string reg_addr, string reg_data)
         {
-            int relative_location = m_StackSize - VariableLocation(array.ident.Value);
             GenExpr(array.index1);
             GenExpr(array.expr);
             GenPop(reg_data);
             GenPop(reg_addr);
+            int relative_location = m_StackSize - VariableLocation(array.ident.Value);
             m_outputcode.Append($"ADDI $3, $sp, {relative_location}\n");
             m_outputcode.Append($"SUB {reg_addr}, $3, {reg_addr}\n");
         }
@@ -150,6 +150,7 @@ namespace Epsilon
             }
             else if (term.type == NodeTerm.NodeTermType.ident) 
             {
+                m_outputcode.Append($"########## {term.ident.ident.Value}\n");
                 NodeTermIdent ident = term.ident;
                 if (!IsVariableDeclared(ident.ident.Value))
                 {
@@ -169,6 +170,8 @@ namespace Epsilon
                         string reg_addr = "$1";
                         string reg_data = "$3";
                         string index2 = "$2";
+
+                        m_outputcode.Append($"# begin index\n");
                         if (ident.index2.HasValue)
                             GenExpr(ident.index2.Value);
                         GenExpr(ident.index1.Value);
@@ -176,7 +179,9 @@ namespace Epsilon
                         GenPop(index2);
                         if (ident.dim2.HasValue)
                             GenMult(reg_addr, ident.dim2.Value.intlit.Value);
+                        m_outputcode.Append($"# end index\n");
 
+                        m_outputcode.Append($"# begin data\n");
                         int relative_location = m_StackSize - VariableLocation(ident.ident.Value);
                         m_outputcode.Append($"ADD {reg_addr}, {reg_addr}, {index2}\n");
                         m_outputcode.Append($"SUB {reg_addr}, $zero, {reg_addr}\n");
@@ -184,19 +189,24 @@ namespace Epsilon
                         m_outputcode.Append($"ADD {reg_addr}, {reg_addr}, $sp\n");
                         m_outputcode.Append($"LW {reg_data}, 0({reg_addr})\n");
                         GenPush(reg_data);
+                        m_outputcode.Append($"# end data\n");
                     }
                     else
                     {
                         string reg_addr = "$1";
                         string reg_data = "$2";
-                        int relative_location = m_StackSize - VariableLocation(ident.ident.Value);
+                        m_outputcode.Append($"# begin index\n");
                         GenExpr(ident.index1.Value);
                         GenPop(reg_addr);
+                        int relative_location = m_StackSize - VariableLocation(ident.ident.Value);
+                        m_outputcode.Append($"# end index\n");
+                        m_outputcode.Append($"# begin data\n");
                         m_outputcode.Append($"SUB {reg_addr}, $zero, {reg_addr}\n");
                         m_outputcode.Append($"ADDI {reg_addr}, {reg_addr}, {relative_location}\n");
                         m_outputcode.Append($"ADD {reg_addr}, {reg_addr}, $sp\n");
                         m_outputcode.Append($"LW {reg_data}, 0({reg_addr})\n");
                         GenPush(reg_data);
+                        m_outputcode.Append($"# end data\n");
                     }
 
                 }
@@ -325,15 +335,51 @@ namespace Epsilon
                 m_outputcode.Append($"SGT {source_reg1}, {source_reg1}, {source_reg2}\n");
                 GenPush(source_reg1);
             }
+            else if (binExpr.type == NodeBinExpr.NodeBinExprType.and)
+            {
+                string source_reg1 = "$1", source_reg2 = "$2";
+                GenExpr(binExpr.rhs);
+                GenExpr(binExpr.lhs);
+                GenPop(source_reg1);
+                GenPop(source_reg2);
+                m_outputcode.Append($"AND {source_reg1}, {source_reg1}, {source_reg2}\n");
+                GenPush(source_reg1);
+            }
+            else if (binExpr.type == NodeBinExpr.NodeBinExprType.or)
+            {
+                string source_reg1 = "$1", source_reg2 = "$2";
+                GenExpr(binExpr.rhs);
+                GenExpr(binExpr.lhs);
+                GenPop(source_reg1);
+                GenPop(source_reg2);
+                m_outputcode.Append($"OR {source_reg1}, {source_reg1}, {source_reg2}\n");
+                GenPush(source_reg1);
+            }
+            else if (binExpr.type == NodeBinExpr.NodeBinExprType.xor)
+            {
+                string source_reg1 = "$1", source_reg2 = "$2";
+                GenExpr(binExpr.rhs);
+                GenExpr(binExpr.lhs);
+                GenPop(source_reg1);
+                GenPop(source_reg2);
+                m_outputcode.Append($"XOR {source_reg1}, {source_reg1}, {source_reg2}\n");
+                GenPush(source_reg1);
+            }
+            else
+            {
+                Error("expected binary operator", -1);
+            }
         }
         void GenExpr(NodeExpr expr)
         {
             if (expr.type == NodeExpr.NodeExprType.term)
             {
+                
                 GenTerm(expr.term);
             }
             else if (expr.type == NodeExpr.NodeExprType.binExpr)
             {
+
                 GenBinExpr(expr.binexpr);
             }
         }
@@ -482,8 +528,8 @@ namespace Epsilon
         void GenArrayAssign1D(NodeStmtAssignArray array)
         {
             // we save $sp + relative_location - index in $2 to use it as an address
-            string reg_addr = "$2";
-            string reg_data = "$1";
+            string reg_addr = "$1";
+            string reg_data = "$2";
             GenArray1DAddrData(array, reg_addr, reg_data);
             m_outputcode.Append($"SW {reg_data}, 0({reg_addr})\n");
         }
@@ -503,10 +549,10 @@ namespace Epsilon
                 {
                     Error($"variable {ident.Value} is not declared", ident.Line);
                 }
-                int relative_location = m_StackSize - VariableLocation(ident.Value);
                 GenExpr(assign.singlevar.expr);
                 string reg = "$1";
                 GenPop(reg);
+                int relative_location = m_StackSize - VariableLocation(ident.Value);
                 m_outputcode.Append($"SW {reg}, {relative_location}($sp)\n");
             }
             else if (assign.type == NodeStmtAssign.NodeStmtAssignType.Array)

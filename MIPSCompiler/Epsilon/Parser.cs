@@ -88,6 +88,9 @@ namespace Epsilon
         {
             return peek(TokenType.Plus).HasValue ||
                    peek(TokenType.Minus).HasValue ||
+                   peek(TokenType.And).HasValue ||
+                   peek(TokenType.Or).HasValue ||
+                   peek(TokenType.Xor).HasValue ||
                    peek(TokenType.Sll).HasValue ||
                    peek(TokenType.Srl).HasValue ||
                    peek(TokenType.EqualEqual).HasValue ||
@@ -102,7 +105,7 @@ namespace Epsilon
             NodeExpr? index = ParseExpr();
             if (!index.HasValue)
             {
-                ErrorExpected("expression");
+                ErrorExpected("expression(parseindex)");
             }
             try_consume_err(TokenType.CloseSquare);
             return index;
@@ -139,7 +142,7 @@ namespace Epsilon
                 NodeExpr? expr = ParseExpr();
                 if (!expr.HasValue)
                 {
-                    ErrorExpected("expression");
+                    ErrorExpected("expression(parseterm)");
                 }
                 try_consume_err(TokenType.CloseParen);
                 NodeTermParen paren = new NodeTermParen();
@@ -160,6 +163,9 @@ namespace Epsilon
                 case TokenType.NotEqual:
                 case TokenType.LessThan:
                 case TokenType.GreaterThan:
+                case TokenType.Xor:
+                case TokenType.Or:
+                case TokenType.And:
                     return 0;
                 case TokenType.Sll:
                 case TokenType.Srl:
@@ -188,6 +194,12 @@ namespace Epsilon
                 return NodeBinExpr.NodeBinExprType.lessthan;
             if (op == TokenType.GreaterThan)
                 return NodeBinExpr.NodeBinExprType.greaterthan;
+            if (op == TokenType.And)
+                return NodeBinExpr.NodeBinExprType.and;
+            if (op == TokenType.Or)
+                return NodeBinExpr.NodeBinExprType.or;
+            if (op == TokenType.Xor)
+                return NodeBinExpr.NodeBinExprType.xor;
             return null;
         }
         NodeExpr? ParseExpr(int min_prec = 0)
@@ -224,7 +236,7 @@ namespace Epsilon
                     NodeExpr? expr_rhs = ParseExpr(next_min_prec);
                     if (!expr_rhs.HasValue)
                     {
-                        ErrorExpected("expression");
+                        ErrorExpected("expression(parseexpr)");
                     }
                     NodeBinExpr expr = new NodeBinExpr();
                     NodeExpr expr_lhs2 = new NodeExpr();
@@ -375,7 +387,7 @@ namespace Epsilon
                     }
                     else
                     {
-                        ErrorExpected("expression");
+                        ErrorExpected("expression(parseforinit)");
                     }
                 }
                 else
@@ -408,7 +420,7 @@ namespace Epsilon
                 }
                 else
                 {
-                    ErrorExpected("expression");
+                    ErrorExpected("expression(parseforinit2)");
                 }
                 try_consume_err(TokenType.SemiColon);
                 NodeForInit forinit = new NodeForInit();
@@ -449,7 +461,7 @@ namespace Epsilon
                 }
                 else
                 {
-                    ErrorExpected("expression");
+                    ErrorExpected("expression(parsestmtupdate)");
                 }
                 NodeStmtAssign assign = new();
                 assign.type = NodeStmtAssign.NodeStmtAssignType.SingleVar;
@@ -522,7 +534,7 @@ namespace Epsilon
                 }
                 else
                 {
-                    ErrorExpected("expression");
+                    ErrorExpected("expression(parsedeclaresinglevar)");
                 }
             }
             else
@@ -573,7 +585,7 @@ namespace Epsilon
             {
                 NodeExpr? expr = ParseExpr();
                 if (!expr.HasValue)
-                    ErrorExpected("expression");
+                    ErrorExpected("expression(parsearrayinit)");
                 values.Add(expr.Value);
                 if (peek(TokenType.CloseCurly).HasValue)
                 {
@@ -664,7 +676,7 @@ namespace Epsilon
             }
             else
             {
-                ErrorExpected("expression");
+                ErrorExpected("expression(parseassignsinglevar)");
             }
             try_consume_err(TokenType.SemiColon);
             NodeStmt stmt = new NodeStmt();
@@ -701,7 +713,7 @@ namespace Epsilon
             }
             else
             {
-                ErrorExpected("expression");
+                ErrorExpected("expression(parseassignarray)");
             }
             try_consume_err(TokenType.SemiColon);
             NodeStmt stmt = new NodeStmt();
@@ -796,7 +808,7 @@ namespace Epsilon
                 }
                 else
                 {
-                    ErrorExpected("expression");
+                    ErrorExpected("expression(parsestmtexit)");
                 }
                 try_consume_err(TokenType.CloseParen);
                 try_consume_err(TokenType.SemiColon);

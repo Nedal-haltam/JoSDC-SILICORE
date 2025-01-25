@@ -258,6 +258,21 @@ namespace Epsilon
                     buffer.Append(Consume());
                     m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Minus, Line = line });
                 }
+                else if (curr_token == '&')
+                {
+                    buffer.Append(Consume());
+                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.And, Line = line });
+                }
+                else if (curr_token == '|')
+                {
+                    buffer.Append(Consume());
+                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Or, Line = line });
+                }
+                else if (curr_token == '^')
+                {
+                    buffer.Append(Consume());
+                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Xor, Line = line });
+                }
                 else if ((Peek('<').HasValue && Peek('<', 1).HasValue))
                 {
                     buffer.Append(Consume());
