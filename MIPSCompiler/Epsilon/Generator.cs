@@ -722,7 +722,7 @@ namespace Epsilon
         public StringBuilder GenProg()
         {
             m_outputcode.Append(".text\nmain:\n");
-            m_outputcode.Append("ADDI $sp, $zero, 20\n");
+            m_outputcode.Append("ADDI $sp, $zero, 50\n");
             foreach (NodeStmt stmt in m_prog.scope.stmts)
                 GenStmt(stmt);
 
