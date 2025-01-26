@@ -19,10 +19,11 @@ namespace VGAG
             writing, drawing
         }
 
-        struct Cell
+        class Cell
         {
             public Rectangle rect;
             public Color color;
+            
             public bool drawn;
             public Cell()
             {
@@ -96,10 +97,8 @@ namespace VGAG
                     Color c = (mousebtnL) ? BrushColor : Color.Black;
                     if ((mousebtnL || mousebtnR) && CheckCollisionPointRec(GetMousePosition(), grid[i][j].rect))
                     {
-                        Cell temp = grid[i][j];
-                        temp.drawn = mousebtnL;
-                        temp.color = c;
-                        grid[i][j] = temp;
+                        grid[i][j].drawn = mousebtnL;
+                        grid[i][j].color = c;
                         for (int dy = i - delta; dy < i + delta; dy++)
                         {
                             for (int dx = j - delta; dx < j + delta; dx++)
@@ -111,10 +110,8 @@ namespace VGAG
                                     continue;
                                 if (CheckCollisionPointCircle(currpoint, center, delta))
                                 {
-                                    Cell temp2 = grid[indexy][indexx];
-                                    temp2.drawn = mousebtnL;
-                                    temp2.color = c;
-                                    grid[indexy][indexx] = temp2;
+                                    grid[indexy][indexx].drawn = mousebtnL;
+                                    grid[indexy][indexx].color = c;
                                 }
                             }
                         }
@@ -245,9 +242,7 @@ namespace VGAG
                     int indexx = (index * Char[0].Count + j);
                     int indexygrid = (indexy + (int)TextBoundary.Y) % (int)TextBoundary.Height;
                     int indexxgrid = (indexx + (int)TextBoundary.X) % (int)TextBoundary.Width;
-                    Cell temp = grid[indexygrid][indexxgrid];
-                    temp.color = Char[i][j];
-                    grid[indexygrid][indexxgrid] = temp;
+                    grid[indexygrid][indexxgrid].color = Char[i][j];
                 }
             }
         }
@@ -262,9 +257,7 @@ namespace VGAG
                     int indexx = (index * Char[0].Count + j);
                     int indexygrid = (indexy + (int)TextBoundary.Y) % (int)TextBoundary.Height;
                     int indexxgrid = (indexx + (int)TextBoundary.X) % (int)TextBoundary.Width;
-                    Cell temp = grid[indexygrid][indexxgrid];
-                    temp.color = Color.Black;
-                    grid[indexygrid][indexxgrid] = temp;
+                    grid[indexygrid][indexxgrid].color = Color.Black;
                 }
             }
         }
@@ -524,9 +517,7 @@ namespace VGAG
             {
                 for (int j = 0; j < grid[0].Count; j++)
                 {
-                    Cell temp = grid[i][j];
-                    temp.color = c;
-                    grid[i][j] = temp;
+                    grid[i][j].color = c;
                 }
             }
         }
@@ -540,10 +531,77 @@ namespace VGAG
             //ParseNumsAndSpecial(NumbersAndSpecial, CHARW, CHARH, 12); // NumbersAndSpecial.mif
             
             string CharMem = "D:\\GitHub Repos\\JoSDC-SILICORE\\VGAG(Desktop)\\VGAG\\bin\\Debug\\net8.0-windows\\characters\\CharMem.mif"; // CharMem.mif;
-            ParseAllInOneFile(NumbersAndSpecial, 11, AlphabetMap, 52, CharMem, CHARW, CHARH);
+            //ParseAllInOneFile(NumbersAndSpecial, 11, AlphabetMap, 52, CharMem, CHARW, CHARH);
+        }
+        static int getindex(int a, int b)
+        {
+            return ((a % b) + b) % b;
+        }
+        static List<List<Cell>> getcopy(List<List<Cell>> src)
+        {
+            List<List<Cell>> ret = [];
+            for (int i = 0; i < src.Count; i++)
+            {
+                List<Cell> temp = [];
+                for (int j = 0; j < src[0].Count; j++)
+                {
+                    temp.Add(new(src[i][j].rect, src[i][j].color));
+                }
+                ret.Add(temp);
+            }
+            return ret;
+        }
+        static void GOL(ref List<List<Cell>> grid)
+        {
+            Random random = new Random();
+            List<List<Cell>> grid2 = [];
+            if (IsKeyPressed(KeyboardKey.R))
+            {
+                for (int i = 0; i < grid.Count; i++)
+                {
+                    for (int j = 0; j < grid[0].Count; j++)
+                    {
+                        grid[i][j].color = (random.Next(10) < 2) ? Color.White : Color.Black;
+                    }
+                }
+            }
+            BeginDrawing();
+            ClearBackground(Color.Pink);
+            grid2 = getcopy(grid);
+            for (int i = 0; i < grid.Count; i++)
+            {
+                for (int j = 0; j < grid[0].Count; j++)
+                {
+                    int live = 0;
+                    for (int dx = i - 1; dx <= i + 1; dx++)
+                    {
+                        for (int dy = j - 1; dy <= j + 1; dy++)
+                        {
+                            if (dx == i && dy == j) continue;
+                            if (grid[getindex(dx, grid.Count)][getindex(dy, grid[0].Count)].color.Equals(Color.White))
+                                live++;
+                        }
+                    }
+
+                    if (grid[i][j].color.Equals(Color.White))
+                    {
+                        if (!(live == 2 || live == 3))
+                            grid2[i][j].color = Color.Black;
+                    }
+                    else
+                    {
+                        if (live == 3)
+                            grid2[i][j].color = Color.White;
+                    }
+                }
+            }
+            grid = getcopy(grid2);
+            UpdateGrid_drawing(ref grid, brushsize);
+            EndDrawing();
         }
         unsafe public static void main()
         {
+            
             int w = 800; // for the application
             int h = 600; // for the application
             int commdiv = 1;
@@ -554,7 +612,7 @@ namespace VGAG
 
             SetConfigFlags(ConfigFlags.AlwaysRunWindow);
             InitWindow(w, h, "VGAG");
-            SetTargetFPS(60); // maximum FPS
+            SetTargetFPS(30); // maximum FPS
 
             int x = (w / 2 - (OrigW) / 2);
             int y = (h / 2 - (OrigH) / 2);
@@ -572,9 +630,10 @@ namespace VGAG
             List<List<Cell>> grid = InitGrid(boundary);
             List<int> newlines = new List<int>();
             bool changed = false;
-
             while (!WindowShouldClose())
             {
+                //GOL(ref grid);
+                //continue;
                 bool Ctrl = IsKeyDown(KeyboardKey.LeftControl) || IsKeyDown(KeyboardKey.RightControl);
                 string FPS = GetFPS().ToString();
                 DrawText($"FPS: {FPS}\nText Shown: {text}", 0, 0, 20, Color.White);
@@ -709,9 +768,7 @@ namespace VGAG
                         {
                             for (int j = 0; j < grid[0].Count; j++)
                             {
-                                Cell temp = grid[i][j];
-                                temp.color = gridc[i][j];
-                                grid[i][j] = temp;
+                                grid[i][j].color = gridc[i][j];
                             }
                         }
                     }
