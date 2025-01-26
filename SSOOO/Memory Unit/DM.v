@@ -30,8 +30,8 @@ always @(negedge clk) begin
         if (Write_en) begin
             DataMem[address] <= data;
         end
-        MEMU_ROBEN <= ROBEN;
     end
+    MEMU_ROBEN <= ROBEN;
 end
 initial begin
 for (i = 0; i < 1024; i = i + 1)
@@ -48,7 +48,6 @@ end
 
 always@(negedge clk) begin
     MEMU_ROBEN <= ROBEN;
-//    MEMU_invalid_address <= ~(32'd0 <= address && address <= 32'd1023);
 end
 DataMemory_IP DataMemory
 (
@@ -63,7 +62,6 @@ DataMemory_IP DataMemory
 
 always@(posedge clk) begin
     MEMU_invalid_address <= ~(0 <= address && address <= 1023);
-    // MEMU_invalid_address <= 1'b0;
 end
 
 
