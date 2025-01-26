@@ -429,6 +429,7 @@ namespace Epsilon
                 forinit.assign.singlevar = singlevar;
                 return forinit;
             }
+            try_consume_err(TokenType.SemiColon);
             return null;
         }
         NodeForCond? ParseForCond()
