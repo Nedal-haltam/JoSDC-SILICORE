@@ -33,6 +33,7 @@ wire ROB_EXCEPTION_Flag;
 wire ROB_FLUSH_Flag;
 wire ROB_Wrong_prediction;
 wire [11:0] ROB_Commit_opcode;
+wire [31:0] ROB_Commit_pc;
 wire [4:0] ROB_Commit_Rd;
 wire [31:0] ROB_Commit_Write_Data;
 wire [2:0] ROB_Commit_Control_Signals;
@@ -129,7 +130,24 @@ always@(negedge clk, posedge rst) begin
 end
 
 `define exception_handler 32'd1000
-assign PC = (ROB_FLUSH_Flag == 1'b1 || InstQ_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_Write_Data : `exception_handler) : 
+reg [31:0] EXCEPTION_EPC, EXCEPTION_CAUSE;
+parameter EXCEPTION_CAUSE_INVALID_IM_ADDR = 1,
+          EXCEPTION_CAUSE_INVALID_DM_ADDR = 2;
+always@(posedge clk) begin
+    if (~rst) begin
+        if (ROB_FLUSH_Flag && ~ROB_Wrong_prediction) begin
+            EXCEPTION_EPC <= ROB_Commit_pc;
+            EXCEPTION_CAUSE <= EXCEPTION_CAUSE_INVALID_DM_ADDR;
+        end
+        else if (InstQ_FLUSH_Flag) begin
+            EXCEPTION_EPC <= PC_out;
+            EXCEPTION_CAUSE <= EXCEPTION_CAUSE_INVALID_IM_ADDR;
+        end
+
+    end
+end
+
+assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_Write_Data : `exception_handler) : 
 (
     (InstQ_opcode == j || InstQ_opcode == jal) ? {6'd0,InstQ_address} : 
     (
@@ -143,8 +161,10 @@ assign PC = (ROB_FLUSH_Flag == 1'b1 || InstQ_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_p
     )
 );
 
+assign InstQ_FLUSH_Flag = ~(rst | (0 <= PC && PC <= 1023));
 
-PC_register pcreg(PC, PC_out, ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag , clk, rst);
+
+PC_register pcreg((InstQ_FLUSH_Flag) ? `exception_handler : PC, PC_out, ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag , clk, rst);
 
 InstQ instq
 (
@@ -160,7 +180,6 @@ InstQ instq
     .immediate(InstQ_immediate),
     .address(InstQ_address),
     .pc(InstQ_PC),
-    .InstQ_FLUSH_Flag(InstQ_FLUSH_Flag),
     .VALID_Inst(InstQ_VALID_Inst)
 );
 
@@ -225,6 +244,7 @@ ROB rob
     .clk(clk), 
     .rst(rst),
     .Decoded_opcode(InstQ_opcode),
+    .Decoded_PC(InstQ_PC),
     .Decoded_Rd
     (
         (InstQ_opcode == jal) ? 5'd31 : 
@@ -257,6 +277,7 @@ ROB rob
     .Wrong_prediction(ROB_Wrong_prediction),
 
     .Commit_opcode(ROB_Commit_opcode),
+    .commit_pc(ROB_Commit_pc),
     .Commit_Rd(ROB_Commit_Rd),
     .Commit_Write_Data(ROB_Commit_Write_Data),
     .Commit_Control_Signals(ROB_Commit_Control_Signals),

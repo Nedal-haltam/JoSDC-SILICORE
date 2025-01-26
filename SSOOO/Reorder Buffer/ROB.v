@@ -15,6 +15,7 @@ module ROB
 (
     input clk, rst,
     input [11:0] Decoded_opcode,
+    input [31:0] Decoded_PC,
     input [4:0] Decoded_Rd,
     input Decoded_prediction,
     input [31:0] Branch_Target_Addr,
@@ -35,6 +36,7 @@ module ROB
     output reg Wrong_prediction,
 
     output reg [11:0] Commit_opcode,
+    output reg [31:0] commit_pc,
     output reg [4:0] Commit_Rd,
     output reg [31:0] Commit_Write_Data,
     output reg [2:0] Commit_Control_Signals,
@@ -68,6 +70,7 @@ module ROB
 `define validbit(i) assign Reg_Valid[i] = ~(Reg_Speculation[i][0] | Reg_Exception[i]) // ~speculative && ~excepted
 
 reg [11:0] Reg_opcode [(`ROB_SIZE - 1):0];
+reg [31:0] Reg_PC [(`ROB_SIZE - 1):0];
 reg [4:0] Reg_Rd [(`ROB_SIZE - 1):0];
 reg [1:0] Reg_Speculation [(`ROB_SIZE - 1):0];
 reg Reg_Busy [(`ROB_SIZE - 1):0];
@@ -138,6 +141,7 @@ always@(posedge clk, posedge rst) begin
     else begin
         if (VALID_Inst && ~FULL_FLAG) begin
             Reg_opcode[`Imone(End_Index)] <= Decoded_opcode;
+            Reg_PC[`Imone(End_Index)] <= Decoded_PC;
             Reg_Rd[`Imone(End_Index)] <= Decoded_Rd;
             Reg_Busy[`Imone(End_Index)] <= 1'b1;
             Reg_Ready[`Imone(End_Index)] <= Decoded_opcode == hlt_inst || Decoded_opcode == jal;
@@ -195,6 +199,7 @@ end
 always@(negedge clk, posedge rst) begin
     if (rst) begin
         Commit_opcode <= 0;
+        commit_pc <= 0;
         Commit_Rd <= 0;
         Commit_Write_Data <= 0;
         Commit_Control_Signals <= 0;
@@ -203,6 +208,7 @@ always@(negedge clk, posedge rst) begin
     end
     else begin
         Commit_opcode <= 0;
+        commit_pc <= 0;
         Commit_Rd <= 0;
         Commit_Write_Data <= 0;
         Commit_Control_Signals <= 0;
@@ -212,6 +218,7 @@ always@(negedge clk, posedge rst) begin
             if (Reg_Valid[`Imone(Start_Index)]) begin // handle ALU, lw, sw that are ready to commit (sw: do nothing, ALU/lw: write on the RegFile)
                 if (Reg_Ready[`Imone(Start_Index)]) begin
                     Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
+                    commit_pc <= Reg_PC[`Imone(Start_Index)];
                     Commit_Rd <= Reg_Rd[`Imone(Start_Index)];
                     Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)];
                     Commit_Control_Signals <= { (!(Reg_opcode[`Imone(Start_Index)] == jr || Reg_opcode[`Imone(Start_Index)] == sw || Reg_opcode[`Imone(Start_Index)] == beq || 
@@ -229,7 +236,8 @@ always@(negedge clk, posedge rst) begin
             end
             else if (Reg_Exception[`Imone(Start_Index)]) begin
                 FLUSH_Flag <= 1'b1;
-                Commit_opcode <= Reg_opcode[`Imone(Start_Index)];               
+                Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
+                commit_pc <= Reg_PC[`Imone(Start_Index)];
             end
         end
     end
