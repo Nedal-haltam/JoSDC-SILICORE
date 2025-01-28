@@ -15,7 +15,7 @@
 `ifdef vscode
 
 `include "./AddressUnit&ld_st buffer/AddressUnit.v"
-`include "./AddressUnit&ld_st buffer/LdStBuffer.v"
+`include "./AddressUnit&ld_st buffer/LSBuffer.v"
 `include "./Common Data Bus/CDB.v"
 `include "./Instruction Queue/InstQ.v"
 `include "./Memory Unit/DM.v"

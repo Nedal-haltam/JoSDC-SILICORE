@@ -8,7 +8,7 @@ internal registers:
     - busy bit and ready bit is needed
 */
 
-module LdStBuffer
+module LSBuffer
 (
     input clk, rst,
     input VALID_Inst,

@@ -453,7 +453,7 @@ we make it a load buffer and store instructions can write to the memory once the
     - 
 */
 
-LdStBuffer ldstbuffer
+LSBuffer lsbuffer
 (
     .clk(clk), 
     .rst(rst),
