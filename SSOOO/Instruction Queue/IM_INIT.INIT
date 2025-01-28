@@ -1,27 +1,47 @@
 
 
 
-// invalid data memory address
-InstMem[  0] <= 32'h2001007B; // addi $1 $zero 123
-InstMem[  1] <= 32'h2002FFFF; // addi $2 $zero -1
-InstMem[  2] <= 32'h206300EA; // addi $3 $3 234
-InstMem[  3] <= 32'hAC410000; // sw $1 0 ( $2 )
-InstMem[  4] <= 32'hFC000000; // hlt
+
+
+
+
+
+// `define invimem
+//`define invdmem
+//`define jrdep
+//`define bubble
+`define insertion
+
+`ifdef insertion
+InstMem[ 0] <= 32'h2014000A;// addi $20 $0 10
+InstMem[ 1] <= 32'h20010002;// addi $1 $0 2
+InstMem[ 2] <= 32'h2016FFFF;// addi $22 $0 -1
+InstMem[ 3] <= 32'h0034F822;// sub $31 $1 $20
+InstMem[ 4] <= 32'h03E0F82A;// slt $31 $31 $0
+InstMem[ 5] <= 32'h13E00011;// beq $31 $0 17
+InstMem[ 6] <= 32'h8C280000;// lw $8 0 ( $1 )
+InstMem[ 7] <= 32'h2022FFFF;// addi $2 $1 -1
+InstMem[ 8] <= 32'h0056182B;// sgt $3 $2 $22
+InstMem[ 9] <= 32'h10600009;// beq $3 $0 9
+InstMem[10] <= 32'h8C450000;// lw $5 0 ( $2 )
+InstMem[11] <= 32'h00A8202B;// sgt $4 $5 $8
+InstMem[12] <= 32'h00643824;// and $7 $3 $4
+InstMem[13] <= 32'h10E00005;// beq $7 $0 5
+InstMem[14] <= 32'h20460001;// addi $6 $2 1
+InstMem[15] <= 32'hACC50000;// sw $5 0 ( $6 )
+InstMem[16] <= 32'h2042FFFF;// addi $2 $2 -1
+InstMem[17] <= 32'h08000008;// j while_loop
+InstMem[18] <= 32'h20420001;// addi $2 $2 1
+InstMem[19] <= 32'hAC480000;// sw $8 0 ( $2 )
+InstMem[20] <= 32'h20210001;// addi $1 $1 1
+InstMem[21] <= 32'h08000003;// j for_loop
+InstMem[22] <= 32'hFC000000;// hlt
 InstMem[999] <= 32'hFC000000;// hlt
 InstMem[1000] <= 32'h201FFFFF;// addi x31 x0 -1
 InstMem[1001] <= 32'hFC000000;// hlt
+`endif
 
-
-
-
-
-
-
-
-
-
-
-/*
+`ifdef bubble
 // this is bubble sort
 InstMem[ 0] <= 32'h2001000A;// addi $1 $0 10
 InstMem[ 1] <= 32'h00015880;// sll $11 $1 2
@@ -57,10 +77,9 @@ InstMem[30] <= 32'hFC000000;// hlt
 InstMem[999] <= 32'hFC000000;// hlt
 InstMem[1000] <= 32'h201FFFFF;// addi x31 x0 -1
 InstMem[1001] <= 32'hFC000000;// hlt
-*/
+`endif
 
-
-/*
+`ifdef jrdep
 // this is the code that tests the jr dependency 
 InstMem[  0] <= 32'h20010003; // addi $1 $zero 3
 InstMem[  1] <= 32'h20210002; // addi $1 $1 2
@@ -69,10 +88,9 @@ InstMem[  3] <= 32'h2002007B; // addi $2 $0 123
 InstMem[  4] <= 32'h2003007B; // addi $3 $0 123
 InstMem[  5] <= 32'h2004007B; // addi $4 $0 123
 InstMem[  6] <= 32'hFC000000; // hlt
-*/
+`endif
 
-
-/*
+`ifdef invimem
 // this is the code that has an invalid instruction memory address (address = -1), trace the code to see it
 InstMem[  0] <= 32'h20010003; // addi $1 $zero 3
 InstMem[  1] <= 32'h2021FFFC; // addi $1 $1 -4
@@ -85,4 +103,18 @@ InstMem[  7] <= 32'hFC000000; // hlt
 InstMem[999] <= 32'hFC000000;// hlt
 InstMem[1000] <= 32'h201FFFFF;// addi x31 x0 -1
 InstMem[1001] <= 32'hFC000000;// hlt
-*/
+`endif
+
+
+`ifdef invdmem
+// invalid data memory address
+InstMem[  0] <= 32'h2001007B; // addi $1 $zero 123
+InstMem[  1] <= 32'h2002FFFF; // addi $2 $zero -1
+InstMem[  2] <= 32'h206300EA; // addi $3 $3 234
+InstMem[  3] <= 32'hAC410000; // sw $1 0 ( $2 )
+InstMem[  4] <= 32'hFC000000; // hlt
+InstMem[999] <= 32'hFC000000;// hlt
+InstMem[1000] <= 32'h201FFFFF;// addi x31 x0 -1
+InstMem[1001] <= 32'hFC000000;// hlt
+`endif
+

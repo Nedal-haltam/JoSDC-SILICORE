@@ -11,17 +11,33 @@ module RS
     input [31:0] CDB_ROBEN1_VAL,
     input [4:0] CDB_ROBEN2,
     input [31:0] CDB_ROBEN2_VAL,
+    input [4:0] CDB_ROBEN3,
+    input [31:0] CDB_ROBEN3_VAL,
+    input [4:0] CDB_ROBEN4,
+    input [31:0] CDB_ROBEN4_VAL,
 
     input VALID_Inst,
     input FU_Is_Free,
     input ROB_FLUSH_Flag,
     output FULL_FLAG,
 
-    output reg [4:0] RS_FU_RS_ID, RS_FU_ROBEN,
-    output reg [11:0] RS_FU_opcode,
-    output reg [3:0] RS_FU_ALUOP,
-    output reg [31:0] RS_FU_Val1, RS_FU_Val2,
-    output reg [31:0] RS_FU_Immediate
+    output reg [4:0] RS_FU_RS_ID1, RS_FU_ROBEN1,
+    output reg [11:0] RS_FU_opcode1,
+    output reg [3:0] RS_FU_ALUOP1,
+    output reg [31:0] RS_FU_Val11, RS_FU_Val21,
+    output reg [31:0] RS_FU_Immediate1,
+
+    output reg [4:0] RS_FU_RS_ID2, RS_FU_ROBEN2,
+    output reg [11:0] RS_FU_opcode2,
+    output reg [3:0] RS_FU_ALUOP2,
+    output reg [31:0] RS_FU_Val12, RS_FU_Val22,
+    output reg [31:0] RS_FU_Immediate2,
+
+    output reg [4:0] RS_FU_RS_ID3, RS_FU_ROBEN3,
+    output reg [11:0] RS_FU_opcode3,
+    output reg [3:0] RS_FU_ALUOP3,
+    output reg [31:0] RS_FU_Val13, RS_FU_Val23,
+    output reg [31:0] RS_FU_Immediate3
 
 
 
@@ -117,8 +133,14 @@ always@(negedge clk, posedge rst) begin
                 Reg_Immediate [`I(Next_Free) - 1'b1] <= Immediate;
             end
         end
-        if (RS_FU_RS_ID != 0) begin
-            Reg_Busy[`I(RS_FU_RS_ID) - 1'b1] <= 0;
+        if (RS_FU_RS_ID1 != 0) begin
+            Reg_Busy[`I(RS_FU_RS_ID1) - 1'b1] <= 0;
+        end
+        if (RS_FU_RS_ID2 != 0) begin
+            Reg_Busy[`I(RS_FU_RS_ID2) - 1'b1] <= 0;
+        end
+        if (RS_FU_RS_ID3 != 0) begin
+            Reg_Busy[`I(RS_FU_RS_ID3) - 1'b1] <= 0;
         end
         for (j = 0; j < `RS_SIZE; j = j + 1) begin
             if (Reg_Busy[`I(j)]) begin
@@ -130,12 +152,29 @@ always@(negedge clk, posedge rst) begin
                     Reg_ROBEN1_VAL[`I(j)] <= CDB_ROBEN2_VAL;
                     Reg_ROBEN1[`I(j)] <= 0;
                 end
+                else if (Reg_ROBEN1[`I(j)] == CDB_ROBEN3 && CDB_ROBEN3 != 0) begin
+                    Reg_ROBEN1_VAL[`I(j)] <= CDB_ROBEN3_VAL;
+                    Reg_ROBEN1[`I(j)] <= 0;
+                end
+                else if (Reg_ROBEN1[`I(j)] == CDB_ROBEN4 && CDB_ROBEN4 != 0) begin
+                    Reg_ROBEN1_VAL[`I(j)] <= CDB_ROBEN4_VAL;
+                    Reg_ROBEN1[`I(j)] <= 0;
+                end
+
                 if (Reg_ROBEN2[`I(j)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
                     Reg_ROBEN2_VAL[`I(j)] <= CDB_ROBEN1_VAL;
                     Reg_ROBEN2[`I(j)] <= 0;
                 end
                 else if (Reg_ROBEN2[`I(j)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
                     Reg_ROBEN2_VAL[`I(j)] <= CDB_ROBEN2_VAL;
+                    Reg_ROBEN2[`I(j)] <= 0;
+                end
+                else if (Reg_ROBEN2[`I(j)] == CDB_ROBEN3 && CDB_ROBEN3 != 0) begin
+                    Reg_ROBEN2_VAL[`I(j)] <= CDB_ROBEN3_VAL;
+                    Reg_ROBEN2[`I(j)] <= 0;
+                end
+                else if (Reg_ROBEN2[`I(j)] == CDB_ROBEN4 && CDB_ROBEN4 != 0) begin
+                    Reg_ROBEN2_VAL[`I(j)] <= CDB_ROBEN4_VAL;
                     Reg_ROBEN2[`I(j)] <= 0;
                 end
             end
@@ -150,32 +189,101 @@ this block does the following:
     - if the FU is free it picks a ready instruction to execute it and once finish it releases the reserved entry by resetting the busy bit
 */
 reg [4:0] k;
+reg [1:0] count;
 always@(posedge clk, posedge rst) begin
     if (rst) begin
-        RS_FU_RS_ID <= 0;
+        RS_FU_RS_ID1 <= 0;
+        RS_FU_RS_ID2 <= 0;
     end
     else begin
-        RS_FU_opcode <= 0;
-        RS_FU_RS_ID <= 0;
-        RS_FU_ROBEN <= 0;
-        RS_FU_ALUOP <= 0;
-        RS_FU_Val1 <= 0;
-        RS_FU_Val2 <= 0;
-        RS_FU_Immediate <= 0;
-        for (k = 0; k < `RS_SIZE; k = k + 1) begin
+
+        // `define b5 (Reg_Busy[4'd5] && Reg_ROBEN1[4'd5] == 0 && Reg_ROBEN2[4'd5] == 0)
+        // if (`b5) begin
+        // RS_FU_opcode1 <= Reg_opcode[4'd5];
+        // RS_FU_Val11 <= Reg_ROBEN1_VAL[4'd5];
+        // RS_FU_RS_ID1 <= 5'd6;
+        // RS_FU_ROBEN1 <= Reg_ROBEN[4'd5];
+        // RS_FU_ALUOP1 <= Reg_ALUOP[4'd5];
+        // RS_FU_Val21 <= Reg_ROBEN2_VAL[4'd5];
+        // RS_FU_Immediate1 <= Reg_Immediate[4'd5];
+        // end
+        // else begin
+        // RS_FU_opcode1 <= 0;
+        // RS_FU_RS_ID1 <= 0;
+        // RS_FU_ROBEN1 <= 0;
+        // RS_FU_ALUOP1 <= 0;
+        // RS_FU_Val11 <= 0;
+        // RS_FU_Val21 <= 0;
+        // RS_FU_Immediate1 <= 0;
+        // end
+
+        `define b6 (Reg_Busy[4'd6] && Reg_ROBEN1[4'd6] == 0 && Reg_ROBEN2[4'd6] == 0)
+        if (`b6) begin
+        RS_FU_opcode2 <= Reg_opcode[4'd6];
+        RS_FU_Val12 <= Reg_ROBEN1_VAL[4'd6];
+        RS_FU_RS_ID2 <= 5'd7;
+        RS_FU_ROBEN2 <= Reg_ROBEN[4'd6];
+        RS_FU_ALUOP2 <= Reg_ALUOP[4'd6];
+        RS_FU_Val22 <= Reg_ROBEN2_VAL[4'd6];
+        RS_FU_Immediate2 <= Reg_Immediate[4'd6];
+        end
+        else begin
+        RS_FU_opcode2 <= 0;
+        RS_FU_RS_ID2 <= 0;
+        RS_FU_ROBEN2 <= 0;
+        RS_FU_ALUOP2 <= 0;
+        RS_FU_Val12 <= 0;
+        RS_FU_Val22 <= 0;
+        RS_FU_Immediate2 <= 0;
+        end
+
+        `define b7 (Reg_Busy[4'd7] && Reg_ROBEN1[4'd7] == 0 && Reg_ROBEN2[4'd7] == 0)
+        if (`b7) begin
+        RS_FU_opcode3 <= Reg_opcode[4'd7];
+        RS_FU_Val13 <= Reg_ROBEN1_VAL[4'd7];
+        RS_FU_RS_ID3 <= 5'd8;
+        RS_FU_ROBEN3 <= Reg_ROBEN[4'd7];
+        RS_FU_ALUOP3 <= Reg_ALUOP[4'd7];
+        RS_FU_Val23 <= Reg_ROBEN2_VAL[4'd7];
+        RS_FU_Immediate3 <= Reg_Immediate[4'd7];
+        end
+        else begin
+        RS_FU_opcode3 <= 0;
+        RS_FU_RS_ID3 <= 0;
+        RS_FU_ROBEN3 <= 0;
+        RS_FU_ALUOP3 <= 0;
+        RS_FU_Val13 <= 0;
+        RS_FU_Val23 <= 0;
+        RS_FU_Immediate3 <= 0;
+        end
+
+        RS_FU_opcode1 <= 0;
+        RS_FU_RS_ID1 <= 0;
+        RS_FU_ROBEN1 <= 0;
+        RS_FU_ALUOP1 <= 0;
+        RS_FU_Val11 <= 0;
+        RS_FU_Val21 <= 0;
+        RS_FU_Immediate1 <= 0;
+
+        for (k = 0; k < `RS_SIZE - 2; k = k + 1) begin
             if (Reg_Busy[`I(k)] && Reg_ROBEN1[`I(k)] == 0 && Reg_ROBEN2[`I(k)] == 0) begin
-                
-                RS_FU_opcode <= Reg_opcode[`I(k)];
-                RS_FU_Val1 <= Reg_ROBEN1_VAL[`I(k)];
-                RS_FU_RS_ID <= k + 1'b1;
-                RS_FU_ROBEN <= Reg_ROBEN[`I(k)];
-                RS_FU_ALUOP <= Reg_ALUOP[`I(k)];
-                RS_FU_Val2 <= Reg_ROBEN2_VAL[`I(k)];
-                RS_FU_Immediate <= Reg_Immediate[`I(k)];
+                RS_FU_opcode1 <= Reg_opcode[`I(k)];
+                RS_FU_Val11 <= Reg_ROBEN1_VAL[`I(k)];
+                RS_FU_RS_ID1 <= k + 1'b1;
+                RS_FU_ROBEN1 <= Reg_ROBEN[`I(k)];
+                RS_FU_ALUOP1 <= Reg_ALUOP[`I(k)];
+                RS_FU_Val21 <= Reg_ROBEN2_VAL[`I(k)];
+                RS_FU_Immediate1 <= Reg_Immediate[`I(k)];
             end
         end
     end
 end
+
+wire b1, b2, b3, b4;
+assign b1 = (Reg_Busy[4'd4] && Reg_ROBEN1[4'd4] == 0 && Reg_ROBEN2[4'd4] == 0);
+assign b2 = (Reg_Busy[4'd5] && Reg_ROBEN1[4'd5] == 0 && Reg_ROBEN2[4'd5] == 0);
+assign b3 = (Reg_Busy[4'd6] && Reg_ROBEN1[4'd6] == 0 && Reg_ROBEN2[4'd6] == 0);
+assign b4 = (Reg_Busy[4'd7] && Reg_ROBEN1[4'd7] == 0 && Reg_ROBEN2[4'd7] == 0);
 
 
 endmodule

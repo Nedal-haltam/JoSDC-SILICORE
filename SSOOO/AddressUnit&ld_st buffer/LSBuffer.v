@@ -26,6 +26,10 @@ module LSBuffer
     input [31:0] CDB_ROBEN1_VAL,
     input [4:0] CDB_ROBEN2,
     input [31:0] CDB_ROBEN2_VAL,
+    input [4:0] CDB_ROBEN3,
+    input [31:0] CDB_ROBEN3_VAL,
+    input [4:0] CDB_ROBEN4,
+    input [31:0] CDB_ROBEN4_VAL,
 
     output reg out_FULL_FLAG,
     output reg out_VALID_Inst,
@@ -103,35 +107,29 @@ assign Reg_ROBEN1_VAL_test = Reg_ROBEN1_VAL[`I(index_test)];
 assign Reg_ROBEN2_VAL_test = Reg_ROBEN2_VAL[`I(index_test)];
 assign Reg_Immediate_test = Reg_Immediate[`I(index_test)];
 
-
+reg [4:0] i;
+reg [4:0] ji;
 
 always@(posedge clk)
     out_FULL_FLAG <= ~(rst | ~(End_Index == Start_Index && (Reg_Busy[Start_Index])));
 
-
-
-reg [4:0] i;
-reg [4:0] ji;
-always@(negedge clk, posedge rst) begin
-    if (rst) begin
+always@(negedge clk) begin
+    if (rst || ROB_FLUSH_Flag) begin
         for (i = 0; i < `LDST_SIZE; i = i + 1) begin
-            Reg_Busy[`I(i)] = 0;
+            Reg_Busy[`I(i)] <= 0;
         end
         Start_Index <= 0;
-        End_Index = 0;
+        End_Index <= 0;
+        out_ROBEN <= 0;
+        out_VALID_Inst <= 0;
     end
     else begin
-        if (ROB_FLUSH_Flag) begin
-            for (i = 0; i < `LDST_SIZE; i = i + 1)
-                Reg_Busy[`I(i)] <= 0;
-            End_Index <= 0;
-        end
-        else if (VALID_Inst && ~out_FULL_FLAG) begin
+        if (VALID_Inst && ~out_FULL_FLAG) begin
             Reg_Busy[End_Index] <= 1'b1;
 
             Reg_opcode[End_Index] <= opcode;
             Reg_Rd[End_Index] <= Rd;
-            Reg_EA[End_Index] <= EA;
+            Reg_EA[End_Index] <= ROBEN1_VAL + Immediate;
             Reg_ROBEN1[End_Index] <= ROBEN1;
             Reg_ROBEN2[End_Index] <= ROBEN2;
             Reg_ROBEN1_VAL[End_Index] <= ROBEN1_VAL;
@@ -142,12 +140,7 @@ always@(negedge clk, posedge rst) begin
             End_Index <= End_Index + 1'b1;
         end
 
-        if (ROB_FLUSH_Flag) begin
-            out_ROBEN <= 0;
-            Start_Index <= 0;
-            out_VALID_Inst <= 0;
-        end
-        else if (Reg_Busy[Start_Index] && Reg_Ready[Start_Index] && ~(Reg_opcode[Start_Index] == sw && Reg_ROBEN[Start_Index] != ROB_Start_Index)) begin
+        if (Reg_Busy[Start_Index] && Reg_Ready[Start_Index] && ~(Reg_opcode[Start_Index] == sw && Reg_ROBEN[Start_Index] != ROB_Start_Index)) begin
             out_VALID_Inst <= 1'b1;
             out_ROBEN <= Reg_ROBEN[Start_Index];
             out_Rd <= Reg_Rd[Start_Index];
@@ -161,24 +154,29 @@ always@(negedge clk, posedge rst) begin
             Reg_Busy[Start_Index] <= 0;
             Start_Index <= Start_Index + 1'b1;
         end
-        else begin
-            out_ROBEN <= 0;
-            out_VALID_Inst <= 1'b0;
-        end
         for (ji = 0; ji < `LDST_SIZE; ji = ji + 1) begin
             if (Reg_Busy[`I(ji)]) begin
                 if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
                     Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN1_VAL;
-                    // Reg_EA[`I(ji)] <= CDB_ROBEN1_VAL[9:0] + Reg_Immediate[`I(ji)][9:0];
                     Reg_EA[`I(ji)] <= CDB_ROBEN1_VAL + Reg_Immediate[`I(ji)];
                     Reg_ROBEN1[`I(ji)] <= 0;
                 end
                 else if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
                     Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN2_VAL;
-                    // Reg_EA[`I(ji)] <= CDB_ROBEN2_VAL[9:0] + Reg_Immediate[`I(ji)][9:0];
                     Reg_EA[`I(ji)] <= CDB_ROBEN2_VAL + Reg_Immediate[`I(ji)];
                     Reg_ROBEN1[`I(ji)] <= 0;
                 end
+                else if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN3 && CDB_ROBEN3 != 0) begin
+                    Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN3_VAL;
+                    Reg_EA[`I(ji)] <= CDB_ROBEN3_VAL + Reg_Immediate[`I(ji)];
+                    Reg_ROBEN1[`I(ji)] <= 0;
+                end
+                else if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN4 && CDB_ROBEN4 != 0) begin
+                    Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN4_VAL;
+                    Reg_EA[`I(ji)] <= CDB_ROBEN4_VAL + Reg_Immediate[`I(ji)];
+                    Reg_ROBEN1[`I(ji)] <= 0;
+                end
+
                 if (Reg_ROBEN2[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
                     Reg_ROBEN2_VAL[`I(ji)] <= CDB_ROBEN1_VAL;
                     Reg_ROBEN2[`I(ji)] <= 0;
@@ -187,11 +185,18 @@ always@(negedge clk, posedge rst) begin
                     Reg_ROBEN2_VAL[`I(ji)] <= CDB_ROBEN2_VAL;
                     Reg_ROBEN2[`I(ji)] <= 0;
                 end
+                else if (Reg_ROBEN2[`I(ji)] == CDB_ROBEN3 && CDB_ROBEN3 != 0) begin
+                    Reg_ROBEN2_VAL[`I(ji)] <= CDB_ROBEN3_VAL;
+                    Reg_ROBEN2[`I(ji)] <= 0;
+                end
+                else if (Reg_ROBEN2[`I(ji)] == CDB_ROBEN4 && CDB_ROBEN4 != 0) begin
+                    Reg_ROBEN2_VAL[`I(ji)] <= CDB_ROBEN4_VAL;
+                    Reg_ROBEN2[`I(ji)] <= 0;
+                end
             end
         end
     end
 end
 
 endmodule
-
 

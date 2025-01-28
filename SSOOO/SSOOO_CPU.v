@@ -26,6 +26,10 @@ wire InstQ_FLUSH_Flag;
 wire [31:0] RegFile_RP1_Reg1, RegFile_RP1_Reg2;
 wire [4:0] RegFile_RP1_Reg1_ROBEN, RegFile_RP1_Reg2_ROBEN;
 
+// BPU
+wire [11:0] Decoded_opcode, Commit_opcode;
+wire [1:0] state;  // 2-bit state (00 NT | 01 NT | 10 T | 11 T)
+wire predicted; // prediction (1 = taken, 0 = not taken)
 
 // ROB
 wire ROB_FULL_FLAG;
@@ -42,23 +46,44 @@ wire [4:0] ROB_End_Index;
 wire [31:0] ROB_RP1_Write_Data1, ROB_RP1_Write_Data2;
 wire ROB_RP1_Ready1, ROB_RP1_Ready2;
 
-
 // RS
 wire RS_FULL_FLAG;
-wire [4:0] RS_FU_RS_ID, RS_FU_ROBEN;
-wire [11:0] RS_FU_opcode;
-wire [3:0] RS_FU_ALUOP;
-wire [31:0] RS_FU_Val1, RS_FU_Val2;
-wire [31:0] RS_FU_Immediate;
+wire [4:0] RS_FU_RS_ID1, RS_FU_ROBEN1;
+wire [11:0] RS_FU_opcode1;
+wire [3:0] RS_FU_ALUOP1;
+wire [31:0] RS_FU_Val11, RS_FU_Val21;
+wire [31:0] RS_FU_Immediate1;
 
+wire [4:0] RS_FU_RS_ID2, RS_FU_ROBEN2;
+wire [11:0] RS_FU_opcode2;
+wire [3:0] RS_FU_ALUOP2;
+wire [31:0] RS_FU_Val12, RS_FU_Val22;
+wire [31:0] RS_FU_Immediate2;
+
+wire [4:0] RS_FU_RS_ID3, RS_FU_ROBEN3;
+wire [11:0] RS_FU_opcode3;
+wire [3:0] RS_FU_ALUOP3;
+wire [31:0] RS_FU_Val13, RS_FU_Val23;
+wire [31:0] RS_FU_Immediate3;
 
 // FU
-wire [31:0] FU_Result;
-wire [4:0] FU_ROBEN;
-wire [11:0] FU_opcode;
+wire [31:0] FU_Result1;
+wire [4:0] FU_ROBEN1;
+wire [11:0] FU_opcode1;
+wire FU_Branch_Decision1;
+
+wire [31:0] FU_Result2;
+wire [4:0] FU_ROBEN2;
+wire [11:0] FU_opcode2;
+wire FU_Branch_Decision2;
+
+wire [31:0] FU_Result3;
+wire [4:0] FU_ROBEN3;
+wire [11:0] FU_opcode3;
+wire FU_Branch_Decision3;
+
+
 wire FU_Is_Free;
-
-
 
 // Address Unit
 wire AU_LdStB_VALID_Inst;
@@ -69,7 +94,6 @@ wire [4:0]  AU_LdStB_ROBEN1, AU_LdStB_ROBEN2;
 wire [31:0] AU_LdStB_ROBEN1_VAL, AU_LdStB_ROBEN2_VAL;
 wire [31:0] AU_LdStB_Immediate;
 wire [31:0] AU_LdStB_EA, AU_LdStB_Write_Data;
-
 
 // Load Store Buffer
 wire LdStB_MEMU_VALID_Inst;
@@ -89,7 +113,6 @@ wire [4:0] MEMU_ROBEN;
 wire [31:0] MEMU_Result;
 wire MEMU_invalid_address;
 
-
 // CDB
 wire [4:0] CDB_ROBEN1;
 wire [31:0] CDB_Write_Data1;
@@ -97,16 +120,25 @@ wire CDB_EXCEPTION1;
 wire [4:0] CDB_ROBEN2;
 wire [31:0] CDB_Write_Data2;
 wire CDB_EXCEPTION2;
+wire [4:0] CDB_ROBEN3;
+wire [31:0] CDB_Write_Data3;
+wire CDB_EXCEPTION3;
+wire [4:0] CDB_ROBEN4;
+wire [31:0] CDB_Write_Data4;
+wire CDB_EXCEPTION4;
 
-
-
-
-
-
+// misc
+`define exception_handler 32'd1000
 wire hlt;
-assign hlt = ROB_Commit_opcode == hlt_inst;
-nor hlt_logic(clk, input_clk, hlt);
+reg isjr;
+reg [31:0] EXCEPTION_EPC, EXCEPTION_CAUSE;
+parameter EXCEPTION_CAUSE_INVALID_IM_ADDR = 1,
+          EXCEPTION_CAUSE_INVALID_DM_ADDR = 2;
 
+
+assign hlt = ROB_Commit_opcode == hlt_inst;
+
+nor hlt_logic(clk, input_clk, hlt);
 
 always@(negedge clk , posedge rst) begin
 	if (rst)
@@ -124,15 +156,10 @@ TODO:
     - multiple FU
 */
 
-reg isjr;
 always@(negedge clk, posedge rst) begin
     isjr <= (rst) ? 1'b0 : ((isjr) ? 1'b0 : InstQ_opcode == jr);
 end
 
-`define exception_handler 32'd1000
-reg [31:0] EXCEPTION_EPC, EXCEPTION_CAUSE;
-parameter EXCEPTION_CAUSE_INVALID_IM_ADDR = 1,
-          EXCEPTION_CAUSE_INVALID_DM_ADDR = 2;
 always@(posedge clk) begin
     if (~rst) begin
         if (ROB_FLUSH_Flag && ~ROB_Wrong_prediction) begin
@@ -161,8 +188,8 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_Writ
     )
 );
 
-assign InstQ_FLUSH_Flag = ~(rst | (0 <= PC && PC <= 1023));
-
+// assign InstQ_FLUSH_Flag = ~(rst | (0 <= PC && PC <= 1023));
+assign InstQ_FLUSH_Flag = ~(rst | ~(|(PC[31:10])));
 
 PC_register pcreg((InstQ_FLUSH_Flag) ? `exception_handler : PC, PC_out, ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag , clk, rst);
 
@@ -222,11 +249,6 @@ RegFile regfile
 );
 
 
-wire [11:0] Decoded_opcode, Commit_opcode;
-wire [1:0] state;  // 2-bit state (00 NT | 01 NT | 10 T | 11 T)
-wire predicted; // prediction (1 = taken, 0 = not taken)
-
-
 BranchPredictor BPU
 (
     .rst(rst), 
@@ -235,8 +257,8 @@ BranchPredictor BPU
 
     .Decoded_opcode(InstQ_opcode),
     .Commit_opcode(ROB_Commit_opcode),
-    .state(state),  // 2-bit state (00 NT | 01 NT | 10 T | 11 T)
-    .predicted(predicted)  // prediction (1 = taken, 0 = not taken)
+    .state(state),
+    .predicted(predicted)
 );
 
 ROB rob
@@ -258,12 +280,22 @@ ROB rob
 
     .CDB_ROBEN1(CDB_ROBEN1),
     .CDB_ROBEN1_Write_Data(CDB_Write_Data1),
-    .CDB_Branch_Decision(FU_Branch_Decision),
+    .CDB_Branch_Decision1(FU_Branch_Decision1),
     .CDB_EXCEPTION1(CDB_EXCEPTION1),
 
     .CDB_ROBEN2(CDB_ROBEN2),
     .CDB_ROBEN2_Write_Data(CDB_Write_Data2),
     .CDB_EXCEPTION2(CDB_EXCEPTION2),
+
+    .CDB_ROBEN3(CDB_ROBEN3),
+    .CDB_ROBEN3_Write_Data(CDB_Write_Data3),
+    .CDB_Branch_Decision2(FU_Branch_Decision2),
+    .CDB_EXCEPTION3(CDB_EXCEPTION3),
+
+    .CDB_ROBEN4(CDB_ROBEN4),
+    .CDB_ROBEN4_Write_Data(CDB_Write_Data4),
+    .CDB_Branch_Decision3(FU_Branch_Decision3),
+    .CDB_EXCEPTION4(CDB_EXCEPTION4),
 
     .VALID_Inst
     (
@@ -345,6 +377,10 @@ RS rs
     .CDB_ROBEN1_VAL(CDB_Write_Data1),
     .CDB_ROBEN2(CDB_ROBEN2),
     .CDB_ROBEN2_VAL(CDB_Write_Data2),
+    .CDB_ROBEN3(CDB_ROBEN3),
+    .CDB_ROBEN3_VAL(CDB_Write_Data3),
+    .CDB_ROBEN4(CDB_ROBEN4),
+    .CDB_ROBEN4_VAL(CDB_Write_Data4),
 
     .ROB_FLUSH_Flag(ROB_FLUSH_Flag),
     .VALID_Inst
@@ -356,35 +392,91 @@ RS rs
 
     .FULL_FLAG(RS_FULL_FLAG),
 
-    .RS_FU_RS_ID(RS_FU_RS_ID),
-    .RS_FU_ROBEN(RS_FU_ROBEN),
-    .RS_FU_opcode(RS_FU_opcode),   
-    .RS_FU_ALUOP(RS_FU_ALUOP),
-    .RS_FU_Val1(RS_FU_Val1), 
-    .RS_FU_Val2(RS_FU_Val2),
-    .RS_FU_Immediate(RS_FU_Immediate)
+    .RS_FU_RS_ID1(RS_FU_RS_ID1),
+    .RS_FU_ROBEN1(RS_FU_ROBEN1),
+    .RS_FU_opcode1(RS_FU_opcode1),   
+    .RS_FU_ALUOP1(RS_FU_ALUOP1),
+    .RS_FU_Val11(RS_FU_Val11), 
+    .RS_FU_Val21(RS_FU_Val21),
+    .RS_FU_Immediate1(RS_FU_Immediate1),
+
+    .RS_FU_RS_ID2(RS_FU_RS_ID2),
+    .RS_FU_ROBEN2(RS_FU_ROBEN2),
+    .RS_FU_opcode2(RS_FU_opcode2),   
+    .RS_FU_ALUOP2(RS_FU_ALUOP2),
+    .RS_FU_Val12(RS_FU_Val12), 
+    .RS_FU_Val22(RS_FU_Val22),
+    .RS_FU_Immediate2(RS_FU_Immediate2),
+
+    .RS_FU_RS_ID3(RS_FU_RS_ID3),
+    .RS_FU_ROBEN3(RS_FU_ROBEN3),
+    .RS_FU_opcode3(RS_FU_opcode3),   
+    .RS_FU_ALUOP3(RS_FU_ALUOP3),
+    .RS_FU_Val13(RS_FU_Val13), 
+    .RS_FU_Val23(RS_FU_Val23),
+    .RS_FU_Immediate3(RS_FU_Immediate3)
 
 );
 
-ALU alu
+ALU alu1
 (
     .clk(clk),
     .rst(rst),
-    .ROBEN(RS_FU_ROBEN),
-    .opcode(RS_FU_opcode),
-    .A((RS_FU_opcode == sll || RS_FU_opcode == srl) ? RS_FU_Val2 : RS_FU_Val1), 
+    .ROBEN(RS_FU_ROBEN1),
+    .opcode(RS_FU_opcode1),
+    .A((RS_FU_opcode1 == sll || RS_FU_opcode1 == srl) ? RS_FU_Val21 : RS_FU_Val11), 
     .B
     (
-        (RS_FU_opcode == addi || RS_FU_opcode == andi || RS_FU_opcode == ori || RS_FU_opcode == xori || 
-         RS_FU_opcode == sll  || RS_FU_opcode == srl  || RS_FU_opcode == slti) ? RS_FU_Immediate : RS_FU_Val2
+        (RS_FU_opcode1 == addi || RS_FU_opcode1 == andi || RS_FU_opcode1 == ori || RS_FU_opcode1 == xori || 
+         RS_FU_opcode1 == sll  || RS_FU_opcode1 == srl  || RS_FU_opcode1 == slti) ? RS_FU_Immediate1 : RS_FU_Val21
     ), 
-    .ALUOP(RS_FU_ALUOP),
+    .ALUOP(RS_FU_ALUOP1),
 
-    .FU_res(FU_Result), 
-    .FU_Branch_Decision(FU_Branch_Decision),
-    .FU_ROBEN(FU_ROBEN),
-    .FU_opcode(FU_opcode),
-    .FU_Is_Free(FU_Is_Free)
+    .FU_res(FU_Result1), 
+    .FU_Branch_Decision(FU_Branch_Decision1),
+    .FU_ROBEN(FU_ROBEN1),
+    .FU_opcode(FU_opcode1)
+    // .FU_Is_Free(FU_Is_Free)
+);
+ALU alu2
+(
+    .clk(clk),
+    .rst(rst),
+    .ROBEN(RS_FU_ROBEN2),
+    .opcode(RS_FU_opcode2),
+    .A((RS_FU_opcode2 == sll || RS_FU_opcode2 == srl) ? RS_FU_Val22 : RS_FU_Val12), 
+    .B
+    (
+        (RS_FU_opcode2 == addi || RS_FU_opcode2 == andi || RS_FU_opcode2 == ori || RS_FU_opcode2 == xori || 
+         RS_FU_opcode2 == sll  || RS_FU_opcode2 == srl  || RS_FU_opcode2 == slti) ? RS_FU_Immediate2 : RS_FU_Val22
+    ), 
+    .ALUOP(RS_FU_ALUOP2),
+
+    .FU_res(FU_Result2), 
+    .FU_Branch_Decision(FU_Branch_Decision2),
+    .FU_ROBEN(FU_ROBEN2),
+    .FU_opcode(FU_opcode2)
+    // .FU_Is_Free(FU_Is_Free)
+);
+ALU alu3
+(
+    .clk(clk),
+    .rst(rst),
+    .ROBEN(RS_FU_ROBEN3),
+    .opcode(RS_FU_opcode3),
+    .A((RS_FU_opcode3 == sll || RS_FU_opcode3 == srl) ? RS_FU_Val23 : RS_FU_Val13), 
+    .B
+    (
+        (RS_FU_opcode3 == addi || RS_FU_opcode3 == andi || RS_FU_opcode3 == ori || RS_FU_opcode3 == xori || 
+         RS_FU_opcode3 == sll  || RS_FU_opcode3 == srl  || RS_FU_opcode3 == slti) ? RS_FU_Immediate3 : RS_FU_Val23
+    ), 
+    .ALUOP(RS_FU_ALUOP3),
+
+    .FU_res(FU_Result3), 
+    .FU_Branch_Decision(FU_Branch_Decision3),
+    .FU_ROBEN(FU_ROBEN3),
+    .FU_opcode(FU_opcode3)
+    // .FU_Is_Free(FU_Is_Free)
 );
 
 
@@ -392,7 +484,6 @@ ALU alu
 
 AddressUnit AU
 (
-    // .Decoded_ROBEN((ROB_End_Index == 5'd1) ? 5'd16 : (ROB_End_Index - 1'b1)),
     .Decoded_ROBEN(ROB_End_Index),
     .Decoded_Rd(InstQ_rt),
     .Decoded_opcode(InstQ_opcode),
@@ -432,8 +523,7 @@ AddressUnit AU
     .AU_LdStB_ROBEN2(AU_LdStB_ROBEN2),
     .AU_LdStB_ROBEN1_VAL(AU_LdStB_ROBEN1_VAL), 
     .AU_LdStB_ROBEN2_VAL(AU_LdStB_ROBEN2_VAL),
-    .AU_LdStB_Immediate(AU_LdStB_Immediate),
-    .AU_LdStB_EA(AU_LdStB_EA)
+    .AU_LdStB_Immediate(AU_LdStB_Immediate)
 );
 
 
@@ -475,6 +565,10 @@ LSBuffer lsbuffer
     .CDB_ROBEN1_VAL(CDB_Write_Data1),
     .CDB_ROBEN2(CDB_ROBEN2),
     .CDB_ROBEN2_VAL(CDB_Write_Data2),
+    .CDB_ROBEN3(CDB_ROBEN3),
+    .CDB_ROBEN3_VAL(CDB_Write_Data3),
+    .CDB_ROBEN4(CDB_ROBEN4),
+    .CDB_ROBEN4_VAL(CDB_Write_Data4),
 
     .out_FULL_FLAG(LdStB_FULL_FLAG),
     .out_VALID_Inst(LdStB_MEMU_VALID_Inst),
@@ -518,19 +612,21 @@ DM datamemory
 
 CDB cdb
 (
-    .ROBEN1(FU_ROBEN),
-    .Write_Data1(FU_Result),
+    .ROBEN1(FU_ROBEN1),
+    .Write_Data1(FU_Result1),
     .EXCEPTION1(1'b0),
 
     .ROBEN2(MEMU_ROBEN),
     .Write_Data2(MEMU_Result),
     .EXCEPTION2(MEMU_invalid_address),
 
-    // input [4:0] ROBEN3,
-    // input [31:0] Write_Data3,
+    .ROBEN3(FU_ROBEN2),
+    .Write_Data3(FU_Result2),
+    .EXCEPTION3(1'b0),
 
-    // input [4:0] ROBEN4,
-    // input [31:0] Write_Data4,
+    .ROBEN4(FU_ROBEN3),
+    .Write_Data4(FU_Result3),
+    .EXCEPTION4(1'b0),
 
 
     .out_ROBEN1(CDB_ROBEN1),
@@ -539,15 +635,17 @@ CDB cdb
 
     .out_ROBEN2(CDB_ROBEN2),
     .out_Write_Data2(CDB_Write_Data2),
-    .out_EXCEPTION2(CDB_EXCEPTION2)
+    .out_EXCEPTION2(CDB_EXCEPTION2),
 
-    // output [4:0] out_ROBEN3,
-    // output [31:0] out_Write_Data3,
+    .out_ROBEN3(CDB_ROBEN3),
+    .out_Write_Data3(CDB_Write_Data3),
+    .out_EXCEPTION3(CDB_EXCEPTION3),
 
-    // output [4:0] out_ROBEN4,
-    // output [31:0] out_Write_Data4
+    .out_ROBEN4(CDB_ROBEN4),
+    .out_Write_Data4(CDB_Write_Data4),
+    .out_EXCEPTION4(CDB_EXCEPTION4)
+
 );
-
 
 
 

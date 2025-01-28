@@ -21,47 +21,48 @@ integer i;
 
 `ifdef vscode
 
-reg [31 : 0] DataMem [0 : 1023];
-always @(negedge clk) begin
-    if (~MEMU_invalid_address) begin
-        if (Read_en) begin
-            MEMU_Result <= DataMem[address[9:0]];
+    reg [31 : 0] DataMem [0 : 1023];
+    always @(negedge clk) begin
+        if (~MEMU_invalid_address) begin
+            if (Read_en) begin
+                MEMU_Result <= DataMem[address[9:0]];
+            end
+            if (Write_en) begin
+                DataMem[address] <= data;
+            end
         end
-        if (Write_en) begin
-            DataMem[address] <= data;
-        end
+        MEMU_ROBEN <= ROBEN;
     end
-    MEMU_ROBEN <= ROBEN;
-end
-initial begin
-for (i = 0; i < 1024; i = i + 1)
-    DataMem[i] = 0;
+    initial begin
+    for (i = 0; i < 1024; i = i + 1)
+        DataMem[i] = 0;
 
 `ifdef test
-`include "./Memory Unit/DM_INIT.INIT"
+        `include "./Memory Unit/DM_INIT.INIT"
 `else
-`include "DM_INIT.INIT"
+        `include "DM_INIT.INIT"
 `endif 
-end
+    end
 
 `else
 
-always@(negedge clk) begin
-    MEMU_ROBEN <= ROBEN;
-end
-DataMemory_IP DataMemory
-(
-	address[9:0],
-	~clk,
-	data,
-	Write_en,
-	MEMU_Result
-);
+    always@(negedge clk) begin
+        MEMU_ROBEN <= ROBEN;
+    end
+    DataMemory_IP DataMemory
+    (
+        address[9:0],
+        ~clk,
+        data,
+        Write_en,
+        MEMU_Result
+    );
 
 `endif
 
 always@(posedge clk) begin
-    MEMU_invalid_address <= ~(0 <= address && address <= 1023);
+    // MEMU_invalid_address <= ~(0 <= address && address <= 1023);
+    MEMU_invalid_address <= (|address[31:10]);
 end
 
 

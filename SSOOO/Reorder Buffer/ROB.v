@@ -22,11 +22,22 @@ module ROB
 
     input [4:0] CDB_ROBEN1,
     input [31:0] CDB_ROBEN1_Write_Data,
-    input CDB_Branch_Decision,
+    input CDB_Branch_Decision1,
     input CDB_EXCEPTION1,
+
     input [4:0] CDB_ROBEN2,
     input [31:0] CDB_ROBEN2_Write_Data,
     input CDB_EXCEPTION2,
+
+    input [4:0] CDB_ROBEN3,
+    input [31:0] CDB_ROBEN3_Write_Data,
+    input CDB_Branch_Decision2,
+    input CDB_EXCEPTION3,
+
+    input [4:0] CDB_ROBEN4,
+    input [31:0] CDB_ROBEN4_Write_Data,
+    input CDB_Branch_Decision3,
+    input CDB_EXCEPTION4,
 
     input VALID_Inst,
     // output FULL_FLAG,
@@ -154,16 +165,30 @@ always@(posedge clk, posedge rst) begin
         if (Reg_Busy[`Imone(CDB_ROBEN1)] && CDB_ROBEN1 != 0) begin
             if (~Reg_Speculation[`Imone(CDB_ROBEN1)][0])
                 Reg_Write_Data[`Imone(CDB_ROBEN1)] <= CDB_ROBEN1_Write_Data;
-            Reg_Speculation[`Imone(CDB_ROBEN1)][0] <= Reg_Speculation[`Imone(CDB_ROBEN1)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN1)][1]);
+            Reg_Speculation[`Imone(CDB_ROBEN1)][0] <= Reg_Speculation[`Imone(CDB_ROBEN1)][0] & (CDB_Branch_Decision1 ^ Reg_Speculation[`Imone(CDB_ROBEN1)][1]);
             Reg_Ready[`Imone(CDB_ROBEN1)] <= 1'b1;
             Reg_Exception[`Imone(CDB_ROBEN1)] <= CDB_EXCEPTION1;
         end
         if (Reg_Busy[`Imone(CDB_ROBEN2)] && CDB_ROBEN2 != 0) begin
             if (~Reg_Speculation[`Imone(CDB_ROBEN2)][0])
                 Reg_Write_Data[`Imone(CDB_ROBEN2)] <= CDB_ROBEN2_Write_Data;
-            Reg_Speculation[`Imone(CDB_ROBEN2)][0] <= Reg_Speculation[`Imone(CDB_ROBEN2)][0] & (CDB_Branch_Decision ^ Reg_Speculation[`Imone(CDB_ROBEN2)][1]);
+            Reg_Speculation[`Imone(CDB_ROBEN2)] <= 2'b0;
             Reg_Ready[`Imone(CDB_ROBEN2)] <= 1'b1;
             Reg_Exception[`Imone(CDB_ROBEN2)] <= CDB_EXCEPTION2;
+        end
+        if (Reg_Busy[`Imone(CDB_ROBEN3)] && CDB_ROBEN3 != 0) begin
+            if (~Reg_Speculation[`Imone(CDB_ROBEN3)][0])
+                Reg_Write_Data[`Imone(CDB_ROBEN3)] <= CDB_ROBEN3_Write_Data;
+            Reg_Speculation[`Imone(CDB_ROBEN3)][0] <= Reg_Speculation[`Imone(CDB_ROBEN3)][0] & (CDB_Branch_Decision2 ^ Reg_Speculation[`Imone(CDB_ROBEN3)][1]);
+            Reg_Ready[`Imone(CDB_ROBEN3)] <= 1'b1;
+            Reg_Exception[`Imone(CDB_ROBEN3)] <= CDB_EXCEPTION3;
+        end
+        if (Reg_Busy[`Imone(CDB_ROBEN4)] && CDB_ROBEN4 != 0) begin
+            if (~Reg_Speculation[`Imone(CDB_ROBEN4)][0])
+                Reg_Write_Data[`Imone(CDB_ROBEN4)] <= CDB_ROBEN4_Write_Data;
+            Reg_Speculation[`Imone(CDB_ROBEN4)][0] <= Reg_Speculation[`Imone(CDB_ROBEN4)][0] & (CDB_Branch_Decision3 ^ Reg_Speculation[`Imone(CDB_ROBEN4)][1]);
+            Reg_Ready[`Imone(CDB_ROBEN4)] <= 1'b1;
+            Reg_Exception[`Imone(CDB_ROBEN4)] <= CDB_EXCEPTION3;
         end
 
         if (Reg_Busy[`Imone(Start_Index)]) begin

@@ -35,16 +35,12 @@ module AddressUnit
     output [11:0] AU_LdStB_opcode,
     output [4:0]  AU_LdStB_ROBEN1, AU_LdStB_ROBEN2,
     output [31:0] AU_LdStB_ROBEN1_VAL, AU_LdStB_ROBEN2_VAL,
-    output [31:0] AU_LdStB_Immediate,
-    output [31:0] AU_LdStB_EA
+    output [31:0] AU_LdStB_Immediate
 );
 
 
 
 assign AU_LdStB_VALID_Inst = (Decoded_opcode == `lw || Decoded_opcode == `sw) && InstQ_VALID_Inst;
-
-assign AU_LdStB_EA = ROBEN1_VAL + Immediate;
-
 assign AU_LdStB_ROBEN = Decoded_ROBEN;
 assign AU_LdStB_Rd = Decoded_Rd;
 assign AU_LdStB_opcode = Decoded_opcode;
@@ -53,7 +49,5 @@ assign AU_LdStB_ROBEN2 = ROBEN2;
 assign AU_LdStB_ROBEN1_VAL = ROBEN1_VAL;
 assign AU_LdStB_ROBEN2_VAL = ROBEN2_VAL;
 assign AU_LdStB_Immediate = Immediate;
-
-
 
 endmodule
