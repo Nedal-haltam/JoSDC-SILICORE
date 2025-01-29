@@ -1,4 +1,3 @@
-
 using System.Text;
 using System.Collections.Generic;
 
@@ -551,7 +550,7 @@ namespace LibCPU
         static public List<LSregister> LSbuffer;
 
         public OOO(List<string> insts, List<string> data_mem_init) {
-            PC              = -1;
+            PC              = 0;
             hlt             = false;
             targetaddress   = 0;
             flush           = false;
@@ -600,8 +599,7 @@ namespace LibCPU
             return fetched;
         }
 
-        Instruction decodemc(string mc, int pc)
-        {
+        Instruction decodemc(string mc, int pc) {
             Instruction inst = GetNewInst();
             inst.mc = mc;
             inst.PC = pc;
@@ -967,13 +965,22 @@ namespace LibCPU
         void consumeInstruction() {
 
             string mc = IM[PC]; // fetch the instructon
-            Instruction inst = decodemc(mc, PC); // decode the instruction
-            // 
+            Instruction currInstruction = decodemc(mc, PC); // decode the instruction
+            bool dispatched = dispatch(currInstruction); // dispatches the instruction into the ROB & LS or RS
+            executeAndBroadcast(); // executes ready instructions
+            commit(); // commits instruction from the ROB
+            update_PC(); // updates the program counter
         }
 
         public int Run() {
-            consumeInstruction();
-            return 0;
+            int cycles = 0;
+            while (PC < IM.Count) {
+                cycles++;
+                if(hlt) break;
+                consumeInstruction();
+            }
+
+            return cycles;
         }
 
         public void print_regs() { MIPS.print_regs(regs); }
