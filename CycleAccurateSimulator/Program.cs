@@ -1,17 +1,13 @@
 using System.Text;
 
-namespace main
-{
-    internal class Program
-    {
-        static T popF<T>(ref List<T> vals)
-        {
+namespace main {
+    internal class Program {
+        static T popF<T>(ref List<T> vals) {
             T val = vals.First();
             vals.RemoveAt(0);
             return val;
         }
-        static void assert(string msg)
-        {
+        static void assert(string msg) {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Error.WriteLine(msg);
             Console.ResetColor();
@@ -23,18 +19,13 @@ namespace main
         static string dm_filepath = "";
         static List<string> data_mem_init = [];
         static string output_filepath = "";
-        static LibCPU.CPU_type cpu_type = LibCPU.CPU_type.SingleCycle;
-        static void HandleCommand(List<string> args)
-        {
+        static LibCPU.CPU_type cpu_type = LibCPU.CPU_type.OOO;
+        static void HandleCommand(List<string> args) {
             popF(ref args);
-            if (args.Count != 5)
-            {
-                assert("Missing arguments");
-            }
+            if (args.Count != 5) { assert("Missing arguments"); }
 
             string arg = popF(ref args).ToLower();
-            if (arg == "sim")
-            {
+            if (arg == "sim") {
                 string cputype = popF(ref args).ToLower();
                 mc_filepath = popF(ref args);
                 dm_filepath = popF(ref args);
@@ -42,47 +33,33 @@ namespace main
                 
                 mcs = File.ReadAllLines(mc_filepath).ToList();
                 data_mem_init = File.ReadAllLines(dm_filepath).ToList();
-                if (cputype == "singlecycle")
-                {
-                    cpu_type = LibCPU.CPU_type.SingleCycle;
-                }
-                else if (cputype == "pipeline")
-                {
-                    cpu_type = LibCPU.CPU_type.PipeLined;
-                }
+                if (cputype == "singlecycle")   { cpu_type = LibCPU.CPU_type.SingleCycle; }
+                else if (cputype == "pipeline") { cpu_type = LibCPU.CPU_type.PipeLined; }
+                else if (cputype == "OOO")      { cpu_type = LibCPU.CPU_type.OOO; }
                 else
-                {
-                    assert($"invalid cpu type {cputype}");
-                }
-
+                { assert($"invalid cpu type {cputype}"); }
             }
-            else
-            {
-                assert($"Invalid argument {arg}");
-            }
+            else { assert($"Invalid argument {arg}"); }
         }
 
 
-        static void Main()
-        {
-            bool command = true;
-
+        static void Main() {
+            bool command = false;
             List<string> args = Environment.GetCommandLineArgs().ToList();
-            if (command)
-                HandleCommand(args);
 
-
-            if (!command)
-            {
-                mcs = [
-
-
+            if (command) HandleCommand(args);
+            
+            if (!command) {
+                mcs = [ "00100000000000010000000000001010", // addi $1 $0 10
+                        "00100000000000100000000000010100", // addi $2 $0 20
+                        "00000000001000100001100000100000", // add $3 $1 $2
+                        "00000000010000010010000000100010", // sub $4 $2 $1
+                        "11111100000000000000000000000000", // hlt
                 ];
             }
             
             StringBuilder sb = new StringBuilder();
-            if (cpu_type == LibCPU.CPU_type.SingleCycle)
-            {
+            if (cpu_type == LibCPU.CPU_type.SingleCycle) {
                 LibCPU.SingleCycle cpu = new(mcs, data_mem_init);
                 (int cycles, LibCPU.MIPS.Exceptions excep) = cpu.Run();
                 sb.Append(LibCPU.MIPS.get_regs(cpu.regs));
@@ -90,8 +67,7 @@ namespace main
                 //sb.Append($"Exception Type : {excep.ToString()}");
                 sb.Append($"Number of cycles consumed : {cycles,10}\n");
             }
-            else if (cpu_type == LibCPU.CPU_type.PipeLined)
-            {
+            else if (cpu_type == LibCPU.CPU_type.PipeLined) {
                 LibCPU.CPU5STAGE cpu = new(mcs, data_mem_init);
                 (int cycles, LibCPU.MIPS.Exceptions excep) = cpu.Run();
                 sb.Append(LibCPU.MIPS.get_regs(cpu.regs));
@@ -99,8 +75,7 @@ namespace main
                 //sb.Append($"Exception Type : {excep.ToString()}");
                 sb.Append($"Number of cycles consumed : {cycles,10}\n");
             }
-            else if (cpu_type == LibCPU.CPU_type.OOO)
-            {
+            else if (cpu_type == LibCPU.CPU_type.OOO) {
                 LibCPU.OOO cpu = new(mcs, data_mem_init);
                 int cycles = cpu.Run();
                 sb.Append(LibCPU.MIPS.get_regs(cpu.regs));
@@ -108,11 +83,10 @@ namespace main
                 //sb.Append($"Exception Type : {excep.ToString()}");
                 sb.Append($"Number of cycles consumed : {cycles,10}\n");
             }
-            if (!command)
-                Console.WriteLine( sb.ToString() );
 
-            if (command)
-                File.WriteAllText(output_filepath, sb.ToString());
+            if (!command) Console.WriteLine( sb.ToString() );
+
+            if (command) File.WriteAllText(output_filepath, sb.ToString());
         }
     }
 }
