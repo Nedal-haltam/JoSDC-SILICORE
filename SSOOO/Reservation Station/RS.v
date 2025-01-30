@@ -197,26 +197,6 @@ always@(posedge clk, posedge rst) begin
     end
     else begin
 
-        // `define b5 (Reg_Busy[4'd5] && Reg_ROBEN1[4'd5] == 0 && Reg_ROBEN2[4'd5] == 0)
-        // if (`b5) begin
-        // RS_FU_opcode1 <= Reg_opcode[4'd5];
-        // RS_FU_Val11 <= Reg_ROBEN1_VAL[4'd5];
-        // RS_FU_RS_ID1 <= 5'd6;
-        // RS_FU_ROBEN1 <= Reg_ROBEN[4'd5];
-        // RS_FU_ALUOP1 <= Reg_ALUOP[4'd5];
-        // RS_FU_Val21 <= Reg_ROBEN2_VAL[4'd5];
-        // RS_FU_Immediate1 <= Reg_Immediate[4'd5];
-        // end
-        // else begin
-        // RS_FU_opcode1 <= 0;
-        // RS_FU_RS_ID1 <= 0;
-        // RS_FU_ROBEN1 <= 0;
-        // RS_FU_ALUOP1 <= 0;
-        // RS_FU_Val11 <= 0;
-        // RS_FU_Val21 <= 0;
-        // RS_FU_Immediate1 <= 0;
-        // end
-
         `define b6 (Reg_Busy[4'd6] && Reg_ROBEN1[4'd6] == 0 && Reg_ROBEN2[4'd6] == 0)
         if (`b6) begin
         RS_FU_opcode2 <= Reg_opcode[4'd6];

@@ -31,7 +31,8 @@ module LSBuffer
     input [4:0] CDB_ROBEN4,
     input [31:0] CDB_ROBEN4_VAL,
 
-    output reg out_FULL_FLAG,
+    output reg FULL_FLAG,
+    
     output reg out_VALID_Inst,
     output reg [4:0]  out_ROBEN,
     output reg [4:0]  out_Rd,
@@ -111,7 +112,7 @@ reg [4:0] i;
 reg [4:0] ji;
 
 always@(posedge clk)
-    out_FULL_FLAG <= ~(rst | ~(End_Index == Start_Index && (Reg_Busy[Start_Index])));
+    FULL_FLAG <= ~(rst | ~(End_Index == Start_Index && (Reg_Busy[Start_Index])));
 
 always@(negedge clk) begin
     if (rst || ROB_FLUSH_Flag) begin
@@ -124,7 +125,7 @@ always@(negedge clk) begin
         out_VALID_Inst <= 0;
     end
     else begin
-        if (VALID_Inst && ~out_FULL_FLAG) begin
+        if (VALID_Inst && ~FULL_FLAG) begin
             Reg_Busy[End_Index] <= 1'b1;
 
             Reg_opcode[End_Index] <= opcode;
@@ -154,6 +155,11 @@ always@(negedge clk) begin
             Reg_Busy[Start_Index] <= 0;
             Start_Index <= Start_Index + 1'b1;
         end
+
+
+
+
+
         for (ji = 0; ji < `LDST_SIZE; ji = ji + 1) begin
             if (Reg_Busy[`I(ji)]) begin
                 if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin

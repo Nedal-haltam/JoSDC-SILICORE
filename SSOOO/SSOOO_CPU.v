@@ -248,7 +248,10 @@ RegFile regfile
     .RP1_Reg2_ROBEN(RegFile_RP1_Reg2_ROBEN)
 );
 
-
+/*
+methods:
+    - BHT: you index a list of predictors using a lower portion of address of branch instructions, could be a list of N-bit predictors 
+*/
 BranchPredictor BPU
 (
     .rst(rst), 
@@ -257,7 +260,7 @@ BranchPredictor BPU
 
     .Decoded_opcode(InstQ_opcode),
     .Commit_opcode(ROB_Commit_opcode),
-    .state(state),
+    // .state(state),
     .predicted(predicted)
 );
 
@@ -570,7 +573,7 @@ LSBuffer lsbuffer
     .CDB_ROBEN4(CDB_ROBEN4),
     .CDB_ROBEN4_VAL(CDB_Write_Data4),
 
-    .out_FULL_FLAG(LdStB_FULL_FLAG),
+    .FULL_FLAG(LdStB_FULL_FLAG),
     .out_VALID_Inst(LdStB_MEMU_VALID_Inst),
     .out_ROBEN(LdStB_MEMU_ROBEN),
     .out_Rd(LdStB_MEMU_Rd),
