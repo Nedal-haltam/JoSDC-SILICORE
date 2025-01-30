@@ -149,11 +149,20 @@ end
 
 
 /*
-TODO:
     - the jr dependency is solved but we can do better in terms of forwarding it from the ROB or the CDB, but it works
-    - support flags from FU: OF, UF
+
+TODO:
     - better branch predictor
-    - multiple FU
+    - make it SS
+    - MultiCore (dualcore is enough)
+    - check on epsilon in the priority TODO
+    - priority encoder in RS
+
+    - GOL: open Quartus, and work on it interfacing and using the RAM2PORT
+        - you have two sources of image: the static image, and the run time modification from the proc_interface
+        - for speed: adjust the clock of the CPU through the switches
+	- use the FPGA to emulate on and display the head of the ROB information through 
+	the VGA interface
 */
 
 always@(negedge clk, posedge rst) begin
@@ -248,19 +257,15 @@ RegFile regfile
     .RP1_Reg2_ROBEN(RegFile_RP1_Reg2_ROBEN)
 );
 
-/*
-methods:
-    - BHT: you index a list of predictors using a lower portion of address of branch instructions, could be a list of N-bit predictors 
-*/
-BranchPredictor BPU
+
+
+BranchPredictor #(.N(3)) BPU
 (
     .rst(rst), 
     .clk(clk), 
     .Wrong_prediction(ROB_Wrong_prediction), 
-
     .Decoded_opcode(InstQ_opcode),
     .Commit_opcode(ROB_Commit_opcode),
-    // .state(state),
     .predicted(predicted)
 );
 

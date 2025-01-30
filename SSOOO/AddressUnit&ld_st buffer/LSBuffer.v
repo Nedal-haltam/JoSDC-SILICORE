@@ -131,6 +131,7 @@ always@(negedge clk) begin
             Reg_opcode[End_Index] <= opcode;
             Reg_Rd[End_Index] <= Rd;
             Reg_EA[End_Index] <= ROBEN1_VAL + Immediate;
+            // Reg_EA[End_Index] <= ROBEN1_VAL[9:0] + Immediate[9:0];
             Reg_ROBEN1[End_Index] <= ROBEN1;
             Reg_ROBEN2[End_Index] <= ROBEN2;
             Reg_ROBEN1_VAL[End_Index] <= ROBEN1_VAL;
