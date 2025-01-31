@@ -24,8 +24,8 @@ parameter N = 3
 	always @ (posedge rst , posedge clk) begin
 		// active high reset to 00
 		if (rst) begin
-			state <= MAX_VALUE - 1'b1; // maximum
-			// state <= 0; // minimum
+			state <= 0; // minimum
+			// state <= MAX_VALUE - 1'b1; // maximum
 			// state <= (MAX_VALUE >> 1) - 1; // middle value
 		end
 		else if (Commit_opcode == beq || Commit_opcode == bne) begin

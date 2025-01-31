@@ -5,6 +5,8 @@ module DM
     input clk, 
     input [4:0] ROBEN,
     input Read_en, Write_en,
+    input [31:0] LdStB_MEMU_ROBEN1_VAL,
+    input [31:0] LdStB_MEMU_Immediate,
     input [31 : 0] address,
     input [31 : 0] data,
     output reg MEMU_invalid_address,
@@ -28,7 +30,7 @@ integer i;
                 MEMU_Result <= DataMem[address[9:0]];
             end
             if (Write_en) begin
-                DataMem[address] <= data;
+                DataMem[address[9:0]] <= data;
             end
         end
         MEMU_ROBEN <= ROBEN;
@@ -61,8 +63,8 @@ integer i;
 `endif
 
 always@(posedge clk) begin
-    // MEMU_invalid_address <= ~(0 <= address && address <= 1023);
-    MEMU_invalid_address <= (|address[31:10]);
+    // MEMU_invalid_address <= (|address[31:10]);
+    MEMU_invalid_address <= (LdStB_MEMU_ROBEN1_VAL + LdStB_MEMU_Immediate) > 1023;
 end
 
 

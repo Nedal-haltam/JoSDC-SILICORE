@@ -51,23 +51,26 @@ module ROB
     output reg [4:0] Commit_Rd,
     output reg [31:0] Commit_Write_Data,
     output reg [2:0] Commit_Control_Signals,
+    output reg [31:0] commit_BTA,
 
     input [4:0] RP1_ROBEN1, RP1_ROBEN2,
     output [31:0] RP1_Write_Data1, RP1_Write_Data2,
+    // output reg [31:0] RP1_Write_Data1, RP1_Write_Data2,
     output RP1_Ready1, RP1_Ready2,
+    // output reg RP1_Ready1, RP1_Ready2,
 
     output reg [4:0] Start_Index,
     output reg [4:0] End_Index
 
-    ,input  [4:0] index_test,
-    output [11:0] Reg_opcode_test,
-    output [4:0]  Reg_Rd_test,
-    output [31:0] Reg_Write_Data_test,
-    output [0:0]  Reg_Busy_test,
-    output [0:0]  Reg_Ready_test,
-    output [1:0]  Reg_Speculation_test,
-    output [0:0]  Reg_Exception_test,
-    output [0:0]  Reg_Valid_test
+//    ,input  [4:0] index_test,
+//    output [11:0] Reg_opcode_test,
+//    output [4:0]  Reg_Rd_test,
+//    output [31:0] Reg_Write_Data_test,
+//    output [0:0]  Reg_Busy_test,
+//    output [0:0]  Reg_Ready_test,
+//    output [1:0]  Reg_Speculation_test,
+//    output [0:0]  Reg_Exception_test,
+//    output [0:0]  Reg_Valid_test
 );
 
 `include "opcodes.txt"
@@ -87,8 +90,8 @@ reg [1:0] Reg_Speculation [(`ROB_SIZE - 1):0];
 reg Reg_Busy [(`ROB_SIZE - 1):0];
 reg Reg_Ready [(`ROB_SIZE - 1):0];
 reg Reg_Exception [(`ROB_SIZE - 1):0];
-
 reg [31:0] Reg_Write_Data [(`ROB_SIZE - 1):0];
+reg [31:0] Reg_BTA[(`ROB_SIZE - 1):0];
 
 
 wire Reg_Valid [(`ROB_SIZE - 1):0];
@@ -100,14 +103,22 @@ end
 endgenerate
 
 
-assign Reg_opcode_test = Reg_opcode[`I(index_test)];
-assign Reg_Rd_test = Reg_Rd[`I(index_test)];
-assign Reg_Write_Data_test = Reg_Write_Data[`I(index_test)];
-assign Reg_Busy_test = Reg_Busy[`I(index_test)];
-assign Reg_Ready_test = Reg_Ready[`I(index_test)];
-assign Reg_Speculation_test = Reg_Speculation[`I(index_test)];
-assign Reg_Exception_test = Reg_Exception[`I(index_test)];
-assign Reg_Valid_test = Reg_Valid[`I(index_test)];
+//assign Reg_opcode_test = Reg_opcode[`I(index_test)];
+//assign Reg_Rd_test = Reg_Rd[`I(index_test)];
+//assign Reg_Write_Data_test = Reg_Write_Data[`I(index_test)];
+//assign Reg_Busy_test = Reg_Busy[`I(index_test)];
+//assign Reg_Ready_test = Reg_Ready[`I(index_test)];
+//assign Reg_Speculation_test = Reg_Speculation[`I(index_test)];
+//assign Reg_Exception_test = Reg_Exception[`I(index_test)];
+//assign Reg_Valid_test = Reg_Valid[`I(index_test)];
+//
+
+// always@(posedge clk) begin
+// RP1_Write_Data1 <= Reg_Write_Data[`Imone(RP1_ROBEN1)];
+// RP1_Write_Data2 <= Reg_Write_Data[`Imone(RP1_ROBEN2)];
+// RP1_Ready1 <= Reg_Ready[`Imone(RP1_ROBEN1)];
+// RP1_Ready2 <= Reg_Ready[`Imone(RP1_ROBEN2)];
+// end
 
 assign RP1_Write_Data1 = Reg_Write_Data[`Imone(RP1_ROBEN1)];
 assign RP1_Write_Data2 = Reg_Write_Data[`Imone(RP1_ROBEN2)];
@@ -158,34 +169,30 @@ always@(posedge clk, posedge rst) begin
             Reg_Ready[`Imone(End_Index)] <= Decoded_opcode == hlt_inst || Decoded_opcode == jal;
             Reg_Speculation[`Imone(End_Index)][0] <= (Decoded_opcode == beq || Decoded_opcode == bne);
             Reg_Speculation[`Imone(End_Index)][1] <= Decoded_prediction;
-            Reg_Write_Data[`Imone(End_Index)] <= Branch_Target_Addr;
+            Reg_BTA[`Imone(End_Index)] <= Branch_Target_Addr;
             Reg_Exception[`Imone(End_Index)] <= 1'b0;
         end
 
-        if (Reg_Busy[`Imone(CDB_ROBEN1)] && CDB_ROBEN1 != 0) begin
-            if (~Reg_Speculation[`Imone(CDB_ROBEN1)][0])
-                Reg_Write_Data[`Imone(CDB_ROBEN1)] <= CDB_ROBEN1_Write_Data;
+        if (Reg_Busy[`Imone(CDB_ROBEN1)] && (|CDB_ROBEN1)) begin
+            Reg_Write_Data[`Imone(CDB_ROBEN1)] <= CDB_ROBEN1_Write_Data;
             Reg_Speculation[`Imone(CDB_ROBEN1)][0] <= Reg_Speculation[`Imone(CDB_ROBEN1)][0] & (CDB_Branch_Decision1 ^ Reg_Speculation[`Imone(CDB_ROBEN1)][1]);
             Reg_Ready[`Imone(CDB_ROBEN1)] <= 1'b1;
             Reg_Exception[`Imone(CDB_ROBEN1)] <= CDB_EXCEPTION1;
         end
-        if (Reg_Busy[`Imone(CDB_ROBEN2)] && CDB_ROBEN2 != 0) begin
-            if (~Reg_Speculation[`Imone(CDB_ROBEN2)][0])
-                Reg_Write_Data[`Imone(CDB_ROBEN2)] <= CDB_ROBEN2_Write_Data;
+        if (Reg_Busy[`Imone(CDB_ROBEN2)] && (|CDB_ROBEN2)) begin
+            Reg_Write_Data[`Imone(CDB_ROBEN2)] <= CDB_ROBEN2_Write_Data;
             Reg_Speculation[`Imone(CDB_ROBEN2)] <= 2'b0;
             Reg_Ready[`Imone(CDB_ROBEN2)] <= 1'b1;
             Reg_Exception[`Imone(CDB_ROBEN2)] <= CDB_EXCEPTION2;
         end
-        if (Reg_Busy[`Imone(CDB_ROBEN3)] && CDB_ROBEN3 != 0) begin
-            if (~Reg_Speculation[`Imone(CDB_ROBEN3)][0])
-                Reg_Write_Data[`Imone(CDB_ROBEN3)] <= CDB_ROBEN3_Write_Data;
+        if (Reg_Busy[`Imone(CDB_ROBEN3)] && (|CDB_ROBEN3)) begin
+            Reg_Write_Data[`Imone(CDB_ROBEN3)] <= CDB_ROBEN3_Write_Data;
             Reg_Speculation[`Imone(CDB_ROBEN3)][0] <= Reg_Speculation[`Imone(CDB_ROBEN3)][0] & (CDB_Branch_Decision2 ^ Reg_Speculation[`Imone(CDB_ROBEN3)][1]);
             Reg_Ready[`Imone(CDB_ROBEN3)] <= 1'b1;
             Reg_Exception[`Imone(CDB_ROBEN3)] <= CDB_EXCEPTION3;
         end
-        if (Reg_Busy[`Imone(CDB_ROBEN4)] && CDB_ROBEN4 != 0) begin
-            if (~Reg_Speculation[`Imone(CDB_ROBEN4)][0])
-                Reg_Write_Data[`Imone(CDB_ROBEN4)] <= CDB_ROBEN4_Write_Data;
+        if (Reg_Busy[`Imone(CDB_ROBEN4)] && (|CDB_ROBEN4)) begin
+            Reg_Write_Data[`Imone(CDB_ROBEN4)] <= CDB_ROBEN4_Write_Data;
             Reg_Speculation[`Imone(CDB_ROBEN4)][0] <= Reg_Speculation[`Imone(CDB_ROBEN4)][0] & (CDB_Branch_Decision3 ^ Reg_Speculation[`Imone(CDB_ROBEN4)][1]);
             Reg_Ready[`Imone(CDB_ROBEN4)] <= 1'b1;
             Reg_Exception[`Imone(CDB_ROBEN4)] <= CDB_EXCEPTION3;
@@ -256,7 +263,7 @@ always@(negedge clk, posedge rst) begin
                     FLUSH_Flag <= 1'b1;
                     Wrong_prediction <= 1'b1;
                     Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
-                    Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)]; // output the target address
+                    commit_BTA <= Reg_BTA[`Imone(Start_Index)];
                 end
             end
             else if (Reg_Exception[`Imone(Start_Index)]) begin

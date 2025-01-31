@@ -41,6 +41,7 @@ wire [31:0] ROB_Commit_pc;
 wire [4:0] ROB_Commit_Rd;
 wire [31:0] ROB_Commit_Write_Data;
 wire [2:0] ROB_Commit_Control_Signals;
+wire [31:0] ROB_Commit_BTA;
 wire [4:0] ROB_Start_Index;
 wire [4:0] ROB_End_Index;
 wire [31:0] ROB_RP1_Write_Data1, ROB_RP1_Write_Data2;
@@ -129,14 +130,18 @@ wire CDB_EXCEPTION4;
 
 // misc
 `define exception_handler 32'd1000
-wire hlt;
+reg hlt;
+// wire hlt;
 reg isjr;
 reg [31:0] EXCEPTION_EPC, EXCEPTION_CAUSE;
 parameter EXCEPTION_CAUSE_INVALID_IM_ADDR = 1,
           EXCEPTION_CAUSE_INVALID_DM_ADDR = 2;
 
+always@(posedge clk) begin
+    hlt <= ROB_Commit_opcode == hlt_inst;
+end
+// assign hlt <= ROB_Commit_opcode == hlt_inst;
 
-assign hlt = ROB_Commit_opcode == hlt_inst;
 
 nor hlt_logic(clk, input_clk, hlt);
 
@@ -152,11 +157,15 @@ end
     - the jr dependency is solved but we can do better in terms of forwarding it from the ROB or the CDB, but it works
 
 TODO:
-    - better branch predictor
+
+PC logic maybe using priority encoder logic
+assign statement in ROB
+priority encoder in RS
+
     - make it SS
     - MultiCore (dualcore is enough)
     - check on epsilon in the priority TODO
-    - priority encoder in RS
+    - better branch predictor
 
     - GOL: open Quartus, and work on it interfacing and using the RAM2PORT
         - you have two sources of image: the static image, and the run time modification from the proc_interface
@@ -183,11 +192,11 @@ always@(posedge clk) begin
     end
 end
 
-assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_Write_Data : `exception_handler) : 
+assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA : `exception_handler) : 
 (
     (InstQ_opcode == j || InstQ_opcode == jal) ? {6'd0,InstQ_address} : 
     (
-        (InstQ_opcode == jr) ? ((~isjr) ? PC_out : ((RegFile_RP1_Reg1_ROBEN == 0) ? RegFile_RP1_Reg1 : PC_out)) : 
+        (InstQ_opcode == jr) ? ((~isjr) ? PC_out : ((~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : PC_out)) : 
         (
             (InstQ_opcode == hlt_inst) ? PC_out : 
             (
@@ -321,6 +330,7 @@ ROB rob
     .Commit_Rd(ROB_Commit_Rd),
     .Commit_Write_Data(ROB_Commit_Write_Data),
     .Commit_Control_Signals(ROB_Commit_Control_Signals),
+    .commit_BTA(ROB_Commit_BTA),
 
     .RP1_ROBEN1(RegFile_RP1_Reg1_ROBEN), 
     .RP1_ROBEN2(RegFile_RP1_Reg2_ROBEN),
@@ -347,7 +357,7 @@ RS rs
     .ROBEN(ROB_End_Index),
     .ROBEN1
     (
-        (RegFile_RP1_Reg1_ROBEN == 0 || InstQ_opcode == sll || InstQ_opcode == srl || InstQ_opcode == jal) ? 5'd0 : 
+        (~(|RegFile_RP1_Reg1_ROBEN) || InstQ_opcode == sll || InstQ_opcode == srl || InstQ_opcode == jal) ? 5'd0 : 
         (
             (ROB_RP1_Ready1) ? 5'd0 : RegFile_RP1_Reg1_ROBEN
         )
@@ -357,7 +367,7 @@ RS rs
         (InstQ_opcode == addi || InstQ_opcode == andi || InstQ_opcode == ori || InstQ_opcode == xori || 
          InstQ_opcode == slti || InstQ_opcode == jal) ? 5'd0 : 
          (
-            (RegFile_RP1_Reg2_ROBEN == 0) ? 5'd0 : 
+            (~(|RegFile_RP1_Reg2_ROBEN)) ? 5'd0 : 
             (
                 (ROB_RP1_Ready2) ? 5'd0 : RegFile_RP1_Reg2_ROBEN
             )
@@ -365,11 +375,11 @@ RS rs
     ), 
     .ROBEN1_VAL
     (
-        (RegFile_RP1_Reg1_ROBEN == 0) ? RegFile_RP1_Reg1 : ROB_RP1_Write_Data1
+        (~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : ROB_RP1_Write_Data1
     ), 
     .ROBEN2_VAL
     (
-        (RegFile_RP1_Reg2_ROBEN == 0) ? RegFile_RP1_Reg2 : ROB_RP1_Write_Data2
+        (~(|RegFile_RP1_Reg2_ROBEN)) ? RegFile_RP1_Reg2 : ROB_RP1_Write_Data2
     ), 
     .Immediate
     (
@@ -497,7 +507,7 @@ AddressUnit AU
     .Decoded_opcode(InstQ_opcode),
     .ROBEN1
     (
-        (RegFile_RP1_Reg1_ROBEN == 0) ? 5'd0 : 
+        (~(|RegFile_RP1_Reg1_ROBEN)) ? 5'd0 : 
         (
             (ROB_RP1_Ready1) ? 5'd0 : RegFile_RP1_Reg1_ROBEN
         )
@@ -506,7 +516,7 @@ AddressUnit AU
     (
         (InstQ_opcode == lw) ? 5'd0 : 
         (
-            (RegFile_RP1_Reg2_ROBEN == 0) ? 5'd0 : 
+            (~(|RegFile_RP1_Reg2_ROBEN)) ? 5'd0 : 
             (
                 (ROB_RP1_Ready2) ? 5'd0 : RegFile_RP1_Reg2_ROBEN
             )
@@ -514,11 +524,11 @@ AddressUnit AU
     ),
     .ROBEN1_VAL
     (
-        (RegFile_RP1_Reg1_ROBEN == 0) ? RegFile_RP1_Reg1 : ROB_RP1_Write_Data1
+        (~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : ROB_RP1_Write_Data1
     ), 
     .ROBEN2_VAL
     (
-        (RegFile_RP1_Reg2_ROBEN == 0) ? RegFile_RP1_Reg2 : ROB_RP1_Write_Data2
+        (~(|RegFile_RP1_Reg2_ROBEN)) ? RegFile_RP1_Reg2 : ROB_RP1_Write_Data2
     ), 
     .Immediate({{16{InstQ_immediate[15]}},InstQ_immediate}),
     .InstQ_VALID_Inst(InstQ_VALID_Inst),
@@ -607,6 +617,8 @@ DM datamemory
     (
         (LdStB_MEMU_VALID_Inst) ? LdStB_MEMU_opcode == sw : 1'b0
     ), 
+    .LdStB_MEMU_ROBEN1_VAL(LdStB_MEMU_ROBEN1_VAL),
+    .LdStB_MEMU_Immediate(LdStB_MEMU_Immediate),
     .address(LdStB_MEMU_EA),
     .data(LdStB_MEMU_ROBEN2_VAL),
     .MEMU_invalid_address(MEMU_invalid_address),

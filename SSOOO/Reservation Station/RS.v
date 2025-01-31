@@ -41,13 +41,13 @@ module RS
 
 
 
-    ,input [4:0] input_index_test,
-    output [11:0] opcode_test,
-    output [3:0] ALUOP_test, 
-    output [4:0] ROBEN1_test, ROBEN2_test,
-    output [31:0] ROBEN1_VAL_test, ROBEN2_VAL_test,
-    output [31:0] Immediate_test,
-    output [0:0] busy_test
+    // ,input [4:0] input_index_test,
+    // output [11:0] opcode_test,
+    // output [3:0] ALUOP_test, 
+    // output [4:0] ROBEN1_test, ROBEN2_test,
+    // output [31:0] ROBEN1_VAL_test, ROBEN2_VAL_test,
+    // output [31:0] Immediate_test,
+    // output [0:0] busy_test
 
 );
 
@@ -69,14 +69,14 @@ reg [31:0] Reg_Immediate [(`RS_SIZE - 1):0];
 reg Reg_Busy [(`RS_SIZE - 1):0];
 
 
-assign opcode_test = Reg_opcode[`I(input_index_test)];
-assign ALUOP_test = Reg_ALUOP[`I(input_index_test)]; 
-assign ROBEN1_test = Reg_ROBEN1[`I(input_index_test)]; 
-assign ROBEN2_test = Reg_ROBEN2[`I(input_index_test)];
-assign ROBEN1_VAL_test = Reg_ROBEN1_VAL[`I(input_index_test)]; 
-assign ROBEN2_VAL_test = Reg_ROBEN2_VAL[`I(input_index_test)];
-assign Immediate_test = Reg_Immediate[`I(input_index_test)];
-assign busy_test = Reg_Busy[`I(input_index_test)];
+// assign opcode_test = Reg_opcode[`I(input_index_test)];
+// assign ALUOP_test = Reg_ALUOP[`I(input_index_test)]; 
+// assign ROBEN1_test = Reg_ROBEN1[`I(input_index_test)]; 
+// assign ROBEN2_test = Reg_ROBEN2[`I(input_index_test)];
+// assign ROBEN1_VAL_test = Reg_ROBEN1_VAL[`I(input_index_test)]; 
+// assign ROBEN2_VAL_test = Reg_ROBEN2_VAL[`I(input_index_test)];
+// assign Immediate_test = Reg_Immediate[`I(input_index_test)];
+// assign busy_test = Reg_Busy[`I(input_index_test)];
 
 /*
 this block is does the following:
