@@ -712,6 +712,30 @@ namespace Epsilon
             EndScope();
             m_outputcode.Append("# end forloop\n");
         }
+        void GenStmtWhile(NodeStmtWhile whilee)
+        {
+            m_outputcode.Append("# begin whileloop\n");
+            BeginScope();
+            m_outputcode.Append("# begin condition\n");
+            string label_start = $"TEMP_LABEL{m_labels_count++}_START";
+            string label_end = $"TEMP_LABEL{m_labels_count++}_END";
+
+            m_outputcode.Append($"{label_start}:\n");
+            GenExpr(whilee.cond);
+            string reg = "$1";
+            GenPop(reg);
+            m_outputcode.Append($"BEQ $1, $zero, {label_end}\n");
+            m_outputcode.Append("# end condition\n");
+            m_scopestart.Push(label_start);
+            m_scopeend.Push(label_end);
+            GenScope(whilee.scope);
+            m_scopestart.Pop();
+            m_scopeend.Pop();
+            m_outputcode.Append($"J {label_start}\n");
+            m_outputcode.Append($"{label_end}:\n");
+            EndScope();
+            m_outputcode.Append("# end whileloop\n");
+        }
         void GenStmtBreak(NodeStmtBreak breakk)
         {
             if (m_scopeend.Count == 0)
@@ -740,22 +764,26 @@ namespace Epsilon
             {
                 GenStmtAssign(stmt.assign);
             }
-            else if (stmt.type == NodeStmt.NodeStmtType.iff)
+            else if (stmt.type == NodeStmt.NodeStmtType.If)
             {
-                GenStmtIF(stmt.iff);
+                GenStmtIF(stmt.If);
             }
-            else if (stmt.type == NodeStmt.NodeStmtType.forr)
+            else if (stmt.type == NodeStmt.NodeStmtType.For)
             {
-                GenStmtFor(stmt.forr);
+                GenStmtFor(stmt.For);
             }
-            else if (stmt.type == NodeStmt.NodeStmtType.breakk)
+            else if (stmt.type == NodeStmt.NodeStmtType.While)
             {
-                GenStmtBreak(stmt.breakk);
+                GenStmtWhile(stmt.While);
             }
-            else if (stmt.type == NodeStmt.NodeStmtType.continuee)
+            else if (stmt.type == NodeStmt.NodeStmtType.Break)
             {
-                GenStmtContinue(stmt.continuee);
+                GenStmtBreak(stmt.Break);
             }
+            else if (stmt.type == NodeStmt.NodeStmtType.Continue)
+            {
+                GenStmtContinue(stmt.Continue);
+            } 
             else if (stmt.type == NodeStmt.NodeStmtType.Exit)
             {
                 GenStmtExit(stmt.Exit);

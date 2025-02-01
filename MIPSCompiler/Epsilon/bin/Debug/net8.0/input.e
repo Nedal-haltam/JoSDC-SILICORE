@@ -5,18 +5,15 @@
 
 int y = 1234;
 int x = 0;
-for(;;)
+while (x < 10)
 {
-    if (x == 123)
+    if (x == 5)
         break;
     x = x + 1;
     continue;
     y = y + 1;
 }
-
-exit(0);
-
-
+int z = 999;
 
 
 /*

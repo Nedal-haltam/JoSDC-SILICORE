@@ -73,19 +73,23 @@ namespace Epsilon
         }
         bool IsStmtIF()
         {
-            return peek(TokenType.Iff).HasValue;
+            return peek(TokenType.If).HasValue;
         }
         bool IsStmtFor()
         {
             return peek(TokenType.For).HasValue;
         }
+        bool IsStmtWhile()
+        {
+            return peek(TokenType.While).HasValue;
+        }
         bool IsStmtBreak()
         {
-            return peek(TokenType.breakk).HasValue;
+            return peek(TokenType.Break).HasValue;
         }
         bool IsStmtContinue()
         {
-            return peek(TokenType.continuee).HasValue;
+            return peek(TokenType.Continue).HasValue;
         }
         bool IsStmtExit()
         {
@@ -442,7 +446,7 @@ namespace Epsilon
         }
         NodeForCond? ParseForCond()
         {
-            NodeForCond forcond = new NodeForCond();
+            NodeForCond forcond = new NodeForCond(); 
             NodeExpr? cond = ParseExpr();
             if (cond.HasValue)
             {
@@ -455,6 +459,21 @@ namespace Epsilon
                 return null;
             }
             return forcond;
+        }
+        NodeExpr? ParseWhileCond()
+        {
+            try_consume_err(TokenType.OpenParen);
+            NodeExpr? cond = ParseExpr();
+            if (cond.HasValue)
+            {
+                try_consume_err(TokenType.CloseParen);
+                return cond.Value;
+            }
+            else
+            {
+                ErrorExpected("expression(parsestmtwhile)");
+                return null;
+            }
         }
         NodeStmtAssign? ParseStmtUpdate()
         {
@@ -783,8 +802,8 @@ namespace Epsilon
                 NodeIfElifs? elifs = ParseElifs();
                 iff.elifs = elifs;
                 NodeStmt stmt = new NodeStmt();
-                stmt.type = NodeStmt.NodeStmtType.iff;
-                stmt.iff = iff;
+                stmt.type = NodeStmt.NodeStmtType.If;
+                stmt.If = iff;
                 return stmt;
             }
             else if (IsStmtFor())
@@ -795,15 +814,35 @@ namespace Epsilon
                 if (pred.HasValue)
                 {
                     forr.pred = pred.Value;
-                }
+                } 
                 else
                 {
                     return null;
                 }
                 NodeStmt stmt = new NodeStmt();
-                stmt.type = NodeStmt.NodeStmtType.forr;
-                stmt.forr = forr;
+                stmt.type = NodeStmt.NodeStmtType.For;
+                stmt.For = forr;
                 return stmt;
+            }
+            else if (IsStmtWhile())
+            {
+                consume();
+                NodeExpr? expr = ParseWhileCond();
+                NodeStmtWhile whilee = new();
+                whilee.cond = expr.Value;
+                NodeScope? scope = ParseScope();
+                if (scope.HasValue)
+                {
+                    whilee.scope = scope.Value;
+                    NodeStmt stmt = new();
+                    stmt.type = NodeStmt.NodeStmtType.While;
+                    stmt.While = whilee;
+                    return stmt;
+                }
+                else
+                {
+                    ErrorExpected("scope");
+                }
             }
             else if (IsStmtBreak())
             {
@@ -812,8 +851,8 @@ namespace Epsilon
                 NodeStmtBreak breakk = new();
                 breakk.breakk = word;
                 NodeStmt stmt = new();
-                stmt.type = NodeStmt.NodeStmtType.breakk;
-                stmt.breakk = breakk;
+                stmt.type = NodeStmt.NodeStmtType.Break;
+                stmt.Break = breakk;
                 return stmt;
             }
             else if (IsStmtContinue())
@@ -823,8 +862,8 @@ namespace Epsilon
                 NodeStmtContinuee continuee = new();
                 continuee.continuee = word;
                 NodeStmt stmt = new();
-                stmt.type = NodeStmt.NodeStmtType.continuee;
-                stmt.continuee = continuee;
+                stmt.type = NodeStmt.NodeStmtType.Continue;
+                stmt.Continue = continuee;
                 return stmt;
             }
             else if (IsStmtExit())

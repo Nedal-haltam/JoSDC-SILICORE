@@ -21,7 +21,7 @@ namespace Epsilon
         // `(` , `)` , `[` , `]` , `,` , (+, -, <, >, &, |, ^, ~|, <<, >>) , `=` , `;` , `\n` (for line increament) , else invalid token
         OpenParen, CloseParen, OpenSquare, CloseSquare, OpenCurly, CloseCurly, Comma, Plus,
         Minus, And, Or, Xor, Nor, Sll, Srl, EqualEqual, NotEqual, Equal, SemiColon, NewLine,
-        Int, Ident, For, Iff, Elif, Else, IntLit, Exit, fslash, star, LessThan, GreaterThan, breakk, continuee
+        Int, Ident, For, While, If, Elif, Else, IntLit, Exit, fslash, star, LessThan, GreaterThan, Break, Continue
     }
     class Tokenizer(string thecode)
     {
@@ -108,7 +108,7 @@ namespace Epsilon
                     }
                     else if (word == "if")
                     {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.Iff, Line = line });
+                        m_tokens.Add(new() { Value = word, Type = TokenType.If, Line = line });
                     }
                     else if (word == "elif")
                     {
@@ -122,13 +122,17 @@ namespace Epsilon
                     {
                         m_tokens.Add(new() { Value = word, Type = TokenType.For, Line = line });
                     }
+                    else if (word == "while")
+                    {
+                        m_tokens.Add(new() { Value = word, Type = TokenType.While, Line = line });
+                    }
                     else if (word == "break")
                     {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.breakk, Line = line });
+                        m_tokens.Add(new() { Value = word, Type = TokenType.Break, Line = line });
                     }
                     else if (word == "continue")
                     {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.continuee, Line = line });
+                        m_tokens.Add(new() { Value = word, Type = TokenType.Continue, Line = line });
                     }
                     else if (word == "exit")
                     {

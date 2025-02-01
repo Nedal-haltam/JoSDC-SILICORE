@@ -25,16 +25,17 @@ namespace Epsilon
     {
         public enum NodeStmtType
         {
-            declare, assign, iff, forr, Exit, breakk, continuee
+            declare, assign, If, For, While, Break, Continue, Exit
         }
         public NodeStmtType type;
         public NodeStmtDeclare declare;
         public NodeStmtAssign assign;
-        public NodeStmtIF iff;
-        public NodeStmtFor forr;
+        public NodeStmtIF If;
+        public NodeStmtFor For;
+        public NodeStmtWhile While;
+        public NodeStmtBreak Break;
+        public NodeStmtContinuee Continue;
         public NodeStmtExit Exit;
-        public NodeStmtBreak breakk;
-        public NodeStmtContinuee continuee;
     }
     public struct NodeStmtDeclare
     {
@@ -178,6 +179,11 @@ namespace Epsilon
         public List<NodeStmtAssign> udpates;
     }
 
+    public struct NodeStmtWhile
+    {
+        public NodeExpr cond;
+        public NodeScope scope;
+    }
 
     public struct NodeStmtBreak
     {
