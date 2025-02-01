@@ -25,8 +25,8 @@ ADDI $sp, $sp, -1
 ADDI $sp, $sp, 1
 LW $1, 0($sp)
 SW $1, 1($sp)
-LABEL1_START:
-ADDI $1, $zero, 123
+LABEL2_START:
+ADDI $1, $zero, 124
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
 ########## x
@@ -37,33 +37,38 @@ ADDI $sp, $sp, 1
 LW $1, 0($sp)
 ADDI $sp, $sp, 1
 LW $2, 0($sp)
-TEMP_LABEL4_START:
+TEMP_LABEL5_START:
 SUB $1, $1, $2
-BEQ $1, $zero, TEMP_LABEL5_ELSE
+BEQ $1, $zero, TEMP_LABEL6_ELSE
 ADDI $1, $zero, 0
-J TEMP_LABEL6_END
-TEMP_LABEL5_ELSE:
+J TEMP_LABEL7_END
+TEMP_LABEL6_ELSE:
 ADDI $1, $zero, 1
-TEMP_LABEL6_END:
+TEMP_LABEL7_END:
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
 ADDI $sp, $sp, 1
 LW $1, 0($sp)
-BEQ $1, $zero, LABEL3_elifs
+BEQ $1, $zero, LABEL4_elifs
 # begin scope
+J TEMP_LABEL1_END
+# end scope
+ADDi $sp, $sp, 0
+LABEL4_elifs:
+LABEL3_END:
+# end scope
+ADDi $sp, $sp, 0
+J TEMP_LABEL0_START
+TEMP_LABEL1_END:
+# end scope
+ADDi $sp, $sp, 0
+# end forloop
+ADDI $1, $zero, 999
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
 ADDI $1, $zero, 0
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
 ADDI $sp, $sp, 1
 LW $1, 0($sp)
 HLT
-# end scope
-ADDi $sp, $sp, 0
-LABEL3_elifs:
-LABEL2_END:
-# end scope
-ADDi $sp, $sp, 0
-J TEMP_LABEL0_START
-# end scope
-ADDi $sp, $sp, 0
-# end forloop

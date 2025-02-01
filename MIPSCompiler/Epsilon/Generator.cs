@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
@@ -31,9 +32,11 @@ namespace Epsilon
         public NodeProg m_prog;
         StringBuilder m_outputcode = new();
         public Vars vars = new();
-        List<int> m_scopes = [];
+        Stack<int> m_scopes = [];
         int m_labels_count = 0;
         int m_StackSize = 0;
+        Stack<string?> m_scopestart = [];
+        Stack<string?> m_scopeend = [];
         public Generator(NodeProg prog)
         {
             m_prog = prog;
@@ -62,12 +65,12 @@ namespace Epsilon
         void BeginScope()
         {
             m_outputcode.Append("# begin scope\n");
-            m_scopes.Add(vars.m_vars.Count);
+            m_scopes.Push(vars.m_vars.Count);
         }
         void EndScope()
         {
             m_outputcode.Append("# end scope\n");
-            int Vars_topop = vars.m_vars.Count - m_scopes[^1];
+            int Vars_topop = vars.m_vars.Count - m_scopes.Pop();
             int i = vars.m_vars.Count - 1;
             int iterations = Vars_topop;
             int popcount = 0;
@@ -78,7 +81,6 @@ namespace Epsilon
             m_outputcode.Append($"ADDi $sp, $sp, {popcount}\n");
             m_StackSize -= popcount;
             vars.m_vars.RemoveRange(vars.m_vars.Count - Vars_topop, Vars_topop);
-            m_scopes.RemoveAt(m_scopes.Count - 1);
         }
         void GenScope(NodeScope scope)
         {
@@ -409,7 +411,8 @@ namespace Epsilon
             return null;
 
         }
-        string? GetImmedOperation(string imm1, string imm2, NodeBinExpr.NodeBinExprType op)
+
+        static string? GetImmedOperation(string imm1, string imm2, NodeBinExpr.NodeBinExprType op)
         {
             if (op == NodeBinExpr.NodeBinExprType.add)
                 return (Convert.ToInt32(imm1) + Convert.ToInt32(imm2)).ToString();
@@ -643,7 +646,8 @@ namespace Epsilon
             {
                 m_outputcode.Append("# begin condition\n");
                 string label_start = $"TEMP_LABEL{m_labels_count++}_START";
-                string label_end = $"TEMP_LABEL{m_labels_count++}_END"; 
+                string label_end = $"TEMP_LABEL{m_labels_count++}_END";
+                string label_update = $"TEMP_LABEL{m_labels_count++}_START";
 
                 m_outputcode.Append($"{label_start}:\n");
                 GenExpr(forr.pred.cond.Value.cond);
@@ -651,8 +655,13 @@ namespace Epsilon
                 GenPop(reg);
                 m_outputcode.Append($"BEQ $1, $zero, {label_end}\n");
                 m_outputcode.Append("# end condition\n");
+                m_scopestart.Push(label_update);
+                m_scopeend.Push(label_end);
                 GenScope(forr.pred.scope);
+                m_scopestart.Pop();
+                m_scopeend.Pop();
                 m_outputcode.Append("# begin update\n");
+                m_outputcode.Append($"{label_update}:\n");
                 if (forr.pred.udpate.HasValue)
                 {
                     for (int i = 0; i < forr.pred.udpate.Value.udpates.Count; i++)
@@ -666,28 +675,48 @@ namespace Epsilon
             }
             else if (forr.pred.udpate.HasValue)
             {
-                m_outputcode.Append("# begin update\n");
                 string label_start = $"TEMP_LABEL{m_labels_count++}_START";
+                string label_end = $"TEMP_LABEL{m_labels_count++}_END";
+                string label_update = $"TEMP_LABEL{m_labels_count++}_START";
 
                 m_outputcode.Append($"{label_start}:\n");
+                m_scopestart.Push(label_update);
+                m_scopeend.Push(label_end);
                 GenScope(forr.pred.scope);
+                m_scopestart.Pop();
+                m_scopeend.Pop();
+                m_outputcode.Append("# begin update\n");
+                m_outputcode.Append($"{label_update}:\n");
                 for (int i = 0; i < forr.pred.udpate.Value.udpates.Count; i++)
                 {
                     GenStmtAssign(forr.pred.udpate.Value.udpates[i]);
                 }
                 m_outputcode.Append("# end update\n");
                 m_outputcode.Append($"J {label_start}\n");
+                m_outputcode.Append($"{label_end}:\n");
             }
             else
             {
                 string label_start = $"TEMP_LABEL{m_labels_count++}_START";
+                string label_end = $"TEMP_LABEL{m_labels_count++}_END";
 
                 m_outputcode.Append($"{label_start}:\n");
+                m_scopestart.Push(label_start);
+                m_scopeend.Push(label_end);
                 GenScope(forr.pred.scope);
+                m_scopestart.Pop();
+                m_scopeend.Pop();
                 m_outputcode.Append($"J {label_start}\n");
+                m_outputcode.Append($"{label_end}:\n");
             }
             EndScope();
             m_outputcode.Append("# end forloop\n");
+        }
+        void GenStmtBreak(NodeStmtBreak breakk)
+        {
+            if (m_scopeend.Count == 0)
+                Error("no enclosing loop out of which to break", breakk.breakk.Line);
+            m_outputcode.Append($"J {m_scopeend.Peek()}\n");
         }
         void GenStmtExit(NodeStmtExit exit)
         {
@@ -713,6 +742,10 @@ namespace Epsilon
             {
                 GenStmtFor(stmt.forr);
             }
+            else if (stmt.type == NodeStmt.NodeStmtType.breakk)
+            {
+                GenStmtBreak(stmt.breakk);
+            }
             else if (stmt.type == NodeStmt.NodeStmtType.Exit)
             {
                 GenStmtExit(stmt.Exit);
@@ -721,7 +754,8 @@ namespace Epsilon
 
         public StringBuilder GenProg()
         {
-            m_outputcode.Append(".text\nmain:\n");
+            m_outputcode.Append(".text\n");
+            m_outputcode.Append("main:\n");
             m_outputcode.Append("ADDI $sp, $zero, 50\n");
             foreach (NodeStmt stmt in m_prog.scope.stmts)
                 GenStmt(stmt);

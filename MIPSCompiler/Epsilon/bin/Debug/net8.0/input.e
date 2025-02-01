@@ -1,6 +1,22 @@
 
 
 
+
+
+
+int x;
+for(;;)
+{
+    x = x + 1;
+    if (x == 124)
+    {
+        break;
+    }
+}
+int y = 999;
+exit(0);
+
+
 /*
 #define SIZE 4
 
@@ -61,12 +77,3 @@ for (int iter = 0; iter < IS; iter = iter + 1)
 */
 
 
-int x;
-for(;;)
-{
-    x = x + 1;
-    if (x == 123)
-    {
-        exit(0);
-    }
-}

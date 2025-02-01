@@ -79,6 +79,10 @@ namespace Epsilon
         {
             return peek(TokenType.For).HasValue;
         }
+        bool IsStmtBreak()
+        {
+            return peek(TokenType.breakk).HasValue;
+        }
         bool IsStmtExit()
         {
             return peek(TokenType.Exit).HasValue &&
@@ -795,6 +799,17 @@ namespace Epsilon
                 NodeStmt stmt = new NodeStmt();
                 stmt.type = NodeStmt.NodeStmtType.forr;
                 stmt.forr = forr;
+                return stmt;
+            }
+            else if (IsStmtBreak())
+            {
+                Token word = consume();
+                try_consume_err(TokenType.SemiColon);
+                NodeStmtBreak breakk = new();
+                breakk.breakk = word;
+                NodeStmt stmt = new();
+                stmt.type = NodeStmt.NodeStmtType.breakk;
+                stmt.breakk = breakk;
                 return stmt;
             }
             else if (IsStmtExit())
