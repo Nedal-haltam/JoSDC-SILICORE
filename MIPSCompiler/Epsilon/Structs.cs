@@ -25,7 +25,7 @@ namespace Epsilon
     {
         public enum NodeStmtType
         {
-            declare, assign, iff, forr, Exit, breakk
+            declare, assign, iff, forr, Exit, breakk, continuee
         }
         public NodeStmtType type;
         public NodeStmtDeclare declare;
@@ -34,6 +34,7 @@ namespace Epsilon
         public NodeStmtFor forr;
         public NodeStmtExit Exit;
         public NodeStmtBreak breakk;
+        public NodeStmtContinuee continuee;
     }
     public struct NodeStmtDeclare
     {
@@ -181,6 +182,10 @@ namespace Epsilon
     public struct NodeStmtBreak
     {
         public Token breakk;
+    }
+    public struct NodeStmtContinuee
+    {
+        public Token continuee;
     }
 
     public struct NodeStmtExit

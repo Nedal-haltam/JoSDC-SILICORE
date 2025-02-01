@@ -3,18 +3,20 @@
 
 
 
-
-int x;
+int y = 1234;
+int x = 0;
 for(;;)
 {
-    x = x + 1;
-    if (x == 124)
-    {
+    if (x == 123)
         break;
-    }
+    x = x + 1;
+    continue;
+    y = y + 1;
 }
-int y = 999;
+
 exit(0);
+
+
 
 
 /*

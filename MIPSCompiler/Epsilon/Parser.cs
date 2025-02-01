@@ -83,6 +83,10 @@ namespace Epsilon
         {
             return peek(TokenType.breakk).HasValue;
         }
+        bool IsStmtContinue()
+        {
+            return peek(TokenType.continuee).HasValue;
+        }
         bool IsStmtExit()
         {
             return peek(TokenType.Exit).HasValue &&
@@ -810,6 +814,17 @@ namespace Epsilon
                 NodeStmt stmt = new();
                 stmt.type = NodeStmt.NodeStmtType.breakk;
                 stmt.breakk = breakk;
+                return stmt;
+            }
+            else if (IsStmtContinue())
+            {
+                Token word = consume();
+                try_consume_err(TokenType.SemiColon);
+                NodeStmtContinuee continuee = new();
+                continuee.continuee = word;
+                NodeStmt stmt = new();
+                stmt.type = NodeStmt.NodeStmtType.continuee;
+                stmt.continuee = continuee;
                 return stmt;
             }
             else if (IsStmtExit())

@@ -21,7 +21,7 @@ namespace Epsilon
         // `(` , `)` , `[` , `]` , `,` , (+, -, <, >, &, |, ^, ~|, <<, >>) , `=` , `;` , `\n` (for line increament) , else invalid token
         OpenParen, CloseParen, OpenSquare, CloseSquare, OpenCurly, CloseCurly, Comma, Plus,
         Minus, And, Or, Xor, Nor, Sll, Srl, EqualEqual, NotEqual, Equal, SemiColon, NewLine,
-        Int, Ident, For, Iff, Elif, Else, IntLit, Exit, fslash, star, LessThan, GreaterThan, breakk
+        Int, Ident, For, Iff, Elif, Else, IntLit, Exit, fslash, star, LessThan, GreaterThan, breakk, continuee
     }
     class Tokenizer(string thecode)
     {
@@ -125,6 +125,10 @@ namespace Epsilon
                     else if (word == "break")
                     {
                         m_tokens.Add(new() { Value = word, Type = TokenType.breakk, Line = line });
+                    }
+                    else if (word == "continue")
+                    {
+                        m_tokens.Add(new() { Value = word, Type = TokenType.continuee, Line = line });
                     }
                     else if (word == "exit")
                     {

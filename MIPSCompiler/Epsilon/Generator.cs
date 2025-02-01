@@ -718,6 +718,12 @@ namespace Epsilon
                 Error("no enclosing loop out of which to break", breakk.breakk.Line);
             m_outputcode.Append($"J {m_scopeend.Peek()}\n");
         }
+        void GenStmtContinue(NodeStmtContinuee continuee)
+        {
+            if (m_scopestart.Count == 0)
+                Error("no enclosing loop out of which to break", continuee.continuee.Line);
+            m_outputcode.Append($"J {m_scopestart.Peek()}\n");
+        }
         void GenStmtExit(NodeStmtExit exit)
         {
             GenExpr(exit.expr);
@@ -745,6 +751,10 @@ namespace Epsilon
             else if (stmt.type == NodeStmt.NodeStmtType.breakk)
             {
                 GenStmtBreak(stmt.breakk);
+            }
+            else if (stmt.type == NodeStmt.NodeStmtType.continuee)
+            {
+                GenStmtContinue(stmt.continuee);
             }
             else if (stmt.type == NodeStmt.NodeStmtType.Exit)
             {
