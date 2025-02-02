@@ -3,17 +3,76 @@
 
 
 
-int y = 1234;
-int x = 0;
-while (x < 10)
-{
-    if (x == 5)
-        break;
-    x = x + 1;
-    continue;
-    y = y + 1;
-}
-int z = 999;
+int x = (1 + 2) + 3 + (4 + 5 + 6);
+// the line above will generate this assembly code without `constant folding` optimization technique
+// see below the new code generated
+/*
+.text
+main:
+ADDI $sp, $zero, 50
+ADDI $1, $zero, 6
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $1, $zero, 5
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $1, $zero, 4
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $1, $zero, 3
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $1, $zero, 2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+*/
+// with `constant folding` optimization technique
+/*
+.text
+main:
+ADDI $sp, $zero, 50
+ADDI $1, $zero, 21
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+*/
 
 
 /*

@@ -214,6 +214,11 @@ namespace Epsilon
                 return NodeBinExpr.NodeBinExprType.xor;
             return null;
         }
+        bool IsExprTermIntLit(NodeExpr expr)
+        {
+            return expr.type == NodeExpr.NodeExprType.term && (expr.term.type == NodeTerm.NodeTermType.intlit || 
+                (expr.term.type == NodeTerm.NodeTermType.paren && expr.term.paren.expr.type == NodeExpr.NodeExprType.term && expr.term.paren.expr.term.type == NodeTerm.NodeTermType.intlit));
+        }
         NodeExpr? ParseExpr(int min_prec = 0)
         {
             NodeTerm? Termlhs = ParseTerm();
@@ -243,7 +248,7 @@ namespace Epsilon
                     {
                         break;
                     }
-                    Token op = consume();
+                    Token Operator = consume();
                     int next_min_prec = prec.Value + 1;
                     NodeExpr? expr_rhs = ParseExpr(next_min_prec);
                     if (!expr_rhs.HasValue)
@@ -253,23 +258,57 @@ namespace Epsilon
                     NodeBinExpr expr = new NodeBinExpr();
                     NodeExpr expr_lhs2 = new NodeExpr();
                     expr_lhs2 = exprlhs;
-                    NodeBinExpr.NodeBinExprType? optype = GetOpType(op.Type);
+                    NodeBinExpr.NodeBinExprType? optype = GetOpType(Operator.Type);
                     if (optype.HasValue)
                         expr.type = optype.Value;
                     else
                         return null;
                     expr.lhs = expr_lhs2;
                     expr.rhs = expr_rhs.Value;
-                    exprlhs.type = NodeExpr.NodeExprType.binExpr;
-                    exprlhs.binexpr = expr;
-                }
 
+                    if (IsExprTermIntLit(expr.lhs) && IsExprTermIntLit(expr.rhs))
+                    {
+                        string constant1, constant2;
+                        if (expr.lhs.term.type == NodeTerm.NodeTermType.intlit)
+                        {
+                            constant1 = expr.lhs.term.intlit.intlit.Value;
+                        }
+                        else
+                        {
+                            constant1 = expr.lhs.term.paren.expr.term.intlit.intlit.Value;
+                        }
+                        if (expr.rhs.term.type == NodeTerm.NodeTermType.intlit)
+                        {
+                            constant2 = expr.rhs.term.intlit.intlit.Value;
+                        }
+                        else
+                        {
+                            constant2 = expr.rhs.term.paren.expr.term.intlit.intlit.Value;
+                        }
+                        string? value = Generator.GetImmedOperation(constant1, constant2, expr.type);
+                        if (value == null)
+                            return null;
+                        NodeTerm term = new();
+                        term.type = NodeTerm.NodeTermType.intlit;
+                        term.intlit.intlit.Value = value;
+                        term.intlit.intlit.Type = TokenType.IntLit;
+                        term.intlit.intlit.Line = expr.lhs.term.intlit.intlit.Line;
+                        exprlhs.type = NodeExpr.NodeExprType.term;
+                        exprlhs.term = term;
+                    }
+                    else
+                    {
+                        exprlhs.type = NodeExpr.NodeExprType.binExpr;
+                        exprlhs.binexpr = expr;
+                    }
+                }
                 return exprlhs;
             }
             else
             {
                 exprlhs.type = NodeExpr.NodeExprType.term;
                 exprlhs.term = Termlhs.Value;
+
                 return exprlhs;
             }
         }

@@ -376,7 +376,6 @@ namespace Epsilon
         {
             if (expr.type == NodeExpr.NodeExprType.term)
             {
-                
                 GenTerm(expr.term);
             }
             else if (expr.type == NodeExpr.NodeExprType.binExpr)
@@ -412,7 +411,7 @@ namespace Epsilon
 
         }
 
-        static string? GetImmedOperation(string imm1, string imm2, NodeBinExpr.NodeBinExprType op)
+        public static string? GetImmedOperation(string imm1, string imm2, NodeBinExpr.NodeBinExprType op)
         {
             if (op == NodeBinExpr.NodeBinExprType.add)
                 return (Convert.ToInt32(imm1) + Convert.ToInt32(imm2)).ToString();
@@ -426,6 +425,16 @@ namespace Epsilon
                 return (Convert.ToInt32(imm1) == Convert.ToInt32(imm2) ? 1 : 0).ToString();
             else if (op == NodeBinExpr.NodeBinExprType.notequal)
                 return (Convert.ToInt32(imm1) != Convert.ToInt32(imm2) ? 1 : 0).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.lessthan)
+                return (Convert.ToInt32(imm1) < Convert.ToInt32(imm2) ? 1 : 0).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.greaterthan)
+                return (Convert.ToInt32(imm1) > Convert.ToInt32(imm2) ? 1 : 0).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.and)
+                return (Convert.ToInt32(imm1) & Convert.ToInt32(imm2)).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.or)
+                return (Convert.ToInt32(imm1) | Convert.ToInt32(imm2)).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.xor)
+                return (Convert.ToInt32(imm1) ^ Convert.ToInt32(imm2)).ToString();
             return null;
         }
         string? GenImmedExpr(NodeExpr Iexpr)
