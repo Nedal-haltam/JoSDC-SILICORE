@@ -224,9 +224,6 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA 
     )
 );
 `endif
-
-
-
 assign InstQ_FLUSH_Flag = ~(rst || ~(|(PC[31:10])));
 // assign InstQ_FLUSH_Flag = ~(rst || (PC <= 1023));
 
