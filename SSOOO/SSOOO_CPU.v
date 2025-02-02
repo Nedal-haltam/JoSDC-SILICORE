@@ -1,6 +1,3 @@
-
-
-
 module SSOOO_CPU
 (
     input input_clk, rst,
@@ -24,7 +21,7 @@ wire InstQ_FLUSH_Flag;
 
 // RegFile
 wire [31:0] RegFile_RP1_Reg1, RegFile_RP1_Reg2;
-wire [4:0] RegFile_RP1_Reg1_ROBEN, RegFile_RP1_Reg2_ROBEN;
+wire [`ROB_SIZE_bits:0] RegFile_RP1_Reg1_ROBEN, RegFile_RP1_Reg2_ROBEN;
 
 // BPU
 wire [11:0] Decoded_opcode, Commit_opcode;
@@ -42,26 +39,29 @@ wire [4:0] ROB_Commit_Rd;
 wire [31:0] ROB_Commit_Write_Data;
 wire [2:0] ROB_Commit_Control_Signals;
 wire [31:0] ROB_Commit_BTA;
-wire [4:0] ROB_Start_Index;
-wire [4:0] ROB_End_Index;
+wire [`ROB_SIZE_bits:0] ROB_Start_Index;
+wire [`ROB_SIZE_bits:0] ROB_End_Index;
 wire [31:0] ROB_RP1_Write_Data1, ROB_RP1_Write_Data2;
 wire ROB_RP1_Ready1, ROB_RP1_Ready2;
 
 // RS
 wire RS_FULL_FLAG;
-wire [4:0] RS_FU_RS_ID1, RS_FU_ROBEN1;
+wire [4:0] RS_FU_RS_ID1;
+wire [`ROB_SIZE_bits:0] RS_FU_ROBEN1;
 wire [11:0] RS_FU_opcode1;
 wire [3:0] RS_FU_ALUOP1;
 wire [31:0] RS_FU_Val11, RS_FU_Val21;
 wire [31:0] RS_FU_Immediate1;
 
-wire [4:0] RS_FU_RS_ID2, RS_FU_ROBEN2;
+wire [4:0] RS_FU_RS_ID2;
+wire [`ROB_SIZE_bits:0] RS_FU_ROBEN2;
 wire [11:0] RS_FU_opcode2;
 wire [3:0] RS_FU_ALUOP2;
 wire [31:0] RS_FU_Val12, RS_FU_Val22;
 wire [31:0] RS_FU_Immediate2;
 
-wire [4:0] RS_FU_RS_ID3, RS_FU_ROBEN3;
+wire [4:0] RS_FU_RS_ID3;
+wire [`ROB_SIZE_bits:0] RS_FU_ROBEN3;
 wire [11:0] RS_FU_opcode3;
 wire [3:0] RS_FU_ALUOP3;
 wire [31:0] RS_FU_Val13, RS_FU_Val23;
@@ -69,17 +69,17 @@ wire [31:0] RS_FU_Immediate3;
 
 // FU
 wire [31:0] FU_Result1;
-wire [4:0] FU_ROBEN1;
+wire [`ROB_SIZE_bits:0] FU_ROBEN1;
 wire [11:0] FU_opcode1;
 wire FU_Branch_Decision1;
 
 wire [31:0] FU_Result2;
-wire [4:0] FU_ROBEN2;
+wire [`ROB_SIZE_bits:0] FU_ROBEN2;
 wire [11:0] FU_opcode2;
 wire FU_Branch_Decision2;
 
 wire [31:0] FU_Result3;
-wire [4:0] FU_ROBEN3;
+wire [`ROB_SIZE_bits:0] FU_ROBEN3;
 wire [11:0] FU_opcode3;
 wire FU_Branch_Decision3;
 
@@ -88,10 +88,10 @@ wire FU_Is_Free;
 
 // Address Unit
 wire AU_LdStB_VALID_Inst;
-wire [4:0]  AU_LdStB_ROBEN;
+wire [`ROB_SIZE_bits:0]  AU_LdStB_ROBEN;
 wire [4:0]  AU_LdStB_Rd;
 wire [11:0] AU_LdStB_opcode;
-wire [4:0]  AU_LdStB_ROBEN1, AU_LdStB_ROBEN2;
+wire [`ROB_SIZE_bits:0]  AU_LdStB_ROBEN1, AU_LdStB_ROBEN2;
 wire [31:0] AU_LdStB_ROBEN1_VAL, AU_LdStB_ROBEN2_VAL;
 wire [31:0] AU_LdStB_Immediate;
 wire [31:0] AU_LdStB_EA, AU_LdStB_Write_Data;
@@ -99,10 +99,10 @@ wire [31:0] AU_LdStB_EA, AU_LdStB_Write_Data;
 // Load Store Buffer
 wire LdStB_MEMU_VALID_Inst;
 wire LdStB_FULL_FLAG;
-wire [4:0]  LdStB_MEMU_ROBEN;
+wire [`ROB_SIZE_bits:0]  LdStB_MEMU_ROBEN;
 wire [4:0]  LdStB_MEMU_Rd;
 wire [11:0] LdStB_MEMU_opcode;
-wire [4:0]  LdStB_MEMU_ROBEN1, LdStB_MEMU_ROBEN2;
+wire [`ROB_SIZE_bits:0]  LdStB_MEMU_ROBEN1, LdStB_MEMU_ROBEN2;
 wire [31:0] LdStB_MEMU_ROBEN1_VAL, LdStB_MEMU_ROBEN2_VAL;
 wire [31:0] LdStB_MEMU_Immediate;
 wire [31:0] LdStB_MEMU_EA, LdStB_MEMU_Write_Data;
@@ -110,21 +110,21 @@ wire [2:0] LdStB_Start_Index;
 wire [2:0] LdStB_End_Index;
 
 // Memory Unit
-wire [4:0] MEMU_ROBEN;
+wire [`ROB_SIZE_bits:0] MEMU_ROBEN;
 wire [31:0] MEMU_Result;
 wire MEMU_invalid_address;
 
 // CDB
-wire [4:0] CDB_ROBEN1;
+wire [`ROB_SIZE_bits:0] CDB_ROBEN1;
 wire [31:0] CDB_Write_Data1;
 wire CDB_EXCEPTION1;
-wire [4:0] CDB_ROBEN2;
+wire [`ROB_SIZE_bits:0] CDB_ROBEN2;
 wire [31:0] CDB_Write_Data2;
 wire CDB_EXCEPTION2;
-wire [4:0] CDB_ROBEN3;
+wire [`ROB_SIZE_bits:0] CDB_ROBEN3;
 wire [31:0] CDB_Write_Data3;
 wire CDB_EXCEPTION3;
-wire [4:0] CDB_ROBEN4;
+wire [`ROB_SIZE_bits:0] CDB_ROBEN4;
 wire [31:0] CDB_Write_Data4;
 wire CDB_EXCEPTION4;
 
@@ -158,9 +158,7 @@ end
 
 TODO:
 
-PC logic maybe using priority encoder logic
-assign statement in ROB
-priority encoder in RS
+assign statement in ROB 
 
     - make it SS
     - MultiCore (dualcore is enough)
@@ -188,10 +186,30 @@ always@(posedge clk) begin
             EXCEPTION_EPC <= PC_out;
             EXCEPTION_CAUSE <= EXCEPTION_CAUSE_INVALID_IM_ADDR;
         end
-
     end
 end
 
+
+// `define other
+`ifdef other
+wire [31:0] add1p, add2, add3, add4, add5;
+assign add1p = ((ROB_Wrong_prediction) ? ROB_Commit_BTA : `exception_handler);
+assign add2 = {6'd0,InstQ_address};
+assign add3 = ((~isjr) ? PC_out : ((~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : PC_out));
+assign add4 = PC_out;
+assign add5 = PC_out + {{16{InstQ_immediate[15]}},InstQ_immediate};
+
+assign PC = (ROB_FLUSH_Flag == 1'b1) ? add1p : 
+(
+    (InstQ_opcode == j || InstQ_opcode == jal || InstQ_opcode == jr || InstQ_opcode == hlt_inst || ((InstQ_opcode == beq || InstQ_opcode == bne) && predicted)) ? 
+    (
+        ({32{InstQ_opcode == j || InstQ_opcode == jal                 }}&add2 ) |
+        ({32{InstQ_opcode == jr                                       }}&add3 ) |
+        ({32{InstQ_opcode == hlt_inst                                 }}&add4 ) |
+        ({32{(InstQ_opcode == beq || InstQ_opcode == bne) && predicted}}&add5)
+    ) : add4 + 1'b1
+);
+`else
 assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA : `exception_handler) : 
 (
     (InstQ_opcode == j || InstQ_opcode == jal) ? {6'd0,InstQ_address} : 
@@ -205,11 +223,20 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA 
         )
     )
 );
+`endif
 
-// assign InstQ_FLUSH_Flag = ~(rst | (0 <= PC && PC <= 1023));
-assign InstQ_FLUSH_Flag = ~(rst | ~(|(PC[31:10])));
 
-PC_register pcreg((InstQ_FLUSH_Flag) ? `exception_handler : PC, PC_out, ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag , clk, rst);
+
+assign InstQ_FLUSH_Flag = ~(rst || ~(|(PC[31:10])));
+// assign InstQ_FLUSH_Flag = ~(rst || (PC <= 1023));
+
+PC_register pcreg
+(
+    (InstQ_FLUSH_Flag) ? `exception_handler : PC, 
+    PC_out, 
+    ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag , 
+    clk, rst
+);
 
 InstQ instq
 (
@@ -243,7 +270,7 @@ RegFile regfile
     ), 
     .Decoded_WP1_ROBEN
     (
-        ((ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag) ? 5'd0 : ROB_End_Index
+        ((ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag) ? {`ROB_SIZE_bits{1'b0}} : ROB_End_Index
     ), 
     .WP1_DRindex(ROB_Commit_Rd), 
     .Decoded_WP1_DRindex
@@ -293,8 +320,8 @@ ROB rob
         )
     ),
     .Decoded_prediction(predicted),
-    .Branch_Target_Addr((predicted || InstQ_opcode == jal) ? InstQ_PC + 1'b1 : InstQ_PC + {{16{InstQ_immediate[15]}},InstQ_immediate}),
-
+    .Branch_Target_Addr((predicted) ? InstQ_PC + 1'b1 : InstQ_PC + {{16{InstQ_immediate[15]}},InstQ_immediate}),
+    .init_Write_Data(InstQ_PC + 1'b1),
     .CDB_ROBEN1(CDB_ROBEN1),
     .CDB_ROBEN1_Write_Data(CDB_Write_Data1),
     .CDB_Branch_Decision1(FU_Branch_Decision1),
@@ -357,19 +384,19 @@ RS rs
     .ROBEN(ROB_End_Index),
     .ROBEN1
     (
-        (~(|RegFile_RP1_Reg1_ROBEN) || InstQ_opcode == sll || InstQ_opcode == srl || InstQ_opcode == jal) ? 5'd0 : 
+        (~(|RegFile_RP1_Reg1_ROBEN) || InstQ_opcode == sll || InstQ_opcode == srl || InstQ_opcode == jal) ? {`ROB_SIZE_bits{1'b0}} : 
         (
-            (ROB_RP1_Ready1) ? 5'd0 : RegFile_RP1_Reg1_ROBEN
+            (ROB_RP1_Ready1) ? {`ROB_SIZE_bits{1'b0}} : RegFile_RP1_Reg1_ROBEN
         )
     ), 
     .ROBEN2
     (
         (InstQ_opcode == addi || InstQ_opcode == andi || InstQ_opcode == ori || InstQ_opcode == xori || 
-         InstQ_opcode == slti || InstQ_opcode == jal) ? 5'd0 : 
+         InstQ_opcode == slti || InstQ_opcode == jal) ? {`ROB_SIZE_bits{1'b0}} : 
          (
-            (~(|RegFile_RP1_Reg2_ROBEN)) ? 5'd0 : 
+            (~(|RegFile_RP1_Reg2_ROBEN)) ? {`ROB_SIZE_bits{1'b0}} : 
             (
-                (ROB_RP1_Ready2) ? 5'd0 : RegFile_RP1_Reg2_ROBEN
+                (ROB_RP1_Ready2) ? {`ROB_SIZE_bits{1'b0}} : RegFile_RP1_Reg2_ROBEN
             )
          )
     ), 
@@ -507,18 +534,18 @@ AddressUnit AU
     .Decoded_opcode(InstQ_opcode),
     .ROBEN1
     (
-        (~(|RegFile_RP1_Reg1_ROBEN)) ? 5'd0 : 
+        (~(|RegFile_RP1_Reg1_ROBEN)) ? {`ROB_SIZE_bits{1'b0}} : 
         (
-            (ROB_RP1_Ready1) ? 5'd0 : RegFile_RP1_Reg1_ROBEN
+            (ROB_RP1_Ready1) ? {`ROB_SIZE_bits{1'b0}} : RegFile_RP1_Reg1_ROBEN
         )
     ), 
     .ROBEN2
     (
-        (InstQ_opcode == lw) ? 5'd0 : 
+        (InstQ_opcode == lw) ? {`ROB_SIZE_bits{1'b0}} : 
         (
-            (~(|RegFile_RP1_Reg2_ROBEN)) ? 5'd0 : 
+            (~(|RegFile_RP1_Reg2_ROBEN)) ? {`ROB_SIZE_bits{1'b0}} : 
             (
-                (ROB_RP1_Ready2) ? 5'd0 : RegFile_RP1_Reg2_ROBEN
+                (ROB_RP1_Ready2) ? {`ROB_SIZE_bits{1'b0}} : RegFile_RP1_Reg2_ROBEN
             )
         )
     ),
@@ -608,7 +635,7 @@ LSBuffer lsbuffer
 DM datamemory
 (
     .clk(clk), 
-    .ROBEN((LdStB_MEMU_VALID_Inst) ? LdStB_MEMU_ROBEN : 5'd0),
+    .ROBEN((LdStB_MEMU_VALID_Inst) ? LdStB_MEMU_ROBEN : {`ROB_SIZE_bits{1'b0}}),
     .Read_en
     (
         (LdStB_MEMU_VALID_Inst) ? LdStB_MEMU_opcode == lw : 1'b0

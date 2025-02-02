@@ -11,6 +11,8 @@ outputs:
     - the head of the buffer to commit its result and go to the next one
 */
 
+// `define edged
+
 module ROB
 (
     input clk, rst,
@@ -19,22 +21,23 @@ module ROB
     input [4:0] Decoded_Rd,
     input Decoded_prediction,
     input [31:0] Branch_Target_Addr,
+    input [31:0] init_Write_Data,
 
-    input [4:0] CDB_ROBEN1,
+    input [`ROB_SIZE_bits:0] CDB_ROBEN1,
     input [31:0] CDB_ROBEN1_Write_Data,
     input CDB_Branch_Decision1,
     input CDB_EXCEPTION1,
 
-    input [4:0] CDB_ROBEN2,
+    input [`ROB_SIZE_bits:0] CDB_ROBEN2,
     input [31:0] CDB_ROBEN2_Write_Data,
     input CDB_EXCEPTION2,
 
-    input [4:0] CDB_ROBEN3,
+    input [`ROB_SIZE_bits:0] CDB_ROBEN3,
     input [31:0] CDB_ROBEN3_Write_Data,
     input CDB_Branch_Decision2,
     input CDB_EXCEPTION3,
 
-    input [4:0] CDB_ROBEN4,
+    input [`ROB_SIZE_bits:0] CDB_ROBEN4,
     input [31:0] CDB_ROBEN4_Write_Data,
     input CDB_Branch_Decision3,
     input CDB_EXCEPTION4,
@@ -53,14 +56,16 @@ module ROB
     output reg [2:0] Commit_Control_Signals,
     output reg [31:0] commit_BTA,
 
-    input [4:0] RP1_ROBEN1, RP1_ROBEN2,
+    input [`ROB_SIZE_bits:0] RP1_ROBEN1, RP1_ROBEN2,
+`ifdef edged
+    output reg [31:0] RP1_Write_Data1, RP1_Write_Data2,
+    output reg RP1_Ready1, RP1_Ready2,
+`else
     output [31:0] RP1_Write_Data1, RP1_Write_Data2,
-    // output reg [31:0] RP1_Write_Data1, RP1_Write_Data2,
     output RP1_Ready1, RP1_Ready2,
-    // output reg RP1_Ready1, RP1_Ready2,
-
-    output reg [4:0] Start_Index,
-    output reg [4:0] End_Index
+`endif
+    output reg [`ROB_SIZE_bits:0] Start_Index,
+    output reg [`ROB_SIZE_bits:0] End_Index
 
 //    ,input  [4:0] index_test,
 //    output [11:0] Reg_opcode_test,
@@ -75,10 +80,8 @@ module ROB
 
 `include "opcodes.txt"
 
-`define BUFFER_SIZE_bits (4)
-`define BUFFER_SIZE (1 << `BUFFER_SIZE_bits)
-`define I(i) i[`BUFFER_SIZE_bits - 1:0]
-`define ROB_SIZE (`BUFFER_SIZE)
+`define I(i) i[`ROB_SIZE_bits - 1:0]
+`define ROB_SIZE ((1 << `ROB_SIZE_bits))
 
 `define Imone(i) `I(i) - 1'b1
 `define validbit(i) assign Reg_Valid[i] = ~(Reg_Speculation[i][0] | Reg_Exception[i]) // ~speculative && ~excepted
@@ -111,19 +114,22 @@ endgenerate
 //assign Reg_Speculation_test = Reg_Speculation[`I(index_test)];
 //assign Reg_Exception_test = Reg_Exception[`I(index_test)];
 //assign Reg_Valid_test = Reg_Valid[`I(index_test)];
-//
 
-// always@(posedge clk) begin
-// RP1_Write_Data1 <= Reg_Write_Data[`Imone(RP1_ROBEN1)];
-// RP1_Write_Data2 <= Reg_Write_Data[`Imone(RP1_ROBEN2)];
-// RP1_Ready1 <= Reg_Ready[`Imone(RP1_ROBEN1)];
-// RP1_Ready2 <= Reg_Ready[`Imone(RP1_ROBEN2)];
-// end
 
+`ifdef edged
+always@(posedge clk) begin
+RP1_Write_Data1 <= Reg_Write_Data[`Imone(RP1_ROBEN1)];
+RP1_Write_Data2 <= Reg_Write_Data[`Imone(RP1_ROBEN2)];
+RP1_Ready1 <= Reg_Ready[`Imone(RP1_ROBEN1)];
+RP1_Ready2 <= Reg_Ready[`Imone(RP1_ROBEN2)];
+end
+`else
 assign RP1_Write_Data1 = Reg_Write_Data[`Imone(RP1_ROBEN1)];
 assign RP1_Write_Data2 = Reg_Write_Data[`Imone(RP1_ROBEN2)];
 assign RP1_Ready1 = Reg_Ready[`Imone(RP1_ROBEN1)];
 assign RP1_Ready2 = Reg_Ready[`Imone(RP1_ROBEN2)];
+`endif
+
 
 // assign FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
 always@(posedge clk)
@@ -132,8 +138,8 @@ assign EXCEPTION_Flag = Reg_Busy[`Imone(Start_Index)] & Reg_Exception[`Imone(Sta
 
 
 
-reg [4:0] i = 0;
-reg [4:0] k = 0;
+reg [`ROB_SIZE_bits:0] i = 0;
+reg [`ROB_SIZE_bits:0] k = 0;
 always@(negedge clk) begin
 
     if (rst) begin
@@ -170,6 +176,7 @@ always@(posedge clk, posedge rst) begin
             Reg_Speculation[`Imone(End_Index)][0] <= (Decoded_opcode == beq || Decoded_opcode == bne);
             Reg_Speculation[`Imone(End_Index)][1] <= Decoded_prediction;
             Reg_BTA[`Imone(End_Index)] <= Branch_Target_Addr;
+            Reg_Write_Data[`Imone(End_Index)] <= init_Write_Data;
             Reg_Exception[`Imone(End_Index)] <= 1'b0;
         end
 

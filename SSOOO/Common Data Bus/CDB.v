@@ -14,36 +14,36 @@ description:
 
 module CDB
 (
-    input [4:0] ROBEN1,
+    input [`ROB_SIZE_bits:0] ROBEN1,
     input [31:0] Write_Data1,
     input EXCEPTION1,
 
-    input [4:0] ROBEN2,
+    input [`ROB_SIZE_bits:0] ROBEN2,
     input [31:0] Write_Data2,
     input EXCEPTION2,
 
-    input [4:0] ROBEN3,
+    input [`ROB_SIZE_bits:0] ROBEN3,
     input [31:0] Write_Data3,
     input EXCEPTION3,
 
-    input [4:0] ROBEN4,
+    input [`ROB_SIZE_bits:0] ROBEN4,
     input [31:0] Write_Data4,
     input EXCEPTION4,
 
 
-    output [4:0] out_ROBEN1,
+    output [`ROB_SIZE_bits:0] out_ROBEN1,
     output [31:0] out_Write_Data1,
     output out_EXCEPTION1,
 
-    output [4:0] out_ROBEN2,
+    output [`ROB_SIZE_bits:0] out_ROBEN2,
     output [31:0] out_Write_Data2,
     output out_EXCEPTION2,
 
-    output [4:0] out_ROBEN3,
+    output [`ROB_SIZE_bits:0] out_ROBEN3,
     output [31:0] out_Write_Data3,
     output out_EXCEPTION3,
 
-    output [4:0] out_ROBEN4,
+    output [`ROB_SIZE_bits:0] out_ROBEN4,
     output [31:0] out_Write_Data4,
     output out_EXCEPTION4
 );

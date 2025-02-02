@@ -3,14 +3,14 @@
 module DM
 (
     input clk, 
-    input [4:0] ROBEN,
+    input [`ROB_SIZE_bits:0] ROBEN,
     input Read_en, Write_en,
     input [31:0] LdStB_MEMU_ROBEN1_VAL,
     input [31:0] LdStB_MEMU_Immediate,
     input [31 : 0] address,
     input [31 : 0] data,
     output reg MEMU_invalid_address,
-    output reg [4:0] MEMU_ROBEN,
+    output reg [`ROB_SIZE_bits:0] MEMU_ROBEN,
 `ifdef vscode
     output reg [31:0] MEMU_Result
 `else

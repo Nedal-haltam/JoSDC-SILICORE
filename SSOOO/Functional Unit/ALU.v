@@ -1,7 +1,7 @@
 module ALU
 (
     input clk, rst,
-    input [4:0] ROBEN,
+    input [`ROB_SIZE_bits:0] ROBEN,
     input [11:0] opcode,
     input [31:0] A, B,
     input [3:0] ALUOP,
@@ -9,7 +9,7 @@ module ALU
 
     output reg [31:0] FU_res,
     output reg FU_Branch_Decision,
-    output reg [4:0] FU_ROBEN,
+    output reg [`ROB_SIZE_bits:0] FU_ROBEN,
     output reg [11:0] FU_opcode,
     output FU_Is_Free
 );

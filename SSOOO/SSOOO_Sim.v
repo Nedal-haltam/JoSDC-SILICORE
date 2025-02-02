@@ -12,6 +12,8 @@
 `timescale 1ns/1ps
 `endif
 
+`define ROB_SIZE_bits (4)
+
 `ifdef vscode
 
 `include "./AddressUnit&ld_st buffer/AddressUnit.v"

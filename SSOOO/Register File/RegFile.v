@@ -3,7 +3,7 @@ module RegFile
 (
     input clk, rst,
     input WP1_Wen, Decoded_WP1_Wen,
-    input [4:0] WP1_ROBEN, Decoded_WP1_ROBEN, 
+    input [`ROB_SIZE_bits:0] WP1_ROBEN, Decoded_WP1_ROBEN, 
     input [4:0]                   WP1_DRindex, Decoded_WP1_DRindex, 
     input [31:0]                  WP1_Data,
 
@@ -12,7 +12,7 @@ module RegFile
     input [4:0]   RP1_index1, RP1_index2,
     // output [31:0] RP1_Reg1, RP1_Reg2,
     output reg [31:0] RP1_Reg1, RP1_Reg2,
-    output reg [4:0] RP1_Reg1_ROBEN, RP1_Reg2_ROBEN
+    output reg [`ROB_SIZE_bits:0] RP1_Reg1_ROBEN, RP1_Reg2_ROBEN
 
     // for testing purposes, 
     // it is important to separate the testing signal from any other signal in the module 
@@ -23,7 +23,7 @@ module RegFile
 
 
 reg [31:0] Regs [31:0];
-reg [4:0] Reg_ROBEs [31:0];
+reg [`ROB_SIZE_bits:0] Reg_ROBEs [31:0];
 
 
 // for testing purposes

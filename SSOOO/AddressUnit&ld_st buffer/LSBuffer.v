@@ -12,32 +12,32 @@ module LSBuffer
 (
     input clk, rst,
     input VALID_Inst,
-    input [4:0]  ROBEN,
+    input [`ROB_SIZE_bits:0]  ROBEN,
     input [4:0]  Rd,
     input [11:0] opcode,
-    input [4:0]  ROBEN1, ROBEN2,
+    input [`ROB_SIZE_bits:0]  ROBEN1, ROBEN2,
     input [31:0] ROBEN1_VAL, ROBEN2_VAL,
     input [31:0] Immediate,
     input [31:0] EA,
 
-    input [4:0] ROB_Start_Index,
+    input [`ROB_SIZE_bits:0] ROB_Start_Index,
     input ROB_FLUSH_Flag,
-    input [4:0] CDB_ROBEN1,
+    input [`ROB_SIZE_bits:0] CDB_ROBEN1,
     input [31:0] CDB_ROBEN1_VAL,
-    input [4:0] CDB_ROBEN2,
+    input [`ROB_SIZE_bits:0] CDB_ROBEN2,
     input [31:0] CDB_ROBEN2_VAL,
-    input [4:0] CDB_ROBEN3,
+    input [`ROB_SIZE_bits:0] CDB_ROBEN3,
     input [31:0] CDB_ROBEN3_VAL,
-    input [4:0] CDB_ROBEN4,
+    input [`ROB_SIZE_bits:0] CDB_ROBEN4,
     input [31:0] CDB_ROBEN4_VAL,
 
     output reg FULL_FLAG,
     
     output reg out_VALID_Inst,
-    output reg [4:0]  out_ROBEN,
+    output reg [`ROB_SIZE_bits:0]  out_ROBEN,
     output reg [4:0]  out_Rd,
     output reg [11:0] out_opcode,
-    output reg [4:0]  out_ROBEN1, out_ROBEN2,
+    output reg [`ROB_SIZE_bits:0]  out_ROBEN1, out_ROBEN2,
     output reg [31:0] out_ROBEN1_VAL, out_ROBEN2_VAL,
     output reg [31:0] out_Immediate,
     output reg [31:0] out_EA,
@@ -82,9 +82,9 @@ wire Reg_Ready [(`LDST_SIZE - 1):0];
 reg [11:0] Reg_opcode [(`LDST_SIZE - 1):0];
 reg [4:0] Reg_Rd [(`LDST_SIZE - 1):0];
 reg [31:0] Reg_EA [(`LDST_SIZE - 1):0];
-reg [4:0] Reg_ROBEN [(`LDST_SIZE - 1):0];
-reg [4:0] Reg_ROBEN1 [(`LDST_SIZE - 1):0];
-reg [4:0] Reg_ROBEN2 [(`LDST_SIZE - 1):0];
+reg [`ROB_SIZE_bits:0] Reg_ROBEN [(`LDST_SIZE - 1):0];
+reg [`ROB_SIZE_bits:0] Reg_ROBEN1 [(`LDST_SIZE - 1):0];
+reg [`ROB_SIZE_bits:0] Reg_ROBEN2 [(`LDST_SIZE - 1):0];
 reg [31:0] Reg_ROBEN1_VAL [(`LDST_SIZE - 1):0];
 reg [31:0] Reg_ROBEN2_VAL [(`LDST_SIZE - 1):0];
 reg [31:0] Reg_Immediate [(`LDST_SIZE - 1):0];

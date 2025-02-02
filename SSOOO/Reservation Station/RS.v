@@ -3,17 +3,17 @@ module RS
     input clk, rst,
     input [11:0] opcode,
     input [3:0] ALUOP, 
-    input [4:0] ROBEN, ROBEN1, ROBEN2,
+    input [`ROB_SIZE_bits:0] ROBEN, ROBEN1, ROBEN2,
     input [31:0] ROBEN1_VAL, ROBEN2_VAL,
     input [31:0] Immediate,
 
-    input [4:0] CDB_ROBEN1,
+    input [`ROB_SIZE_bits:0] CDB_ROBEN1,
     input [31:0] CDB_ROBEN1_VAL,
-    input [4:0] CDB_ROBEN2,
+    input [`ROB_SIZE_bits:0] CDB_ROBEN2,
     input [31:0] CDB_ROBEN2_VAL,
-    input [4:0] CDB_ROBEN3,
+    input [`ROB_SIZE_bits:0] CDB_ROBEN3,
     input [31:0] CDB_ROBEN3_VAL,
-    input [4:0] CDB_ROBEN4,
+    input [`ROB_SIZE_bits:0] CDB_ROBEN4,
     input [31:0] CDB_ROBEN4_VAL,
 
     input VALID_Inst,
@@ -21,19 +21,22 @@ module RS
     input ROB_FLUSH_Flag,
     output FULL_FLAG,
 
-    output reg [4:0] RS_FU_RS_ID1, RS_FU_ROBEN1,
+    output reg [4:0] RS_FU_RS_ID1, 
+    output reg [`ROB_SIZE_bits:0] RS_FU_ROBEN1,
     output reg [11:0] RS_FU_opcode1,
     output reg [3:0] RS_FU_ALUOP1,
     output reg [31:0] RS_FU_Val11, RS_FU_Val21,
     output reg [31:0] RS_FU_Immediate1,
 
-    output reg [4:0] RS_FU_RS_ID2, RS_FU_ROBEN2,
+    output reg [4:0] RS_FU_RS_ID2, 
+    output reg [`ROB_SIZE_bits:0] RS_FU_ROBEN2,
     output reg [11:0] RS_FU_opcode2,
     output reg [3:0] RS_FU_ALUOP2,
     output reg [31:0] RS_FU_Val12, RS_FU_Val22,
     output reg [31:0] RS_FU_Immediate2,
 
-    output reg [4:0] RS_FU_RS_ID3, RS_FU_ROBEN3,
+    output reg [4:0] RS_FU_RS_ID3, 
+    output reg [`ROB_SIZE_bits:0] RS_FU_ROBEN3,
     output reg [11:0] RS_FU_opcode3,
     output reg [3:0] RS_FU_ALUOP3,
     output reg [31:0] RS_FU_Val13, RS_FU_Val23,
@@ -60,9 +63,9 @@ module RS
 // RS buffers to store an instruction
 reg [11:0] Reg_opcode [(`RS_SIZE - 1):0];
 reg [3:0] Reg_ALUOP [(`RS_SIZE - 1):0];
-reg [4:0] Reg_ROBEN [(`RS_SIZE - 1):0];
-reg [4:0] Reg_ROBEN1 [(`RS_SIZE - 1):0];
-reg [4:0] Reg_ROBEN2 [(`RS_SIZE - 1):0];
+reg [`ROB_SIZE_bits:0] Reg_ROBEN [(`RS_SIZE - 1):0];
+reg [`ROB_SIZE_bits:0] Reg_ROBEN1 [(`RS_SIZE - 1):0];
+reg [`ROB_SIZE_bits:0] Reg_ROBEN2 [(`RS_SIZE - 1):0];
 reg [31:0] Reg_ROBEN1_VAL [(`RS_SIZE - 1):0];
 reg [31:0] Reg_ROBEN2_VAL [(`RS_SIZE - 1):0];
 reg [31:0] Reg_Immediate [(`RS_SIZE - 1):0];

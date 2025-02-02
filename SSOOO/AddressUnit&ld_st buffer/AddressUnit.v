@@ -20,20 +20,20 @@ outputs:
 */
 module AddressUnit
 (
-    input [4:0]  Decoded_ROBEN,
+    input [`ROB_SIZE_bits:0]  Decoded_ROBEN,
     input [4:0] Decoded_Rd,
     input [11:0] Decoded_opcode,
-    input [4:0]  ROBEN1, ROBEN2,
+    input [`ROB_SIZE_bits:0]  ROBEN1, ROBEN2,
     input [31:0] ROBEN1_VAL, ROBEN2_VAL,
     input [31:0] Immediate,
     input InstQ_VALID_Inst,
 
 
     output AU_LdStB_VALID_Inst,
-    output [4:0]  AU_LdStB_ROBEN,
+    output [`ROB_SIZE_bits:0]  AU_LdStB_ROBEN,
     output [4:0]  AU_LdStB_Rd,
     output [11:0] AU_LdStB_opcode,
-    output [4:0]  AU_LdStB_ROBEN1, AU_LdStB_ROBEN2,
+    output [`ROB_SIZE_bits:0]  AU_LdStB_ROBEN1, AU_LdStB_ROBEN2,
     output [31:0] AU_LdStB_ROBEN1_VAL, AU_LdStB_ROBEN2_VAL,
     output [31:0] AU_LdStB_Immediate
 );
