@@ -6,13 +6,14 @@
 
 SWFILE=""
 HWFILE=""
-
+INDEX=1
+TOTAL=13
 comapre_two_files()
 {
     if diff $1 $2 > /dev/null; then
-        printf "[INFO]: Files are identical.\n"
+        printf "[INFO $INDEX/$TOTAL ]: Files are identical.\n"
     else
-        printf "[INFO]: Files are different. Detailed differences:\n"
+        printf "[INFO $INDEX/$TOTAL ]: Files are different. Detailed differences:\n"
         diff -a --color=always $1 $2
     fi
 }
@@ -37,7 +38,7 @@ Run_BenchMark_SW()
     ASSEMBLER_ARGS="gen $ASSEMBLER_IN $ASSEMBLER_OUT_TO_CAS_IM $ASSEMBLER_OUT_TO_CAS_DM $ASSEMBLER_OUT_IM_INIT $ASSEMBLER_OUT_DM_INIT $ASSEMBLER_OUT_IM_MIF $ASSEMBLER_OUT_DM_MIF"
 
     # run the the assembler
-    printf "[INFO]: Assembling "$ProgName"...\n"
+    printf "[INFO $INDEX/$TOTAL ]: Assembling "$ProgName"...\n"
     $ASSEMBLER $ASSEMBLER_ARGS
 
     if [ $? -ne 0 ]; then
@@ -46,7 +47,7 @@ Run_BenchMark_SW()
         exit 1
     fi
 
-    printf "[INFO]: "$ProgName" Assembled Successfully\n"
+    printf "[INFO $INDEX/$TOTAL ]: "$ProgName" Assembled Successfully\n"
 
     # define the I/O
     CAS_IN_IM=$ASSEMBLER_OUT_TO_CAS_IM
@@ -58,7 +59,7 @@ Run_BenchMark_SW()
     
     CAS_ARGS="sim singlecycle $CAS_IN_IM $CAS_IN_DM $CAS_SC_OUT"
     # run the CAS on the single cycle
-    printf "[INFO]: Simulating "$ProgName" on the Single Cycle\n"
+    printf "[INFO $INDEX/$TOTAL ]: Simulating "$ProgName" on the Single Cycle\n"
     $CAS $CAS_ARGS
 
     if [ $? -ne 0 ]; then
@@ -67,11 +68,11 @@ Run_BenchMark_SW()
         exit 1
     fi
 
-    printf "[INFO]: "$ProgName" simulated successfully on the Single Cycle\n"
+    printf "[INFO $INDEX/$TOTAL ]: "$ProgName" simulated successfully on the Single Cycle\n"
 
     CAS_ARGS="sim pipeline $CAS_IN_IM $CAS_IN_DM $CAS_PL_OUT"
     # run the CAS on the PipeLine
-    printf "[INFO]: Simulating "$ProgName" on the PipeLine\n"
+    printf "[INFO $INDEX/$TOTAL ]: Simulating "$ProgName" on the PipeLine\n"
     $CAS $CAS_ARGS
 
     if [ $? -ne 0 ]; then
@@ -80,7 +81,7 @@ Run_BenchMark_SW()
         exit 1
     fi
 
-    printf "[INFO]: "$ProgName" simulated successfully on the PipeLine\n"
+    printf "[INFO $INDEX/$TOTAL ]: "$ProgName" simulated successfully on the PipeLine\n"
 
 
     
@@ -97,7 +98,7 @@ Run_BenchMark_SW()
     sed -i '$d' "$CAS_SC_OUT"
     sed -i '$d' "$CAS_PL_OUT"
 
-    printf "[INFO]: Comparing Software Outputs\n"
+    printf "[INFO $INDEX/$TOTAL ]: Comparing Software Outputs\n"
     comapre_two_files "$CAS_SC_OUT" "$CAS_PL_OUT"
 
     SWFILE="$CAS_SC_OUT"
@@ -107,7 +108,7 @@ RunBenchMark_HW()
 {
     ProgName=$1
     ProgFolder="./$ProgName/"
-    printf "[INFO]: simulating on single cycle hardware\n"
+    printf "[INFO $INDEX/$TOTAL ]: simulating on single cycle hardware\n"
     BASE_PATH="../singlecycle/SiliCore_Qualifying_code/"
     VERILOG_EXT_SC="VERILOG_SC.vvp"
     VERILOG_EXT_SC_OUT="VERILOG_SC_OUT.txt"
@@ -116,7 +117,7 @@ RunBenchMark_HW()
     iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SC -D vscode -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" $BASE_PATH"SingleCycle_sim.v"
     vvp $VERILOG_SC > $VERILOG_SC_OUT
 
-    printf "[INFO]: simulating on pipeline hardware\n"
+    printf "[INFO $INDEX/$TOTAL ]: simulating on pipeline hardware\n"
     BASE_PATH="../PipeLine/PipeLine/"
     VERILOG_EXT_PL="VERILOG_PL.vvp"
     VERILOG_EXT_PL_OUT="VERILOG_PL_OUT.txt"
@@ -126,7 +127,7 @@ RunBenchMark_HW()
     vvp $VERILOG_PL > $VERILOG_PL_OUT
 
 
-    printf "[INFO]: simulating on SSOOO hardware\n"
+    printf "[INFO $INDEX/$TOTAL ]: simulating on SSOOO hardware\n"
     BASE_PATH="../SSOOO/"
     VERILOG_EXT_SSOOO="VERILOG_SSOOO.vvp"
     VERILOG_EXT_SSOOO_OUT="VERILOG_SSOOO_OUT.txt"
@@ -163,7 +164,7 @@ RunBenchMark_HW()
     sed -i '$d' "$VERILOG_PL_OUT"
     sed -i '$d' "$VERILOG_SSOOO_OUT"
 
-    printf "[INFO]: Comparing HardWare Outputs\n"
+    printf "[INFO $INDEX/$TOTAL ]: Comparing HardWare Outputs\n"
 
     comapre_two_files "$VERILOG_SC_OUT" "$VERILOG_PL_OUT"
     comapre_two_files "$VERILOG_SC_OUT" "$VERILOG_SSOOO_OUT"
@@ -175,8 +176,10 @@ Run_BenchMark()
 {
     Run_BenchMark_SW $1
     RunBenchMark_HW $1
-    # printf "[INFO]: comparing Software output with hardware output\n"
+    # printf "[INFO $INDEX/$TOTAL ]: comparing Software output with hardware output\n"
     # comapre_two_files $SWFILE $HWFILE
+    INDEX=$(($INDEX + 1))
+    echo ""
 }
 
 
