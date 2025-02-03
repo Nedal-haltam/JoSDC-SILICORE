@@ -7,7 +7,7 @@
 SWFILE=""
 HWFILE=""
 INDEX=1
-TOTAL=13
+TOTAL=15
 comapre_two_files()
 {
     if diff $1 $2 > /dev/null; then
