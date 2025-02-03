@@ -206,7 +206,7 @@ Run_BenchMark "SelectionSort"
 Run_BenchMark "SparseMatrixCount"
 Run_BenchMark "Swapping"
 Run_BenchMark "MultiplicationUsingAddition"
-# Run_BenchMark "ScalarMultiplicationUsingAddition"
+Run_BenchMark "ScalarMultiplicationUsingAddition"
 
 
 

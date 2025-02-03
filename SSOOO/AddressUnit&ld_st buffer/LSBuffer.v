@@ -158,6 +158,9 @@ always@(negedge clk) begin
             Reg_Busy[Start_Index] <= 0;
             Start_Index <= Start_Index + 1'b1;
         end
+        else begin
+            out_VALID_Inst <= 1'b0;
+        end
 
 
 

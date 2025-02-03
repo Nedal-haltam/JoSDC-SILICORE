@@ -392,7 +392,7 @@ RS rs
     ), 
     .ROBEN2
     (
-        (InstQ_opcode[11:6] != 6'd0 && InstQ_opcode != beq && InstQ_opcode != bne || ROB_RP1_Ready2 || ~(|RegFile_RP1_Reg2_ROBEN)) ? 
+        ((InstQ_opcode[11:6] != 6'd0 && InstQ_opcode != beq && InstQ_opcode != bne) || ROB_RP1_Ready2 || ~(|RegFile_RP1_Reg2_ROBEN)) ? 
             {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg2_ROBEN
     ), 
     .ROBEN1_VAL
