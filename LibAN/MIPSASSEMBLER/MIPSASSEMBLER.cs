@@ -373,7 +373,8 @@ namespace MIPSASSEMBLER
                     new Instruction([new Token(branch), new Token("$at"), new Token("$0"), new Token($"{inst.m_tokens[2].m_value}") ]),
                 ];
             }
-            Assert($"Invalid Pseudo Instruction : {inst.m_tokens[0].m_value}");
+            lblINVINST = true;
+            //Assert($"Invalid Pseudo Instruction : {inst.m_tokens[0].m_value}");
             return [];
         }
         void SubstitutePseudoInProg(ref Program program)
