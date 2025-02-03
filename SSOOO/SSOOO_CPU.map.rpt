@@ -1,5 +1,5 @@
 Analysis & Synthesis report for SSOOO_CPU
-Sun Feb  2 17:42:50 2025
+Mon Feb  3 13:53:54 2025
 Quartus Prime Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
 
 
@@ -74,13 +74,13 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                        ;
 +------------------------------------+------------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Sun Feb  2 17:42:50 2025          ;
+; Analysis & Synthesis Status        ; Successful - Mon Feb  3 13:53:54 2025          ;
 ; Quartus Prime Version              ; 23.1std.1 Build 993 05/14/2024 SC Lite Edition ;
 ; Revision Name                      ; SSOOO_CPU                                      ;
 ; Top-level Entity Name              ; SSOOO_CPU                                      ;
 ; Family                             ; Cyclone IV E                                   ;
-; Total logic elements               ; 15,113                                         ;
-;     Total combinational functions  ; 13,376                                         ;
+; Total logic elements               ; 15,079                                         ;
+;     Total combinational functions  ; 13,341                                         ;
 ;     Dedicated logic registers      ; 4,574                                          ;
 ; Total registers                    ; 4574                                           ;
 ; Total pins                         ; 34                                             ;
@@ -240,16 +240,16 @@ https://fpgasoftware.intel.com/eula.
 +---------------------------------------------+-----------+
 ; Resource                                    ; Usage     ;
 +---------------------------------------------+-----------+
-; Estimated Total logic elements              ; 15,113    ;
+; Estimated Total logic elements              ; 15,079    ;
 ;                                             ;           ;
-; Total combinational functions               ; 13376     ;
+; Total combinational functions               ; 13341     ;
 ; Logic element usage by number of LUT inputs ;           ;
-;     -- 4 input functions                    ; 9712      ;
-;     -- 3 input functions                    ; 3051      ;
-;     -- <=2 input functions                  ; 613       ;
+;     -- 4 input functions                    ; 9718      ;
+;     -- 3 input functions                    ; 2923      ;
+;     -- <=2 input functions                  ; 700       ;
 ;                                             ;           ;
 ; Logic elements by mode                      ;           ;
-;     -- normal mode                          ; 12828     ;
+;     -- normal mode                          ; 12793     ;
 ;     -- arithmetic mode                      ; 548       ;
 ;                                             ;           ;
 ; Total registers                             ; 4574      ;
@@ -263,8 +263,8 @@ https://fpgasoftware.intel.com/eula.
 ;                                             ;           ;
 ; Maximum fan-out node                        ; hlt_logic ;
 ; Maximum fan-out                             ; 4638      ;
-; Total fan-out                               ; 65730     ;
-; Average fan-out                             ; 3.64      ;
+; Total fan-out                               ; 65543     ;
+; Average fan-out                             ; 3.63      ;
 +---------------------------------------------+-----------+
 
 
@@ -273,25 +273,25 @@ https://fpgasoftware.intel.com/eula.
 +----------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+------------------------------------------------------------------------------------------------------------------+-----------------+--------------+
 ; Compilation Hierarchy Node                   ; Combinational ALUTs ; Dedicated Logic Registers ; Memory Bits ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                                              ; Entity Name     ; Library Name ;
 +----------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+------------------------------------------------------------------------------------------------------------------+-----------------+--------------+
-; |SSOOO_CPU                                   ; 13376 (1225)        ; 4574 (34)                 ; 33280       ; 0            ; 0       ; 0         ; 34   ; 0            ; |SSOOO_CPU                                                                                                       ; SSOOO_CPU       ; work         ;
-;    |ALU:alu1|                                ; 687 (687)           ; 38 (38)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|ALU:alu1                                                                                              ; ALU             ; work         ;
-;    |ALU:alu2|                                ; 691 (691)           ; 38 (38)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|ALU:alu2                                                                                              ; ALU             ; work         ;
-;    |ALU:alu3|                                ; 692 (692)           ; 38 (38)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|ALU:alu3                                                                                              ; ALU             ; work         ;
-;    |ALU_OPER:alu_op|                         ; 19 (19)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|ALU_OPER:alu_op                                                                                       ; ALU_OPER        ; work         ;
-;    |AddressUnit:AU|                          ; 2 (2)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|AddressUnit:AU                                                                                        ; AddressUnit     ; work         ;
-;    |BranchPredictor:BPU|                     ; 10 (10)             ; 3 (3)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|BranchPredictor:BPU                                                                                   ; BranchPredictor ; work         ;
+; |SSOOO_CPU                                   ; 13341 (1218)        ; 4574 (34)                 ; 33280       ; 0            ; 0       ; 0         ; 34   ; 0            ; |SSOOO_CPU                                                                                                       ; SSOOO_CPU       ; work         ;
+;    |ALU:alu1|                                ; 664 (664)           ; 38 (38)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|ALU:alu1                                                                                              ; ALU             ; work         ;
+;    |ALU:alu2|                                ; 664 (664)           ; 38 (38)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|ALU:alu2                                                                                              ; ALU             ; work         ;
+;    |ALU:alu3|                                ; 689 (689)           ; 38 (38)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|ALU:alu3                                                                                              ; ALU             ; work         ;
+;    |ALU_OPER:alu_op|                         ; 23 (23)             ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|ALU_OPER:alu_op                                                                                       ; ALU_OPER        ; work         ;
+;    |AddressUnit:AU|                          ; 1 (1)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|AddressUnit:AU                                                                                        ; AddressUnit     ; work         ;
+;    |BranchPredictor:BPU|                     ; 9 (9)               ; 3 (3)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|BranchPredictor:BPU                                                                                   ; BranchPredictor ; work         ;
 ;    |DM:datamemory|                           ; 39 (39)             ; 6 (6)                     ; 32768       ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|DM:datamemory                                                                                         ; DM              ; work         ;
 ;       |DataMemory_IP:DataMemory|             ; 0 (0)               ; 0 (0)                     ; 32768       ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|DM:datamemory|DataMemory_IP:DataMemory                                                                ; DataMemory_IP   ; work         ;
 ;          |altsyncram:altsyncram_component|   ; 0 (0)               ; 0 (0)                     ; 32768       ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|DM:datamemory|DataMemory_IP:DataMemory|altsyncram:altsyncram_component                                ; altsyncram      ; work         ;
 ;             |altsyncram_1vj1:auto_generated| ; 0 (0)               ; 0 (0)                     ; 32768       ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|DM:datamemory|DataMemory_IP:DataMemory|altsyncram:altsyncram_component|altsyncram_1vj1:auto_generated ; altsyncram_1vj1 ; work         ;
 ;    |InstQ:instq|                             ; 140 (140)           ; 66 (66)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|InstQ:instq                                                                                           ; InstQ           ; work         ;
 ;    |LSBuffer:lsbuffer|                       ; 2620 (2620)         ; 1023 (1023)               ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|LSBuffer:lsbuffer                                                                                     ; LSBuffer        ; work         ;
-;    |PC_register:pcreg|                       ; 3 (3)               ; 32 (32)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|PC_register:pcreg                                                                                     ; PC_register     ; work         ;
-;    |ROB:rob|                                 ; 2710 (2710)         ; 910 (910)                 ; 512         ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|ROB:rob                                                                                               ; ROB             ; work         ;
+;    |PC_register:pcreg|                       ; 2 (2)               ; 32 (32)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|PC_register:pcreg                                                                                     ; PC_register     ; work         ;
+;    |ROB:rob|                                 ; 2712 (2712)         ; 910 (910)                 ; 512         ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|ROB:rob                                                                                               ; ROB             ; work         ;
 ;       |altsyncram:Reg_BTA_rtl_0|             ; 0 (0)               ; 0 (0)                     ; 512         ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|ROB:rob|altsyncram:Reg_BTA_rtl_0                                                                      ; altsyncram      ; work         ;
 ;          |altsyncram_6pd1:auto_generated|    ; 0 (0)               ; 0 (0)                     ; 512         ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|ROB:rob|altsyncram:Reg_BTA_rtl_0|altsyncram_6pd1:auto_generated                                       ; altsyncram_6pd1 ; work         ;
-;    |RS:rs|                                   ; 2490 (2490)         ; 1160 (1160)               ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|RS:rs                                                                                                 ; RS              ; work         ;
-;    |RegFile:regfile|                         ; 2048 (2048)         ; 1226 (1226)               ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|RegFile:regfile                                                                                       ; RegFile         ; work         ;
+;    |RS:rs|                                   ; 2496 (2496)         ; 1160 (1160)               ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|RS:rs                                                                                                 ; RS              ; work         ;
+;    |RegFile:regfile|                         ; 2064 (2064)         ; 1226 (1226)               ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |SSOOO_CPU|RegFile:regfile                                                                                       ; RegFile         ; work         ;
 +----------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+------------------------------------------------------------------------------------------------------------------+-----------------+--------------+
 Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
 
@@ -723,27 +723,27 @@ Note: All latches listed above may not be present at the end of synthesis due to
 ; RS:rs|Reg_Immediate[7][30]              ; Merged with RS:rs|Reg_Immediate[7][16]             ;
 ; RS:rs|Reg_Immediate[7][31]              ; Merged with RS:rs|Reg_Immediate[7][16]             ;
 ; RegFile:regfile|Regs[0][31]             ; Stuck at GND due to stuck port clock_enable        ;
-; RegFile:regfile|Regs[0][30]             ; Stuck at GND due to stuck port clock_enable        ;
-; RegFile:regfile|Regs[0][28]             ; Stuck at GND due to stuck port clock_enable        ;
-; RegFile:regfile|Regs[0][27]             ; Stuck at GND due to stuck port clock_enable        ;
-; RegFile:regfile|Regs[0][29]             ; Stuck at GND due to stuck port clock_enable        ;
-; RegFile:regfile|Regs[0][26]             ; Stuck at GND due to stuck port clock_enable        ;
-; RegFile:regfile|Regs[0][16]             ; Stuck at GND due to stuck port clock_enable        ;
-; RegFile:regfile|Regs[0][25]             ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][10]             ; Stuck at GND due to stuck port clock_enable        ;
+; RegFile:regfile|Regs[0][11]             ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][12]             ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][13]             ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][14]             ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][15]             ; Stuck at GND due to stuck port clock_enable        ;
-; RegFile:regfile|Regs[0][24]             ; Stuck at GND due to stuck port clock_enable        ;
+; RegFile:regfile|Regs[0][16]             ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][17]             ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][18]             ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][19]             ; Stuck at GND due to stuck port clock_enable        ;
-; RegFile:regfile|Regs[0][11]             ; Stuck at GND due to stuck port clock_enable        ;
-; RegFile:regfile|Regs[0][21]             ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][20]             ; Stuck at GND due to stuck port clock_enable        ;
+; RegFile:regfile|Regs[0][21]             ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][22]             ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][23]             ; Stuck at GND due to stuck port clock_enable        ;
+; RegFile:regfile|Regs[0][24]             ; Stuck at GND due to stuck port clock_enable        ;
+; RegFile:regfile|Regs[0][25]             ; Stuck at GND due to stuck port clock_enable        ;
+; RegFile:regfile|Regs[0][26]             ; Stuck at GND due to stuck port clock_enable        ;
+; RegFile:regfile|Regs[0][27]             ; Stuck at GND due to stuck port clock_enable        ;
+; RegFile:regfile|Regs[0][28]             ; Stuck at GND due to stuck port clock_enable        ;
+; RegFile:regfile|Regs[0][29]             ; Stuck at GND due to stuck port clock_enable        ;
+; RegFile:regfile|Regs[0][30]             ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][0]              ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][1]              ; Stuck at GND due to stuck port clock_enable        ;
 ; RegFile:regfile|Regs[0][2]              ; Stuck at GND due to stuck port clock_enable        ;
@@ -887,13 +887,13 @@ Note: All latches listed above may not be present at the end of synthesis due to
 ; PC_register:pcreg|DataOut[2]            ; 38      ;
 ; PC_register:pcreg|DataOut[3]            ; 46      ;
 ; PC_register:pcreg|DataOut[4]            ; 36      ;
-; PC_register:pcreg|DataOut[9]            ; 18      ;
+; PC_register:pcreg|DataOut[9]            ; 19      ;
 ; PC_register:pcreg|DataOut[7]            ; 5       ;
 ; PC_register:pcreg|DataOut[6]            ; 5       ;
 ; PC_register:pcreg|DataOut[5]            ; 5       ;
-; PC_register:pcreg|DataOut[8]            ; 22      ;
+; PC_register:pcreg|DataOut[8]            ; 23      ;
 ; PC_register:pcreg|DataOut[31]           ; 5       ;
-; PC_register:pcreg|DataOut[30]           ; 5       ;
+; PC_register:pcreg|DataOut[30]           ; 6       ;
 ; PC_register:pcreg|DataOut[29]           ; 5       ;
 ; PC_register:pcreg|DataOut[28]           ; 5       ;
 ; PC_register:pcreg|DataOut[27]           ; 5       ;
@@ -932,74 +932,74 @@ Note: All latches listed above may not be present at the end of synthesis due to
 +--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------------------------------+
 ; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                         ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------------------------------+
-; 3:1                ; 12 bits   ; 24 LEs        ; 12 LEs               ; 12 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Commit_opcode[10]               ;
-; 3:1                ; 8 bits    ; 16 LEs        ; 8 LEs                ; 8 LEs                  ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Start_Index[2]        ;
+; 3:1                ; 12 bits   ; 24 LEs        ; 12 LEs               ; 12 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Commit_opcode[11]               ;
+; 3:1                ; 8 bits    ; 16 LEs        ; 8 LEs                ; 8 LEs                  ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|out_ROBEN[1]          ;
 ; 3:1                ; 3 bits    ; 6 LEs         ; 3 LEs                ; 3 LEs                  ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|End_Index[0]          ;
 ; 3:1                ; 2 bits    ; 4 LEs         ; 0 LEs                ; 4 LEs                  ; Yes        ; |SSOOO_CPU|BranchPredictor:BPU|state[2]            ;
 ; 4:1                ; 6 bits    ; 12 LEs        ; 6 LEs                ; 6 LEs                  ; Yes        ; |SSOOO_CPU|ROB:rob|Commit_Rd[3]                    ;
-; 4:1                ; 4 bits    ; 8 LEs         ; 4 LEs                ; 4 LEs                  ; Yes        ; |SSOOO_CPU|ROB:rob|Start_Index[3]                  ;
-; 8:1                ; 90 bits   ; 450 LEs       ; 450 LEs              ; 0 LEs                  ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|out_Immediate[12]     ;
-; 5:1                ; 5 bits    ; 15 LEs        ; 5 LEs                ; 10 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|End_Index[0]                    ;
-; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[7][7]          ;
-; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[6][1]          ;
-; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[5][7]          ;
-; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[4][9]          ;
-; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[3][0]          ;
+; 4:1                ; 4 bits    ; 8 LEs         ; 4 LEs                ; 4 LEs                  ; Yes        ; |SSOOO_CPU|ROB:rob|Start_Index[1]                  ;
+; 8:1                ; 90 bits   ; 450 LEs       ; 450 LEs              ; 0 LEs                  ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|out_ROBEN2_VAL[23]    ;
+; 5:1                ; 5 bits    ; 15 LEs        ; 5 LEs                ; 10 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|End_Index[2]                    ;
+; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[7][5]          ;
+; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[6][0]          ;
+; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[5][3]          ;
+; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[4][7]          ;
+; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[3][2]          ;
 ; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[2][4]          ;
-; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[1][4]          ;
-; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[0][1]          ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[14][3]           ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[15][27]          ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[12][29]          ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[13][10]          ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[10][19]          ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[11][1]           ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[8][18]           ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[9][27]           ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[6][19]           ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[7][7]            ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[4][20]           ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[5][18]           ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[2][23]           ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[3][5]            ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[0][18]           ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[1][28]           ;
-; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[7][1]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[7][10] ;
+; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[1][5]          ;
+; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_EA[0][5]          ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[14][8]           ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[15][15]          ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[12][6]           ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[13][23]          ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[10][24]          ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[11][2]           ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[8][28]           ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[9][29]           ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[6][1]            ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[7][24]           ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[4][23]           ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[5][25]           ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[2][25]           ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[3][14]           ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[0][21]           ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Reg_Write_Data[1][14]           ;
+; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[7][4]      ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[7][3]  ;
 ; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1[7][0]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[7][31] ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[7][17] ;
 ; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[6][0]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[6][16] ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[6][13] ;
 ; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1[6][2]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[6][26] ;
-; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[5][3]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[5][22] ;
-; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1[5][2]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[5][10] ;
-; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[4][4]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[4][14] ;
-; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1[4][2]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[4][6]  ;
-; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[3][2]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[3][16] ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[6][1]  ;
+; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[5][0]      ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[5][31] ;
+; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1[5][4]      ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[5][29] ;
+; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[4][1]      ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[4][18] ;
+; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1[4][3]      ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[4][12] ;
+; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[3][1]      ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[3][17] ;
 ; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1[3][0]      ;
 ; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[3][6]  ;
 ; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[2][1]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[2][10] ;
-; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1[2][0]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[2][14] ;
-; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[1][3]      ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[2][20] ;
+; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1[2][4]      ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[2][12] ;
+; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[1][1]      ;
 ; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[1][26] ;
 ; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1[1][0]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[1][14] ;
-; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[0][0]      ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[0][11] ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[1][8]  ;
+; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2[0][4]      ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN2_VAL[0][18] ;
 ; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1[0][1]      ;
 ; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|LSBuffer:lsbuffer|Reg_ROBEN1_VAL[0][19] ;
 ; 33:1               ; 32 bits   ; 704 LEs       ; 704 LEs              ; 0 LEs                  ; Yes        ; |SSOOO_CPU|RegFile:regfile|RP1_Reg1[27]            ;
 ; 33:1               ; 5 bits    ; 110 LEs       ; 110 LEs              ; 0 LEs                  ; Yes        ; |SSOOO_CPU|RegFile:regfile|RP1_Reg1_ROBEN[1]       ;
-; 33:1               ; 32 bits   ; 704 LEs       ; 704 LEs              ; 0 LEs                  ; Yes        ; |SSOOO_CPU|RegFile:regfile|RP1_Reg2[18]            ;
-; 33:1               ; 5 bits    ; 110 LEs       ; 110 LEs              ; 0 LEs                  ; Yes        ; |SSOOO_CPU|RegFile:regfile|RP1_Reg2_ROBEN[3]       ;
+; 33:1               ; 32 bits   ; 704 LEs       ; 704 LEs              ; 0 LEs                  ; Yes        ; |SSOOO_CPU|RegFile:regfile|RP1_Reg2[23]            ;
+; 33:1               ; 5 bits    ; 110 LEs       ; 110 LEs              ; 0 LEs                  ; Yes        ; |SSOOO_CPU|RegFile:regfile|RP1_Reg2_ROBEN[0]       ;
 ; 7:1                ; 102 bits  ; 408 LEs       ; 408 LEs              ; 0 LEs                  ; Yes        ; |SSOOO_CPU|RS:rs|RS_FU_Val11[15]                   ;
 ; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RS:rs|Reg_ROBEN1[0][4]                  ;
 ; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|RS:rs|Reg_ROBEN1_VAL[0][5]              ;
@@ -1032,45 +1032,44 @@ Note: All latches listed above may not be present at the end of synthesis due to
 ; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RS:rs|Reg_ROBEN1[7][4]                  ;
 ; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|RS:rs|Reg_ROBEN1_VAL[7][29]             ;
 ; 6:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RS:rs|Reg_ROBEN2[7][0]                  ;
-; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|RS:rs|Reg_ROBEN2_VAL[7][17]             ;
-; 19:1               ; 32 bits   ; 384 LEs       ; 352 LEs              ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Commit_Write_Data[2]            ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[31][2]        ;
+; 6:1                ; 32 bits   ; 128 LEs       ; 96 LEs               ; 32 LEs                 ; Yes        ; |SSOOO_CPU|RS:rs|Reg_ROBEN2_VAL[7][12]             ;
+; 19:1               ; 32 bits   ; 384 LEs       ; 352 LEs              ; 32 LEs                 ; Yes        ; |SSOOO_CPU|ROB:rob|Commit_Write_Data[10]           ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[31][3]        ;
 ; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[30][3]        ;
 ; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[29][2]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[28][0]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[27][0]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[26][2]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[25][0]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[28][3]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[27][4]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[26][4]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[25][1]        ;
 ; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[24][0]        ;
 ; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[23][1]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[22][2]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[21][1]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[20][2]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[19][3]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[18][1]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[17][3]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[16][2]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[15][4]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[14][4]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[13][3]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[22][3]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[21][3]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[20][3]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[19][0]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[18][3]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[17][1]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[16][4]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[15][2]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[14][3]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[13][1]        ;
 ; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[12][1]        ;
 ; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[11][3]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[10][3]        ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[9][3]         ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[8][4]         ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[7][4]         ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[6][0]         ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[10][2]        ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[9][2]         ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[8][2]         ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[7][2]         ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[6][2]         ;
 ; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[5][1]         ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[4][1]         ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[4][2]         ;
 ; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[3][1]         ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[2][4]         ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[1][4]         ;
-; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[0][4]         ;
-; 8:1                ; 10 bits   ; 50 LEs        ; 40 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|PC_register:pcreg|DataOut[3]            ;
-; 3:1                ; 5 bits    ; 10 LEs        ; 5 LEs                ; 5 LEs                  ; No         ; |SSOOO_CPU|comb                                    ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[2][1]         ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[1][1]         ;
+; 7:1                ; 5 bits    ; 20 LEs        ; 5 LEs                ; 15 LEs                 ; Yes        ; |SSOOO_CPU|RegFile:regfile|Reg_ROBEs[0][2]         ;
+; 8:1                ; 10 bits   ; 50 LEs        ; 40 LEs               ; 10 LEs                 ; Yes        ; |SSOOO_CPU|PC_register:pcreg|DataOut[1]            ;
 ; 3:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|comb                                    ;
-; 3:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|comb                                    ;
-; 8:1                ; 2 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|LSBuffer:lsbuffer|Mux1                  ;
+; 8:1                ; 2 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|LSBuffer:lsbuffer|Mux0                  ;
+; 4:1                ; 5 bits    ; 10 LEs        ; 5 LEs                ; 5 LEs                  ; No         ; |SSOOO_CPU|comb                                    ;
 ; 4:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|LSBuffer:lsbuffer|Add31                 ;
 ; 4:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|LSBuffer:lsbuffer|Add27                 ;
 ; 4:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|LSBuffer:lsbuffer|Add23                 ;
@@ -1079,35 +1078,35 @@ Note: All latches listed above may not be present at the end of synthesis due to
 ; 4:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|LSBuffer:lsbuffer|Add11                 ;
 ; 4:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|LSBuffer:lsbuffer|Add7                  ;
 ; 4:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|LSBuffer:lsbuffer|Add3                  ;
-; 16:1               ; 17 bits   ; 170 LEs       ; 170 LEs              ; 0 LEs                  ; No         ; |SSOOO_CPU|ROB:rob|Mux66                           ;
-; 16:1               ; 3 bits    ; 30 LEs        ; 30 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|ROB:rob|Mux69                           ;
-; 16:1               ; 3 bits    ; 30 LEs        ; 30 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|ROB:rob|Mux73                           ;
+; 16:1               ; 17 bits   ; 170 LEs       ; 170 LEs              ; 0 LEs                  ; No         ; |SSOOO_CPU|ROB:rob|Mux83                           ;
+; 16:1               ; 3 bits    ; 30 LEs        ; 30 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|ROB:rob|Mux68                           ;
+; 16:1               ; 3 bits    ; 30 LEs        ; 30 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|ROB:rob|Mux72                           ;
 ; 16:1               ; 3 bits    ; 30 LEs        ; 30 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|ROB:rob|Mux75                           ;
 ; 17:1               ; 32 bits   ; 352 LEs       ; 352 LEs              ; 0 LEs                  ; No         ; |SSOOO_CPU|comb                                    ;
 ; 17:1               ; 32 bits   ; 352 LEs       ; 352 LEs              ; 0 LEs                  ; No         ; |SSOOO_CPU|comb                                    ;
 ; 32:1               ; 5 bits    ; 105 LEs       ; 105 LEs              ; 0 LEs                  ; No         ; |SSOOO_CPU|RegFile:regfile|Mux71                   ;
-; 7:1                ; 6 bits    ; 24 LEs        ; 24 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|PC[31]                                  ;
-; 7:1                ; 16 bits   ; 64 LEs        ; 64 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|PC[16]                                  ;
-; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |SSOOO_CPU|ALU:alu1|Mux16                          ;
-; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |SSOOO_CPU|ALU:alu1|Mux22                          ;
-; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |SSOOO_CPU|ALU:alu2|Mux11                          ;
-; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |SSOOO_CPU|ALU:alu2|Mux17                          ;
+; 7:1                ; 6 bits    ; 24 LEs        ; 24 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|PC[29]                                  ;
+; 7:1                ; 16 bits   ; 64 LEs        ; 64 LEs               ; 0 LEs                  ; No         ; |SSOOO_CPU|PC[18]                                  ;
+; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |SSOOO_CPU|ALU:alu1|Mux11                          ;
+; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |SSOOO_CPU|ALU:alu1|Mux20                          ;
+; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |SSOOO_CPU|ALU:alu2|Mux16                          ;
+; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |SSOOO_CPU|ALU:alu2|Mux19                          ;
 ; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |SSOOO_CPU|ALU:alu3|Mux13                          ;
-; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |SSOOO_CPU|ALU:alu3|Mux17                          ;
-; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |SSOOO_CPU|ALU:alu1|Mux7                           ;
+; 15:1               ; 8 bits    ; 80 LEs        ; 56 LEs               ; 24 LEs                 ; No         ; |SSOOO_CPU|ALU:alu3|Mux22                          ;
+; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |SSOOO_CPU|ALU:alu1|Mux8                           ;
 ; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |SSOOO_CPU|ALU:alu1|Mux28                          ;
-; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |SSOOO_CPU|ALU:alu2|Mux8                           ;
-; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |SSOOO_CPU|ALU:alu2|Mux27                          ;
-; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |SSOOO_CPU|ALU:alu3|Mux5                           ;
-; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |SSOOO_CPU|ALU:alu3|Mux27                          ;
+; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |SSOOO_CPU|ALU:alu2|Mux7                           ;
+; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |SSOOO_CPU|ALU:alu2|Mux28                          ;
+; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |SSOOO_CPU|ALU:alu3|Mux6                           ;
+; 16:1               ; 4 bits    ; 40 LEs        ; 32 LEs               ; 8 LEs                  ; No         ; |SSOOO_CPU|ALU:alu3|Mux28                          ;
 ; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu1|Mux4                           ;
 ; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu1|Mux30                          ;
 ; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu2|Mux4                           ;
-; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu2|Mux29                          ;
-; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu3|Mux0                           ;
-; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu3|Mux29                          ;
-; 18:1               ; 2 bits    ; 24 LEs        ; 18 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu1|Mux31                          ;
-; 18:1               ; 2 bits    ; 24 LEs        ; 18 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu2|Mux32                          ;
+; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu2|Mux30                          ;
+; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu3|Mux4                           ;
+; 17:1               ; 2 bits    ; 22 LEs        ; 16 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu3|Mux30                          ;
+; 18:1               ; 2 bits    ; 24 LEs        ; 18 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu1|Mux32                          ;
+; 18:1               ; 2 bits    ; 24 LEs        ; 18 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu2|Mux31                          ;
 ; 18:1               ; 2 bits    ; 24 LEs        ; 18 LEs               ; 6 LEs                  ; No         ; |SSOOO_CPU|ALU:alu3|Mux32                          ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------------------------------+
 
@@ -1657,19 +1656,19 @@ Note: In order to hide this table in the UI and the text report file, please set
 ;     ENA SLD           ; 144                         ;
 ;     SCLR              ; 9                           ;
 ;     plain             ; 23                          ;
-; cycloneiii_lcell_comb ; 13376                       ;
+; cycloneiii_lcell_comb ; 13341                       ;
 ;     arith             ; 548                         ;
 ;         2 data inputs ; 94                          ;
 ;         3 data inputs ; 454                         ;
-;     normal            ; 12828                       ;
+;     normal            ; 12793                       ;
 ;         1 data inputs ; 37                          ;
-;         2 data inputs ; 482                         ;
-;         3 data inputs ; 2597                        ;
-;         4 data inputs ; 9712                        ;
+;         2 data inputs ; 569                         ;
+;         3 data inputs ; 2469                        ;
+;         4 data inputs ; 9718                        ;
 ; cycloneiii_ram_block  ; 64                          ;
 ;                       ;                             ;
 ; Max LUT depth         ; 14.00                       ;
-; Average LUT depth     ; 7.20                        ;
+; Average LUT depth     ; 7.13                        ;
 +-----------------------+-----------------------------+
 
 
@@ -1678,7 +1677,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 +----------------+--------------+
 ; Partition Name ; Elapsed Time ;
 +----------------+--------------+
-; Top            ; 00:00:23     ;
+; Top            ; 00:00:21     ;
 +----------------+--------------+
 
 
@@ -1688,10 +1687,8 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 23.1std.1 Build 993 05/14/2024 SC Lite Edition
-    Info: Processing started: Sun Feb  2 17:42:14 2025
+    Info: Processing started: Mon Feb  3 13:53:21 2025
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off SSOOO_CPU -c SSOOO_CPU
-Warning (125096): Overriding device family setting MAX 10 -- part EP4CE115F29C7 belongs to device family Cyclone IV E
-    Info (125063): set_global_assignment -name DEVICE EP4CE115F29C7
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 6 of the 6 processors detected
 Info (12021): Found 1 design units, including 1 entities, in source file ssooo_sim.v
@@ -1726,14 +1723,14 @@ Info (12128): Elaborating entity "BranchPredictor" for hierarchy "BranchPredicto
 Warning (10230): Verilog HDL assignment warning at branchpredictor.v(20): truncated value with size 32 to match size of target (4) File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/branchpredictor.v Line: 20
 Warning (12125): Using design file reorder buffer/rob.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: ROB File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/reorder buffer/rob.v Line: 16
-Info (12128): Elaborating entity "ROB" for hierarchy "ROB:rob" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 369
+Info (12128): Elaborating entity "ROB" for hierarchy "ROB:rob" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 368
 Warning (10230): Verilog HDL assignment warning at rob.v(161): truncated value with size 32 to match size of target (5) File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/reorder buffer/rob.v Line: 161
 Warning (10230): Verilog HDL assignment warning at rob.v(220): truncated value with size 32 to match size of target (5) File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/reorder buffer/rob.v Line: 220
 Warning (10230): Verilog HDL assignment warning at rob.v(227): truncated value with size 32 to match size of target (5) File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/reorder buffer/rob.v Line: 227
 Warning (10240): Verilog HDL Always Construct warning at rob.v(159): inferring latch(es) for variable "i", which holds its previous value in one or more paths through the always construct File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/reorder buffer/rob.v Line: 159
 Warning (12125): Using design file functional unit/alu_oper.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: ALU_OPER File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/functional unit/alu_oper.v Line: 15
-Info (12128): Elaborating entity "ALU_OPER" for hierarchy "ALU_OPER:alu_op" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 372
+Info (12128): Elaborating entity "ALU_OPER" for hierarchy "ALU_OPER:alu_op" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 371
 Warning (10270): Verilog HDL Case Statement warning at alu_oper.v(28): incomplete case statement has no default case item File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/functional unit/alu_oper.v Line: 28
 Warning (10240): Verilog HDL Always Construct warning at alu_oper.v(28): inferring latch(es) for variable "ALU_OP", which holds its previous value in one or more paths through the always construct File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/functional unit/alu_oper.v Line: 28
 Info (10041): Inferred latch for "ALU_OP[0]" at alu_oper.v(28) File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/functional unit/alu_oper.v Line: 28
@@ -1743,7 +1740,7 @@ Info (10041): Inferred latch for "ALU_OP[3]" at alu_oper.v(28) File: D:/GitHub R
 Warning (10274): Verilog HDL macro warning at rs.v(60): overriding existing definition for macro "I", which was defined in "rob.v", line 84 File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/reservation station/rs.v Line: 60
 Warning (12125): Using design file reservation station/rs.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: RS File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/reservation station/rs.v Line: 1
-Info (12128): Elaborating entity "RS" for hierarchy "RS:rs" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 461
+Info (12128): Elaborating entity "RS" for hierarchy "RS:rs" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 459
 Warning (10036): Verilog HDL or VHDL warning at rs.v(265): object "b1" assigned a value but never read File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/reservation station/rs.v Line: 265
 Warning (10036): Verilog HDL or VHDL warning at rs.v(265): object "b2" assigned a value but never read File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/reservation station/rs.v Line: 265
 Warning (10036): Verilog HDL or VHDL warning at rs.v(265): object "b3" assigned a value but never read File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/reservation station/rs.v Line: 265
@@ -1755,7 +1752,7 @@ Warning (10230): Verilog HDL assignment warning at rs.v(148): truncated value wi
 Warning (10230): Verilog HDL assignment warning at rs.v(251): truncated value with size 32 to match size of target (5) File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/reservation station/rs.v Line: 251
 Warning (12125): Using design file functional unit/alu.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: ALU File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/functional unit/alu.v Line: 1
-Info (12128): Elaborating entity "ALU" for hierarchy "ALU:alu1" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 482
+Info (12128): Elaborating entity "ALU" for hierarchy "ALU:alu1" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 479
 Warning (10270): Verilog HDL Case Statement warning at alu.v(40): incomplete case statement has no default case item File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/functional unit/alu.v Line: 40
 Warning (10240): Verilog HDL Always Construct warning at alu.v(40): inferring latch(es) for variable "Reg_res", which holds its previous value in one or more paths through the always construct File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/functional unit/alu.v Line: 40
 Info (10041): Inferred latch for "Reg_res[0]" at alu.v(40) File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/functional unit/alu.v Line: 40
@@ -1792,12 +1789,12 @@ Info (10041): Inferred latch for "Reg_res[30]" at alu.v(40) File: D:/GitHub Repo
 Info (10041): Inferred latch for "Reg_res[31]" at alu.v(40) File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/functional unit/alu.v Line: 40
 Warning (12125): Using design file addressunit&ld_st buffer/addressunit.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: AddressUnit File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/addressunit&ld_st buffer/addressunit.v Line: 21
-Info (12128): Elaborating entity "AddressUnit" for hierarchy "AddressUnit:AU" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 569
+Info (12128): Elaborating entity "AddressUnit" for hierarchy "AddressUnit:AU" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 564
 Warning (12125): Using design file addressunit&ld_st buffer/lsbuffer.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: LSBuffer File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/addressunit&ld_st buffer/lsbuffer.v Line: 11
-Info (12128): Elaborating entity "LSBuffer" for hierarchy "LSBuffer:lsbuffer" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 629
-Warning (10230): Verilog HDL assignment warning at lsbuffer.v(119): truncated value with size 32 to match size of target (5) File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/addressunit&ld_st buffer/lsbuffer.v Line: 119
-Warning (10230): Verilog HDL assignment warning at lsbuffer.v(165): truncated value with size 32 to match size of target (5) File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/addressunit&ld_st buffer/lsbuffer.v Line: 165
+Info (12128): Elaborating entity "LSBuffer" for hierarchy "LSBuffer:lsbuffer" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 624
+Warning (10230): Verilog HDL assignment warning at lsbuffer.v(120): truncated value with size 32 to match size of target (5) File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/addressunit&ld_st buffer/lsbuffer.v Line: 120
+Warning (10230): Verilog HDL assignment warning at lsbuffer.v(166): truncated value with size 32 to match size of target (5) File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/addressunit&ld_st buffer/lsbuffer.v Line: 166
 Warning (10030): Net "Reg_EA[7][31..10]" at lsbuffer.v(84) has no driver or initial value, using a default initial value '0' File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/addressunit&ld_st buffer/lsbuffer.v Line: 84
 Warning (10030): Net "Reg_EA[6][31..10]" at lsbuffer.v(84) has no driver or initial value, using a default initial value '0' File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/addressunit&ld_st buffer/lsbuffer.v Line: 84
 Warning (10030): Net "Reg_EA[5][31..10]" at lsbuffer.v(84) has no driver or initial value, using a default initial value '0' File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/addressunit&ld_st buffer/lsbuffer.v Line: 84
@@ -1808,7 +1805,7 @@ Warning (10030): Net "Reg_EA[1][31..10]" at lsbuffer.v(84) has no driver or init
 Warning (10030): Net "Reg_EA[0][31..10]" at lsbuffer.v(84) has no driver or initial value, using a default initial value '0' File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/addressunit&ld_st buffer/lsbuffer.v Line: 84
 Warning (12125): Using design file memory unit/dm.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: DM File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/memory unit/dm.v Line: 3
-Info (12128): Elaborating entity "DM" for hierarchy "DM:datamemory" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 652
+Info (12128): Elaborating entity "DM" for hierarchy "DM:datamemory" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 647
 Info (12128): Elaborating entity "DataMemory_IP" for hierarchy "DM:datamemory|DataMemory_IP:DataMemory" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/memory unit/dm.v Line: 61
 Info (12128): Elaborating entity "altsyncram" for hierarchy "DM:datamemory|DataMemory_IP:DataMemory|altsyncram:altsyncram_component" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/DataMemory_IP.v Line: 86
 Info (12130): Elaborated megafunction instantiation "DM:datamemory|DataMemory_IP:DataMemory|altsyncram:altsyncram_component" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/DataMemory_IP.v Line: 86
@@ -1833,7 +1830,7 @@ Info (12021): Found 1 design units, including 1 entities, in source file db/alts
 Info (12128): Elaborating entity "altsyncram_1vj1" for hierarchy "DM:datamemory|DataMemory_IP:DataMemory|altsyncram:altsyncram_component|altsyncram_1vj1:auto_generated" File: d:/quartus/devices_support/quartus/libraries/megafunctions/altsyncram.tdf Line: 792
 Warning (12125): Using design file common data bus/cdb.v, which is not specified as a design file for the current project, but contains definitions for 1 design units and 1 entities in project
     Info (12023): Found entity 1: CDB File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/common data bus/cdb.v Line: 15
-Info (12128): Elaborating entity "CDB" for hierarchy "CDB:cdb" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 692
+Info (12128): Elaborating entity "CDB" for hierarchy "CDB:cdb" File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.v Line: 687
 Warning (276027): Inferred dual-clock RAM node "ROB:rob|Reg_BTA_rtl_0" from synchronous design logic.  The read-during-write behavior of a dual-clock RAM is undefined and may not match the behavior of the original design.
 Info (276014): Found 4 instances of uninferred RAM logic
     Info (276007): RAM logic "InstQ:instq|InstMem" is uninferred due to asynchronous read logic File: D:/GitHub Repos/JoSDC-SILICORE/SSOOO/instruction queue/instq.v Line: 16
@@ -2081,16 +2078,16 @@ Info (286030): Timing-Driven Synthesis is running
 Info (144001): Generated suppressed messages file D:/GitHub Repos/JoSDC-SILICORE/SSOOO/SSOOO_CPU.map.smsg
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
-Info (21057): Implemented 15413 device resources after synthesis - the final resource count might be different
+Info (21057): Implemented 15378 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 2 input pins
     Info (21059): Implemented 32 output pins
-    Info (21061): Implemented 15315 logic cells
+    Info (21061): Implemented 15280 logic cells
     Info (21064): Implemented 64 RAM segments
-Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 253 warnings
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 252 warnings
     Info: Peak virtual memory: 4933 megabytes
-    Info: Processing ended: Sun Feb  2 17:42:50 2025
-    Info: Elapsed time: 00:00:36
-    Info: Total CPU time (on all processors): 00:00:49
+    Info: Processing ended: Mon Feb  3 13:53:54 2025
+    Info: Elapsed time: 00:00:33
+    Info: Total CPU time (on all processors): 00:00:45
 
 
 +------------------------------------------+

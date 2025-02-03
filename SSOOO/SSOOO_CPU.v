@@ -224,8 +224,8 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA 
     )
 );
 `endif
-assign InstQ_FLUSH_Flag = ~(rst || ~(|(PC[31:10])));
-// assign InstQ_FLUSH_Flag = ~(rst || (PC <= 1023));
+// assign InstQ_FLUSH_Flag = ~(rst || ~(|(PC[31:10])));
+assign InstQ_FLUSH_Flag = ~(rst || (PC <= 1023));
 
 PC_register pcreg
 (
@@ -274,7 +274,7 @@ RegFile regfile
     (
         (InstQ_opcode == jal) ? 5'd31 : 
         (
-            (InstQ_opcode[11:6] == 6'd0) ? InstQ_rd : InstQ_rt
+            (~(|InstQ_opcode[11:6])) ? InstQ_rd : InstQ_rt
         )
     ), 
     .WP1_Data(ROB_Commit_Write_Data),
@@ -312,8 +312,7 @@ ROB rob
     (
         (InstQ_opcode == jal) ? 5'd31 : 
         (
-            (InstQ_opcode == addi || InstQ_opcode == andi || InstQ_opcode == ori || InstQ_opcode == xori || 
-            InstQ_opcode == slti || InstQ_opcode == lw) ? InstQ_rt : InstQ_rd
+            (~(|InstQ_opcode[11:6])) ? InstQ_rd : InstQ_rt
         )
     ),
     .Decoded_prediction(predicted),
@@ -370,32 +369,31 @@ ROB rob
 
 
 ALU_OPER alu_op(InstQ_opcode, InstQ_ALUOP);
-
+/*
+(InstQ_opcode == jal) ? 5'd31 : 
+(
+    (InstQ_opcode == addi || InstQ_opcode == andi || InstQ_opcode == ori || InstQ_opcode == xori || 
+    InstQ_opcode == slti || InstQ_opcode == lw) ? InstQ_rt : InstQ_rd
+)
+*/
 RS rs
 (
     .clk(clk), 
     .rst(rst),
     .opcode(InstQ_opcode),
     .ALUOP(InstQ_ALUOP),
-    // .ROBEN((ROB_End_Index == 5'd1) ? 5'd16 : (ROB_End_Index - 1'b1)),
     .ROBEN(ROB_End_Index),
     .ROBEN1
     (
-        (~(|RegFile_RP1_Reg1_ROBEN) || InstQ_opcode == sll || InstQ_opcode == srl || InstQ_opcode == jal) ? {`ROB_SIZE_bits{1'b0}} : 
+        (~(|RegFile_RP1_Reg1_ROBEN) || InstQ_opcode == sll || InstQ_opcode == srl) ? {`ROB_SIZE_bits{1'b0}} : 
         (
             (ROB_RP1_Ready1) ? {`ROB_SIZE_bits{1'b0}} : RegFile_RP1_Reg1_ROBEN
         )
     ), 
     .ROBEN2
     (
-        (InstQ_opcode == addi || InstQ_opcode == andi || InstQ_opcode == ori || InstQ_opcode == xori || 
-         InstQ_opcode == slti || InstQ_opcode == jal) ? {`ROB_SIZE_bits{1'b0}} : 
-         (
-            (~(|RegFile_RP1_Reg2_ROBEN)) ? {`ROB_SIZE_bits{1'b0}} : 
-            (
-                (ROB_RP1_Ready2) ? {`ROB_SIZE_bits{1'b0}} : RegFile_RP1_Reg2_ROBEN
-            )
-         )
+        (InstQ_opcode[11:6] != 6'd0 && InstQ_opcode != beq && InstQ_opcode != bne || ROB_RP1_Ready2 || ~(|RegFile_RP1_Reg2_ROBEN)) ? 
+            {`ROB_SIZE_bits{1'b0}} : RegFile_RP1_Reg2_ROBEN
     ), 
     .ROBEN1_VAL
     (
@@ -469,8 +467,7 @@ ALU alu1
     .A((RS_FU_opcode1 == sll || RS_FU_opcode1 == srl) ? RS_FU_Val21 : RS_FU_Val11), 
     .B
     (
-        (RS_FU_opcode1 == addi || RS_FU_opcode1 == andi || RS_FU_opcode1 == ori || RS_FU_opcode1 == xori || 
-         RS_FU_opcode1 == sll  || RS_FU_opcode1 == srl  || RS_FU_opcode1 == slti) ? RS_FU_Immediate1 : RS_FU_Val21
+        (RS_FU_opcode1 == sll  || RS_FU_opcode1 == srl  || ((|RS_FU_opcode1[11:6]) && RS_FU_opcode1 != beq && RS_FU_opcode1 != bne)) ? RS_FU_Immediate1 : RS_FU_Val21
     ), 
     .ALUOP(RS_FU_ALUOP1),
 
@@ -489,8 +486,7 @@ ALU alu2
     .A((RS_FU_opcode2 == sll || RS_FU_opcode2 == srl) ? RS_FU_Val22 : RS_FU_Val12), 
     .B
     (
-        (RS_FU_opcode2 == addi || RS_FU_opcode2 == andi || RS_FU_opcode2 == ori || RS_FU_opcode2 == xori || 
-         RS_FU_opcode2 == sll  || RS_FU_opcode2 == srl  || RS_FU_opcode2 == slti) ? RS_FU_Immediate2 : RS_FU_Val22
+        (RS_FU_opcode2 == sll  || RS_FU_opcode2 == srl  || ((|RS_FU_opcode2[11:6]) && RS_FU_opcode2 != beq && RS_FU_opcode2 != bne)) ? RS_FU_Immediate2 : RS_FU_Val22
     ), 
     .ALUOP(RS_FU_ALUOP2),
 
@@ -509,8 +505,7 @@ ALU alu3
     .A((RS_FU_opcode3 == sll || RS_FU_opcode3 == srl) ? RS_FU_Val23 : RS_FU_Val13), 
     .B
     (
-        (RS_FU_opcode3 == addi || RS_FU_opcode3 == andi || RS_FU_opcode3 == ori || RS_FU_opcode3 == xori || 
-         RS_FU_opcode3 == sll  || RS_FU_opcode3 == srl  || RS_FU_opcode3 == slti) ? RS_FU_Immediate3 : RS_FU_Val23
+        (RS_FU_opcode3 == sll  || RS_FU_opcode3 == srl  || ((|RS_FU_opcode3[11:6]) && RS_FU_opcode3 != beq && RS_FU_opcode3 != bne)) ? RS_FU_Immediate3 : RS_FU_Val23
     ), 
     .ALUOP(RS_FU_ALUOP3),
 

@@ -114,6 +114,7 @@ reg [4:0] ji;
 always@(posedge clk)
     FULL_FLAG <= ~(rst | ~(End_Index == Start_Index && (Reg_Busy[Start_Index])));
 
+
 always@(negedge clk) begin
     if (rst || ROB_FLUSH_Flag) begin
         for (i = 0; i < `LDST_SIZE; i = i + 1) begin
