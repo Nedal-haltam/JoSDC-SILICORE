@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using static LibCPU.MIPS;
 using System.Runtime.InteropServices;
-using System.IO.Pipelines;
+
 namespace LibCPU
 {
     public enum CPU_type

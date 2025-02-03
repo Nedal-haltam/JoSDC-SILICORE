@@ -43,8 +43,9 @@ namespace main {
         }
 
 
-        static void Main() {
-            bool command = false;
+        static void Main()
+        {
+            bool command = true;
             List<string> args = Environment.GetCommandLineArgs().ToList();
 
             if (command) HandleCommand(args);
