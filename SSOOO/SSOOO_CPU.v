@@ -160,16 +160,16 @@ TODO:
 
 assign statement in ROB 
 
-    - make it SS
-    - MultiCore (dualcore is enough)
-    - check on epsilon in the priority TODO
-    - better branch predictor
-
     - GOL: open Quartus, and work on it interfacing and using the RAM2PORT
         - you have two sources of image: the static image, and the run time modification from the proc_interface
         - for speed: adjust the clock of the CPU through the switches
 	- use the FPGA to emulate on and display the head of the ROB information through 
 	the VGA interface
+
+    - make it SS
+    - MultiCore (dualcore is enough)
+    - better branch predictor
+
 */
 
 always@(negedge clk, posedge rst) begin
