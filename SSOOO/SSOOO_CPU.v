@@ -267,7 +267,7 @@ RegFile regfile
     ), 
     .Decoded_WP1_ROBEN
     (
-        ((ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag) ? {`ROB_SIZE_bits{1'b0}} : ROB_End_Index
+        ((ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag) ? {(`ROB_SIZE_bits+1){1'b0}} : ROB_End_Index
     ), 
     .WP1_DRindex(ROB_Commit_Rd), 
     .Decoded_WP1_DRindex
@@ -340,7 +340,7 @@ ROB rob
     .VALID_Inst
     (
         ~rst && 
-         ~ROB_FLUSH_Flag && ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) && InstQ_VALID_Inst && InstQ_opcode != j
+         ~ROB_FLUSH_Flag && ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) && InstQ_VALID_Inst && InstQ_opcode != j && InstQ_opcode != jr
     ),
 
     .FULL_FLAG(ROB_FULL_FLAG),
@@ -385,15 +385,15 @@ RS rs
     .ROBEN(ROB_End_Index),
     .ROBEN1
     (
-        (~(|RegFile_RP1_Reg1_ROBEN) || InstQ_opcode == sll || InstQ_opcode == srl) ? {`ROB_SIZE_bits{1'b0}} : 
+        (~(|RegFile_RP1_Reg1_ROBEN) || InstQ_opcode == sll || InstQ_opcode == srl) ? {(`ROB_SIZE_bits+1){1'b0}} : 
         (
-            (ROB_RP1_Ready1) ? {`ROB_SIZE_bits{1'b0}} : RegFile_RP1_Reg1_ROBEN
+            (ROB_RP1_Ready1) ? {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg1_ROBEN
         )
     ), 
     .ROBEN2
     (
         (InstQ_opcode[11:6] != 6'd0 && InstQ_opcode != beq && InstQ_opcode != bne || ROB_RP1_Ready2 || ~(|RegFile_RP1_Reg2_ROBEN)) ? 
-            {`ROB_SIZE_bits{1'b0}} : RegFile_RP1_Reg2_ROBEN
+            {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg2_ROBEN
     ), 
     .ROBEN1_VAL
     (
@@ -426,7 +426,7 @@ RS rs
     .VALID_Inst
     (
         InstQ_opcode != hlt_inst && InstQ_VALID_Inst && ~ROB_FULL_FLAG && ~ROB_FLUSH_Flag && 
-        InstQ_opcode != lw && InstQ_opcode != sw && InstQ_opcode != jal && InstQ_opcode != j
+        InstQ_opcode != lw && InstQ_opcode != sw && InstQ_opcode != jal && InstQ_opcode != j && InstQ_opcode != jr
     ),
     .FU_Is_Free(FU_Is_Free),
 
@@ -526,18 +526,18 @@ AddressUnit AU
     .Decoded_opcode(InstQ_opcode),
     .ROBEN1
     (
-        (~(|RegFile_RP1_Reg1_ROBEN)) ? {`ROB_SIZE_bits{1'b0}} : 
+        (~(|RegFile_RP1_Reg1_ROBEN)) ? {(`ROB_SIZE_bits+1){1'b0}} : 
         (
-            (ROB_RP1_Ready1) ? {`ROB_SIZE_bits{1'b0}} : RegFile_RP1_Reg1_ROBEN
+            (ROB_RP1_Ready1) ? {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg1_ROBEN
         )
     ), 
     .ROBEN2
     (
-        (InstQ_opcode == lw) ? {`ROB_SIZE_bits{1'b0}} : 
+        (InstQ_opcode == lw) ? {(`ROB_SIZE_bits+1){1'b0}} : 
         (
-            (~(|RegFile_RP1_Reg2_ROBEN)) ? {`ROB_SIZE_bits{1'b0}} : 
+            (~(|RegFile_RP1_Reg2_ROBEN)) ? {(`ROB_SIZE_bits+1){1'b0}} : 
             (
-                (ROB_RP1_Ready2) ? {`ROB_SIZE_bits{1'b0}} : RegFile_RP1_Reg2_ROBEN
+                (ROB_RP1_Ready2) ? {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg2_ROBEN
             )
         )
     ),
@@ -627,7 +627,7 @@ LSBuffer lsbuffer
 DM datamemory
 (
     .clk(clk), 
-    .ROBEN((LdStB_MEMU_VALID_Inst) ? LdStB_MEMU_ROBEN : {`ROB_SIZE_bits{1'b0}}),
+    .ROBEN((LdStB_MEMU_VALID_Inst) ? LdStB_MEMU_ROBEN : {(`ROB_SIZE_bits+1){1'b0}}),
     .Read_en
     (
         (LdStB_MEMU_VALID_Inst) ? LdStB_MEMU_opcode == lw : 1'b0

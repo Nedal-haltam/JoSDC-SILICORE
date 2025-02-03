@@ -192,7 +192,6 @@ Run_BenchMark()
 # Run_BenchMark "InsertionSort" 
 
 
-
 Run_BenchMark "JR_Dependency(Silicore_BenchMark)"
 Run_BenchMark "InsertionSort(SiliCore_version)"
 Run_BenchMark "Max&MinArray"
@@ -206,6 +205,8 @@ Run_BenchMark "RemoveDuplicates"
 Run_BenchMark "SelectionSort"
 Run_BenchMark "SparseMatrixCount"
 Run_BenchMark "Swapping"
+Run_BenchMark "MultiplicationUsingAddition"
+# Run_BenchMark "ScalarMultiplicationUsingAddition"
 
 
 
