@@ -35,7 +35,7 @@ namespace main {
                 data_mem_init = File.ReadAllLines(dm_filepath).ToList();
                 if (cputype == "singlecycle")   { cpu_type = LibCPU.CPU_type.SingleCycle; }
                 else if (cputype == "pipeline") { cpu_type = LibCPU.CPU_type.PipeLined; }
-                else if (cputype == "OOO")      { cpu_type = LibCPU.CPU_type.OOO; }
+                else if (cputype == "ooo")      { cpu_type = LibCPU.CPU_type.OOO; }
                 else
                 { assert($"invalid cpu type {cputype}"); }
             }
