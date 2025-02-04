@@ -1,12 +1,47 @@
-
 using System.Text;
 using System.Collections.Generic;
 
 using static LibCPU.MIPS;
 using System.Runtime.InteropServices;
+using System.IO.Pipelines;
+namespace LibCPU {
+    // circular queue used for ROB and LSbuffer in OOO CPU
+    public class CircularQueue<T> {
+        public int start, end, size;
+        private T[] elements;
 
-namespace LibCPU
-{
+        public CircularQueue(int initialSize) {
+            this.start = this.end = -1;
+            this.size = initialSize;
+            this.elements = new T[initialSize];
+        }
+
+        public int enqueue(T element) {
+            if(isFull()) return -2;
+            else if (isEmpty()) start++;
+
+            end = (end + 1) % size;
+            elements[end] = element;
+            return end;
+        }
+
+        public ref T dequeue() {
+            if(isEmpty())
+                throw new Exception($"Queue is empty");
+            ref T temp = ref elements[start];
+            if(start == end) start = end = -1;
+            else start = (start + 1) % size;
+
+            return ref temp;
+        }
+
+        public T getIndex(int index) { return elements[index]; }
+
+        public bool isEmpty() { return start == -1; }
+        public bool isFull() { return ((end + 1) % 16) == start; }
+        public void flush() { start = end = -1; }
+    }   
+
     public enum CPU_type
     {
         PipeLined, SingleCycle, OOO
@@ -137,17 +172,10 @@ namespace LibCPU
 
         }
 
-        public enum Stage
-        {
-            fetch, decode, execute1, execute2, memory, write_back
-        }
-        public enum Exceptions
-        {
-            NONE, INF_LOOP, INVALID_INST, EXCEPTION
-        }
+        public enum Stage { fetch, decode, execute1, execute2, memory, write_back }
+        public enum Exceptions { NONE, INF_LOOP, INVALID_INST, EXCEPTION }
 
-        public static readonly Dictionary<string, Mnemonic> mnemonicmap = new Dictionary<string, Mnemonic>()
-        {
+        public static readonly Dictionary<string, Mnemonic> mnemonicmap = new Dictionary<string, Mnemonic>() {
             // the nop is not mentioned here to not conflict with sll
             // R-format depends on the funct field, if opcode = "000000" then it is R-format else (it is an I-format or J-format either way it depends on distinct opcodes)
             // rd = rd, rs1 = rs, rs2 = rt
@@ -320,8 +348,7 @@ namespace LibCPU
             return mnem == Mnemonic.beq ||
                     mnem == Mnemonic.bne;
         }
-        public static int get_oper1(Instruction inst)
-        {
+        public static int get_oper1(Instruction inst) {
             if (inst.format == "R")
             {
                 if (inst.mnem == Mnemonic.sll || inst.mnem == Mnemonic.srl)
@@ -364,16 +391,9 @@ namespace LibCPU
             }
             throw new Exception($"Invalid format provided : {inst.format}");
         }
-        public static string sx(string num)
-        {
-            return num.PadLeft(32, num[0]);
-        }
-        public static string zx(string num)
-        {
-            return num.PadLeft(32, '0');
-        }
-        public static void print_regs(List<int> regs)
-        {
+        public static string sx(string num) { return num.PadLeft(32, num[0]); }
+        public static string zx(string num) { return num.PadLeft(32, '0'); }
+        public static void print_regs(List<int> regs) {
             Console.Write("Register file content : \n");
             int i = 0;
             foreach (int n in regs)
@@ -382,8 +402,7 @@ namespace LibCPU
                 Console.Write(temp);
             }
         }
-        public static void print_DM(List<string> DM)
-        {
+        public static void print_DM(List<string> DM) {
             Console.Write("Data Memory Content : \n");
             int i = 0;
             foreach (string mem in DM)
@@ -396,8 +415,7 @@ namespace LibCPU
             }
         }
 
-        public static StringBuilder get_regs(List<int> regs)
-        {
+        public static StringBuilder get_regs(List<int> regs) {
             StringBuilder sb = new StringBuilder();
             sb.Append("Register file content : \n");
             int i = 0;
@@ -408,8 +426,8 @@ namespace LibCPU
             }
             return sb;
         }
-        public static StringBuilder get_DM(List<string> DM)
-        {
+
+        public static StringBuilder get_DM(List<string> DM) {
             StringBuilder sb = new StringBuilder();
             sb.Append("Data Memory Content : \n");
             int i = 0;
@@ -425,29 +443,18 @@ namespace LibCPU
             return sb;
         }
 
-        public static bool isvalid_format(string format)
-        {
-            return format == "R" || format == "I" || format == "J";
-        }
-        public static bool is_in_range_inc(int x, int lo, int hi)
-        {
-            return lo <= x && x <= hi;
-        }
-        public static bool isvalid_reg_ind(Instruction inst)
-        {
+        public static bool isvalid_format(string format) { return format == "R" || format == "I" || format == "J"; }
+        public static bool is_in_range_inc(int x, int lo, int hi) { return lo <= x && x <= hi; }
+        public static bool isvalid_reg_ind(Instruction inst) {
             return is_in_range_inc(inst.rsind, 0, 32) &&
                     is_in_range_inc(inst.rtind, 0, 32) &&
                     is_in_range_inc(inst.rdind, 0, 32);
         }
-        public static bool isvalid_opcode_funct(Instruction inst)
-        {
-            return mnemonicmap.ContainsKey(inst.opcode + inst.funct);
-        }
+        public static bool isvalid_opcode_funct(Instruction inst) { return mnemonicmap.ContainsKey(inst.opcode + inst.funct); }
 
     }
     
-    public class OOO 
-    {
+    public class OOO {
         static public int PC;
         static public bool hlt;
         static public int targetaddress;
@@ -463,11 +470,10 @@ namespace LibCPU
         public List<string> IM; // Instruction Mem
 
         // ROB
-        public bool ROBfullFlag, flush;
-        public int ROBendIndex, ROBstartIndex, ROBsize;
+        public bool flush;
+        public int ROBsize;
 
         public class ROBregister {
-
             public Mnemonic type;
             public int Rd;
             public bool busy;
@@ -485,7 +491,7 @@ namespace LibCPU
             }
         }
 
-        public List<ROBregister> ROB;
+        public CircularQueue<ROBregister> ROB;
 
         // Reservation Station
         static public bool RSfullFlag;
@@ -517,8 +523,7 @@ namespace LibCPU
         public List<RSregister> reservationStation;
 
         // Load Store Buffer
-        static public bool LSfullFlag;
-        static public int LSendIndex, LSstartIndex, LSsize;
+        static public int LSsize;
 
         public class LSregister {
             public Mnemonic type;
@@ -548,7 +553,7 @@ namespace LibCPU
             }
         }
 
-        public List<LSregister> LSbuffer;
+        public CircularQueue<LSregister> LSbuffer;
 
         public OOO(List<string> insts, List<string> data_mem_init) {
             PC              = 0;
@@ -567,13 +572,7 @@ namespace LibCPU
                 regs_ROBENS.Add(0);
 
             // initializing ROB 
-            ROB = new List<ROBregister>();
-            for (int i = 0; i < ROBsize; i++) 
-                ROB.Add(new ROBregister(Mnemonic.nop));
-
-            ROBendIndex     = 0;
-            ROBstartIndex   = 0;
-            ROBfullFlag     = false;
+            ROB = new CircularQueue<ROBregister>(ROBsize);
 
             // initializing reservation station
             reservationStation = new List<RSregister>();
@@ -583,14 +582,7 @@ namespace LibCPU
             RSfullFlag = false;
 
             // initializing the LS buffer
-            LSbuffer = new List<LSregister>();
-            for (int i = 0; i < LSsize; i++)
-                LSbuffer.Add(new LSregister(Mnemonic.nop));
-
-            LSfullFlag = false;
-            LSendIndex = 0;
-            LSstartIndex = 0;
-
+            LSbuffer = new CircularQueue<LSregister>(LSsize);
         }
 
         public string fetchInstruction() {
@@ -651,25 +643,22 @@ namespace LibCPU
 
         // dispatch instruction from instruction queue
         public bool dispatch(Instruction currInstruction) {
-            if(!(currInstruction.mnem == Mnemonic.lw) && !(currInstruction.mnem == Mnemonic.sw) && !ROBfullFlag && !RSfullFlag) {
-                // places the instruction in the ROB
-                if(!(ROBendIndex == 0 && ROBendIndex == ROBstartIndex)) ROBendIndex = (ROBendIndex + 1) % ROBsize;
-                
+            if(!(currInstruction.mnem == Mnemonic.lw) && !(currInstruction.mnem == Mnemonic.sw) && !ROB.isFull() && !RSfullFlag) {
                 // assigns the values of the ROB register
-                ROB[ROBendIndex].type        = currInstruction.mnem;
-                ROB[ROBendIndex].Rd          = currInstruction.rdind;
-                ROB[ROBendIndex].busy        = true;
-                ROB[ROBendIndex].ready       = false;
-                ROB[ROBendIndex].exception   = false;
+                ROBregister currROBregister = new ROBregister(currInstruction.mnem);
+                currROBregister.Rd          = currInstruction.rdind;
+                currROBregister.busy        = true;
+                currROBregister.ready       = false;
+                currROBregister.exception   = false;
 
-                // assigns the full flag after it inserts the element
-                if((ROBendIndex + 1) % ROBsize == ROBstartIndex) { ROBfullFlag = true; }
+                // places the instruction in the ROB and saves its ROBEN
+                int tempROBen = ROB.enqueue(currROBregister);
 
                 // places the instruction in the RS
                 for(int i = 0; i < RSsize; i++) {
                     if(!reservationStation[i].busy) {
                         reservationStation[i].ALUop        = currInstruction.aluop;
-                        reservationStation[i].ROBEN        = ROBendIndex + 1;
+                        reservationStation[i].ROBEN        = tempROBen + 1;
                         reservationStation[i].busy         = true;
                         // assigns operands based on format
                         if(currInstruction.format == "R") {
@@ -680,9 +669,9 @@ namespace LibCPU
                                 reservationStation[i].ROBEN1_val = regs[currInstruction.rsind];
                             else {
                                 for(int j = 0; j < ROBsize; j++) {
-                                    ROB[ROBendIndex] = ROB[j];
-                                    if(ROB[ROBendIndex].busy && ROB[ROBendIndex].ready && j == reservationStation[i].ROBEN1) {
-                                        reservationStation[i].ROBEN1_val = ROB[ROBendIndex].writeData;
+                                    currROBregister = ROB.getIndex(j);
+                                    if(currROBregister.busy && currROBregister.ready && ((j + 1) == reservationStation[i].ROBEN1)) {
+                                        reservationStation[i].ROBEN1_val = currROBregister.writeData;
                                         reservationStation[i].ROBEN1 = 0;
                                     }   
                                 }
@@ -695,9 +684,9 @@ namespace LibCPU
                                 reservationStation[i].ROBEN2_val = regs[currInstruction.rtind];
                             else {
                                 for(int j = 0; j < ROBsize; j++) {
-                                    ROB[ROBendIndex] = ROB[j];
-                                    if(ROB[ROBendIndex].busy && ROB[ROBendIndex].ready && j == reservationStation[i].ROBEN2) {
-                                        reservationStation[i].ROBEN2_val = ROB[ROBendIndex].writeData;
+                                    currROBregister = ROB.getIndex(j);
+                                    if(currROBregister.busy && currROBregister.ready && ((j + 1) == reservationStation[i].ROBEN2)) {
+                                        reservationStation[i].ROBEN2_val = currROBregister.writeData;
                                         reservationStation[i].ROBEN2 = 0;
                                     }        
                                 }
@@ -711,11 +700,11 @@ namespace LibCPU
                                 reservationStation[i].ROBEN1_val = regs[currInstruction.rsind];
                             else {
                                 for(int j = 0; j < ROBsize; j++) {
-                                    ROB[ROBendIndex] = ROB[j];
-                                    if(ROB[ROBendIndex].busy && ROB[ROBendIndex].ready && j == reservationStation[i].ROBEN1) {
-                                        reservationStation[i].ROBEN1_val = ROB[ROBendIndex].writeData;
+                                    currROBregister = ROB.getIndex(j);
+                                    if(currROBregister.busy && currROBregister.ready && ((j + 1) == reservationStation[i].ROBEN1)) {
+                                        reservationStation[i].ROBEN1_val = currROBregister.writeData;
                                         reservationStation[i].ROBEN1 = 0;
-                                    }    
+                                    }   
                                 }
                             }
                             reservationStation[i].ROBEN2 = 0;
@@ -732,80 +721,76 @@ namespace LibCPU
                 }
 
                 // updates register file ROBEN
-                regs_ROBENS[currInstruction.rdind] = ROBendIndex + 1;
+                regs_ROBENS[currInstruction.rdind] = tempROBen + 1;
 
                 return true;
             }
-            else if((currInstruction.mnem == Mnemonic.lw || currInstruction.mnem == Mnemonic.sw) && !ROBfullFlag && !LSfullFlag) {
-                // places the instruction in the ROB
-                if(!(ROBendIndex == 0 && ROBendIndex == ROBstartIndex)) ROBendIndex = (ROBendIndex + 1) % ROBsize;
-                
+            else if((currInstruction.mnem == Mnemonic.lw || currInstruction.mnem == Mnemonic.sw) && !ROB.isFull() && !LSbuffer.isFull()) {
                 // assigns the values of the ROB register
-                ROB[ROBendIndex].type        = currInstruction.mnem;
-                ROB[ROBendIndex].Rd          = currInstruction.rdind;
-                ROB[ROBendIndex].busy        = true;
-                ROB[ROBendIndex].ready       = false;
-                ROB[ROBendIndex].exception   = false;
+                ROBregister currROBregister = new ROBregister(currInstruction.mnem);
+                currROBregister.Rd          = currInstruction.rdind;
+                currROBregister.busy        = true;
+                currROBregister.ready       = false;
+                currROBregister.exception   = false;
 
-                // assigns the full flag after it inserts the element
-                if((ROBendIndex + 1) % ROBsize == ROBstartIndex) { ROBfullFlag = true; }
+                // places the instruction in the ROB and saves its ROBEN
+                int tempROBen = ROB.enqueue(currROBregister);
 
                 // places the instruction in the LSbuffer
-                LSendIndex = (LSendIndex + 1) % LSsize;
-
-                LSbuffer[LSendIndex].type = currInstruction.mnem;
-                LSbuffer[LSendIndex].ready = false;
-                LSbuffer[LSendIndex].busy = true;
-                LSbuffer[LSendIndex].Rd = currInstruction.rdind;
-                LSbuffer[LSendIndex].ROBEN = ROBendIndex + 1;
-                LSbuffer[LSendIndex].immediate = currInstruction.immeds;
+                LSregister currLSregister = new LSregister(currInstruction.mnem);
+                currLSregister.ready = false;
+                currLSregister.busy = true;
+                currLSregister.Rd = currInstruction.rdind;
+                currLSregister.ROBEN = tempROBen + 1;
+                currLSregister.immediate = currInstruction.immeds;
 
                 // assigns the ROBEN of the first operand
-                LSbuffer[LSendIndex].ROBEN1 = regs_ROBENS[currInstruction.rsind];
+                currLSregister.ROBEN1 = regs_ROBENS[currInstruction.rsind];
 
                 // search the ROB for the value needed
-                if(LSbuffer[LSendIndex].ROBEN1 == 0) {
-                    LSbuffer[LSendIndex].ROBEN1_val = regs[currInstruction.rsind];
-                    LSbuffer[LSendIndex].effectiveAddress = LSbuffer[LSendIndex].ROBEN1_val + LSbuffer[LSendIndex].immediate;
+                if(currLSregister.ROBEN1 == 0) {
+                    currLSregister.ROBEN1_val = regs[currInstruction.rsind];
+                    currLSregister.effectiveAddress = currLSregister.ROBEN1_val + currLSregister.immediate;
                 }    
                 else {
                     for(int j = 0; j < ROBsize; j++) {
-                        ROB[ROBendIndex] = ROB[j];
-                        if(ROB[ROBendIndex].busy && ROB[ROBendIndex].ready && j == LSbuffer[LSendIndex].ROBEN1) {
-                            LSbuffer[LSendIndex].ROBEN1_val = ROB[ROBendIndex].writeData;
-                            LSbuffer[LSendIndex].ROBEN1 = 0;
-                            LSbuffer[LSendIndex].effectiveAddress = LSbuffer[LSendIndex].ROBEN1_val + LSbuffer[LSendIndex].immediate;
+                        currROBregister = ROB.getIndex(j);
+                        if(currROBregister.busy && currROBregister.ready && ((j + 1) == currLSregister.ROBEN1)) {
+                            currLSregister.ROBEN1_val = currROBregister.writeData;
+                            currLSregister.ROBEN1 = 0;
+                            currLSregister.effectiveAddress = currLSregister.ROBEN1_val + currLSregister.immediate;
                         }     
                     }
                 }
                 // assigns the ROBEN of the second operand
                 if(currInstruction.mnem == Mnemonic.lw) {
-                    LSbuffer[LSendIndex].ROBEN2 = 0;
-                    LSbuffer[LSendIndex].ROBEN2_val = currInstruction.oper2;
+                    currLSregister.ROBEN2 = 0;
+                    currLSregister.ROBEN2_val = currInstruction.oper2;
                 }
                 else {
-                    LSbuffer[LSendIndex].ROBEN2 = regs_ROBENS[currInstruction.rtind];
+                    currLSregister.ROBEN2 = regs_ROBENS[currInstruction.rtind];
                     // search the ROB for the value needed
-                    if(LSbuffer[LSendIndex].ROBEN2 == 0) 
-                        LSbuffer[LSendIndex].ROBEN2_val = regs[currInstruction.rtind];
+                    if(currLSregister.ROBEN2 == 0) 
+                        currLSregister.ROBEN2_val = regs[currInstruction.rtind];
                     else {
                         for(int j = 0; j < ROBsize; j++) {
-                            ROB[ROBendIndex] = ROB[j];
-                            if(ROB[ROBendIndex].busy && ROB[ROBendIndex].ready && j == LSbuffer[LSendIndex].ROBEN2) {
-                                LSbuffer[LSendIndex].ROBEN2_val = ROB[ROBendIndex].writeData;
-                                LSbuffer[LSendIndex].ROBEN2 = 0;
+                            currROBregister = ROB.getIndex(j);
+                            if(currROBregister.busy && currROBregister.ready && ((j + 1) == currLSregister.ROBEN2)) {
+                                currLSregister.ROBEN2_val = currROBregister.writeData;
+                                currLSregister.ROBEN2 = 0;
                             }    
                         }
                     }
                 }
                 // updates the ready bit if necessary
-                LSbuffer[LSendIndex].ready = LSbuffer[LSendIndex].ROBEN1 == 0 && LSbuffer[LSendIndex].ROBEN2 == 0;
+                currLSregister.ready = currLSregister.ROBEN1 == 0 && currLSregister.ROBEN2 == 0;
+                ROB.getIndex(tempROBen).ready = currLSregister.ROBEN1 == 0 && currLSregister.ROBEN2 == 0;
             
-                // updates register file ROBEN
-                if(currInstruction.mnem == Mnemonic.lw) { regs_ROBENS[currInstruction.rdind] = ROBendIndex + 1; }
+                // places the register in the LSbuffer
+                LSbuffer.enqueue(currLSregister);
 
-                // assigns the full flag after it inserts the element
-                if((LSendIndex + 1) % LSsize == LSstartIndex) { LSfullFlag = true; }
+                // updates register file ROBEN
+                if(currInstruction.mnem == Mnemonic.lw) { regs_ROBENS[currInstruction.rdind] = tempROBen + 1; }
 
                 return true;
             }
@@ -850,29 +835,31 @@ namespace LibCPU
             }
             
             // updates ROB from CDB
-            for(int i = 0; i < ROBsize; i++){ 
+            for(int i = 0; i < ROBsize && !ROB.isEmpty(); i++){ 
+                ROBregister currROBregister = ROB.getIndex(i);
                 if(i + 1 == resultROBEN) { 
-                    ROB[i].writeData   = result;
-                    ROB[i].ready       = true;
+                    currROBregister.writeData   = result;
+                    currROBregister.ready       = true;
                 }
             }
 
             // updates load store buffer
-            for(int i = 0; i < LSsize; i++) {
-                if(LSbuffer[i].busy) {
+            for(int i = 0; i < LSsize && !LSbuffer.isEmpty(); i++) {
+                LSregister currLSregister = LSbuffer.getIndex(i);
+                if(currLSregister.busy) {
                     // updates first operand
-                    if(LSbuffer[i].ROBEN1 == resultROBEN && resultROBEN != 0) {
-                        LSbuffer[i].ROBEN1_val = result;
-                        LSbuffer[i].ROBEN1 = 0;
-                        LSbuffer[i].effectiveAddress = LSbuffer[i].ROBEN1_val + LSbuffer[i].immediate;
+                    if(currLSregister.ROBEN1 == resultROBEN && resultROBEN != 0) {
+                        currLSregister.ROBEN1_val = result;
+                        currLSregister.ROBEN1 = 0;
+                        currLSregister.effectiveAddress = currLSregister.ROBEN1_val + currLSregister.immediate;
                     }
                     // updates second operand for store instructions
-                    if(LSbuffer[i].type == Mnemonic.sw && LSbuffer[i].ROBEN2 == resultROBEN && resultROBEN != 0) {
-                        LSbuffer[i].ROBEN2_val = result;
-                        LSbuffer[i].ROBEN2 = 0;
+                    if(currLSregister.type == Mnemonic.sw && currLSregister.ROBEN2 == resultROBEN && resultROBEN != 0) {
+                        currLSregister.ROBEN2_val = result;
+                        currLSregister.ROBEN2 = 0;
                     }
                     // updates the ready bit if necessary
-                    LSbuffer[i].ready = LSbuffer[i].ROBEN1 == 0 && LSbuffer[i].ROBEN2 == 0; 
+                    currLSregister.ready = currLSregister.ROBEN1 == 0 && currLSregister.ROBEN2 == 0; 
                 }
             }
         }
@@ -889,16 +876,23 @@ namespace LibCPU
             }
 
             // executes ready instruction from LS buffer 
-            if(LSbuffer[LSstartIndex].busy && LSbuffer[LSstartIndex].ready) {
-                if(LSbuffer[LSstartIndex].type == Mnemonic.lw) {
-                    int result = Convert.ToInt32(DM[LSbuffer[LSstartIndex].effectiveAddress], 2);
-                    LSbuffer[LSstartIndex].busy = false;
-                    update(result, LSbuffer[LSstartIndex].ROBEN);
+            if(!LSbuffer.isEmpty()) {
+                LSregister currLSregister = LSbuffer.getIndex(LSbuffer.start);
+                if(currLSregister.busy && currLSregister.ready) {
+                    if(currLSregister.type == Mnemonic.lw) {
+                        LSbuffer.dequeue();
+                        int result = Convert.ToInt32(DM[currLSregister.effectiveAddress], 2);
+                        currLSregister.busy = false;
+                        update(result, currLSregister.ROBEN);
+                    }
+                    else if(currLSregister.type == Mnemonic.sw) {
+                        if((ROB.start + 1)== currLSregister.ROBEN) {
+                            LSbuffer.dequeue();
+                            DM[currLSregister.effectiveAddress] = Convert.ToString(currLSregister.ROBEN2_val, 2);
+                        }
+                    }
                 }
-                LSstartIndex = (LSstartIndex + 1) % LSsize;
-                LSfullFlag = false;
             }
-
         }
 
         public void flushRegisters() {
@@ -909,56 +903,56 @@ namespace LibCPU
                 reservationStation[i].ROBEN2 = 0;
             }
 
-            ROBfullFlag = false;
+            ROB.flush();
+            LSbuffer.flush();
             flush = false;
-            ROBstartIndex = 0;
-            ROBendIndex = 0;
         }
 
         public void commit() {
             // if empty, return
-            if((ROBstartIndex == ROBendIndex) && ROB[ROBstartIndex].busy == false) return;
+            if(ROB.isEmpty()) return;
 
-            if(ROB[ROBstartIndex].type == Mnemonic.hlt) {
+            ROBregister currROBregister = ROB.getIndex(ROB.start);
+            if(currROBregister.type == Mnemonic.hlt) {
                 hlt = true;
                 return;
             }
 
-            if(ROB[ROBstartIndex].ready) {
+            if(currROBregister.ready) {
                 // if branch instruction, branch
-                if(ROB[ROBstartIndex].type == Mnemonic.beq || ROB[ROBstartIndex].type == Mnemonic.bne) {
-                    if(ROB[ROBstartIndex].ready) {
-                        targetaddress = ROB[ROBstartIndex].writeData;
+                if(currROBregister.type == Mnemonic.beq || currROBregister.type == Mnemonic.bne) {
+                    if(currROBregister.ready) {
+                        targetaddress = currROBregister.writeData;
                         pcsrc = PCsrc.branchTarget;
                         flushRegisters();
                     }
                     else 
                         pcsrc = PCsrc.PCplus1;
                 }
-                else if(ROB[ROBstartIndex].type == Mnemonic.j || ROB[ROBstartIndex].type == Mnemonic.jal || ROB[ROBstartIndex].type == Mnemonic.jr) {
-                    targetaddress = ROB[ROBstartIndex].writeData;
+                else if(currROBregister.type == Mnemonic.j || currROBregister.type == Mnemonic.jal || currROBregister.type == Mnemonic.jr) {
+                    targetaddress = currROBregister.writeData;
                     pcsrc = PCsrc.branchTarget;
                 }
-                else if(ROB[ROBstartIndex].type == Mnemonic.sw) { return; }
+                else if(currROBregister.type == Mnemonic.sw){
+                    ROB.dequeue();
+                    return;
+                } 
                 else {
-                    regs_ROBENS[ROB[ROBstartIndex].Rd] = 0;
-                    regs[ROB[ROBstartIndex].Rd] = ROB[ROBstartIndex].writeData;
+                    regs_ROBENS[currROBregister.Rd] = 0;
+                    regs[currROBregister.Rd] = currROBregister.writeData;
                 } 
 
-                ROB[ROBstartIndex].busy = false;
-                ROBstartIndex = (ROBstartIndex + 1) % ROBsize;
-                ROBfullFlag = false;
+                ROB.dequeue();
             }
         }
 
         public void update_PC() {
-            if (pcsrc == PCsrc.none) { return; }
-            else if (pcsrc == PCsrc.PCplus1) { PC += 1; }
-            else if (pcsrc == PCsrc.branchTarget) { PC = targetaddress; }
+            if (pcsrc == PCsrc.none) return; 
+            else if (pcsrc == PCsrc.PCplus1) PC += 1; 
+            else if (pcsrc == PCsrc.branchTarget) PC = targetaddress; 
         }
 
         void consumeInstruction() {
-
             string mc = IM[PC]; // fetch the instructon
             Instruction currInstruction = decodemc(mc, PC); // decode the instruction
             bool dispatched = dispatch(currInstruction); // dispatches the instruction into the ROB & LS or RS
@@ -1056,20 +1050,10 @@ namespace LibCPU
             }
             return source_reg;
         }
-        void update_PC()
-        {
-            if (pcsrc == PCsrc.none)
-            {
-                return;
-            }
-            else if (pcsrc == PCsrc.PCplus1)
-            {
-                PC += 1;
-            }
-            else if (pcsrc == PCsrc.pfc)
-            {
-                PC = targetaddress;
-            }
+        void update_PC() {
+            if (pcsrc == PCsrc.none) return;
+            else if (pcsrc == PCsrc.PCplus1) PC += 1; 
+            else if (pcsrc == PCsrc.pfc) PC = targetaddress; 
         }
         Instruction decodemc(string mc, int pc)
         {
