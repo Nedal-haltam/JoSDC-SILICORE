@@ -181,7 +181,7 @@
             // 
             cmbcpulist.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbcpulist.FormattingEnabled = true;
-            cmbcpulist.Items.AddRange(new object[] { "Pipe Lined", "Single Cycle" });
+            cmbcpulist.Items.AddRange(new object[] { "Pipe Lined", "Single Cycle", "SSOOO" });
             cmbcpulist.Location = new Point(1202, 11);
             cmbcpulist.Margin = new Padding(3, 4, 3, 4);
             cmbcpulist.MaxDropDownItems = 4;

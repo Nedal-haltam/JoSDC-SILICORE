@@ -67,6 +67,15 @@ namespace RealTimeCAS
                 cpu.DM = pl.DM;
                 return (cycles, excep, cpu);
             }
+            else if (curr_cpu == LibCPU.CPU_type.OOO)
+            {
+                LibCPU.OOO SSOOO = new LibCPU.OOO(mc, curr_data);
+                int cycles = SSOOO.Run();
+                cpu.regs = SSOOO.regs;
+                cpu.DM = SSOOO.DM;
+                // TODO: should return exception from `SSOOO.Run();` function call
+                return (cycles, LibCPU.MIPS.Exceptions.NONE, cpu);
+            }
             else
                 return (0, LibCPU.MIPS.Exceptions.EXCEPTION, new LibCPU.MIPS.CPU());
         }
