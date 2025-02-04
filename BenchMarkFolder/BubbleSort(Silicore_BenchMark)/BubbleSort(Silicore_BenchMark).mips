@@ -1,19 +1,19 @@
-// initializing the memory with reversed order array and with duplicates and negatives
+# initializing the memory with reversed order array and with duplicates and negatives
 
 
 
 .text
 
 main:
-// range : -10 : 10 (duplicates)
+# range : -10 : 10 (duplicates)
 ADDI $1, $0, 10
 
-// number of elements = 42 (0 -> 41)
-// $11 = 41 = 4 * $1 + 1
+# number of elements = 42 (0 -> 41)
+# $11 = 41 = 4 * $1 + 1
 SLL $11, $1, 2
 ADDI $11, $11, 1
 
-// index
+# index
 ADDI $2, $0, 0
 ADD $3, $0, $1
 
@@ -31,7 +31,7 @@ ADDI $3, $0, 0
 L1:
 BEQ $3, $11, EXITL1
 
-// j
+# j
 ADDI $4, $0, 0
 ADD $7, $0, $11
 SUB $7, $7, $3
