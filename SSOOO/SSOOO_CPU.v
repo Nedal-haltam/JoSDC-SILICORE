@@ -1,12 +1,16 @@
+
+`define ROB_SIZE_bits (4)
 module SSOOO_CPU
 (
     input input_clk, rst,
-    output reg [31:0] cycles_consumed
+    output reg [31:0] cycles_consumed,
+    output [31:0] PC_out,
+    output reg hlt
 );
 
 `include "opcodes.txt"
 
-wire [31:0] PC, PC_out, Branch_Target_Addr;
+wire [31:0] PC, Branch_Target_Addr;
 wire PC_src, clk;
 // InstQ
 wire [ 11:0] InstQ_opcode;
@@ -130,15 +134,17 @@ wire CDB_EXCEPTION4;
 
 // misc
 `define exception_handler 32'd1000
-reg hlt;
 // wire hlt;
 reg isjr;
 reg [31:0] EXCEPTION_EPC, EXCEPTION_CAUSE;
 parameter EXCEPTION_CAUSE_INVALID_IM_ADDR = 1,
           EXCEPTION_CAUSE_INVALID_DM_ADDR = 2;
 
-always@(posedge clk) begin
-    hlt <= ROB_Commit_opcode == hlt_inst;
+always@(posedge clk, posedge rst) begin
+    if (rst)
+        hlt <= 1'b0;
+    else
+        hlt <= ROB_Commit_opcode == hlt_inst;
 end
 // assign hlt <= ROB_Commit_opcode == hlt_inst;
 

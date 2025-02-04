@@ -2,25 +2,8 @@
 
 
 
-`define DE10LITE
 
-// these are the width and height per character (in pixels)
-`define CHARW 6
-`define CHARH 8
-// this is the Rectangle size (RS) which is the ratio we used to scale our image
-`define RS 5
-// these are the width and height in terms of number of characters
-`define WIDTH_CHARS 21
-`define HEIGHT_CHARS 2
-`define CHAR_COUNT (`WIDTH_CHARS * `HEIGHT_CHARS)
-
-
-`define ERROR_COND(VAR) if (!iRST_n) VAR <= 0; else if (cHS==1'b0 && cVS==1'b0) VAR <= 0;
-
-
-`ifdef DE10LITE
-`define COLORW 4
-`endif
+`include "Defs.txt"
 
 module VGA_Interface(
 
@@ -31,17 +14,17 @@ module VGA_Interface(
 
 	//////////// SEG7 //////////
 	output		     [7:0]		HEX0,
-//	output		     [7:0]		HEX1,
-//	output		     [7:0]		HEX2,
-//	output		     [7:0]		HEX3,
-//	output		     [7:0]		HEX4,
-//	output		     [7:0]		HEX5,
+	output		     [7:0]		HEX1,
+	output		     [7:0]		HEX2,
+	output		     [7:0]		HEX3,
+	output		     [7:0]		HEX4,
+	output		     [7:0]		HEX5,
 
 	//////////// KEY //////////
-//	input 		     [1:0]		KEY,
+	input 		     [1:0]		KEY,
 
 	//////////// LED //////////
-//	output		     [9:0]		LEDR,
+	output		     [9:0]		LEDR,
 
 	//////////// SW //////////
 //	input 		     [9:0]		SW,
@@ -55,9 +38,28 @@ module VGA_Interface(
 );
 
 
-wire VGA_CLK, DLY_RST;
+wire VGA_CLK, DLY_RST, hlt, input_clk;
+wire [31:0] cycles_consumed;
+wire [31:0] PC;
 
-bcd7seg sdf(4'd0, HEX0);
+wire [31:0] cycles_consumed1 = (cycles_consumed / 1    ) % 10;
+wire [31:0] cycles_consumed2 = (cycles_consumed / 10   ) % 10;
+wire [31:0] cycles_consumed3 = (cycles_consumed / 100  ) % 10;
+wire [31:0] cycles_consumed4 = (cycles_consumed / 1000 ) % 10;
+
+bcd7seg cycles1(cycles_consumed1[3:0], HEX0);
+bcd7seg cycles2(cycles_consumed2[3:0], HEX1);
+bcd7seg cycles3(cycles_consumed3[3:0], HEX2);
+bcd7seg cycles4(cycles_consumed4[3:0], HEX3);
+
+wire [31:0] PC1 = (PC / 1 ) % 10;
+wire [31:0] PC2 = (PC / 10) % 10;
+bcd7seg pc1(PC1[3:0], HEX4);
+bcd7seg pc2(PC2[3:0], HEX5);
+
+
+assign LEDR[0] = hlt;
+assign LEDR[1] = input_clk;
 	
 Reset_Delay reset
 (
@@ -71,9 +73,10 @@ VGA_PLL
 	.inclk0(MAX10_CLK1_50),
 	.c0(VGA_CLK)
 );
-							 
+
 VGA_controller VGA_CTRL
 (
+	.fpga_clk(MAX10_CLK2_50),
 	.iVGA_CLK(VGA_CLK), 
 	.iRST_n(DLY_RST), 
 	
@@ -82,13 +85,24 @@ VGA_controller VGA_CTRL
 	.b_data(VGA_B),
 	
 	.oHS(VGA_HS),
-	.oVS(VGA_VS)
+	.oVS(VGA_VS),
+
+	.manual_rst(~KEY[0]),
+	.input_clk(input_clk),
+	.cycles_consumed(cycles_consumed),
+	.PC(PC),
+	.hlt(hlt)
+	
 );
 
-
-
-
 endmodule
+
+
+
+
+
+
+
 
 module	Reset_Delay(iCLK,oRESET);
 input		iCLK;

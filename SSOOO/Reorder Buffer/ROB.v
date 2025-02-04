@@ -163,6 +163,7 @@ always@(posedge clk, posedge rst) begin
             Reg_Ready[`I(i)] <= 0;
             Reg_Speculation[`I(i)] <= 0;
             Reg_Exception[`I(i)] <= 0;
+            Reg_opcode[`I(i)] <= 0;
         end
         Start_Index <= 1;
     end

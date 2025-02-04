@@ -8,8 +8,20 @@
 
 // `define invimem
 //`define invdmem
-`define bubble
+//`define bubble
 //`define insertion
+`define simple
+
+
+`ifdef simple
+InstMem[  0] <= 32'h20020064; // addi $2 $zero 100
+InstMem[  1] <= 32'h2042FFFF; // addi $2 $2 -1
+InstMem[  2] <= 32'h0040082A; // slt $at $2 $0
+InstMem[  3] <= 32'h1020FFFE; // beq $at $0 -2
+InstMem[  4] <= 32'h00000000; // nop
+InstMem[  5] <= 32'hFC000000; // hlt
+`endif
+
 
 `ifdef insertion
 InstMem[ 0] <= 32'h2014000A;// addi $20 $0 10

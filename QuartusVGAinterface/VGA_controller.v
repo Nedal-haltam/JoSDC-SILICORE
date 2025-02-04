@@ -1,28 +1,11 @@
 
 
 
-`define DE10LITE
-
-// these are the width and height per character (in pixels)
-`define CHARW 6
-`define CHARH 8
-// this is the Rectangle size (RS) which is the ratio we used to scale our image
-`define RS 5
-// these are the width and height in terms of number of characters
-`define WIDTH_CHARS 21
-`define HEIGHT_CHARS 2
-`define CHAR_COUNT (`WIDTH_CHARS * `HEIGHT_CHARS)
-
-
-`define ERROR_COND(VAR) if (!iRST_n) VAR <= 0; else if (cHS==1'b0 && cVS==1'b0) VAR <= 0;
-
-
-`ifdef DE10LITE
-`define COLORW 4
-`endif
+`include "Defs.txt"
 
 module VGA_controller
 (
+	input fpga_clk,
 	input iVGA_CLK,
 	input iRST_n,
 	
@@ -31,7 +14,14 @@ module VGA_controller
 	output [`COLORW - 1:0] b_data,
 	
 	output reg oHS,
-	output reg oVS
+	output reg oVS,
+	
+	
+	input manual_rst,
+	output input_clk,
+	output [31:0] cycles_consumed,
+	output [31:0] PC,
+	output hlt
 );
 
 parameter addrw = 19;
@@ -45,7 +35,7 @@ reg [addrw:0] ADDR;
 
 wire [addrw:0] FINAL_ADDR;
 wire datasource;
-wire [3*`COLORW - 1: 0] RGB_Static;
+wire [3*`COLORW - 1: 0] RGB_Static, RGB_Auto;
 wire cBLANK_n,cHS,cVS;
 
 ////
@@ -115,14 +105,51 @@ ImageStatic IMG
 );
 `endif
 
+autoMAN automan
+(
+	.iVGA_CLK(iVGA_CLK), 
+	.iRST_n(iRST_n), 
+	.enable(datasource), 
+	.cHS(cHS), 
+	.cVS(cVS), 
+	.RGB_out(RGB_Auto)
+);
+
+reg [24:0] clk_divider = 0;
+always@(posedge fpga_clk) begin
+		clk_divider <= clk_divider + 1'b1;
+end
+assign input_clk = clk_divider[20];
+SSOOO_CPU cpu
+(
+    .input_clk(input_clk), 
+	 .rst(manual_rst),
+    .cycles_consumed(cycles_consumed),
+	 .PC_out(PC),
+	 .hlt(hlt)
+);
+
+
+
+/*
+TODO:
+	- ability to switch between the modes: 
+		- static mode: all from `ImageStatic` memory
+		- automatic mode: text from automAN
+		- MIX mode: from both and they should be organized we they don't overlap: e.g. static text + current instruction from the CPU
+		- dualport mode: the VGA reads and the CPU writes
+*/
+
+
+
+
+
+
 
 //////latch valid data at falling edge;
 always@(negedge iVGA_CLK) begin
 
-//if (datasource == 1'b1)
-//	RGB_Data <= rgb_from_cpu;
-//else
-	RGB_Data <= RGB_Static;
+RGB_Data <= (datasource) ? RGB_Auto : RGB_Static;
 
 end
 

@@ -196,7 +196,11 @@ reg [1:0] count;
 always@(posedge clk, posedge rst) begin
     if (rst) begin
         RS_FU_RS_ID1 <= 0;
+        RS_FU_ROBEN1 <= 0;
         RS_FU_RS_ID2 <= 0;
+        RS_FU_ROBEN2 <= 0;
+        RS_FU_RS_ID3 <= 0;
+        RS_FU_ROBEN3 <= 0;
     end
     else begin
 
@@ -262,11 +266,11 @@ always@(posedge clk, posedge rst) begin
     end
 end
 
-wire b1, b2, b3, b4;
-assign b1 = (Reg_Busy[4'd4] && Reg_ROBEN1[4'd4] == 0 && Reg_ROBEN2[4'd4] == 0);
-assign b2 = (Reg_Busy[4'd5] && Reg_ROBEN1[4'd5] == 0 && Reg_ROBEN2[4'd5] == 0);
-assign b3 = (Reg_Busy[4'd6] && Reg_ROBEN1[4'd6] == 0 && Reg_ROBEN2[4'd6] == 0);
-assign b4 = (Reg_Busy[4'd7] && Reg_ROBEN1[4'd7] == 0 && Reg_ROBEN2[4'd7] == 0);
+// wire b1, b2, b3, b4;
+// assign b1 = (Reg_Busy[4'd4] && Reg_ROBEN1[4'd4] == 0 && Reg_ROBEN2[4'd4] == 0);
+// assign b2 = (Reg_Busy[4'd5] && Reg_ROBEN1[4'd5] == 0 && Reg_ROBEN2[4'd5] == 0);
+// assign b3 = (Reg_Busy[4'd6] && Reg_ROBEN1[4'd6] == 0 && Reg_ROBEN2[4'd6] == 0);
+// assign b4 = (Reg_Busy[4'd7] && Reg_ROBEN1[4'd7] == 0 && Reg_ROBEN2[4'd7] == 0);
 
 
 endmodule

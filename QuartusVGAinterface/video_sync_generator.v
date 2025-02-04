@@ -1,23 +1,5 @@
 
-`define DE10LITE
-
-// these are the width and height per character (in pixels)
-`define CHARW 6
-`define CHARH 8
-// this is the Rectangle size (RS) which is the ratio we used to scale our image
-`define RS 5
-// these are the width and height in terms of number of characters
-`define WIDTH_CHARS 21
-`define HEIGHT_CHARS 2
-`define CHAR_COUNT (`WIDTH_CHARS * `HEIGHT_CHARS)
-
-
-`define ERROR_COND(VAR) if (!iRST_n) VAR <= 0; else if (cHS==1'b0 && cVS==1'b0) VAR <= 0;
-
-
-`ifdef DE10LITE
-`define COLORW 4
-`endif
+`include "Defs.txt"
 
 module video_sync_generator(reset,
                             vga_clk,
@@ -91,19 +73,15 @@ parameter vert_line  = 525;
 
 
 
-`ifdef small
-parameter hori_front = 16 + resxbar;
-parameter vert_front = 10 + resybar;
-`else
+
 parameter hori_front = 16;
 parameter vert_front = 10;
-`endif
+
 
 
 // these parameters are know at compile time
 // but getting data is at runtime from the proc_interface and draw it on the screen
-parameter numofchars = 0;
-parameter startx = hori_back + numofchars * `CHARW * `RS;
+parameter startx = hori_back;
 parameter starty = vert_back;
 parameter endx   = startx    + (`WIDTH_CHARS  * `CHARW * `RS);
 parameter endy   = starty    + (`HEIGHT_CHARS * `CHARH * `RS);
@@ -141,8 +119,8 @@ assign cHD = ((h_cnt) < H_sync_cycle) ? 1'b0 : 1'b1 ;
 assign cVD = ((v_cnt) < V_sync_cycle) ? 1'b0 : 1'b1 ;
 
 
-//assign datasource = (h_cnt >= startx && h_cnt < endx && v_cnt >= starty && v_cnt < endy) ? 1'b1 : 1'b0;
-assign datasource = 1'b0;
+assign datasource = (h_cnt >= startx && h_cnt < endx && v_cnt >= starty && v_cnt < endy) ? 1'b1 : 1'b0;
+//assign datasource = 1'b0;
 
 
 // these valid flags are high when we should output our data to the monitor and increament our addr in the memory

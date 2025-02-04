@@ -38,7 +38,7 @@ reg clk = 0, rst = 0;
 wire [31:0] PC;
 wire [31 : 0] cycles_consumed;
 
-SSOOO_CPU cpu(clk, rst, cycles_consumed);
+SSOOO_CPU cpu(clk, rst, cycles_consumed, PC, hlt);
 
 
 always #(`HALF_CYCLE) clk <= ~clk;
