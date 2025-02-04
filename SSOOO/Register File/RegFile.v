@@ -95,20 +95,30 @@ end
 
 
 
-always@(posedge clk) begin
-    if (ROB_FLUSH_Flag || (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN && WP1_DRindex == RP1_index1)) begin
+always@(posedge clk, posedge rst) begin
+    if (rst) begin
         RP1_Reg1_ROBEN <= 0;
     end
-    else begin
-        RP1_Reg1_ROBEN <= Reg_ROBEs[RP1_index1];
+        else begin
+        if (ROB_FLUSH_Flag || (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN && WP1_DRindex == RP1_index1)) begin
+            RP1_Reg1_ROBEN <= 0;
+        end
+        else begin
+            RP1_Reg1_ROBEN <= Reg_ROBEs[RP1_index1];
+        end
     end
 end
-always@(posedge clk) begin
-    if (ROB_FLUSH_Flag || (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN && WP1_DRindex == RP1_index2)) begin
+always@(posedge clk, posedge rst) begin
+    if (rst) begin
         RP1_Reg2_ROBEN <= 0;
     end
-    else begin
-        RP1_Reg2_ROBEN <= Reg_ROBEs[RP1_index2];
+        else begin
+        if (ROB_FLUSH_Flag || (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN && WP1_DRindex == RP1_index2)) begin
+            RP1_Reg2_ROBEN <= 0;
+        end
+        else begin
+            RP1_Reg2_ROBEN <= Reg_ROBEs[RP1_index2];
+        end
     end
 end
 

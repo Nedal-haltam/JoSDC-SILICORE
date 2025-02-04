@@ -1,10 +1,12 @@
 
-
+`define length 4
+// `include "Defs.txt"
 module autoMAN
 (
 	input iVGA_CLK, iRST_n, 
 	input enable, 
 	input cHS, cVS, 
+	input [0 : `length * 8 - 1] word,
 	output reg [3*`COLORW - 1: 0] RGB_out
 );
 
@@ -51,11 +53,11 @@ end
 
 `define char(dest, src, i) assign dest[i] = src[8*(i) +: 8]
 
-`define length 11
-wire [0 : `length * 8 - 1] word = "Hello World"; 
+
 wire [7:0] data [0 : `length - 1'b1];
 
 wire [7:0] i, index;
+// assign i = (data[i+offset] == `terminating_char) ? i : (addrx / 30 + `WIDTH_CHARS*(addry / 40));
 assign i = addrx / 30 + `WIDTH_CHARS*(addry / 40);
 
 generate
@@ -77,6 +79,7 @@ end
 
 
 always@(posedge iVGA_CLK) begin
+	// if (data[i+offset] == `terminating_char) begin
 	if (i >= `length) begin
 		RGB_out <= 12'd0;
 	end

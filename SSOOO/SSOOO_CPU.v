@@ -1,5 +1,8 @@
 
 `define ROB_SIZE_bits (4)
+
+
+`ifdef vscode
 module SSOOO_CPU
 (
     input input_clk, rst,
@@ -8,17 +11,35 @@ module SSOOO_CPU
     output reg hlt
 );
 
+`else
+module SSOOO_CPU
+(
+    input input_clk, rst,
+    output reg [31:0] cycles_consumed,
+    output [31:0] PC_out,
+    output reg hlt,
+
+    output [11:0] InstQ_opcode,
+    output [4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt,
+    output [15:0] InstQ_immediate,
+    output [25:0] InstQ_address,
+    output [31:0] InstQ_PC
+);
+`endif
+
 `include "opcodes.txt"
 
 wire [31:0] PC, Branch_Target_Addr;
 wire PC_src, clk;
 // InstQ
-wire [ 11:0] InstQ_opcode;
 wire [3:0] InstQ_ALUOP;
-wire [ 4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt;
-wire [15:0] InstQ_immediate;
-wire [25:0] InstQ_address;
-wire [31:0] InstQ_PC;
+`ifdef vscode
+    wire [ 11:0] InstQ_opcode;
+    wire [ 4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt;
+    wire [15:0] InstQ_immediate;
+    wire [25:0] InstQ_address;
+    wire [31:0] InstQ_PC;
+`endif
 wire InstQ_VALID_Inst;
 wire InstQ_FLUSH_Flag;
 
@@ -182,8 +203,12 @@ always@(negedge clk, posedge rst) begin
     isjr <= (rst) ? 1'b0 : ((isjr) ? 1'b0 : InstQ_opcode == jr);
 end
 
-always@(posedge clk) begin
-    if (~rst) begin
+always@(posedge clk, posedge rst) begin
+    if (rst) begin
+        EXCEPTION_EPC <= 0;
+        EXCEPTION_CAUSE <= 0;
+    end
+    else begin
         if (ROB_FLUSH_Flag && ~ROB_Wrong_prediction) begin
             EXCEPTION_EPC <= ROB_Commit_pc;
             EXCEPTION_CAUSE <= EXCEPTION_CAUSE_INVALID_DM_ADDR;

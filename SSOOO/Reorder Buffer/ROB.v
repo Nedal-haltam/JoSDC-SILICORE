@@ -132,15 +132,21 @@ assign RP1_Ready2 = Reg_Ready[`Imone(RP1_ROBEN2)];
 
 
 // assign FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
-always@(posedge clk)
-    FULL_FLAG <= ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
+always@(posedge clk, posedge rst) begin
+    if (rst) begin
+        FULL_FLAG <= 1'b0;
+    end
+    else begin
+        FULL_FLAG <= End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)]);
+    end
+end
 assign EXCEPTION_Flag = Reg_Busy[`Imone(Start_Index)] & Reg_Exception[`Imone(Start_Index)];
 
 
 
 reg [`ROB_SIZE_bits:0] i = 0;
 reg [`ROB_SIZE_bits:0] k = 0;
-always@(negedge clk) begin
+always@(negedge clk, posedge rst) begin
 
     if (rst) begin
         End_Index <= 1;

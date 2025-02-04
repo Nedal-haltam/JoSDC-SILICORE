@@ -27,7 +27,7 @@ module VGA_Interface(
 	output		     [9:0]		LEDR,
 
 	//////////// SW //////////
-//	input 		     [9:0]		SW,
+	input 		     [9:0]		SW,
 
 	//////////// VGA //////////
 	output		     [3:0]		VGA_R,
@@ -88,6 +88,7 @@ VGA_controller VGA_CTRL
 	.oVS(VGA_VS),
 
 	.manual_rst(~KEY[0]),
+	// .manual_rst(SW[0]),
 	.input_clk(input_clk),
 	.cycles_consumed(cycles_consumed),
 	.PC(PC),
