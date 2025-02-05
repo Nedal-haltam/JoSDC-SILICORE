@@ -1,4 +1,3 @@
-
 using System.Text;
 using System.Collections.Generic;
 
@@ -496,6 +495,7 @@ namespace LibCPU {
             public bool ready;
             public bool exception;
             public int writeData; 
+            public int PC;
             public bool BranchDecision;
 
             public ROBregister(Mnemonic type) {
@@ -505,6 +505,7 @@ namespace LibCPU {
                 this.ready       = false;
                 this.exception   = false;
                 this.writeData   = 0;
+                this.PC          = 0;
             }
         }
 
@@ -673,10 +674,12 @@ namespace LibCPU {
                 if(currInstruction.mnem == Mnemonic.beq || currInstruction.mnem == Mnemonic.bne)
                     currROBregister.writeData = currInstruction.immeds + currInstruction.PC;
                 
-                if(currInstruction.mnem == Mnemonic.j) {
+                if(currInstruction.mnem == Mnemonic.j || currInstruction.mnem == Mnemonic.jal) {
                     currROBregister.writeData = currInstruction.address;
                     currROBregister.ready       = true;
+                    currROBregister.PC          = currInstruction.PC;
                     ROB.enqueue(currROBregister);
+                    if(currInstruction.mnem == Mnemonic.jal) regs_ROBENS[31] = ROB.end;
                     return true;
                 }
                     
@@ -732,6 +735,10 @@ namespace LibCPU {
                             if(currInstruction.mnem == Mnemonic.sll || currInstruction.mnem == Mnemonic.srl){
                                 reservationStation[i].ROBEN2 = 0;
                                 reservationStation[i].ROBEN2_val = currInstruction.oper2;
+                            }
+                            else if(currInstruction.mnem == Mnemonic.jr) {
+                                reservationStation[i].ROBEN2 = 0;
+                                reservationStation[i].ROBEN2_val = 0;
                             }
                             else {
                                 // assigns the ROBEN of the second operand
@@ -793,19 +800,13 @@ namespace LibCPU {
                                 reservationStation[i].ROBEN2_val = currInstruction.oper2;
                             }   
                         }
-                        else if(currInstruction.format == "J") {
-                            reservationStation[i].ROBEN1       = 0;
-                            reservationStation[i].ROBEN1_val   = currInstruction.oper1;
-                            reservationStation[i].ROBEN2       = 0;
-                            reservationStation[i].ROBEN2_val   = currInstruction.oper2;
-                        }
                         break;
                     }
                 }
 
                 // updates register file ROBEN
                 if(currInstruction.rdind != 0 && currInstruction.mnem != Mnemonic.beq && currInstruction.mnem != Mnemonic.bne
-                && currInstruction.mnem != Mnemonic.j) 
+                && currInstruction.mnem != Mnemonic.jr) 
                     regs_ROBENS[currInstruction.rdind] = tempROBen + 1;
 
                 return true;
@@ -986,6 +987,7 @@ namespace LibCPU {
                     }
                     else if(currLSregister.type == Mnemonic.sw) {
                         if((ROB.start + 1)== currLSregister.ROBEN) {
+                            ROB.getIndex(ROB.start).ready = true;
                             LSbuffer.dequeue();
                             DM[currLSregister.effectiveAddress] = Convert.ToString(currLSregister.ROBEN2_val, 2);
                         }
@@ -1038,6 +1040,10 @@ namespace LibCPU {
                 else if(currROBregister.type == Mnemonic.j || currROBregister.type == Mnemonic.jal || currROBregister.type == Mnemonic.jr) {
                     targetaddress = currROBregister.writeData;
                     pcsrc = PCsrc.branchTarget;
+                    if(currROBregister.type == Mnemonic.jal) {
+                        regs_ROBENS[31] = 0;
+                        regs[31] = currROBregister.PC + 1;
+                    }
                 }
                 else if(currROBregister.type == Mnemonic.sw){
                     ROB.dequeue();
