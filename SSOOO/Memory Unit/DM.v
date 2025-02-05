@@ -15,6 +15,12 @@ module DM
     output reg [31:0] MEMU_Result
 `else
     output [31:0] MEMU_Result
+`ifdef VGA
+    ,input [9:0] VGA_address,
+    input VGA_clk,
+    output [31:0] VGA_data
+`endif
+
 `endif
 );
 integer i;
@@ -51,6 +57,7 @@ integer i;
     always@(negedge clk) begin
         MEMU_ROBEN <= ROBEN;
     end
+`ifndef VGA
     DataMemory_IP DataMemory
     (
         address[9:0],
@@ -59,6 +66,23 @@ integer i;
         Write_en,
         MEMU_Result
     );
+`else
+
+DataMemory_IP2PORT DataMemory
+(
+	.address_a(address[9:0]),
+	.address_b(VGA_address),
+	.clock_a(~clk),
+	.clock_b(VGA_clk),
+	.data_a(data),
+	.data_b(32'd0),
+	.wren_a(Write_en),
+	.wren_b(1'b0),
+	.q_a(MEMU_Result),
+	.q_b(VGA_data)
+);
+
+`endif
 
 `endif
 

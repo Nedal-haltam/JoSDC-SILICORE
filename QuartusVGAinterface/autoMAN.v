@@ -5,7 +5,10 @@ module autoMAN
 	input iVGA_CLK, iRST_n, 
 	input enable, 
 	input cHS, cVS, 
-	input [0 : (`length + 1) * 8 - 1] word,
+	output [7:0] address,
+	input word_RunTimeData_FLAG,
+	input [31:0] RunTimeData,
+	input [0 : (`length) * 8 - 1] word,
 	output reg [3*`COLORW - 1: 0] RGB_out
 );
 
@@ -57,7 +60,7 @@ wire [7:0] data [0 : `length - 1'b1];
 
 wire [7:0] i, index;
 assign i = addrx / 30 + `WIDTH_CHARS*(addry / 40);
-
+assign address  = i;
 generate
     genvar j;
     for (j = 0; j < `length; j = j + 1) begin : required_block_name
@@ -66,10 +69,16 @@ generate
 endgenerate
 
 always@(posedge iVGA_CLK) begin
-	RGB_out <= (i >= `length || data[i] == `terminating_char || data[i] == 0 || data[i] == " ") ? 12'd0 : 
-	(
-		(index == 8'hFF) ? 12'd0 : RGB_temp
-	);
+	if (word_RunTimeData_FLAG) begin
+		RGB_out <= (RunTimeData != 0) ? 12'hFFF : 12'd0;
+		// RGB_out <= (RunTimeData[0]) ? 12'hFFF : 12'd0;
+	end
+	else begin
+		RGB_out <= (address >= `length || data[address] == `terminating_char || data[address] == 0 || data[address] == " ") ? 12'd0 : 
+		(
+			(index == 8'hFF) ? 12'd0 : RGB_temp
+		);
+	end
 end
 
 char2index C2I

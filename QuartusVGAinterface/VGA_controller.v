@@ -46,6 +46,18 @@ wire [4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt;
 wire [15:0] InstQ_immediate;
 wire [25:0] InstQ_address;
 wire [31:0] InstQ_PC;
+wire [9:0] VGA_address;
+wire VGA_clk;
+wire [31:0] VGA_data;
+wire word_RunTimeData_FLAG;
+
+wire [0 : 2 * 8 - 1] text_rs;
+wire [0 : 2 * 8 - 1] text_rt;
+wire [0 : 2 * 8 - 1] text_rd;
+wire [0 : 2 * 8 - 1] text_shamt;
+wire [0 : 6 * 8 - 1] text_signed_immediate;
+wire [0 : 6 * 8 - 1] text_unsigned_immediate;
+wire [0 : 5 * 8 - 1] text_address = "addrr";
 
 
 
@@ -103,7 +115,6 @@ end
 end
 
 
-assign FINAL_ADDR = (tempADDRx / `RS) + (tempADDRy / `RS)*(128);
 
 //////////////////////////////////////////////////////////////////////////////
 `ifdef DE10LITE
@@ -122,23 +133,14 @@ autoMAN automan
 	.enable(datasource), 
 	.cHS(cHS), 
 	.cVS(cVS), 
-	.word({TextCurrentInst}),
+	.address(VGA_address[7:0]),
+	.word_RunTimeData_FLAG(word_RunTimeData_FLAG),
+	.RunTimeData(VGA_data),
+	// .word({TextCurrentInst}),
+	.word({"Hello World"}),
 	.RGB_out(RGB_Auto)
 );
 //////////////////////////////////////////////////////////////////////////////
-
-
-`define text
-`ifndef text
-SSOOO_CPU cpu
-(
-    .input_clk(input_clk), 
-	.rst(manual_rst),
-	.cycles_consumed(cycles_consumed),
-	.PC_out(PC),
-	.hlt(hlt)
-);
-`else
 SSOOO_CPU cpu
 (
     .input_clk(input_clk), 
@@ -153,18 +155,11 @@ SSOOO_CPU cpu
 	.InstQ_shamt(InstQ_shamt),
 	.InstQ_immediate(InstQ_immediate),
 	.InstQ_address(InstQ_address),
-	.InstQ_PC(InstQ_PC)
+	.InstQ_PC(InstQ_PC),
+	.VGA_address(VGA_address),
+    .VGA_clk(VGA_clk),
+    .VGA_data(VGA_data)
 );
-
-wire [0 : 2 * 8 - 1] text_rs;
-wire [0 : 2 * 8 - 1] text_rt;
-wire [0 : 2 * 8 - 1] text_rd;
-wire [0 : 2 * 8 - 1] text_shamt;
-wire [0 : 6 * 8 - 1] text_signed_immediate;
-wire [0 : 6 * 8 - 1] text_unsigned_immediate;
-wire [0 : 5 * 8 - 1] text_address = "addrr";
-
-// two digit number
 fivebit2text I2Trd
 (
 	.index(InstQ_rd),
@@ -196,16 +191,11 @@ sixteenbit2text_unsigned immediate_unsigned
 	.index(InstQ_immediate),
 	.text_index(text_unsigned_immediate)
 );
-
 `define reg_char "X"
 `define open_paren " " 
 `define close_paren " " 
 `define TEXT_RTYPE(mnemonic) TextCurrentInst <= {mnemonic, `reg_char, text_rd, `reg_char, text_rs, `reg_char, text_rt, `terminating_char}
-
-
 always@(InstQ_opcode, InstQ_rt, InstQ_rs, InstQ_rd, InstQ_immediate) begin
-
-
 case (InstQ_opcode)
 	add :
 	begin
@@ -310,15 +300,25 @@ case (InstQ_opcode)
 
 endcase
 end
-`endif
+//////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
 
 /*
 TODO:
-	- ability to switch between the modes: 
-		- static mode: all from `ImageStatic` memory
-		- automatic mode: text from automAN
-		- MIX mode: from both and they should be organized we they don't overlap: e.g. autoMAN + current instruction from the CPU
-		- dualport mode: the VGA reads and the CPU writes
+	- negative numbers
+	- address2text
+	- parenthesis
+	- ability to switch between the modes
+
+- done: static mode: all from `ImageStatic` memory, (datasource = 1'b0)
+- done: automatic mode: text from automAN, (datasource = 1'b1)
+- done: MIX mode: from both (static image & autoMAN which is the current instruction from the CPU), (datasource = (boundary set in video_sync_generator))
+- dualport mode: the VGA reads and the CPU writes
 */
 
 
@@ -329,14 +329,16 @@ TODO:
 
 //////latch valid data at falling edge;
 always@(negedge iVGA_CLK) begin
-
-RGB_Data <= (datasource) ? RGB_Auto : RGB_Static;
-
+	RGB_Data <= (datasource) ? RGB_Auto : RGB_Static;
 end
 
 assign r_data = (cBLANK_n == 1'b0) ? 0 : RGB_Data[1*`COLORW - 1: 0*`COLORW];
 assign g_data = (cBLANK_n == 1'b0) ? 0 : RGB_Data[2*`COLORW - 1: 1*`COLORW];
 assign b_data = (cBLANK_n == 1'b0) ? 0 : RGB_Data[3*`COLORW - 1: 2*`COLORW];
+assign FINAL_ADDR = (tempADDRx / `RS) + (tempADDRy / `RS)*(128);
+assign VGA_clk = iVGA_CLK;
+assign VGA_address[9:8] = 2'd0;
+assign word_RunTimeData_FLAG = 1'b1;
 
 ///////////////////
 //////Delay the iHD, iVD,iDEN for one clock cycle;

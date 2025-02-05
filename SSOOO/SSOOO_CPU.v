@@ -2,16 +2,15 @@
 `define ROB_SIZE_bits (4)
 
 
-`ifdef vscode
+`ifndef VGA
 module SSOOO_CPU
 (
     input input_clk, rst,
-    output reg [31:0] cycles_consumed,
-    output [31:0] PC_out,
-    output reg hlt
+    output reg [31:0] cycles_consumed
 );
 
 `else
+
 module SSOOO_CPU
 (
     input input_clk, rst,
@@ -23,7 +22,11 @@ module SSOOO_CPU
     output [4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt,
     output [15:0] InstQ_immediate,
     output [25:0] InstQ_address,
-    output [31:0] InstQ_PC
+    output [31:0] InstQ_PC,
+
+    input [9:0] VGA_address,
+    input VGA_clk,
+    output [31:0] VGA_data
 );
 `endif
 
@@ -31,9 +34,12 @@ module SSOOO_CPU
 
 wire [31:0] PC, Branch_Target_Addr;
 wire PC_src, clk;
+
 // InstQ
 wire [3:0] InstQ_ALUOP;
-`ifdef vscode
+`ifndef VGA
+    wire [31:0] PC_out;
+    reg hlt;
     wire [ 11:0] InstQ_opcode;
     wire [ 4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt;
     wire [15:0] InstQ_immediate;
@@ -674,6 +680,11 @@ DM datamemory
     .MEMU_invalid_address(MEMU_invalid_address),
     .MEMU_ROBEN(MEMU_ROBEN),
     .MEMU_Result(MEMU_Result)
+`ifdef VGA
+    ,.VGA_address(VGA_address),
+    .VGA_clk(VGA_clk),
+    .VGA_data(VGA_data)
+`endif
 
 );
 
