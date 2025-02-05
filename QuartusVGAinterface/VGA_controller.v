@@ -5,7 +5,6 @@
 
 module VGA_controller
 (
-	input fpga_clk,
 	input iVGA_CLK,
 	input iRST_n,
 	
@@ -18,7 +17,7 @@ module VGA_controller
 	
 	
 	input manual_rst,
-	output input_clk,
+	input input_clk,
 	output [31:0] cycles_consumed,
 	output [31:0] PC,
 	output hlt
@@ -35,14 +34,7 @@ reg [addrw:0] tempADDRx;
 reg [addrw:0] tempADDRy;
 reg [addrw:0] ADDR;
 
-reg [0 : 4 * 8 - 1]text_opcode;
-reg [0 : 3 * 8 - 1]text_rs;
-reg [0 : 3 * 8 - 1]text_rt;
-reg [0 : 3 * 8 - 1]text_rd;
-reg [0 : 2 * 8 - 1]text_shamt;
-reg [0 : 5 * 8 - 1]text_immediate;
-reg [0 : 5 * 8 - 1]text_address;
-reg [0 : 5 * 8 - 1]text_PC;
+reg [0 : `length * 8 - 1] TextCurrentInst;
 
 wire [addrw:0] FINAL_ADDR;
 wire datasource;
@@ -54,6 +46,8 @@ wire [4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt;
 wire [15:0] InstQ_immediate;
 wire [25:0] InstQ_address;
 wire [31:0] InstQ_PC;
+
+
 
 
 ////
@@ -128,27 +122,10 @@ autoMAN automan
 	.enable(datasource), 
 	.cHS(cHS), 
 	.cVS(cVS), 
-	.word({text_opcode}),
-	// .word({"text opcode", `terminating_char}),
+	.word({TextCurrentInst}),
 	.RGB_out(RGB_Auto)
 );
 //////////////////////////////////////////////////////////////////////////////
-reg [24:0] clk_divider = 0;
-// wire cpuclk;
-// CPU_PLL cpupll
-// (
-// 	.areset(1'b0),
-// 	.inclk0(fpga_clk),
-// 	.c0(cpuclk)
-// );
-always@(posedge fpga_clk) begin
-	clk_divider <= clk_divider + 1'b1;
-end
-assign input_clk = clk_divider[20];
-// always@(posedge cpuclk) begin
-// 	clk_divider <= clk_divider + 1'b1;
-// end
-// assign input_clk = clk_divider[6];
 
 
 `define text
@@ -178,47 +155,164 @@ SSOOO_CPU cpu
 	.InstQ_address(InstQ_address),
 	.InstQ_PC(InstQ_PC)
 );
-always@(InstQ_opcode) begin
+
+wire [0 : 2 * 8 - 1] text_rs;
+wire [0 : 2 * 8 - 1] text_rt;
+wire [0 : 2 * 8 - 1] text_rd;
+wire [0 : 2 * 8 - 1] text_shamt;
+wire [0 : 6 * 8 - 1] text_signed_immediate;
+wire [0 : 6 * 8 - 1] text_unsigned_immediate;
+wire [0 : 5 * 8 - 1] text_address = "addrr";
+
+// two digit number
+fivebit2text I2Trd
+(
+	.index(InstQ_rd),
+	.text_index(text_rd)
+);
+fivebit2text I2Trs
+(
+	.index(InstQ_rs),
+	.text_index(text_rs)
+);
+fivebit2text I2Trt
+(
+	.index(InstQ_rt),
+	.text_index(text_rt)
+);
+fivebit2text I2Tshamt
+(
+	.index(InstQ_shamt),
+	.text_index(text_shamt)
+);
+sixteenbit2text_signed immediate_signed
+(
+	.index(InstQ_immediate),
+	.text_index(text_signed_immediate)
+);
+
+sixteenbit2text_unsigned immediate_unsigned
+(
+	.index(InstQ_immediate),
+	.text_index(text_unsigned_immediate)
+);
+
+`define reg_char "X"
+`define open_paren " " 
+`define close_paren " " 
+`define TEXT_RTYPE(mnemonic) TextCurrentInst <= {mnemonic, `reg_char, text_rd, `reg_char, text_rs, `reg_char, text_rt, `terminating_char}
+
+
+always@(InstQ_opcode, InstQ_rt, InstQ_rs, InstQ_rd, InstQ_immediate) begin
+
+
 case (InstQ_opcode)
-	add      : text_opcode <= "add ";
-	addu     : text_opcode <= "addu";
-	sub      : text_opcode <= "sub ";
-	subu     : text_opcode <= "subu";
-	and_     : text_opcode <= "and ";
-	or_      : text_opcode <= "or  ";
-	xor_     : text_opcode <= "xor ";
-	nor_     : text_opcode <= "nor ";
-	sll      : text_opcode <= "sll ";
-	srl      : text_opcode <= "srl ";
-	slt      : text_opcode <= "slt ";
-	sgt      : text_opcode <= "sgt ";
-	jr       : text_opcode <= "jr  ";
-	addi     : text_opcode <= "addi";
-	andi     : text_opcode <= "andi";
-	ori      : text_opcode <= "ori ";
-	xori     : text_opcode <= "xori";
-	lw       : text_opcode <= "lw  ";
-	sw       : text_opcode <= "sw  ";
-	slti     : text_opcode <= "slti";
-	beq      : text_opcode <= "beq ";
-	bne      : text_opcode <= "bne ";
-	j        : text_opcode <= "j   ";
-	jal      : text_opcode <= "jal ";
-	hlt_inst : text_opcode <= "hlt ";
+	add :
+	begin
+	`TEXT_RTYPE("add ");
+	end
+	addu :
+	begin
+	`TEXT_RTYPE("addu ");
+	end
+	sub :
+	begin
+	`TEXT_RTYPE("sub ");
+	end
+	subu :
+	begin
+	`TEXT_RTYPE("subu ");
+	end
+	and_ :
+	begin
+	`TEXT_RTYPE("and ");
+	end
+	or_ :
+	begin
+	`TEXT_RTYPE("or  ");
+	end
+	xor_ :
+	begin
+	`TEXT_RTYPE("xor ");
+	end
+	nor_ :
+	begin
+	`TEXT_RTYPE("nor ");
+	end
+	sll :
+	begin
+	TextCurrentInst <= {"sll ", `reg_char, text_rd, `reg_char, text_rt, " ", text_shamt, `terminating_char};
+	end
+	srl :
+	begin
+	TextCurrentInst <= {"srl ", `reg_char, text_rd, `reg_char, text_rt, " ", text_shamt, `terminating_char};
+	end
+	slt :
+	begin
+	`TEXT_RTYPE("slt ");
+	end
+	sgt :
+	begin
+	`TEXT_RTYPE("sgt ");
+	end
+	jr :
+	begin
+	TextCurrentInst <= {"jr ", `reg_char, text_rs, `terminating_char}; 
+	end
+	addi :
+	begin
+	TextCurrentInst <= {"addi ", `reg_char, text_rt, `reg_char, text_rs, " ", text_signed_immediate, `terminating_char};
+	end
+	andi :
+	begin
+	TextCurrentInst <= {"andi ", `reg_char, text_rt, `reg_char, text_rs, " ", text_unsigned_immediate, `terminating_char}; 
+	end
+	ori :
+	begin
+	TextCurrentInst <= {"ori ", `reg_char, text_rt, `reg_char, text_rs, " ", text_unsigned_immediate, `terminating_char}; 
+	end
+	xori :
+	begin
+	TextCurrentInst <= {"xori ", `reg_char, text_rt, `reg_char, text_rs, " ", text_unsigned_immediate, `terminating_char}; 
+	end
+	lw :
+	begin
+	TextCurrentInst <= {"lw ", `reg_char, text_rt, " ", text_signed_immediate, `open_paren, `reg_char, text_rs, `close_paren}; 
+	end
+	sw :
+	begin
+	TextCurrentInst <= {"sw ", `reg_char, text_rt, " ", text_signed_immediate, `open_paren, `reg_char, text_rs, `close_paren}; 
+	end
+	slti :
+	begin
+	TextCurrentInst <= {"slti ", `reg_char, text_rt, `reg_char, text_rs, " ", text_signed_immediate, `terminating_char};
+	end
+	beq :
+	begin
+	TextCurrentInst <= {"beq ", `reg_char, text_rs, `reg_char, text_rt, " ", text_signed_immediate, `terminating_char};
+	end
+	bne :
+	begin
+	TextCurrentInst <= {"bne ", `reg_char, text_rs, `reg_char, text_rt, " ", text_signed_immediate, `terminating_char};
+	end
+	j :
+	begin
+	TextCurrentInst <= {"j ", text_address, `terminating_char}; 
+	end
+	jal :
+	begin
+	TextCurrentInst <= {"jal ", text_address, `terminating_char}; 
+	end
+	hlt_inst :
+	begin
+	TextCurrentInst <= {"hlt ", `terminating_char};
+	end
+
 endcase
 end
 `endif
 
 /*
-next step is to display the current instruction that's being (fetched/commited/executed)
-take the info and convert them into indicies directly by decoding them (if-elseif-...) or case statement
-if (opcode == sdf)
-	opcode_text = `corresponding text`
-	
-text = {opcode_text, rd_text, rs_text, rt_text, label_text, ☺}
-now you have a text you can display it by inserting it into autoMAN
-
-
 TODO:
 	- ability to switch between the modes: 
 		- static mode: all from `ImageStatic` memory
@@ -256,17 +350,75 @@ endmodule
  	
 
 
+module fivebit2text
+(
+	input [4:0] index,
+	output [0 : 2 * 8 - 1] text_index
+);
+
+wire [7:0] dig0;
+wire [7:0] dig1;
+assign dig0 = (index % 10) + 8'd48;
+assign dig1 = ((index / 10) % 10) + 8'd48;
+assign text_index = { dig1, dig0 };
+
+endmodule
+
+module sixteenbit2text_signed
+(
+	input [15:0] index,
+	output [0 : 6 * 8 - 1] text_index
+);
 
 
+wire [15:0] twoscomp;
+assign twoscomp = ~index + 1'b1;
 
 
+wire [7:0] dig0;
+wire [7:0] dig1;
+wire [7:0] dig2;
+wire [7:0] dig3;
+wire [7:0] dig4;
+assign dig0 = (index       % 10     ) + 8'd48;
+assign dig1 = ((index / 10) % 10    ) + 8'd48;
+assign dig2 = ((index / 100) % 10   ) + 8'd48;
+assign dig3 = ((index / 1000) % 10  ) + 8'd48;
+assign dig4 = ((index / 10000) % 10 ) + 8'd48;
 
+wire [7:0] twoscomp_dig0;
+wire [7:0] twoscomp_dig1;
+wire [7:0] twoscomp_dig2;
+wire [7:0] twoscomp_dig3;
+wire [7:0] twoscomp_dig4;
+assign twoscomp_dig0 = (twoscomp       % 10     ) + 8'd48;
+assign twoscomp_dig1 = ((twoscomp / 10) % 10    ) + 8'd48;
+assign twoscomp_dig2 = ((twoscomp / 100) % 10   ) + 8'd48;
+assign twoscomp_dig3 = ((twoscomp / 1000) % 10  ) + 8'd48;
+assign twoscomp_dig4 = ((twoscomp / 10000) % 10 ) + 8'd48;
 
+assign text_index = (index[15]) ? { "n", twoscomp_dig4, twoscomp_dig3, twoscomp_dig2, twoscomp_dig1, twoscomp_dig0 } : { " ", dig4, dig3, dig2, dig1, dig0 };
 
+endmodule
 
+module sixteenbit2text_unsigned
+(
+	input [15:0] index,
+	output [0 : 6 * 8 - 1] text_index
+);
 
+wire [7:0] dig0;
+wire [7:0] dig1;
+wire [7:0] dig2;
+wire [7:0] dig3;
+wire [7:0] dig4;
 
+assign dig0 = (index       % 10     ) + 8'd48;
+assign dig1 = ((index / 10) % 10    ) + 8'd48;
+assign dig2 = ((index / 100) % 10   ) + 8'd48;
+assign dig3 = ((index / 1000) % 10  ) + 8'd48;
+assign dig4 = ((index / 10000) % 10 ) + 8'd48;
+assign text_index = { " ", dig4, dig3, dig2, dig1, dig0 };
 
-
-
+endmodule
 

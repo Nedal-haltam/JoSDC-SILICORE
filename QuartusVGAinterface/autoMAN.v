@@ -1,12 +1,11 @@
 
-`define length 4
-// `include "Defs.txt"
+`include "Defs.txt"
 module autoMAN
 (
 	input iVGA_CLK, iRST_n, 
 	input enable, 
 	input cHS, cVS, 
-	input [0 : `length * 8 - 1] word,
+	input [0 : (`length + 1) * 8 - 1] word,
 	output reg [3*`COLORW - 1: 0] RGB_out
 );
 
@@ -57,7 +56,6 @@ end
 wire [7:0] data [0 : `length - 1'b1];
 
 wire [7:0] i, index;
-// assign i = (data[i+offset] == `terminating_char) ? i : (addrx / 30 + `WIDTH_CHARS*(addry / 40));
 assign i = addrx / 30 + `WIDTH_CHARS*(addry / 40);
 
 generate
@@ -67,33 +65,16 @@ generate
     end
 endgenerate
 
-reg [7:0] jj, offset = 0;
 always@(posedge iVGA_CLK) begin
-if (offset == 0) begin
-	for (jj = 0; jj < `length; jj = jj + 1) begin
-		if (data[jj] == 0)
-			offset = offset + 1;
-	end
-end
-end
-
-
-always@(posedge iVGA_CLK) begin
-	// if (data[i+offset] == `terminating_char) begin
-	if (i >= `length) begin
-		RGB_out <= 12'd0;
-	end
-	else begin
-		RGB_out <= (data[i+offset] == " ") ? 12'd0 : 
-						(
-							(index == 8'hFF) ? 12'd0 : RGB_temp
-						);
-	end
+	RGB_out <= (i >= `length || data[i] == `terminating_char || data[i] == 0 || data[i] == " ") ? 12'd0 : 
+	(
+		(index == 8'hFF) ? 12'd0 : RGB_temp
+	);
 end
 
 char2index C2I
 (
-	.in_char(data[i+offset]),
+	.in_char(data[i]),
 	.out_index(index)
 );
 
