@@ -44,7 +44,7 @@ namespace main {
 
 
         static void Main() {
-            bool command = false;
+            bool command = true;
             List<string> args = Environment.GetCommandLineArgs().ToList();
 
             if (command) HandleCommand(args);
@@ -96,7 +96,7 @@ namespace main {
             }
             else if (cpu_type == LibCPU.CPU_type.OOO) {
                 LibCPU.OOO cpu = new(mcs, data_mem_init);
-                int cycles = cpu.Run();
+                (int cycles, LibCPU.MIPS.Exceptions excep) = cpu.Run();
                 sb.Append(LibCPU.MIPS.get_regs(cpu.regs));
                 sb.Append(LibCPU.MIPS.get_DM(cpu.DM));
                 //sb.Append($"Exception Type : {excep.ToString()}");

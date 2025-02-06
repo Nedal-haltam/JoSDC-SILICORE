@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using static LibCPU.MIPS;
 using System.Runtime.InteropServices;
-using System.IO.Pipelines;
+//using System.IO.Pipelines;
 using System.Formats.Asn1;
 using System.Security;
 namespace LibCPU {
@@ -981,7 +981,8 @@ namespace LibCPU {
                 if(currLSregister.busy && currLSregister.ready) {
                     if(currLSregister.type == Mnemonic.lw) {
                         LSbuffer.dequeue();
-                        int result = Convert.ToInt32(DM[currLSregister.effectiveAddress], 2);
+                        //int result = Convert.ToInt32(DM[currLSregister.effectiveAddress], 2);
+                        int result = Convert.ToInt32(DM[currLSregister.effectiveAddress]);
                         currLSregister.busy = false;
                         update(result, currLSregister.ROBEN);
                     }
@@ -989,7 +990,8 @@ namespace LibCPU {
                         if((ROB.start + 1)== currLSregister.ROBEN) {
                             ROB.getIndex(ROB.start).ready = true;
                             LSbuffer.dequeue();
-                            DM[currLSregister.effectiveAddress] = Convert.ToString(currLSregister.ROBEN2_val, 2);
+                            //DM[currLSregister.effectiveAddress] = Convert.ToString(currLSregister.ROBEN2_val, 2);
+                            DM[currLSregister.effectiveAddress] = Convert.ToString(currLSregister.ROBEN2_val);
                         }
                     }
                 }
