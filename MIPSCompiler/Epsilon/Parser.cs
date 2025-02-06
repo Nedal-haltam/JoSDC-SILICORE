@@ -820,6 +820,17 @@ namespace Epsilon
                     return ParseDeclareSingleVar(ident);
                 }
             }
+            // should be before the StmtAssign condition because it is considered an identifier
+            else if (peek(TokenType.Ident).HasValue && peek(TokenType.Ident).Value.Value == "cleanstack" && peek(TokenType.SemiColon, 1).HasValue)
+            {
+                consume();
+                consume();
+                NodeStmtCleanStack cs = new();
+                NodeStmt stmt = new();
+                stmt.type = NodeStmt.NodeStmtType.CleanSack;
+                stmt.CleanStack = cs;
+                return stmt;
+            }
             else if (IsStmtAssign())
             {
                 if (peek(TokenType.OpenSquare, 1).HasValue)
@@ -932,7 +943,6 @@ namespace Epsilon
                 stmt.Exit = Return;
                 return stmt;
             }
-
 
             return null;
         }

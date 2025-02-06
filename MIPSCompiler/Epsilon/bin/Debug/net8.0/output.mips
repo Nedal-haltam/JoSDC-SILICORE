@@ -1,73 +1,1271 @@
 .text
 main:
 ADDI $sp, $zero, 50
+SW $zero, 0($zero)
+SW $zero, 1($zero)
+SW $zero, 2($zero)
+SW $zero, 3($zero)
+SW $zero, 4($zero)
+SW $zero, 5($zero)
+SW $zero, 6($zero)
+SW $zero, 7($zero)
+SW $zero, 8($zero)
+SW $zero, 9($zero)
+SW $zero, 10($zero)
+SW $zero, 11($zero)
+SW $zero, 12($zero)
+SW $zero, 13($zero)
+SW $zero, 14($zero)
+SW $zero, 15($zero)
+SW $zero, 16($zero)
+SW $zero, 17($zero)
+SW $zero, 18($zero)
+SW $zero, 19($zero)
+SW $zero, 20($zero)
+SW $zero, 21($zero)
+SW $zero, 22($zero)
+SW $zero, 23($zero)
+SW $zero, 24($zero)
+SW $zero, 25($zero)
+SW $zero, 26($zero)
+SW $zero, 27($zero)
+SW $zero, 28($zero)
+SW $zero, 29($zero)
+SW $zero, 30($zero)
+SW $zero, 31($zero)
+SW $zero, 32($zero)
+SW $zero, 33($zero)
+SW $zero, 34($zero)
+SW $zero, 35($zero)
+SW $zero, 36($zero)
+SW $zero, 37($zero)
+SW $zero, 38($zero)
+SW $zero, 39($zero)
+SW $zero, 40($zero)
+SW $zero, 41($zero)
+SW $zero, 42($zero)
+SW $zero, 43($zero)
+SW $zero, 44($zero)
+SW $zero, 45($zero)
+SW $zero, 46($zero)
+SW $zero, 47($zero)
+SW $zero, 48($zero)
+SW $zero, 49($zero)
+SW $zero, 50($zero)
+ADDI $sp, $sp, -16
+ADDI $sp, $sp, -16
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $1, $zero, 0
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $3, 0($sp)
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADDI $8, $zero, 4
+ADD $9, $zero, $1
+LABEL0_START:
+ADDI $8, $8, -1
+BEQ $8, $zero, LABEL1_END
+ADD $1, $1, $9
+J LABEL0_START
+LABEL1_END:
+ADD $1, $1, $2
+SUB $1, $zero, $1
+ADDI $1, $1, 32
+ADD $1, $1, $sp
+SW $3, 0($1)
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $3, 0($sp)
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADDI $8, $zero, 4
+ADD $9, $zero, $1
+LABEL2_START:
+ADDI $8, $8, -1
+BEQ $8, $zero, LABEL3_END
+ADD $1, $1, $9
+J LABEL2_START
+LABEL3_END:
+ADD $1, $1, $2
+SUB $1, $zero, $1
+ADDI $1, $1, 32
+ADD $1, $1, $sp
+SW $3, 0($1)
 ADDI $1, $zero, 1
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
 ADDI $1, $zero, 2
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $3, 0($sp)
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADDI $8, $zero, 4
+ADD $9, $zero, $1
+LABEL4_START:
+ADDI $8, $8, -1
+BEQ $8, $zero, LABEL5_END
+ADD $1, $1, $9
+J LABEL4_START
+LABEL5_END:
+ADD $1, $1, $2
+SUB $1, $zero, $1
+ADDI $1, $1, 32
+ADD $1, $1, $sp
+SW $3, 0($1)
+# begin forloop
+# begin scope
+# begin init
+ADDI $1, $zero, 0
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+# end init
+# begin condition
+TEMP_LABEL6_START:
 ADDI $1, $zero, 3
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
-ADDI $1, $zero, 1
-SW $1, 0($sp)
-ADDI $sp, $sp, -1
-########## xs
-# begin index
-ADDI $1, $zero, 1
+########## iter
+LW $1, 2($sp)
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
 ADDI $sp, $sp, 1
 LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+SLT $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, TEMP_LABEL7_END
+# end condition
+# begin scope
+# begin forloop
+# begin scope
+# begin init
+ADDI $1, $zero, 0
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+# end init
+# begin condition
+TEMP_LABEL9_START:
+ADDI $1, $zero, 4
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## ci
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+SLT $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, TEMP_LABEL10_END
+# end condition
+# begin scope
+# begin forloop
+# begin scope
+# begin init
+ADDI $1, $zero, 0
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+# end init
+# begin condition
+TEMP_LABEL12_START:
+ADDI $1, $zero, 4
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## cj
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+SLT $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, TEMP_LABEL13_END
+# end condition
+# begin scope
+########## cj
+LW $1, 1($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## ci
+LW $1, 3($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## grid
+# begin index
+########## cj
+LW $1, 3($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## ci
+LW $1, 5($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADDI $8, $zero, 4
+ADD $9, $zero, $1
+LABEL15_START:
+ADDI $8, $8, -1
+BEQ $8, $zero, LABEL16_END
+ADD $1, $1, $9
+J LABEL15_START
+LABEL16_END:
 # end index
 # begin data
+ADD $1, $1, $2
 SUB $1, $zero, $1
-ADDI $1, $1, 4
+ADDI $1, $1, 37
 ADD $1, $1, $sp
-LW $2, 0($1)
-SUB $2, $zero, $2
-SW $2, 0($sp)
+LW $3, 0($1)
+SW $3, 0($sp)
 ADDI $sp, $sp, -1
 # end data
 ADDI $sp, $sp, 1
-LW $2, 0($sp)
+LW $3, 0($sp)
 ADDI $sp, $sp, 1
 LW $1, 0($sp)
-ADDI $3, $sp, 3
-SUB $1, $3, $1
-SW $2, 0($1)
-########## xs
-# begin index
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADDI $8, $zero, 4
+ADD $9, $zero, $1
+LABEL17_START:
+ADDI $8, $8, -1
+BEQ $8, $zero, LABEL18_END
+ADD $1, $1, $9
+J LABEL17_START
+LABEL18_END:
+ADD $1, $1, $2
+SUB $1, $zero, $1
+ADDI $1, $1, 19
+ADD $1, $1, $sp
+SW $3, 0($1)
+# end scope
+ADDi $sp, $sp, 0
+# begin update
+TEMP_LABEL14_START:
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## cj
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 1($sp)
+# end update
+J TEMP_LABEL12_START
+TEMP_LABEL13_END:
+# end scope
+ADDi $sp, $sp, 1
+# end forloop
+# end scope
+ADDi $sp, $sp, 0
+# begin update
+TEMP_LABEL11_START:
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## ci
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 1($sp)
+# end update
+J TEMP_LABEL9_START
+TEMP_LABEL10_END:
+# end scope
+ADDi $sp, $sp, 1
+# end forloop
+# begin forloop
+# begin scope
+# begin init
+ADDI $1, $zero, 0
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+# end init
+# begin condition
+TEMP_LABEL19_START:
+ADDI $1, $zero, 4
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## i
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+SLT $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, TEMP_LABEL20_END
+# end condition
+# begin scope
+# begin forloop
+# begin scope
+# begin init
+ADDI $1, $zero, 0
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+# end init
+# begin condition
+TEMP_LABEL22_START:
+ADDI $1, $zero, 4
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## j
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+SLT $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, TEMP_LABEL23_END
+# end condition
+# begin scope
+ADDI $1, $zero, 0
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+# begin forloop
+# begin scope
+# begin init
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## i
+LW $1, 4($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+SUB $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+# end init
+# begin condition
+TEMP_LABEL25_START:
+ADDI $1, $zero, 2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## i
+LW $1, 5($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## dx
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+SLT $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, TEMP_LABEL26_END
+# end condition
+# begin scope
+# begin forloop
+# begin scope
+# begin init
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## j
+LW $1, 4($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+SUB $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+# end init
+# begin condition
+TEMP_LABEL28_START:
+ADDI $1, $zero, 2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## j
+LW $1, 5($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## dy
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+SLT $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, TEMP_LABEL29_END
+# end condition
+# begin scope
+LABEL31_START:
+########## j
+LW $1, 4($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## dy
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+TEMP_LABEL34_START:
+SUB $1, $1, $2
+BEQ $1, $zero, TEMP_LABEL35_ELSE
+ADDI $1, $zero, 1
+J TEMP_LABEL36_END
+TEMP_LABEL35_ELSE:
+ADDI $1, $zero, 0
+TEMP_LABEL36_END:
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## i
+LW $1, 6($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## dx
+LW $1, 4($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+TEMP_LABEL37_START:
+SUB $1, $1, $2
+BEQ $1, $zero, TEMP_LABEL38_ELSE
+ADDI $1, $zero, 1
+J TEMP_LABEL39_END
+TEMP_LABEL38_ELSE:
+ADDI $1, $zero, 0
+TEMP_LABEL39_END:
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+OR $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, LABEL33_elifs
+# begin scope
+########## dx
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## dy
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+LABEL40_START:
+ADDI $1, $zero, -1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## dx
+LW $1, 5($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+TEMP_LABEL43_START:
+SUB $1, $1, $2
+BEQ $1, $zero, TEMP_LABEL44_ELSE
+ADDI $1, $zero, 0
+J TEMP_LABEL45_END
+TEMP_LABEL44_ELSE:
+ADDI $1, $zero, 1
+TEMP_LABEL45_END:
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, LABEL42_elifs
+# begin scope
+ADDI $1, $zero, 3
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 2($sp)
+# end scope
+ADDi $sp, $sp, 0
+J LABEL41_END
+LABEL42_elifs:
+# begin scope
+LABEL46_START:
+ADDI $1, $zero, 4
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## dx
+LW $1, 5($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+TEMP_LABEL49_START:
+SUB $1, $1, $2
+BEQ $1, $zero, TEMP_LABEL50_ELSE
+ADDI $1, $zero, 0
+J TEMP_LABEL51_END
+TEMP_LABEL50_ELSE:
+ADDI $1, $zero, 1
+TEMP_LABEL51_END:
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, LABEL48_elifs
+# begin scope
 ADDI $1, $zero, 0
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
 ADDI $sp, $sp, 1
 LW $1, 0($sp)
-# end index
-# begin data
-SUB $1, $zero, $1
-ADDI $1, $1, 3
-ADD $1, $1, $sp
-LW $2, 0($1)
-SUB $2, $zero, $2
-SW $2, 0($sp)
+SW $1, 2($sp)
+# end scope
+ADDi $sp, $sp, 0
+LABEL48_elifs:
+LABEL47_END:
+# end scope
+ADDi $sp, $sp, 0
+LABEL41_END:
+LABEL52_START:
+ADDI $1, $zero, -1
+SW $1, 0($sp)
 ADDI $sp, $sp, -1
-# end data
-########## xs
-# begin index
-ADDI $1, $zero, 2
+########## dy
+LW $1, 4($sp)
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
 ADDI $sp, $sp, 1
 LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+TEMP_LABEL55_START:
+SUB $1, $1, $2
+BEQ $1, $zero, TEMP_LABEL56_ELSE
+ADDI $1, $zero, 0
+J TEMP_LABEL57_END
+TEMP_LABEL56_ELSE:
+ADDI $1, $zero, 1
+TEMP_LABEL57_END:
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, LABEL54_elifs
+# begin scope
+ADDI $1, $zero, 3
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 1($sp)
+# end scope
+ADDi $sp, $sp, 0
+J LABEL53_END
+LABEL54_elifs:
+# begin scope
+LABEL58_START:
+ADDI $1, $zero, 4
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## dy
+LW $1, 4($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+TEMP_LABEL61_START:
+SUB $1, $1, $2
+BEQ $1, $zero, TEMP_LABEL62_ELSE
+ADDI $1, $zero, 0
+J TEMP_LABEL63_END
+TEMP_LABEL62_ELSE:
+ADDI $1, $zero, 1
+TEMP_LABEL63_END:
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, LABEL60_elifs
+# begin scope
+ADDI $1, $zero, 0
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 1($sp)
+# end scope
+ADDi $sp, $sp, 0
+LABEL60_elifs:
+LABEL59_END:
+# end scope
+ADDi $sp, $sp, 0
+LABEL53_END:
+LABEL64_START:
+########## grid
+# begin index
+########## indexy
+LW $1, 1($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## indexx
+LW $1, 3($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADDI $8, $zero, 4
+ADD $9, $zero, $1
+LABEL67_START:
+ADDI $8, $8, -1
+BEQ $8, $zero, LABEL68_END
+ADD $1, $1, $9
+J LABEL67_START
+LABEL68_END:
 # end index
 # begin data
+ADD $1, $1, $2
 SUB $1, $zero, $1
-ADDI $1, $1, 4
+ADDI $1, $1, 40
 ADD $1, $1, $sp
-LW $2, 0($1)
-SUB $2, $zero, $2
-SW $2, 0($sp)
+LW $3, 0($1)
+SW $3, 0($sp)
 ADDI $sp, $sp, -1
 # end data
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, LABEL66_elifs
+# begin scope
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## live
+LW $1, 6($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 5($sp)
+# end scope
+ADDi $sp, $sp, 0
+LABEL66_elifs:
+LABEL65_END:
+# end scope
+ADDi $sp, $sp, 2
+LABEL33_elifs:
+LABEL32_END:
+# end scope
+ADDi $sp, $sp, 0
+# begin update
+TEMP_LABEL30_START:
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## dy
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 1($sp)
+# end update
+J TEMP_LABEL28_START
+TEMP_LABEL29_END:
+# end scope
+ADDi $sp, $sp, 1
+# end forloop
+# end scope
+ADDi $sp, $sp, 0
+# begin update
+TEMP_LABEL27_START:
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## dx
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 1($sp)
+# end update
+J TEMP_LABEL25_START
+TEMP_LABEL26_END:
+# end scope
+ADDi $sp, $sp, 1
+# end forloop
+LABEL69_START:
+########## grid
+# begin index
+########## j
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## i
+LW $1, 4($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADDI $8, $zero, 4
+ADD $9, $zero, $1
+LABEL72_START:
+ADDI $8, $8, -1
+BEQ $8, $zero, LABEL73_END
+ADD $1, $1, $9
+J LABEL72_START
+LABEL73_END:
+# end index
+# begin data
+ADD $1, $1, $2
+SUB $1, $zero, $1
+ADDI $1, $1, 36
+ADD $1, $1, $sp
+LW $3, 0($1)
+SW $3, 0($sp)
+ADDI $sp, $sp, -1
+# end data
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, LABEL71_elifs
+# begin scope
+LABEL74_START:
+ADDI $1, $zero, 3
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## live
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+TEMP_LABEL77_START:
+SUB $1, $1, $2
+BEQ $1, $zero, TEMP_LABEL78_ELSE
+ADDI $1, $zero, 1
+J TEMP_LABEL79_END
+TEMP_LABEL78_ELSE:
+ADDI $1, $zero, 0
+TEMP_LABEL79_END:
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $1, $zero, 2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## live
+LW $1, 3($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+TEMP_LABEL80_START:
+SUB $1, $1, $2
+BEQ $1, $zero, TEMP_LABEL81_ELSE
+ADDI $1, $zero, 1
+J TEMP_LABEL82_END
+TEMP_LABEL81_ELSE:
+ADDI $1, $zero, 0
+TEMP_LABEL82_END:
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+AND $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, LABEL76_elifs
+# begin scope
+########## j
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## i
+LW $1, 4($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $1, $zero, 0
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $3, 0($sp)
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADDI $8, $zero, 4
+ADD $9, $zero, $1
+LABEL83_START:
+ADDI $8, $8, -1
+BEQ $8, $zero, LABEL84_END
+ADD $1, $1, $9
+J LABEL83_START
+LABEL84_END:
+ADD $1, $1, $2
+SUB $1, $zero, $1
+ADDI $1, $1, 20
+ADD $1, $1, $sp
+SW $3, 0($1)
+# end scope
+ADDi $sp, $sp, 0
+LABEL76_elifs:
+LABEL75_END:
+# end scope
+ADDi $sp, $sp, 0
+J LABEL70_END
+LABEL71_elifs:
+# begin scope
+LABEL85_START:
+ADDI $1, $zero, 3
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## live
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+TEMP_LABEL88_START:
+SUB $1, $1, $2
+BEQ $1, $zero, TEMP_LABEL89_ELSE
+ADDI $1, $zero, 0
+J TEMP_LABEL90_END
+TEMP_LABEL89_ELSE:
+ADDI $1, $zero, 1
+TEMP_LABEL90_END:
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, LABEL87_elifs
+# begin scope
+########## j
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## i
+LW $1, 4($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $3, 0($sp)
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADDI $8, $zero, 4
+ADD $9, $zero, $1
+LABEL91_START:
+ADDI $8, $8, -1
+BEQ $8, $zero, LABEL92_END
+ADD $1, $1, $9
+J LABEL91_START
+LABEL92_END:
+ADD $1, $1, $2
+SUB $1, $zero, $1
+ADDI $1, $1, 20
+ADD $1, $1, $sp
+SW $3, 0($1)
+# end scope
+ADDi $sp, $sp, 0
+LABEL87_elifs:
+LABEL86_END:
+# end scope
+ADDi $sp, $sp, 0
+LABEL70_END:
+# end scope
+ADDi $sp, $sp, 1
+# begin update
+TEMP_LABEL24_START:
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## j
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 1($sp)
+# end update
+J TEMP_LABEL22_START
+TEMP_LABEL23_END:
+# end scope
+ADDi $sp, $sp, 1
+# end forloop
+# end scope
+ADDi $sp, $sp, 0
+# begin update
+TEMP_LABEL21_START:
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## i
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 1($sp)
+# end update
+J TEMP_LABEL19_START
+TEMP_LABEL20_END:
+# end scope
+ADDi $sp, $sp, 1
+# end forloop
+# begin forloop
+# begin scope
+# begin init
+ADDI $1, $zero, 0
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+# end init
+# begin condition
+TEMP_LABEL93_START:
+ADDI $1, $zero, 4
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## ci
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+SLT $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, TEMP_LABEL94_END
+# end condition
+# begin scope
+# begin forloop
+# begin scope
+# begin init
+ADDI $1, $zero, 0
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+# end init
+# begin condition
+TEMP_LABEL96_START:
+ADDI $1, $zero, 4
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## cj
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+SLT $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+BEQ $1, $zero, TEMP_LABEL97_END
+# end condition
+# begin scope
+########## cj
+LW $1, 1($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## ci
+LW $1, 3($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## grid2
+# begin index
+########## cj
+LW $1, 3($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## ci
+LW $1, 5($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADDI $8, $zero, 4
+ADD $9, $zero, $1
+LABEL99_START:
+ADDI $8, $8, -1
+BEQ $8, $zero, LABEL100_END
+ADD $1, $1, $9
+J LABEL99_START
+LABEL100_END:
+# end index
+# begin data
+ADD $1, $1, $2
+SUB $1, $zero, $1
+ADDI $1, $1, 21
+ADD $1, $1, $sp
+LW $3, 0($1)
+SW $3, 0($sp)
+ADDI $sp, $sp, -1
+# end data
+ADDI $sp, $sp, 1
+LW $3, 0($sp)
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADDI $8, $zero, 4
+ADD $9, $zero, $1
+LABEL101_START:
+ADDI $8, $8, -1
+BEQ $8, $zero, LABEL102_END
+ADD $1, $1, $9
+J LABEL101_START
+LABEL102_END:
+ADD $1, $1, $2
+SUB $1, $zero, $1
+ADDI $1, $1, 35
+ADD $1, $1, $sp
+SW $3, 0($1)
+# end scope
+ADDi $sp, $sp, 0
+# begin update
+TEMP_LABEL98_START:
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## cj
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 1($sp)
+# end update
+J TEMP_LABEL96_START
+TEMP_LABEL97_END:
+# end scope
+ADDi $sp, $sp, 1
+# end forloop
+# end scope
+ADDi $sp, $sp, 0
+# begin update
+TEMP_LABEL95_START:
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## ci
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 1($sp)
+# end update
+J TEMP_LABEL93_START
+TEMP_LABEL94_END:
+# end scope
+ADDi $sp, $sp, 1
+# end forloop
+# end scope
+ADDi $sp, $sp, 0
+# begin update
+TEMP_LABEL8_START:
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## iter
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+SW $1, 1($sp)
+# end update
+J TEMP_LABEL6_START
+TEMP_LABEL7_END:
+# end scope
+ADDi $sp, $sp, 1
+# end forloop

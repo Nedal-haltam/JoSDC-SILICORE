@@ -29,6 +29,7 @@ namespace Epsilon
     }
     class Generator
     {
+        private int STACK_CAPACITY = 50;
         public NodeProg m_prog;
         StringBuilder m_outputcode = new();
         public Vars vars = new();
@@ -769,6 +770,13 @@ namespace Epsilon
             GenPop("$1");
             m_outputcode.Append("HLT\n");
         }
+        void GenStmtCleanStack(NodeStmtCleanStack CleanStack)
+        {
+            for (int i = 0; i <= STACK_CAPACITY; i++)
+            {
+                m_outputcode.Append($"SW $zero, {i}($zero)\n");
+            }
+        }
         void GenStmt(NodeStmt stmt)
         {
             if (stmt.type == NodeStmt.NodeStmtType.declare)
@@ -803,13 +811,17 @@ namespace Epsilon
             {
                 GenStmtExit(stmt.Exit);
             }
+            else if (stmt.type == NodeStmt.NodeStmtType.CleanSack)
+            {
+                GenStmtCleanStack(stmt.CleanStack);
+            }
         }
 
         public StringBuilder GenProg()
         {
             m_outputcode.Append(".text\n");
             m_outputcode.Append("main:\n");
-            m_outputcode.Append("ADDI $sp, $zero, 50\n");
+            m_outputcode.Append($"ADDI $sp, $zero, {STACK_CAPACITY}\n");
             foreach (NodeStmt stmt in m_prog.scope.stmts)
                 GenStmt(stmt);
 
