@@ -7,7 +7,7 @@
 
 
 
-cleanstack;
+//cleanstack;
 
 int grid[SIZE][SIZE];
 int grid2[SIZE][SIZE];

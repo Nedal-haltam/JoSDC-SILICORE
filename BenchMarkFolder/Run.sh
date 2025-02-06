@@ -54,7 +54,7 @@ Run_BenchMark_SW()
     CAS_IN_DM=$ASSEMBLER_OUT_TO_CAS_DM
     CAS_SC_OUT=$ProgFolder"CAS_SC_OUT.txt"
     CAS_PL_OUT=$ProgFolder"CAS_PL_OUT.txt"
-    # CAS_SSOOO_OUT=$ProgFolder"CAS_SSOOO_OUT.txt"
+    CAS_SSOOO_OUT=$ProgFolder"CAS_SSOOO_OUT.txt"
     # define the program and its arguments
     CAS="../CycleAccurateSimulator/bin/Debug/net8.0/CAS.exe"
     
@@ -77,25 +77,25 @@ Run_BenchMark_SW()
     printf "[INFO $INDEX/$TOTAL ]: Simulating "$ProgName" on the PipeLine\n"
     $CAS $CAS_ARGS
 
-    if [ $? -ne 0 ]; then
-        printf "\033[31mCycle Accurate Simulator failed to run the program:\033[0m\nUsage: [path to CAS] sim [singlecycle/pipline/OOO] [IM input (machine code)] [DM input] [CAS output]\n"
-        read -p "Press Enter to exit"
-        exit 1
-    fi
-    printf "[INFO $INDEX/$TOTAL ]: "$ProgName" simulated successfully on the PipeLine\n"
-
-##############################################################################################################
-    # CAS_ARGS="sim ooo $CAS_IN_IM $CAS_IN_DM $CAS_SSOOO_OUT"
-    # # run the CAS on the SSOOO
-    # printf "[INFO $INDEX/$TOTAL ]: Simulating "$ProgName" on the SSOOO\n"
-    # $CAS $CAS_ARGS
-
     # if [ $? -ne 0 ]; then
     #     printf "\033[31mCycle Accurate Simulator failed to run the program:\033[0m\nUsage: [path to CAS] sim [singlecycle/pipline/OOO] [IM input (machine code)] [DM input] [CAS output]\n"
     #     read -p "Press Enter to exit"
     #     exit 1
     # fi
-    # printf "[INFO $INDEX/$TOTAL ]: "$ProgName" simulated successfully on the SSOOO\n"
+    printf "[INFO $INDEX/$TOTAL ]: "$ProgName" simulated successfully on the PipeLine\n"
+
+##############################################################################################################
+    CAS_ARGS="sim ooo $CAS_IN_IM $CAS_IN_DM $CAS_SSOOO_OUT"
+    # run the CAS on the SSOOO
+    printf "[INFO $INDEX/$TOTAL ]: Simulating "$ProgName" on the SSOOO\n"
+    $CAS $CAS_ARGS
+
+    if [ $? -ne 0 ]; then
+        printf "\033[31mCycle Accurate Simulator failed to run the program:\033[0m\nUsage: [path to CAS] sim [singlecycle/pipline/OOO] [IM input (machine code)] [DM input] [CAS output]\n"
+        read -p "Press Enter to exit"
+        exit 1
+    fi
+    printf "[INFO $INDEX/$TOTAL ]: "$ProgName" simulated successfully on the SSOOO\n"
 
 
     
@@ -108,17 +108,17 @@ Run_BenchMark_SW()
     printf "\tPipLined: \n" >> $STATS
     printf "\t\t" >> $STATS
     sed -n '$p'  "$CAS_PL_OUT" >> $STATS
-    # printf "\tSSOOO: \n" >> $STATS
-    # printf "\t\t" >> $STATS
-    # sed -n '$p'  "$CAS_SSOOO_OUT" >> $STATS
+    printf "\tSSOOO: \n" >> $STATS
+    printf "\t\t" >> $STATS
+    sed -n '$p'  "$CAS_SSOOO_OUT" >> $STATS
 
     sed -i '$d' "$CAS_SC_OUT"
     sed -i '$d' "$CAS_PL_OUT"
-    # sed -i '$d' "$CAS_SSOOO_OUT"
+    sed -i '$d' "$CAS_SSOOO_OUT"
 
     printf "[INFO $INDEX/$TOTAL ]: Comparing Software Outputs\n"
     comapre_two_files "$CAS_SC_OUT" "$CAS_PL_OUT"
-    # comapre_two_files "$CAS_SC_OUT" "$CAS_SSOOO_OUT"
+    comapre_two_files "$CAS_SC_OUT" "$CAS_SSOOO_OUT"
 
     SWFILE="$CAS_SC_OUT"
 }
