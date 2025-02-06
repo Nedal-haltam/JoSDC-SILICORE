@@ -125,6 +125,12 @@ namespace Epsilon
         NodeTerm? ParseTerm()
         {
             NodeTerm term = new NodeTerm();
+            term.Negative = false;
+            if (peek(TokenType.Minus).HasValue)
+            {
+                term.Negative = true;
+                consume();
+            }
             if (peek(TokenType.IntLit).HasValue)
             {
                 term.type = NodeTerm.NodeTermType.intlit;

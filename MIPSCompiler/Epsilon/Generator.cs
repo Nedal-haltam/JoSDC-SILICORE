@@ -147,7 +147,8 @@ namespace Epsilon
             if (term.type == NodeTerm.NodeTermType.intlit)
             {
                 string reg = "$1";
-                m_outputcode.Append($"ADDI {reg}, $zero, {term.intlit.intlit.Value}\n");
+                string sign = (term.Negative) ? "-" : "";
+                m_outputcode.Append($"ADDI {reg}, $zero, {sign}{term.intlit.intlit.Value}\n");
                 GenPush(reg);
             }
             else if (term.type == NodeTerm.NodeTermType.ident) 
@@ -163,6 +164,8 @@ namespace Epsilon
                     string dest_reg = "$1";
                     int relative_location = m_StackSize - VariableLocation(ident.ident.Value);
                     m_outputcode.Append($"LW {dest_reg}, {relative_location}($sp)\n");
+                    if (term.Negative)
+                        m_outputcode.Append($"SUB {dest_reg}, $zero, {dest_reg}\n");
                     GenPush(dest_reg);
                 }
                 else
@@ -174,8 +177,7 @@ namespace Epsilon
                         string index2 = "$2";
 
                         m_outputcode.Append($"# begin index\n");
-                        if (ident.index2.HasValue)
-                            GenExpr(ident.index2.Value);
+                        GenExpr(ident.index2.Value);
                         GenExpr(ident.index1.Value);
                         GenPop(reg_addr);
                         GenPop(index2);
@@ -190,6 +192,8 @@ namespace Epsilon
                         m_outputcode.Append($"ADDI {reg_addr}, {reg_addr}, {relative_location}\n");
                         m_outputcode.Append($"ADD {reg_addr}, {reg_addr}, $sp\n");
                         m_outputcode.Append($"LW {reg_data}, 0({reg_addr})\n");
+                        if (term.Negative)
+                            m_outputcode.Append($"SUB {reg_data}, $zero, {reg_data}\n");
                         GenPush(reg_data);
                         m_outputcode.Append($"# end data\n");
                     }
@@ -207,6 +211,8 @@ namespace Epsilon
                         m_outputcode.Append($"ADDI {reg_addr}, {reg_addr}, {relative_location}\n");
                         m_outputcode.Append($"ADD {reg_addr}, {reg_addr}, $sp\n");
                         m_outputcode.Append($"LW {reg_data}, 0({reg_addr})\n");
+                        if (term.Negative)
+                            m_outputcode.Append($"SUB {reg_data}, $zero, {reg_data}\n");
                         GenPush(reg_data);
                         m_outputcode.Append($"# end data\n");
                     }

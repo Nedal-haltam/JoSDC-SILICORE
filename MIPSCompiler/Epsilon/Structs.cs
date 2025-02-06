@@ -221,6 +221,7 @@ namespace Epsilon
             intlit, ident, paren
         }
         public NodeTermType type;
+        public bool Negative;
         public NodeTermIntLit intlit;
         public NodeTermIdent ident;
         public NodeTermParen paren;
