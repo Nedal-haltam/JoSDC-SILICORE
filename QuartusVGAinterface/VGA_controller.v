@@ -156,7 +156,7 @@ SSOOO_CPU cpu
 	.InstQ_immediate(InstQ_immediate),
 	.InstQ_address(InstQ_address),
 	.InstQ_PC(InstQ_PC),
-	.VGA_address(VGA_address),
+	.VGA_address(10'd50 - VGA_address),
     .VGA_clk(VGA_clk),
     .VGA_data(VGA_data)
 );

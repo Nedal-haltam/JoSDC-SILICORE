@@ -66,7 +66,7 @@ always@(posedge MAX10_CLK2_50) begin
 end
 
 assign input_clk =
-// (SW[9]) ? clk_divider[15] : 
+(SW[9]) ? clk_divider[15] : 
 (
 	(SW[8]) ? clk_divider[16] : 
 	(

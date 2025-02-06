@@ -1,3 +1,6 @@
+
+`define BUFFER_SIZE_bitsRS (4)
+
 module RS
 (
     input clk, rst,
@@ -21,21 +24,21 @@ module RS
     input ROB_FLUSH_Flag,
     output FULL_FLAG,
 
-    output reg [4:0] RS_FU_RS_ID1, 
+    output reg [`BUFFER_SIZE_bitsRS+1:0] RS_FU_RS_ID1, 
     output reg [`ROB_SIZE_bits:0] RS_FU_ROBEN1,
     output reg [11:0] RS_FU_opcode1,
     output reg [3:0] RS_FU_ALUOP1,
     output reg [31:0] RS_FU_Val11, RS_FU_Val21,
     output reg [31:0] RS_FU_Immediate1,
 
-    output reg [4:0] RS_FU_RS_ID2, 
+    output reg [`BUFFER_SIZE_bitsRS+1:0] RS_FU_RS_ID2, 
     output reg [`ROB_SIZE_bits:0] RS_FU_ROBEN2,
     output reg [11:0] RS_FU_opcode2,
     output reg [3:0] RS_FU_ALUOP2,
     output reg [31:0] RS_FU_Val12, RS_FU_Val22,
     output reg [31:0] RS_FU_Immediate2,
 
-    output reg [4:0] RS_FU_RS_ID3, 
+    output reg [`BUFFER_SIZE_bitsRS+1:0] RS_FU_RS_ID3, 
     output reg [`ROB_SIZE_bits:0] RS_FU_ROBEN3,
     output reg [11:0] RS_FU_opcode3,
     output reg [3:0] RS_FU_ALUOP3,
@@ -54,9 +57,8 @@ module RS
 
 );
 
-`define BUFFER_SIZE_bits (3)
-`define BUFFER_SIZE (1 << `BUFFER_SIZE_bits)
-`define I(i) i[`BUFFER_SIZE_bits - 1:0]
+`define BUFFER_SIZE (1 << `BUFFER_SIZE_bitsRS)
+`define I(i) i[`BUFFER_SIZE_bitsRS - 1:0]
 `define RS_SIZE `BUFFER_SIZE
 
 // the ROBEN of a an instruction is the index of that instruction in the buffer plus one to avoid ROBEN value of zero
@@ -86,9 +88,9 @@ this block is does the following:
     - resetting the Busy buffer to start with a clean RS
     - and if there is a new instruction is coming it enters it in the Next_Free index if there is and raise the full flag if there is no Next_Free index
 */
-reg [4:0] i;
-reg [4:0] j;
-reg [4:0] Next_Free = 0;
+reg [`BUFFER_SIZE_bitsRS+1:0] i;
+reg [`BUFFER_SIZE_bitsRS+1:0] j;
+reg [`BUFFER_SIZE_bitsRS+1:0] Next_Free = 0;
 
 wire [`RS_SIZE-1:0] and_result;
 
@@ -191,7 +193,7 @@ end
 this block does the following:
     - if the FU is free it picks a ready instruction to execute it and once finish it releases the reserved entry by resetting the busy bit
 */
-reg [4:0] k;
+reg [`BUFFER_SIZE_bitsRS+1:0] k;
 reg [1:0] count;
 always@(posedge clk, posedge rst) begin
     if (rst) begin
@@ -204,15 +206,15 @@ always@(posedge clk, posedge rst) begin
     end
     else begin
 
-        `define b6 (Reg_Busy[4'd6] && Reg_ROBEN1[4'd6] == 0 && Reg_ROBEN2[4'd6] == 0)
+        `define b6 (Reg_Busy[`RS_SIZE-2] && Reg_ROBEN1[`RS_SIZE-2] == 0 && Reg_ROBEN2[`RS_SIZE-2] == 0)
         if (`b6) begin
-        RS_FU_opcode2 <= Reg_opcode[4'd6];
-        RS_FU_Val12 <= Reg_ROBEN1_VAL[4'd6];
-        RS_FU_RS_ID2 <= 5'd7;
-        RS_FU_ROBEN2 <= Reg_ROBEN[4'd6];
-        RS_FU_ALUOP2 <= Reg_ALUOP[4'd6];
-        RS_FU_Val22 <= Reg_ROBEN2_VAL[4'd6];
-        RS_FU_Immediate2 <= Reg_Immediate[4'd6];
+        RS_FU_opcode2 <= Reg_opcode[`RS_SIZE-2];
+        RS_FU_Val12 <= Reg_ROBEN1_VAL[`RS_SIZE-2];
+        RS_FU_RS_ID2 <= `RS_SIZE-1;
+        RS_FU_ROBEN2 <= Reg_ROBEN[`RS_SIZE-2];
+        RS_FU_ALUOP2 <= Reg_ALUOP[`RS_SIZE-2];
+        RS_FU_Val22 <= Reg_ROBEN2_VAL[`RS_SIZE-2];
+        RS_FU_Immediate2 <= Reg_Immediate[`RS_SIZE-2];
         end
         else begin
         RS_FU_opcode2 <= 0;
@@ -224,15 +226,15 @@ always@(posedge clk, posedge rst) begin
         RS_FU_Immediate2 <= 0;
         end
 
-        `define b7 (Reg_Busy[4'd7] && Reg_ROBEN1[4'd7] == 0 && Reg_ROBEN2[4'd7] == 0)
+        `define b7 (Reg_Busy[`RS_SIZE-1] && Reg_ROBEN1[`RS_SIZE-1] == 0 && Reg_ROBEN2[`RS_SIZE-1] == 0)
         if (`b7) begin
-        RS_FU_opcode3 <= Reg_opcode[4'd7];
-        RS_FU_Val13 <= Reg_ROBEN1_VAL[4'd7];
-        RS_FU_RS_ID3 <= 5'd8;
-        RS_FU_ROBEN3 <= Reg_ROBEN[4'd7];
-        RS_FU_ALUOP3 <= Reg_ALUOP[4'd7];
-        RS_FU_Val23 <= Reg_ROBEN2_VAL[4'd7];
-        RS_FU_Immediate3 <= Reg_Immediate[4'd7];
+        RS_FU_opcode3 <= Reg_opcode[`RS_SIZE-1];
+        RS_FU_Val13 <= Reg_ROBEN1_VAL[`RS_SIZE-1];
+        RS_FU_RS_ID3 <= `RS_SIZE;
+        RS_FU_ROBEN3 <= Reg_ROBEN[`RS_SIZE-1];
+        RS_FU_ALUOP3 <= Reg_ALUOP[`RS_SIZE-1];
+        RS_FU_Val23 <= Reg_ROBEN2_VAL[`RS_SIZE-1];
+        RS_FU_Immediate3 <= Reg_Immediate[`RS_SIZE-1];
         end
         else begin
         RS_FU_opcode3 <= 0;

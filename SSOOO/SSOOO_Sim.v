@@ -3,7 +3,7 @@
 `define ONE_CLK (2 * `HALF_CYCLE)
 `define ADVANCE_N_CYCLE(N) #(`ONE_CLK * N);
 
-`define MAX_CLOCKS (2 * 200000)
+`define MAX_CLOCKS (2 * 200*1000)
 `define reset 2 * `ONE_CLK
 
 
@@ -12,7 +12,7 @@
 `timescale 1ns/1ps
 `endif
 
-`define ROB_SIZE_bits (4)
+`define ROB_SIZE_bits (6)
 
 `ifdef vscode
 

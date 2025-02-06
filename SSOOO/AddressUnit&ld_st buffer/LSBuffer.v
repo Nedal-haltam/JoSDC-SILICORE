@@ -7,6 +7,7 @@ inputs:
 internal registers:
     - busy bit and ready bit is needed
 */
+`define BUFFER_SIZE_bitslsbuffer (5)
 
 module LSBuffer
 (
@@ -42,8 +43,8 @@ module LSBuffer
     output reg [31:0] out_Immediate,
     output reg [31:0] out_EA,
 
-    output reg [2:0] Start_Index,
-    output reg [2:0] End_Index
+    output reg [`BUFFER_SIZE_bitslsbuffer-1:0] Start_Index,
+    output reg [`BUFFER_SIZE_bitslsbuffer-1:0] End_Index
 
 
 
@@ -69,9 +70,8 @@ module LSBuffer
 `include "../opcodes.txt"
 `endif  
 
-`define BUFFER_SIZE_bits (3)
-`define BUFFER_SIZE (1 << `BUFFER_SIZE_bits)
-`define I(i) i[`BUFFER_SIZE_bits - 1:0]
+`define BUFFER_SIZE (1 << `BUFFER_SIZE_bitslsbuffer)
+`define I(i) i[`BUFFER_SIZE_bitslsbuffer - 1:0]
 `define LDST_SIZE (`BUFFER_SIZE)
 
 `define readybit(i) assign Reg_Ready[i] = Reg_ROBEN1[i] == 0 && Reg_ROBEN2[i] == 0
@@ -108,8 +108,8 @@ endgenerate
 // assign Reg_ROBEN2_VAL_test = Reg_ROBEN2_VAL[`I(index_test)];
 // assign Reg_Immediate_test = Reg_Immediate[`I(index_test)];
 
-reg [4:0] i;
-reg [4:0] ji;
+reg [`BUFFER_SIZE_bitslsbuffer:0] i;
+reg [`BUFFER_SIZE_bitslsbuffer:0] ji;
 
 always@(posedge clk)
     FULL_FLAG <= ~(rst | ~(End_Index == Start_Index && (Reg_Busy[Start_Index])));

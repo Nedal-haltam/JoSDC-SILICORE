@@ -1,6 +1,5 @@
 
-`define ROB_SIZE_bits (4)
-
+`define ROB_SIZE_bits (6)
 
 `ifndef VGA
 module SSOOO_CPU
@@ -77,21 +76,21 @@ wire ROB_RP1_Ready1, ROB_RP1_Ready2;
 
 // RS
 wire RS_FULL_FLAG;
-wire [4:0] RS_FU_RS_ID1;
+wire [5:0] RS_FU_RS_ID1;
 wire [`ROB_SIZE_bits:0] RS_FU_ROBEN1;
 wire [11:0] RS_FU_opcode1;
 wire [3:0] RS_FU_ALUOP1;
 wire [31:0] RS_FU_Val11, RS_FU_Val21;
 wire [31:0] RS_FU_Immediate1;
 
-wire [4:0] RS_FU_RS_ID2;
+wire [5:0] RS_FU_RS_ID2;
 wire [`ROB_SIZE_bits:0] RS_FU_ROBEN2;
 wire [11:0] RS_FU_opcode2;
 wire [3:0] RS_FU_ALUOP2;
 wire [31:0] RS_FU_Val12, RS_FU_Val22;
 wire [31:0] RS_FU_Immediate2;
 
-wire [4:0] RS_FU_RS_ID3;
+wire [5:0] RS_FU_RS_ID3;
 wire [`ROB_SIZE_bits:0] RS_FU_ROBEN3;
 wire [11:0] RS_FU_opcode3;
 wire [3:0] RS_FU_ALUOP3;
@@ -188,21 +187,20 @@ end
 
 /*
     - the jr dependency is solved but we can do better in terms of forwarding it from the ROB or the CDB, but it works
-
 TODO:
-
-assign statement in ROB 
-
-    - GOL: open Quartus, and work on it interfacing and using the RAM2PORT
-        - you have two sources of image: the static image, and the run time modification from the proc_interface
-        - for speed: adjust the clock of the CPU through the switches
-	- use the FPGA to emulate on and display the head of the ROB information through 
-	the VGA interface
+    - Fmax the design, and pick the best to take to the finals
+    - see about Fmax differences between benchmarks, is it because of IM array of registers, try IP block for IM (use the same one used for DM) (use IM_MIF)
+    - make the sizes minimum 2 Kilo Word, across all SW/HW archs
+    - see about extreme cases in testing (e.g. program size, )
+    - print all DataMemory content in output files
+    - see Quartus warnings, and deal with them
+    - see about the sizes of the buffers (LSBuffer, RS, ROB), consider the full flag from all of them, see the minimum, and run Run.sh, and GOL program
+    - continue and display GOL on the screen, we are near
+    - for optimization: assign statement in ROB 
 
     - make it SS
     - MultiCore (dualcore is enough)
     - better branch predictor
-
 */
 
 always@(negedge clk, posedge rst) begin
@@ -654,10 +652,10 @@ LSBuffer lsbuffer
     .out_ROBEN1_VAL(LdStB_MEMU_ROBEN1_VAL), 
     .out_ROBEN2_VAL(LdStB_MEMU_ROBEN2_VAL),
     .out_Immediate(LdStB_MEMU_Immediate),
-    .out_EA(LdStB_MEMU_EA),
+    .out_EA(LdStB_MEMU_EA)
 
-    .Start_Index(LdStB_Start_Index),
-    .End_Index(LdStB_End_Index)
+    // ,.Start_Index(LdStB_Start_Index),
+    // .End_Index(LdStB_End_Index)
 );
 
 
