@@ -71,39 +71,39 @@ reg [25:0] clk_divider = 0;
 always@(posedge MAX10_CLK2_50) begin
 	clk_divider <= clk_divider + 1'b1;
 end
-assign input_clk =
-// (SW[9]) ? clk_divider[15] : 
-(
-	(SW[8]) ? clk_divider[16] : 
-	(
-		(SW[7]) ? clk_divider[17] : 
-		(
-			(SW[6]) ? clk_divider[18] : 
-			(
-				(SW[5]) ? clk_divider[19] : 
-				(
-					(SW[4]) ? clk_divider[20] : 
-					(
-						(SW[3]) ? clk_divider[21] : 
-						(
-							(SW[2]) ? clk_divider[22] : 
-							(
-								(SW[1]) ? clk_divider[23] : 
-								(
-									(SW[0]) ? clk_divider[24] : 
-									(
-										clk_divider[25]
-									)
-								)
-							)
-						)
-					)
-				)
-			)
-		)
-	)
-)
-;
+assign input_clk = clk_divider[10];
+// // (SW[9]) ? clk_divider[15] : 
+// (
+// 	(SW[8]) ? clk_divider[14] : 
+// 	(
+// 		(SW[7]) ? clk_divider[17] : 
+// 		(
+// 			(SW[6]) ? clk_divider[18] : 
+// 			(
+// 				(SW[5]) ? clk_divider[19] : 
+// 				(
+// 					(SW[4]) ? clk_divider[20] : 
+// 					(
+// 						(SW[3]) ? clk_divider[21] : 
+// 						(
+// 							(SW[2]) ? clk_divider[22] : 
+// 							(
+// 								(SW[1]) ? clk_divider[23] : 
+// 								(
+// 									(SW[0]) ? clk_divider[24] : 
+// 									(
+// 										clk_divider[25]
+// 									)
+// 								)
+// 							)
+// 						)
+// 					)
+// 				)
+// 			)
+// 		)
+// 	)
+// )
+// ;
 
 
 assign LEDR[0] = hlt;

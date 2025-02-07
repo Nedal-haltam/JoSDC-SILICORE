@@ -13,7 +13,7 @@ grid[0][1] = 1;
 grid[1][1] = 1;
 grid[2][1] = 1;
 
-#define iters 3
+#define iters 100
 
 for (int iter = 0; iter < iters; iter = iter + 1)
 {
