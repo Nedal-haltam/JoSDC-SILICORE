@@ -29,7 +29,7 @@ namespace Epsilon
     }
     class Generator
     {
-        private int STACK_CAPACITY = 50;
+        private int STACK_CAPACITY = 500;
         public NodeProg m_prog;
         StringBuilder m_outputcode = new();
         public Vars vars = new();
@@ -818,10 +818,16 @@ namespace Epsilon
         }
         void GenStmtCleanStack(NodeStmtCleanStack CleanStack)
         {
-            for (int i = 0; i <= STACK_CAPACITY; i++)
-            {
-                m_outputcode.Append($"SW $zero, {i}($zero)\n");
-            }
+            m_outputcode.Append($"ADDI $1, $zero, 0\n");
+            m_outputcode.Append($"ADDI $2, $zero, {STACK_CAPACITY+1}\n");
+            m_outputcode.Append($"Clean_Loop:\n");
+            m_outputcode.Append($"SW $zero, 0($1)\n");
+            m_outputcode.Append($"ADDI $1, $1, 1\n");
+            m_outputcode.Append($"BNE $1, $2, Clean_Loop\n");
+            //for (int i = 0; i <= STACK_CAPACITY; i++)
+            //{
+            //    m_outputcode.Append($"SW $zero, {i}($zero)\n");
+            //}
         }
         void GenStmt(NodeStmt stmt)
         {
