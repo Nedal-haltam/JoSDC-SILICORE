@@ -1,11 +1,13 @@
+
 using System.Text;
 using System.Collections.Generic;
 
 using static LibCPU.MIPS;
 using System.Runtime.InteropServices;
-//using System.IO.Pipelines;
+using System.IO.Pipelines;
 using System.Formats.Asn1;
 using System.Security;
+using System.Data;
 namespace LibCPU {
     // circular queue used for ROB and LSbuffer in OOO CPU
     public class CircularQueue<T> {
@@ -473,6 +475,7 @@ namespace LibCPU {
         static public int PC;
         static public bool hlt;
         static public int targetaddress;
+        static public int predictorState;
 
         public enum PCsrc { PCplus1, branchTarget, exception, none }
         public PCsrc pcsrc;
@@ -496,7 +499,8 @@ namespace LibCPU {
             public bool exception;
             public int writeData; 
             public int PC;
-            public bool BranchDecision;
+            public bool branchDecision;
+            public bool branchPrediction;
 
             public ROBregister(Mnemonic type) {
                 this.type        = type;      
@@ -506,6 +510,8 @@ namespace LibCPU {
                 this.exception   = false;
                 this.writeData   = 0;
                 this.PC          = 0;
+                this.branchDecision = false;
+                this.branchPrediction = false;
             }
         }
 
@@ -581,6 +587,7 @@ namespace LibCPU {
             ROBsize         = 16;
             RSsize         = 16;
             LSsize         = 16;
+            predictorState = 0;
 
     
             (IM, DM, regs) = InitMipsCPU(insts, data_mem_init);
@@ -660,8 +667,8 @@ namespace LibCPU {
         }
 
         // dispatch instruction from instruction queue
-        public bool dispatch(Instruction currInstruction) {
-
+        public bool dispatch(Instruction currInstruction, bool prediction) {
+            // handles all non-load and non-store instructions
             if(!(currInstruction.mnem == Mnemonic.lw) && !(currInstruction.mnem == Mnemonic.sw) && !ROB.isFull() && !RSfullFlag) {
                 // assigns the values of the ROB register
                 ROBregister currROBregister = new ROBregister(currInstruction.mnem);
@@ -669,15 +676,23 @@ namespace LibCPU {
                 currROBregister.busy        = true;
                 currROBregister.ready       = false;
                 currROBregister.exception   = false;
+                currROBregister.PC          = currInstruction.PC;
 
-                // places the instruction in the ROB and saves its ROBEN
-                if(currInstruction.mnem == Mnemonic.beq || currInstruction.mnem == Mnemonic.bne)
+                if(currInstruction.mnem == Mnemonic.beq || currInstruction.mnem == Mnemonic.bne) {
+                    // assigns the write data as the branch address
                     currROBregister.writeData = currInstruction.immeds + currInstruction.PC;
+                    // assigns the prediction (taken or not taken 0 = NT & 1 = T)
+                    currROBregister.branchPrediction = prediction;
+                    // if the branch is predicted as taken, the next instruction fetched should be at the branch address
+                    if(prediction) {
+                        targetaddress = currInstruction.immeds + currInstruction.PC;
+                        pcsrc = PCsrc.branchTarget;
+                    }
+                } 
                 
                 if(currInstruction.mnem == Mnemonic.j || currInstruction.mnem == Mnemonic.jal) {
                     currROBregister.writeData = currInstruction.address;
                     currROBregister.ready       = true;
-                    currROBregister.PC          = currInstruction.PC;
                     ROB.enqueue(currROBregister);
                     if(currInstruction.mnem == Mnemonic.jal) regs_ROBENS[31] = ROB.end;
                     return true;
@@ -932,7 +947,8 @@ namespace LibCPU {
                         // ensures we do not overite the branch address for branch instructions
                         if(!(currROBregister.type == Mnemonic.bne || currROBregister.type == Mnemonic.beq)) currROBregister.writeData   = result;
                         currROBregister.ready       = true;
-                        currROBregister.BranchDecision = (currROBregister.type == Mnemonic.beq && result == 0) || (currROBregister.type == Mnemonic.bne && result != 0);
+                        // branch decision = 1 (taken) = 0 (not taken)
+                        currROBregister.branchDecision = (currROBregister.type == Mnemonic.beq && result == 0) || (currROBregister.type == Mnemonic.bne && result != 0);
                     }
                     k = (k + 1) % LSbuffer.size;
                 } while (k != ROB.end + 1);
@@ -981,8 +997,7 @@ namespace LibCPU {
                 if(currLSregister.busy && currLSregister.ready) {
                     if(currLSregister.type == Mnemonic.lw) {
                         LSbuffer.dequeue();
-                        //int result = Convert.ToInt32(DM[currLSregister.effectiveAddress], 2);
-                        int result = Convert.ToInt32(DM[currLSregister.effectiveAddress]);
+                        int result = Convert.ToInt32(DM[currLSregister.effectiveAddress], 2);
                         currLSregister.busy = false;
                         update(result, currLSregister.ROBEN);
                     }
@@ -990,12 +1005,33 @@ namespace LibCPU {
                         if((ROB.start + 1)== currLSregister.ROBEN) {
                             ROB.getIndex(ROB.start).ready = true;
                             LSbuffer.dequeue();
-                            //DM[currLSregister.effectiveAddress] = Convert.ToString(currLSregister.ROBEN2_val, 2);
-                            DM[currLSregister.effectiveAddress] = Convert.ToString(currLSregister.ROBEN2_val);
+                            DM[currLSregister.effectiveAddress] = Convert.ToString(currLSregister.ROBEN2_val, 2);
                         }
                     }
                 }
             }
+        }
+
+        public bool BranchPredictor(bool wrongPrediction, Mnemonic commitOpcode) {
+            // updates the state of the pranch predictor
+            if(commitOpcode == Mnemonic.bne || commitOpcode == Mnemonic.beq) {
+                if(wrongPrediction && predictorState == 0)          predictorState = 1;
+                else if(wrongPrediction && predictorState == 1)     predictorState = 2;
+                else if(wrongPrediction && predictorState == 2)     predictorState = 1;
+                else if(wrongPrediction && predictorState == 3)     predictorState = 2;
+                else if(!wrongPrediction && predictorState == 0)    predictorState = 0;
+                else if(!wrongPrediction && predictorState == 1)    predictorState = 0;
+                else if(!wrongPrediction && predictorState == 2)    predictorState = 3;
+                else if(!wrongPrediction && predictorState == 3)    predictorState = 3;
+                else throw new Exception($"Prediction combination error");
+            }
+                
+            // 0 = NT & 1 = T
+            if(predictorState == 0) return false;
+            else if(predictorState == 1) return false;
+            else if(predictorState == 2) return true;
+            else if(predictorState == 3) return true;
+            else throw new Exception($"Prediction state error");
         }
 
         public void flushRegisters() {
@@ -1011,33 +1047,42 @@ namespace LibCPU {
             flush = false;
         }
 
-        public void commit() {
+        public (Mnemonic, bool) commit() {
             // if empty, return
-            if(ROB.isEmpty()) return;
+            if(ROB.isEmpty()) return (Mnemonic.nop, false);
 
             ROBregister currROBregister = ROB.getIndex(ROB.start);
             if(currROBregister.type == Mnemonic.hlt) {
                 hlt = true;
                 ROB.dequeue();
-                return;
+                return (Mnemonic.hlt, false);
             }
 
-            if(currROBregister.type == Mnemonic.nop){
+            if(currROBregister.type == Mnemonic.sll && currROBregister.Rd == 0){
                 ROB.dequeue();
-                return;
+                return (Mnemonic.nop, false);
             }
 
             if(currROBregister.ready) {
                 // if branch instruction, branch
                 if(currROBregister.type == Mnemonic.beq || currROBregister.type == Mnemonic.bne) {
-                    if(currROBregister.BranchDecision == true) {
-                        targetaddress = currROBregister.writeData;
-                        pcsrc = PCsrc.branchTarget;
-                        flushRegisters();
-                        return;
+                    // check if the prediction was correct (decision and prediction are equal)
+                    if(currROBregister.branchPrediction == currROBregister.branchDecision) {
+                        ROB.dequeue();
+                        return (currROBregister.type, false);
                     }
-                    else 
-                        pcsrc = PCsrc.PCplus1;
+                    else // wrong prediction
+                    {
+                        pcsrc = PCsrc.branchTarget;
+                        if(currROBregister.branchDecision) 
+                            targetaddress = currROBregister.writeData;
+                        else
+                            targetaddress = 1 + currROBregister.PC;
+
+                        flushRegisters();
+
+                        return (currROBregister.type, true);
+                    }
                 }
                 else if(currROBregister.type == Mnemonic.j || currROBregister.type == Mnemonic.jal || currROBregister.type == Mnemonic.jr) {
                     targetaddress = currROBregister.writeData;
@@ -1049,7 +1094,7 @@ namespace LibCPU {
                 }
                 else if(currROBregister.type == Mnemonic.sw){
                     ROB.dequeue();
-                    return;
+                    return (currROBregister.type, false);
                 } 
                 else {
                     if(currROBregister.Rd != 0) {
@@ -1061,6 +1106,7 @@ namespace LibCPU {
 
                 ROB.dequeue();
             }
+            return (currROBregister.type, false);
         }
 
         public void update_PC() {
@@ -1073,11 +1119,18 @@ namespace LibCPU {
         }
 
         void consumeInstruction() {
+            // branch predictor initializations
+            bool prediction = false; 
+            bool wrongPrediction = false;
+
             string mc = IM[PC]; // fetch the instructon
             Instruction currInstruction = decodemc(mc, PC); // decode the instruction
-            bool dispatched = dispatch(currInstruction); // dispatches the instruction into the ROB & LS or RS
+            if(currInstruction.mnem == Mnemonic.bne || currInstruction.mnem == Mnemonic.beq) 
+                prediction = BranchPredictor(wrongPrediction, Mnemonic.nop);
+            bool dispatched = dispatch(currInstruction, prediction); // dispatches the instruction into the ROB & LS or RS
             executeAndBroadcast(); // executes ready instructions
-            commit(); // commits instruction from the ROB
+            (Mnemonic commitOpcode, wrongPrediction) = commit(); // commits instruction from the ROB
+            BranchPredictor(wrongPrediction, commitOpcode);
             update_PC(); // updates the program counter
         }
 
