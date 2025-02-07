@@ -59,14 +59,20 @@ bcd7seg pc2(PC2[3:0], HEX5);
 
 
 
+// reg [25:0] clk_divider = 0;
+// wire input_clk;
+// always@(posedge ADC_CLK_10) begin
+// 	clk_divider <= clk_divider + 1'b1;
+// end
+// assign input_clk = clk_divider[9];
+
+
 reg [25:0] clk_divider = 0;
-wire input_clk;
 always@(posedge MAX10_CLK2_50) begin
 	clk_divider <= clk_divider + 1'b1;
 end
-
 assign input_clk =
-(SW[9]) ? clk_divider[15] : 
+// (SW[9]) ? clk_divider[15] : 
 (
 	(SW[8]) ? clk_divider[16] : 
 	(

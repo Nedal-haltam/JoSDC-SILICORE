@@ -43,7 +43,7 @@ integer i;
     end
     initial begin
     for (i = 0; i < 1024; i = i + 1)
-        DataMem[i] = 0;
+        DataMem[i] <= 0;
 
 `ifdef test
         `include "./Memory Unit/DM_INIT.INIT"

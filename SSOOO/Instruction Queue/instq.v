@@ -54,7 +54,7 @@ integer i;
 initial begin
 
 for (i = 0; i < 1024; i = i + 1)
-    InstMem[i] = 0;
+    InstMem[i] <= 0;
 
 `ifdef test
 `include "./Instruction Queue/IM_INIT.INIT"
