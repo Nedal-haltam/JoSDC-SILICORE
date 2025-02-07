@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using static LibCPU.MIPS;
 using System.Runtime.InteropServices;
-using System.IO.Pipelines;
+//using System.IO.Pipelines;
 using System.Formats.Asn1;
 using System.Security;
 using System.Data;
@@ -1149,7 +1149,7 @@ namespace LibCPU {
                     }
                 }
                 if(hlt) return (cycles, excep);
-                if (cycles == 200 * 1000)
+                if (cycles == 400 * 1000)
                 {
                     excep = Exceptions.INF_LOOP;
                     return (cycles, excep);
@@ -1693,7 +1693,7 @@ namespace LibCPU {
                 }
                 if (hlt)
                     return (i, excep);
-                if (i == 200 * 1000)
+                if (i == 400 * 1000)
                 {
                     excep = Exceptions.INF_LOOP;
                     return (i, excep);
@@ -1877,7 +1877,7 @@ namespace LibCPU {
                 }
                 if (hlt)
                     return (i, Exceptions.NONE);
-                if (i == 200 * 1000)
+                if (i == 400 * 1000)
                 {
                     return (0, Exceptions.INF_LOOP);
                 }
