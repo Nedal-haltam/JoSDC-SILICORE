@@ -15,6 +15,7 @@ int grid2[SIZE][SIZE];
 int glider_index[glider_size][2] = {{1, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}};
 int blinker_index[blinker_size][2] = {{5, 5}, {5, 6}, {5, 7}};
 
+
 for (int i = 0; i < glider_size; i = i + 1)
 {
     grid[glider_index[i][0]][glider_index[i][1]] = 1;

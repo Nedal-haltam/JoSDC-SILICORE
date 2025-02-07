@@ -1,3 +1,4 @@
+
 InstMem[  0] <= 32'h201D01F4; // addi $sp $zero 500
 InstMem[  1] <= 32'h20010000; // addi $1 $zero 0
 InstMem[  2] <= 32'h200201F5; // addi $2 $zero 501
@@ -256,6 +257,9 @@ InstMem[254] <= 32'h23BDFFFF; // addi $sp $sp -1
 //
 // number of iterations is here
 InstMem[255] <= 32'h200100FF; // addi $1 $zero 0xFF
+//InstMem[255] <= 32'h20010001; // addi $1 $zero 0x01
+//InstMem[255] <= 32'hFC000000; // HLT
+
 //
 InstMem[256] <= 32'hAFA10000; // sw $1 0 ( $sp )
 InstMem[257] <= 32'h23BDFFFF; // addi $sp $sp -1
@@ -988,5 +992,10 @@ InstMem[983] <= 32'hAFA10001; // sw $1 1 ( $sp )
 InstMem[984] <= 32'h080000FF; // j temp_label18_start
 InstMem[985] <= 32'h23BD0001; // addi $sp $sp 1
 InstMem[986] <= 32'hFC000000; // hlt
+
+
+
+
+
 
 

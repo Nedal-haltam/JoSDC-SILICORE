@@ -1,5 +1,5 @@
 
-`define ROB_SIZE_bits (6)
+`define ROB_SIZE_bits (10)
 
 `ifndef VGA
 module SSOOO_CPU

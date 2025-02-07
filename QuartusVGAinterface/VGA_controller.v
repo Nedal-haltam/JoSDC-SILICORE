@@ -156,7 +156,7 @@ SSOOO_CPU cpu
 	.InstQ_immediate(InstQ_immediate),
 	.InstQ_address(InstQ_address),
 	.InstQ_PC(InstQ_PC),
-	.VGA_address(10'd50 - VGA_address),
+	.VGA_address(10'd500 - VGA_address),
     .VGA_clk(VGA_clk),
     .VGA_data(VGA_data)
 );
@@ -339,8 +339,8 @@ assign FINAL_ADDR = (tempADDRx / `RS) + (tempADDRy / `RS)*(128);
 assign VGA_clk = iVGA_CLK;
 assign VGA_address[9:8] = 2'd0;
 assign word_RunTimeData_FLAG = 1'b1;
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
-///////////////////
 //////Delay the iHD, iVD,iDEN for one clock cycle;
 always@(negedge iVGA_CLK)
 begin
