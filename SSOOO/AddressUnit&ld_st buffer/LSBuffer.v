@@ -7,7 +7,6 @@ inputs:
 internal registers:
     - busy bit and ready bit is needed
 */
-`define BUFFER_SIZE_bitslsbuffer (9)
 
 module LSBuffer
 (

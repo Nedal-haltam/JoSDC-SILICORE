@@ -1,5 +1,5 @@
 
-`define ROB_SIZE_bits (10)
+`define ROB_SIZE_bits (4)
 
 `ifndef VGA
 module SSOOO_CPU
@@ -76,21 +76,21 @@ wire ROB_RP1_Ready1, ROB_RP1_Ready2;
 
 // RS
 wire RS_FULL_FLAG;
-wire [5:0] RS_FU_RS_ID1;
+wire [`BUFFER_SIZE_bitsRS+1:0] RS_FU_RS_ID1;
 wire [`ROB_SIZE_bits:0] RS_FU_ROBEN1;
 wire [11:0] RS_FU_opcode1;
 wire [3:0] RS_FU_ALUOP1;
 wire [31:0] RS_FU_Val11, RS_FU_Val21;
 wire [31:0] RS_FU_Immediate1;
 
-wire [5:0] RS_FU_RS_ID2;
+wire [`BUFFER_SIZE_bitsRS+1:0] RS_FU_RS_ID2;
 wire [`ROB_SIZE_bits:0] RS_FU_ROBEN2;
 wire [11:0] RS_FU_opcode2;
 wire [3:0] RS_FU_ALUOP2;
 wire [31:0] RS_FU_Val12, RS_FU_Val22;
 wire [31:0] RS_FU_Immediate2;
 
-wire [5:0] RS_FU_RS_ID3;
+wire [`BUFFER_SIZE_bitsRS+1:0] RS_FU_RS_ID3;
 wire [`ROB_SIZE_bits:0] RS_FU_ROBEN3;
 wire [11:0] RS_FU_opcode3;
 wire [3:0] RS_FU_ALUOP3;
@@ -188,19 +188,17 @@ end
 /*
     - the jr dependency is solved but we can do better in terms of forwarding it from the ROB or the CDB, but it works
 TODO:
-    - Fmax the design, and pick the best to take to the finals
-    - see about Fmax differences between benchmarks, is it because of IM array of registers, try IP block for IM (use the same one used for DM) (use IM_MIF)
-    - make the sizes minimum 2 Kilo Word, across all SW/HW archs
-    - see about extreme cases in testing (e.g. program size, )
-    - print all DataMemory content in output files
-    - see Quartus warnings, and deal with them
     - see about the sizes of the buffers (LSBuffer, RS, ROB), consider the full flag from all of them, see the minimum, and run Run.sh, and GOL program
-    - continue and display GOL on the screen, we are near
+    - see about Fmax differences between benchmarks, is it because of IM array of registers, try IP block for IM (use the same one used for DM) (use IM_MIF)
     - for optimization: assign statement in ROB 
+
+    - see Quartus warnings, and deal with them
+    - continue and display GOL on the screen, we are near
 
     - make it SS
     - MultiCore (dualcore is enough)
     - better branch predictor
+    - Fmax the design, and pick the best to take to the finals
 */
 
 always@(negedge clk, posedge rst) begin
@@ -260,7 +258,7 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA 
 );
 `endif
 // assign InstQ_FLUSH_Flag = ~(rst || ~(|(PC[31:10])));
-assign InstQ_FLUSH_Flag = ~(rst || (PC <= 1023));
+assign InstQ_FLUSH_Flag = ~(rst || (PC <= `MEMORY_SIZE));
 
 PC_register pcreg
 (

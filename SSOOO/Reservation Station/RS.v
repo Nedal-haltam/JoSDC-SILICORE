@@ -1,5 +1,4 @@
 
-`define BUFFER_SIZE_bitsRS (4)
 
 module RS
 (
