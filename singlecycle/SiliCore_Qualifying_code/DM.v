@@ -42,8 +42,8 @@ initial begin
   #(`MAX_CLOCKS + `reset);
   // iterating through some of the addresses of the memory to check if the program loaded and stored the values properly
   $display("Data Memory Content : ");
-  for (i = 0; i <= 50; i = i + 1)
-    $display("Mem[%d] = %d",i[5:0],$signed(DataMem[i]));
+  for (i = 0; i <= 1023; i = i + 1)
+    $display("Mem[%d] = %d",i[9:0],$signed(DataMem[i]));
 end 
 `endif
 endmodule

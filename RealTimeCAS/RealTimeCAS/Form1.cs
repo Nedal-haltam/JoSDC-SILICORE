@@ -98,9 +98,9 @@ namespace RealTimeCAS
                 lblcycles.Text = "0";
                 StringBuilder toout = new StringBuilder();
                 toout.Append("Reg file : \n");
-                for (int i = 0; i < 32; i++) toout.Append($"index = {i,2} , signed = {0,10} , unsigned = {(uint)0,10}\n");
+                toout.Append(LibCPU.MIPS.get_regs(regs));
                 toout.Append("Data Memory : \n");
-                for (int i = 0; i < 20; i++) toout.Append($"Mem[{i,2}] = {0,10}\n");
+                toout.Append(LibCPU.MIPS.get_DM(DM));
                 output.Lines = toout.ToString().Split('\n');
             }
             else if (excep == LibCPU.MIPS.Exceptions.NONE && cycles != 0)
@@ -114,9 +114,9 @@ namespace RealTimeCAS
                 lblcycles.Text = "0";
                 StringBuilder toout = new StringBuilder();
                 toout.Append("Reg file : \n");
-                for (int i = 0; i < 32; i++) toout.Append($"index = {i,2} , signed = {0,10} , unsigned = {(uint)0,10}\n");
+                toout.Append(LibCPU.MIPS.get_regs(regs));
                 toout.Append("Data Memory : \n");
-                for (int i = 0; i < 20; i++) toout.Append($"Mem[{i,2}] = {0,10}\n");
+                toout.Append(LibCPU.MIPS.get_DM(DM));
                 output.Lines = toout.ToString().Split('\n');
             }
 

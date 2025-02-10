@@ -424,9 +424,8 @@ namespace LibCPU {
             int i = 0;
             foreach (string mem in DM)
             {
-                if (i == 20) break;
                 string temp;
-                temp = $"Mem[{i++,2}] = {mem,11}\n";
+                temp = $"Mem[{i++,4}] = {mem,11}\n";
 
                 Console.Write(temp);
             }
@@ -450,10 +449,9 @@ namespace LibCPU {
             int i = 0;
             foreach (string mem in DM)
             {
-                if (i == 51) break;
                 string temp;
 
-                temp = $"Mem[{i++,2}] = {mem,11}\n";
+                temp = $"Mem[{i++,4}] = {mem,11}\n";
 
                 sb.Append(temp);
             }
@@ -997,7 +995,8 @@ namespace LibCPU {
                 if(currLSregister.busy && currLSregister.ready) {
                     if(currLSregister.type == Mnemonic.lw) {
                         LSbuffer.dequeue();
-                        int result = Convert.ToInt32(DM[currLSregister.effectiveAddress], 2);
+                        //int result = Convert.ToInt32(DM[currLSregister.effectiveAddress], 2);
+                        int result = Convert.ToInt32(DM[currLSregister.effectiveAddress]);
                         currLSregister.busy = false;
                         update(result, currLSregister.ROBEN);
                     }
@@ -1005,7 +1004,8 @@ namespace LibCPU {
                         if((ROB.start + 1)== currLSregister.ROBEN) {
                             ROB.getIndex(ROB.start).ready = true;
                             LSbuffer.dequeue();
-                            DM[currLSregister.effectiveAddress] = Convert.ToString(currLSregister.ROBEN2_val, 2);
+                            //DM[currLSregister.effectiveAddress] = Convert.ToString(currLSregister.ROBEN2_val, 2);
+                            DM[currLSregister.effectiveAddress] = Convert.ToString(currLSregister.ROBEN2_val);
                         }
                     }
                 }
