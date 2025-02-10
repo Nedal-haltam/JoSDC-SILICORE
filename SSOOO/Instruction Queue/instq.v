@@ -13,7 +13,7 @@ module InstQ
 );
 
 
-reg [31:0] InstMem [0:1023];
+reg [31:0] InstMem [0 : (`MEMORY_SIZE-1)];
 
 wire [31:0] inst;
 
@@ -43,7 +43,7 @@ always@(negedge clk, posedge rst) begin
         shamt      <= inst[10:6];
         immediate  <= inst[15:0];
         address    <= inst[25:0];
-        VALID_Inst <= (0 <= PC && PC <= 1023);
+        VALID_Inst <= (0 <= PC && PC <= (`MEMORY_SIZE-1));
         pc         <= PC;
     end
 end
@@ -53,7 +53,7 @@ end
 integer i;
 initial begin
 
-for (i = 0; i < 1024; i = i + 1)
+for (i = 0; i <= (`MEMORY_SIZE-1); i = i + 1)
     InstMem[i] <= 0;
 
 `ifdef test

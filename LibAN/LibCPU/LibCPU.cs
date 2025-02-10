@@ -67,6 +67,7 @@ namespace LibCPU {
     {
 
         public const int HANDLER_ADDR = 1000;
+        public const int MEMORY_SIZE = 2048;
         public const string EXCEPTION = "EXCEPTION";
         public const string FETCH = "FETCH";
         public const string DECODE = "DECODE";
@@ -162,7 +163,7 @@ namespace LibCPU {
                 curr_count = insts.Count;
             }
             string nop = "0".PadLeft(32, '0');
-            for (int i = 0; i < 1024 - curr_count; i++) IM.Add(nop);
+            for (int i = 0; i < MEMORY_SIZE - curr_count; i++) IM.Add(nop);
 
             IM[HANDLER_ADDR - 1] = "11111100000000000000000000000000"; // hlt
             IM[HANDLER_ADDR] = "00100000000111111111111111111111"; // addi $31 $0 -1
@@ -170,7 +171,7 @@ namespace LibCPU {
 
             List<string> DM = [.. data_mem_init];
 
-            for (int i = 0; i < 1024 - data_mem_init.Count; i++) DM.Add("0");
+            for (int i = 0; i < MEMORY_SIZE - data_mem_init.Count; i++) DM.Add("0");
 
             return (IM, DM, regs);
         }

@@ -125,6 +125,7 @@ Run_BenchMark_SW()
 
 RunBenchMark_HW()
 {
+
     ProgName=$1
     ProgFolder="./$ProgName/"
     printf "[INFO $INDEX/$TOTAL ]: simulating on single cycle hardware\n"
@@ -133,16 +134,15 @@ RunBenchMark_HW()
     VERILOG_EXT_SC_OUT="VERILOG_SC_OUT.txt"
     VERILOG_SC=$ProgFolder""$VERILOG_EXT_SC
     VERILOG_SC_OUT=$ProgFolder""$VERILOG_EXT_SC_OUT
-    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SC -D vscode -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" $BASE_PATH"SingleCycle_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SC -D vscode -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" -D MEMORY_SIZE=2048 -D MEMORY_BITS=11 $BASE_PATH"SingleCycle_sim.v"
     vvp $VERILOG_SC > $VERILOG_SC_OUT
-
     printf "[INFO $INDEX/$TOTAL ]: simulating on pipeline hardware\n"
     BASE_PATH="../PipeLine/PipeLine/"
     VERILOG_EXT_PL="VERILOG_PL.vvp"
     VERILOG_EXT_PL_OUT="VERILOG_PL_OUT.txt"
     VERILOG_PL=$ProgFolder""$VERILOG_EXT_PL
     VERILOG_PL_OUT=$ProgFolder""$VERILOG_EXT_PL_OUT
-    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_PL -D vscode -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" $BASE_PATH"PipeLine_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_PL -D vscode -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" -D MEMORY_SIZE=2048 -D MEMORY_BITS=11 $BASE_PATH"PipeLine_sim.v"
     vvp $VERILOG_PL > $VERILOG_PL_OUT
 
 
@@ -152,7 +152,7 @@ RunBenchMark_HW()
     VERILOG_EXT_SSOOO_OUT="VERILOG_SSOOO_OUT.txt"
     VERILOG_SSOOO=$ProgFolder""$VERILOG_EXT_SSOOO
     VERILOG_SSOOO_OUT=$ProgFolder""$VERILOG_EXT_SSOOO_OUT
-    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SSOOO -D vscode -D VCD_OUT=\"$ProgFolder"SSOOO_WaveForm.vcd"\" $BASE_PATH"SSOOO_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SSOOO -D vscode -D VCD_OUT=\"$ProgFolder"SSOOO_WaveForm.vcd"\" -D MEMORY_SIZE=2048 -D MEMORY_BITS=11 $BASE_PATH"SSOOO_sim.v"
     vvp $VERILOG_SSOOO > $VERILOG_SSOOO_OUT
 
 

@@ -4,6 +4,13 @@
 `define MAX_CLOCKS (2 * 100 * 1000)
 `define reset 4
 
+
+`ifndef MEMORY_SIZE
+`define MEMORY_SIZE 2048
+`define MEMORY_BITS 11
+`endif
+
+
 `ifndef vscode
 `timescale 1ns/1ps
 `endif
