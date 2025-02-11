@@ -1,5 +1,9 @@
 
+`ifndef ROB_SIZE_bits
 `define ROB_SIZE_bits (4)
+`define BUFFER_SIZE_bitslsbuffer (4)
+`define BUFFER_SIZE_bitsRS (4)
+`endif
 
 `ifndef VGA
 module SSOOO_CPU
@@ -192,6 +196,7 @@ TODO:
     - see about Fmax differences between benchmarks, is it because of IM array of registers, try IP block for IM (use the same one used for DM) (use IM_MIF)
     - for optimization: assign statement in ROB 
 
+    - change [9:0] -> [10:0] OR [`MEMORY_BITS-1:0]
     - see Quartus warnings, and deal with them
     - continue and display GOL on the screen, we are near
 
@@ -264,7 +269,7 @@ PC_register pcreg
 (
     (InstQ_FLUSH_Flag) ? `exception_handler : PC, 
     PC_out, 
-    ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag , 
+    ~(ROB_FULL_FLAG || RS_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag , 
     clk, rst
 );
 
@@ -300,7 +305,7 @@ RegFile regfile
     ), 
     .Decoded_WP1_ROBEN
     (
-        ((ROB_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag) ? {(`ROB_SIZE_bits+1){1'b0}} : ROB_End_Index
+        ((ROB_FULL_FLAG || RS_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag) ? {(`ROB_SIZE_bits+1){1'b0}} : ROB_End_Index
     ), 
     .WP1_DRindex(ROB_Commit_Rd), 
     .Decoded_WP1_DRindex
@@ -373,7 +378,7 @@ ROB rob
     .VALID_Inst
     (
         ~rst && 
-         ~ROB_FLUSH_Flag && ~(ROB_FULL_FLAG || LdStB_FULL_FLAG) && InstQ_VALID_Inst && InstQ_opcode != j && InstQ_opcode != jr
+         ~ROB_FLUSH_Flag && ~(ROB_FULL_FLAG || RS_FULL_FLAG || LdStB_FULL_FLAG) && InstQ_VALID_Inst && InstQ_opcode != j && InstQ_opcode != jr
     ),
 
     .FULL_FLAG(ROB_FULL_FLAG),
@@ -415,7 +420,7 @@ RS rs
     .rst(rst),
     .opcode(InstQ_opcode),
     .ALUOP(InstQ_ALUOP),
-    .ROBEN(ROB_End_Index),
+    .ROBEN((ROB_End_Index == 1) ? `ROB_SIZE : ROB_End_Index - 1'b1),
     .ROBEN1
     (
         (~(|RegFile_RP1_Reg1_ROBEN) || InstQ_opcode == sll || InstQ_opcode == srl) ? {(`ROB_SIZE_bits+1){1'b0}} : 
@@ -458,7 +463,7 @@ RS rs
     .ROB_FLUSH_Flag(ROB_FLUSH_Flag),
     .VALID_Inst
     (
-        InstQ_opcode != hlt_inst && InstQ_VALID_Inst && ~ROB_FULL_FLAG && ~ROB_FLUSH_Flag && 
+        InstQ_opcode != hlt_inst && InstQ_VALID_Inst && ~ROB_FULL_FLAG && ~RS_FULL_FLAG && ~ROB_FLUSH_Flag && 
         InstQ_opcode != lw && InstQ_opcode != sw && InstQ_opcode != jal && InstQ_opcode != j && InstQ_opcode != jr
     ),
     .FU_Is_Free(FU_Is_Free),
@@ -554,7 +559,7 @@ ALU alu3
 
 AddressUnit AU
 (
-    .Decoded_ROBEN(ROB_End_Index),
+    .Decoded_ROBEN((ROB_End_Index == 1) ? `ROB_SIZE : ROB_End_Index - 1'b1),
     .Decoded_Rd(InstQ_rt),
     .Decoded_opcode(InstQ_opcode),
     .ROBEN1
@@ -617,7 +622,7 @@ LSBuffer lsbuffer
 (
     .clk(clk), 
     .rst(rst),
-    .VALID_Inst(AU_LdStB_VALID_Inst && ~ROB_FULL_FLAG && ~ROB_FLUSH_Flag && ~rst),
+    .VALID_Inst(AU_LdStB_VALID_Inst && ~ROB_FULL_FLAG && ~LdStB_FULL_FLAG && ~ROB_FLUSH_Flag && ~rst),
     .ROBEN(AU_LdStB_ROBEN),
     .Rd(AU_LdStB_Rd),
     .opcode(AU_LdStB_opcode),

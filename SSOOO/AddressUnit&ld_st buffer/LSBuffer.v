@@ -32,6 +32,7 @@ module LSBuffer
     input [31:0] CDB_ROBEN4_VAL,
 
     output reg FULL_FLAG,
+    // output FULL_FLAG,
     
     output reg out_VALID_Inst,
     output reg [`ROB_SIZE_bits:0]  out_ROBEN,
@@ -111,8 +112,10 @@ reg [`BUFFER_SIZE_bitslsbuffer:0] i;
 reg [`BUFFER_SIZE_bitslsbuffer:0] ji;
 
 always@(posedge clk)
-    FULL_FLAG <= ~(rst | ~(End_Index == Start_Index && (Reg_Busy[Start_Index])));
+    FULL_FLAG <= ~(rst | ~(End_Index + 1'b1 == Start_Index && (Reg_Busy[Start_Index])));
+// assign FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[Start_Index])));
 
+wire [`ROB_SIZE_bits:0] out_ROBEN_test = Reg_ROBEN[Start_Index];
 
 always@(negedge clk) begin
     if (rst || ROB_FLUSH_Flag) begin
@@ -125,12 +128,12 @@ always@(negedge clk) begin
         out_VALID_Inst <= 0;
     end
     else begin
-        if (VALID_Inst && ~FULL_FLAG) begin
+        if (VALID_Inst) begin
             Reg_Busy[End_Index] <= 1'b1;
 
             Reg_opcode[End_Index] <= opcode;
             Reg_Rd[End_Index] <= Rd;
-            Reg_EA[End_Index][9:0] <= ROBEN1_VAL[9:0] + Immediate[9:0];
+            Reg_EA[End_Index][(`MEMORY_BITS-1):0] <= ROBEN1_VAL[(`MEMORY_BITS-1):0] + Immediate[(`MEMORY_BITS-1):0];
             Reg_ROBEN1[End_Index] <= ROBEN1;
             Reg_ROBEN2[End_Index] <= ROBEN2;
             Reg_ROBEN1_VAL[End_Index] <= ROBEN1_VAL;
@@ -169,22 +172,22 @@ always@(negedge clk) begin
             if (Reg_Busy[`I(ji)]) begin
                 if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN1 && CDB_ROBEN1 != 0) begin
                     Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN1_VAL;
-                    Reg_EA[`I(ji)][9:0] <= CDB_ROBEN1_VAL[9:0] + Reg_Immediate[`I(ji)][9:0];
+                    Reg_EA[`I(ji)][(`MEMORY_BITS-1):0] <= CDB_ROBEN1_VAL[(`MEMORY_BITS-1):0] + Reg_Immediate[`I(ji)][(`MEMORY_BITS-1):0];
                     Reg_ROBEN1[`I(ji)] <= 0;
                 end
                 else if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN2 && CDB_ROBEN2 != 0) begin
                     Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN2_VAL;
-                    Reg_EA[`I(ji)][9:0] <= CDB_ROBEN2_VAL[9:0] + Reg_Immediate[`I(ji)][9:0];
+                    Reg_EA[`I(ji)][(`MEMORY_BITS-1):0] <= CDB_ROBEN2_VAL[(`MEMORY_BITS-1):0] + Reg_Immediate[`I(ji)][(`MEMORY_BITS-1):0];
                     Reg_ROBEN1[`I(ji)] <= 0;
                 end
                 else if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN3 && CDB_ROBEN3 != 0) begin
                     Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN3_VAL;
-                    Reg_EA[`I(ji)][9:0] <= CDB_ROBEN3_VAL[9:0] + Reg_Immediate[`I(ji)][9:0];
+                    Reg_EA[`I(ji)][(`MEMORY_BITS-1):0] <= CDB_ROBEN3_VAL[(`MEMORY_BITS-1):0] + Reg_Immediate[`I(ji)][(`MEMORY_BITS-1):0];
                     Reg_ROBEN1[`I(ji)] <= 0;
                 end
                 else if (Reg_ROBEN1[`I(ji)] == CDB_ROBEN4 && CDB_ROBEN4 != 0) begin
                     Reg_ROBEN1_VAL[`I(ji)] <= CDB_ROBEN4_VAL;
-                    Reg_EA[`I(ji)][9:0] <= CDB_ROBEN4_VAL[9:0] + Reg_Immediate[`I(ji)][9:0];
+                    Reg_EA[`I(ji)][(`MEMORY_BITS-1):0] <= CDB_ROBEN4_VAL[(`MEMORY_BITS-1):0] + Reg_Immediate[`I(ji)][(`MEMORY_BITS-1):0];
                     Reg_ROBEN1[`I(ji)] <= 0;
                 end
 

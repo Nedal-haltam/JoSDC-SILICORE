@@ -3,7 +3,8 @@
 `define ONE_CLK (2 * `HALF_CYCLE)
 `define ADVANCE_N_CYCLE(N) #(`ONE_CLK * N);
 
-`define MAX_CLOCKS (2 * 600*1000)
+`define MAX_CLOCKS (2 * 900*1000)
+// `define MAX_CLOCKS (2 * 10000)
 `define reset 2 * `ONE_CLK
 
 `ifndef MEMORY_SIZE
@@ -15,7 +16,9 @@
 `timescale 1ns/1ps
 `endif
 
-`define ROB_SIZE_bits (10)
+`define ROB_SIZE_bits (4)
+`define BUFFER_SIZE_bitslsbuffer (4)
+`define BUFFER_SIZE_bitsRS (4)
 
 `ifdef vscode
 
@@ -53,8 +56,8 @@ $dumpvars;
 
 `else
 
-$dumpfile("SSOOO_Waveform.vcd");
-$dumpvars;
+// $dumpfile("SSOOO_Waveform.vcd");
+// $dumpvars;
 
 `endif
 

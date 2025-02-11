@@ -132,21 +132,15 @@ assign RP1_Ready2 = Reg_Ready[`Imone(RP1_ROBEN2)];
 
 
 // assign FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
-always@(posedge clk, posedge rst) begin
-    if (rst) begin
-        FULL_FLAG <= 1'b0;
-    end
-    else begin
-        FULL_FLAG <= End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)]);
-    end
-end
+always@(negedge clk)
+    FULL_FLAG <= ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
 assign EXCEPTION_Flag = Reg_Busy[`Imone(Start_Index)] & Reg_Exception[`Imone(Start_Index)];
 
 
 
 reg [`ROB_SIZE_bits:0] i = 0;
 reg [`ROB_SIZE_bits:0] k = 0;
-always@(negedge clk, posedge rst) begin
+always@(posedge clk, posedge rst) begin
 
     if (rst) begin
         End_Index <= 1;
@@ -154,7 +148,7 @@ always@(negedge clk, posedge rst) begin
     else if (FLUSH_Flag) begin
         End_Index <= 1;
     end
-    else if (VALID_Inst && ~FULL_FLAG) begin
+    else if (VALID_Inst) begin
         if (End_Index + 1'b1 == (`ROB_SIZE + 1'b1))
             End_Index <= 1;
         else 
@@ -174,7 +168,7 @@ always@(posedge clk, posedge rst) begin
         Start_Index <= 1;
     end
     else begin
-        if (VALID_Inst && ~FULL_FLAG) begin
+        if (VALID_Inst) begin
             Reg_opcode[`Imone(End_Index)] <= Decoded_opcode;
             Reg_PC[`Imone(End_Index)] <= Decoded_PC;
             Reg_Rd[`Imone(End_Index)] <= Decoded_Rd;
