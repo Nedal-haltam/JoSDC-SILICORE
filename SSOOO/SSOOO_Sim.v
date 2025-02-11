@@ -56,8 +56,8 @@ $dumpvars;
 
 `else
 
-// $dumpfile("SSOOO_Waveform.vcd");
-// $dumpvars;
+$dumpfile("SSOOO_Waveform.vcd");
+$dumpvars;
 
 `endif
 
