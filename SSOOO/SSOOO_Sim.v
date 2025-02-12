@@ -68,8 +68,7 @@ $display("Number of cycles consumed: %d", cycles_consumed);
 $finish;
 
 end
-	
-	
+
 endmodule
 
 

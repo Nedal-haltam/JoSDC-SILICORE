@@ -191,12 +191,11 @@ end
 
 /*
     - the jr dependency is solved but we can do better in terms of forwarding it from the ROB or the CDB, but it works
+    - consider the full flag from all of them, consider it done
 TODO:
-    - see about the sizes of the buffers (LSBuffer, RS, ROB), consider the full flag from all of them, see the minimum, and run Run.sh, and GOL program
     - see about Fmax differences between benchmarks, is it because of IM array of registers, try IP block for IM (use the same one used for DM) (use IM_MIF)
     - for optimization: assign statement in ROB 
 
-    - change [9:0] -> [10:0] OR [`MEMORY_BITS-1:0]
     - see Quartus warnings, and deal with them
     - continue and display GOL on the screen, we are near
 
@@ -414,13 +413,15 @@ ALU_OPER alu_op(InstQ_opcode, InstQ_ALUOP);
     InstQ_opcode == slti || InstQ_opcode == lw) ? InstQ_rt : InstQ_rd
 )
 */
+
+wire [`ROB_SIZE_bits:0] new_End_Index = (ROB_End_Index == 1) ? `ROB_SIZE : ROB_End_Index - 1'b1;
 RS rs
 (
     .clk(clk), 
     .rst(rst),
     .opcode(InstQ_opcode),
     .ALUOP(InstQ_ALUOP),
-    .ROBEN((ROB_End_Index == 1) ? `ROB_SIZE : ROB_End_Index - 1'b1),
+    .ROBEN(new_End_Index),
     .ROBEN1
     (
         (~(|RegFile_RP1_Reg1_ROBEN) || InstQ_opcode == sll || InstQ_opcode == srl) ? {(`ROB_SIZE_bits+1){1'b0}} : 
@@ -559,7 +560,7 @@ ALU alu3
 
 AddressUnit AU
 (
-    .Decoded_ROBEN((ROB_End_Index == 1) ? `ROB_SIZE : ROB_End_Index - 1'b1),
+    .Decoded_ROBEN(new_End_Index),
     .Decoded_Rd(InstQ_rt),
     .Decoded_opcode(InstQ_opcode),
     .ROBEN1
