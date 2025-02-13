@@ -6,6 +6,7 @@ using Microsoft.VisualBasic;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq.Expressions;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
@@ -16,6 +17,7 @@ namespace Epsilon
     {
         private List<Token> m_tokens;
         private int m_curr_index = 0;
+        private bool ExitScope = false;
         private Dictionary<string, List<NodeTermIntLit>> m_Arraydims = [];
         public Parser(List<Token> tokens)
         {
@@ -220,10 +222,18 @@ namespace Epsilon
                 return NodeBinExpr.NodeBinExprType.xor;
             return null;
         }
-        bool IsExprTermIntLit(NodeExpr expr)
+        bool IsExprIntLit(NodeExpr expr)
         {
-            return expr.type == NodeExpr.NodeExprType.term && (expr.term.type == NodeTerm.NodeTermType.intlit || 
-                (expr.term.type == NodeTerm.NodeTermType.paren && expr.term.paren.expr.type == NodeExpr.NodeExprType.term && expr.term.paren.expr.term.type == NodeTerm.NodeTermType.intlit));
+            bool IstermIntLit = expr.type == NodeExpr.NodeExprType.term && 
+                (
+                    expr.term.type == NodeTerm.NodeTermType.intlit || 
+                    (expr.term.type == NodeTerm.NodeTermType.paren && expr.term.paren.expr.type == NodeExpr.NodeExprType.term && expr.term.paren.expr.term.type == NodeTerm.NodeTermType.intlit)
+                );
+            //bool IsBinExprIntLit = expr.type == NodeExpr.NodeExprType.binExpr &&
+            //    (
+            //        //expr.binexpr.type == NodeBinExpr.NodeBinExprType.
+            //    )
+            return IstermIntLit;
         }
         NodeExpr? ParseExpr(int min_prec = 0)
         {
@@ -272,7 +282,7 @@ namespace Epsilon
                     expr.lhs = expr_lhs2;
                     expr.rhs = expr_rhs.Value;
 
-                    if (IsExprTermIntLit(expr.lhs) && IsExprTermIntLit(expr.rhs))
+                    if (IsExprIntLit(expr.lhs) && IsExprIntLit(expr.rhs))
                     {
                         string constant1, constant2;
                         if (expr.lhs.term.type == NodeTerm.NodeTermType.intlit)
@@ -328,7 +338,15 @@ namespace Epsilon
                 scope.stmts = [];
                 while (!peek(TokenType.CloseCurly).HasValue)
                 {
-                    NodeStmt? stmt = ParseStmt();
+                    NodeStmt? stmt;
+                    if (ExitScope)
+                    {
+                        stmt = ParseStmt();
+                        if (!stmt.HasValue)
+                            return null;
+                        continue;
+                    }
+                    stmt = ParseStmt();
                     if (stmt.HasValue)
                     {
                         scope.stmts.Add(stmt.Value);
@@ -339,6 +357,7 @@ namespace Epsilon
                     }
                 }
                 try_consume_err(TokenType.CloseCurly);
+                ExitScope = false;
                 return scope;
             }
             else
@@ -941,6 +960,7 @@ namespace Epsilon
                 NodeStmt stmt = new NodeStmt();
                 stmt.type = NodeStmt.NodeStmtType.Exit;
                 stmt.Exit = Return;
+                ExitScope = true;
                 return stmt;
             }
 
@@ -958,6 +978,11 @@ namespace Epsilon
                 if (stmt.HasValue)
                 {
                     prog.scope.stmts.Add(stmt.Value);
+                    if (ExitScope)
+                    {
+                        ExitScope = false;
+                        break;
+                    }
                 }
                 else
                     ErrorExpected($"statement");

@@ -193,6 +193,13 @@ end
     - the jr dependency is solved but we can do better in terms of forwarding it from the ROB or the CDB, but it works
     - consider the full flag from all of them, consider it done
 TODO:
+dead code elimination:
+    - case 1: eliminate stmts after exit stmt
+    - case 2: unused variables
+    - case 3: if stmt with constant conditions
+
+
+    - common subexpression elimination, loop unrolling, support functions calling
     - see about Fmax differences between benchmarks, is it because of IM array of registers, try IP block for IM (use the same one used for DM) (use IM_MIF)
     - for optimization: assign statement in ROB 
 
