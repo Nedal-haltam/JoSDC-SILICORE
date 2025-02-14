@@ -19,6 +19,7 @@ namespace Epsilon
         private int m_curr_index = 0;
         private bool ExitScope = false;
         private Dictionary<string, List<NodeTermIntLit>> m_Arraydims = [];
+        private Dictionary<string, bool> m_UsedVars = [];
         public Parser(List<Token> tokens)
         {
             m_tokens = tokens;
@@ -154,6 +155,7 @@ namespace Epsilon
                     term.ident.dim1 = m_Arraydims[term.ident.ident.Value][0];
                     term.ident.dim2 = m_Arraydims[term.ident.ident.Value][1];
                 }
+                m_UsedVars[term.ident.ident.Value] = true;
                 return term;
             }
             else if (peek(TokenType.OpenParen).HasValue)
@@ -756,10 +758,10 @@ namespace Epsilon
             stmt.declare.array = declare;
             return stmt;
         }
-        NodeStmt? ParseAssignSingleVar()
+        NodeStmt? ParseAssignSingleVar(Token ident)
         {
             NodeStmtAssignSingleVar singlevar = new();
-            singlevar.ident = consume();
+            singlevar.ident = ident;
             consume();
             NodeExpr? expr = ParseExpr();
             if (expr.HasValue)
@@ -777,10 +779,10 @@ namespace Epsilon
             stmt.assign.singlevar = singlevar;
             return stmt;
         }
-        NodeStmt? ParseAssignArray()
+        NodeStmt? ParseAssignArray(Token ident)
         {
             NodeStmtAssignArray array = new();
-            array.ident = consume();
+            array.ident = ident;
             if (peek(TokenType.OpenSquare).HasValue)
             {
                 array.index1 = parseindex().Value;
@@ -816,12 +818,6 @@ namespace Epsilon
         }
         NodeStmt? ParseStmt()
         {
-            // see what possible statements you have and parse it
-            // - declare
-            // - assign
-            // - if
-            // - for
-            // - exit
             if (IsStmtDeclare())
             {
                 Token vartype = consume();
@@ -852,13 +848,14 @@ namespace Epsilon
             }
             else if (IsStmtAssign())
             {
+                Token ident = consume();
                 if (peek(TokenType.OpenSquare, 1).HasValue)
                 {
-                    return ParseAssignArray();
+                    return ParseAssignArray(ident);
                 }
                 else if (peek(TokenType.Equal, 1).HasValue)
                 {
-                    return ParseAssignSingleVar();
+                    return ParseAssignSingleVar(ident);
                 }
             }
             else if (IsStmtIF())
@@ -968,7 +965,7 @@ namespace Epsilon
         }
 
 
-        public NodeProg ParseProg()
+        public (NodeProg, Dictionary<string, bool>) ParseProg()
         {
             NodeProg prog = new NodeProg();
             
@@ -987,7 +984,7 @@ namespace Epsilon
                 else
                     ErrorExpected($"statement");
             }
-            return prog;
+            return (prog, m_UsedVars);
         }
     }
 }

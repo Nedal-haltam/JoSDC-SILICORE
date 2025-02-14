@@ -194,7 +194,6 @@ end
     - consider the full flag from all of them, consider it done
 TODO:
 dead code elimination:
-    - case 1: eliminate stmts after exit stmt
     - case 2: unused variables
     - case 3: if stmt with constant conditions
 

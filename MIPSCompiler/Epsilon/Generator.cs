@@ -29,18 +29,22 @@ namespace Epsilon
     }
     class Generator
     {
-        private int STACK_CAPACITY = 500;
+        private readonly int STACK_CAPACITY = 500;
         public NodeProg m_prog;
-        StringBuilder m_outputcode = new();
+        private readonly StringBuilder m_outputcode = new();
         public Vars vars = new();
-        Stack<int> m_scopes = [];
-        int m_labels_count = 0;
+        private readonly Stack<int> m_scopes = [];
+        private int m_labels_count = 0;
         int m_StackSize = 0;
-        Stack<string?> m_scopestart = [];
-        Stack<string?> m_scopeend = [];
-        public Generator(NodeProg prog)
+        private readonly Stack<string?> m_scopestart = [];
+        private readonly Stack<string?> m_scopeend = [];
+
+        private Dictionary<string, bool> m_UsedVars = [];
+        private string CurrVar = "";
+        public Generator(NodeProg prog, Dictionary<string, bool> usedvars)
         {
             m_prog = prog;
+            m_UsedVars = usedvars;
         }
         void Error(string msg, int line)
         {
@@ -533,6 +537,8 @@ namespace Epsilon
                 }
                 else
                 {
+                    if (!m_UsedVars.ContainsKey(ident.Value))
+                        return;
                     vars.m_vars.Add(new(ident.Value, 1));
                     GenExpr_(declare.singlevar.expr, null);
                 }
@@ -546,7 +552,8 @@ namespace Epsilon
                 }
                 else
                 {
-                    
+                    if (!m_UsedVars.ContainsKey(ident.Value))
+                        return;
                     if (declare.array.dim2.HasValue)
                     {
                         int dim1 = Convert.ToInt32(declare.array.dim1.intlit.Value);
@@ -621,6 +628,8 @@ namespace Epsilon
                 {
                     Error($"variable {ident.Value} is not declared", ident.Line);
                 }
+                if (!m_UsedVars.ContainsKey(ident.Value))
+                    return;
                 GenExpr_(assign.singlevar.expr, reg);
                 int relative_location = m_StackSize - VariableLocation(ident.Value);
                 m_outputcode.Append($"SW {reg}, {relative_location}($sp)\n");
@@ -632,6 +641,8 @@ namespace Epsilon
                 {
                     Error($"variable {ident.Value} is not declared", ident.Line);
                 }
+                if (!m_UsedVars.ContainsKey(ident.Value))
+                    return;
                 if (assign.array.index2.HasValue)
                 {
                     GenArrayAssign2D(assign.array);
@@ -824,13 +835,9 @@ namespace Epsilon
             m_outputcode.Append($"SW $zero, 0($1)\n");
             m_outputcode.Append($"ADDI $1, $1, 1\n");
             m_outputcode.Append($"BNE $1, $2, Clean_Loop\n");
-            //for (int i = 0; i <= STACK_CAPACITY; i++)
-            //{
-            //    m_outputcode.Append($"SW $zero, {i}($zero)\n");
-            //}
         }
         void GenStmt(NodeStmt stmt)
-        {
+        {            
             if (stmt.type == NodeStmt.NodeStmtType.declare)
             {
                 GenStmtDeclare(stmt.declare);

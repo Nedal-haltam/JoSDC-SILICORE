@@ -4,36 +4,3 @@ ADDI $sp, $zero, 500
 ADDI $1, $zero, 123
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
-LABEL0_START:
-ADDI $1, $zero, 1
-SW $1, 0($sp)
-ADDI $sp, $sp, -1
-########## x
-LW $1, 2($sp)
-SW $1, 0($sp)
-ADDI $sp, $sp, -1
-ADDI $sp, $sp, 1
-LW $1, 0($sp)
-ADDI $sp, $sp, 1
-LW $2, 0($sp)
-TEMP_LABEL3_START:
-SUB $1, $1, $2
-BEQ $1, $zero, TEMP_LABEL4_ELSE
-ADDI $1, $zero, 0
-J TEMP_LABEL5_END
-TEMP_LABEL4_ELSE:
-ADDI $1, $zero, 1
-TEMP_LABEL5_END:
-ADDI $1, $1, 0
-BEQ $1, $zero, LABEL2_elifs
-# begin scope
-ADDI $1, $zero, 888
-SW $1, 0($sp)
-ADDI $sp, $sp, -1
-ADDI $1, $zero, 0
-ADDI $1, $1, 0
-HLT
-# end scope
-ADDi $sp, $sp, 1
-LABEL2_elifs:
-LABEL1_END:

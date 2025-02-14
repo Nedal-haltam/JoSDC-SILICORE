@@ -15,9 +15,9 @@ namespace Epsilon
             List<Token> Tprog = tokenizer.Tokenize(); // tokenized program
 
             Parser parser = new(Tprog);
-            NodeProg Pprog = parser.ParseProg(); // parsed program
+            (NodeProg Pprog, Dictionary<string, bool> usedvars) = parser.ParseProg(); // parsed program
 
-            Generator generator = new(Pprog);
+            Generator generator = new(Pprog, usedvars);
             StringBuilder outputcode = generator.GenProg();
 
             File.WriteAllText("./output.mips", outputcode.ToString());
