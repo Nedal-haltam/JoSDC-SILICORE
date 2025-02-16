@@ -1,9 +1,15 @@
 
 
-int x = 123;
-int y = 321 + x;
-// x is considered not used so we should eliminate also `x`
-// need another dictionary?? 
+int x = 111;
+int y = 222;
+if (1)
+{
+    y = 1;
+    x = x + 123;
+}
+
+
+
 
 /*
 

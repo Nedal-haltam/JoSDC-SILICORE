@@ -2,14 +2,6 @@
 
 
 
-using Microsoft.VisualBasic;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq.Expressions;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
 
 namespace Epsilon
 {
@@ -19,7 +11,6 @@ namespace Epsilon
         private int m_curr_index = 0;
         private bool ExitScope = false;
         private Dictionary<string, List<NodeTermIntLit>> m_Arraydims = [];
-        private Dictionary<string, bool> m_UsedVars = [];
         public Parser(List<Token> tokens)
         {
             m_tokens = tokens;
@@ -155,7 +146,6 @@ namespace Epsilon
                     term.ident.dim1 = m_Arraydims[term.ident.ident.Value][0];
                     term.ident.dim2 = m_Arraydims[term.ident.ident.Value][1];
                 }
-                m_UsedVars[term.ident.ident.Value] = true;
                 return term;
             }
             else if (peek(TokenType.OpenParen).HasValue)
@@ -849,11 +839,11 @@ namespace Epsilon
             else if (IsStmtAssign())
             {
                 Token ident = consume();
-                if (peek(TokenType.OpenSquare, 1).HasValue)
+                if (peek(TokenType.OpenSquare).HasValue)
                 {
                     return ParseAssignArray(ident);
                 }
-                else if (peek(TokenType.Equal, 1).HasValue)
+                else if (peek(TokenType.Equal).HasValue)
                 {
                     return ParseAssignSingleVar(ident);
                 }
@@ -965,7 +955,7 @@ namespace Epsilon
         }
 
 
-        public (NodeProg, Dictionary<string, bool>) ParseProg()
+        public NodeProg ParseProg()
         {
             NodeProg prog = new NodeProg();
             
@@ -984,7 +974,7 @@ namespace Epsilon
                 else
                     ErrorExpected($"statement");
             }
-            return (prog, m_UsedVars);
+            return prog;
         }
     }
 }
