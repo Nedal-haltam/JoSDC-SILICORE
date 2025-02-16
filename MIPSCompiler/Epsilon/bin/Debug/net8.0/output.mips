@@ -1,6 +1,43 @@
 .text
 main:
 ADDI $sp, $zero, 500
-ADDI $1, $zero, 111
+ADDI $1, $zero, 123
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
+ADDI $1, $zero, 1000
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## x
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+ADDI $1, $1, 0
+SW $1, 1($sp)
+LABEL0_START:
+ADDI $1, $zero, 1
+ADDI $1, $1, 0
+BEQ $1, $zero, LABEL2_elifs
+# begin scope
+ADDI $1, $zero, 234
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## x
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+ADDI $1, $1, 0
+SW $1, 1($sp)
+# end scope
+ADDi $sp, $sp, 0
+LABEL2_elifs:
+LABEL1_END:
