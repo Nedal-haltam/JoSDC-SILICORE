@@ -2,12 +2,14 @@
 
 
 
-int x = 123;
-x = x + 1000;
-if (1)
-{
-    x = x+234;
-}
+
+#define type(var) int var
+
+type(var1) = 123;
+
+type(var2) = 321;
+int var = 3213;
+
 
 
 /*

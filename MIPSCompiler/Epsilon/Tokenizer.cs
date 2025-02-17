@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -76,7 +77,13 @@ namespace Epsilon
             }
             return false;
         }
-        private Dictionary<string, List<Token>> macro = [];
+        public struct Macro
+        {
+            public List<string> inputs;
+            public List<Token> value;
+            public string src;
+        }
+        private Dictionary<string, Macro> macro = [];
         public List<Token> Tokenize()
         {
             m_tokens = [];
@@ -99,8 +106,39 @@ namespace Epsilon
                     string word = buffer.ToString();
                     if (macro.ContainsKey(word))
                     {
-                        List<Token> tokens = macro[word];
-                        m_tokens.AddRange(tokens);
+                        buffer.Clear();
+                        List<string> inputs = [];
+                        if (Peek('(').HasValue)
+                        {
+                            Consume();
+                            while (!Peek(')').HasValue)
+                            {
+                                if (Peek(',').HasValue)
+                                {
+                                    if (string.IsNullOrEmpty(buffer.ToString()) || string.IsNullOrWhiteSpace(buffer.ToString()))
+                                        throw new Exception("invalid macro input");
+                                    inputs.Add(buffer.ToString());
+                                    buffer.Clear();
+                                }
+                                else
+                                {
+                                    buffer.Append(Consume());
+                                }
+                            }
+                            Consume();
+                        }
+                        inputs.Add(buffer.ToString());
+                        buffer.Clear();
+
+                        if (inputs.Count != macro[word].inputs.Count)
+                            throw new Exception("inputs does not match macro definition");
+                        string src = macro[word].src;
+                        for (int i = 0; i < macro[word].inputs.Count; i++)
+                        {
+                            src = Regex.Replace(macro[word].src, $@"\b{Regex.Escape(macro[word].inputs[i])}\b", inputs[i]);
+                        }
+                        Tokenizer temp = new(src);
+                        m_tokens.AddRange(temp.Tokenize());
                     }
                     else if (word == "int")
                     {
@@ -229,19 +267,44 @@ namespace Epsilon
                     {
                         // aready consumed, now we get the name and the value
                         while (Peek(' ').HasValue) Consume();
-                        while (!Peek(' ').HasValue)
+                        while (Peek().HasValue && (char.IsAsciiLetterOrDigit(Peek().Value) || Peek('_').HasValue))
                         {
                             buffer.Append(Consume());
                         }
-                        Consume();
                         string macroname = buffer.ToString();
                         buffer.Clear();
+                        while (Peek(' ').HasValue) Consume();
+                        List<string> inputs = [];
+                        if (Peek('(').HasValue)
+                        {
+                            Consume();
+                            while(!Peek(')').HasValue)
+                            {
+                                if (Peek(',').HasValue)
+                                {
+                                    if (string.IsNullOrEmpty(buffer.ToString()) || string.IsNullOrWhiteSpace(buffer.ToString()))
+                                        throw new Exception("invalid macro input");
+                                    inputs.Add(buffer.ToString());
+                                    buffer.Clear();
+                                }
+                                else
+                                {
+                                    buffer.Append(Consume());
+                                }
+                            }
+                            Consume();
+                        }
+                        inputs.Add(buffer.ToString());
+                        buffer.Clear();
+
+                        
                         while (!Peek('\n').HasValue)
                         {
-                            buffer.Append(Consume());
+                            buffer.Append(Consume()); 
                         }
                         Consume();
-                        Tokenizer temp = new(buffer.ToString());
+                        string MacroSrc = buffer.ToString();
+                        Tokenizer temp = new(MacroSrc);
                         List<Token> macrovalue = temp.Tokenize();
                         for (int i = 0; i < macrovalue.Count; i++)
                         {
@@ -249,10 +312,10 @@ namespace Epsilon
                             {
                                 Token t = macrovalue[i];
                                 macrovalue.RemoveAt(i);
-                                macrovalue.InsertRange(i, macro[t.Value]);
+                                macrovalue.InsertRange(i, macro[t.Value].value);
                             }
                         }
-                        macro.Add(macroname, macrovalue);
+                        macro.Add(macroname, new() { src = MacroSrc, inputs = inputs, value = macrovalue });
                     }
                     else
                     {
