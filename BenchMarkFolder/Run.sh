@@ -77,11 +77,11 @@ Run_BenchMark_SW()
     printf "[INFO $INDEX/$TOTAL ]: Simulating "$ProgName" on the PipeLine\n"
     $CAS $CAS_ARGS
 
-    # if [ $? -ne 0 ]; then
-    #     printf "\033[31mCycle Accurate Simulator failed to run the program:\033[0m\nUsage: [path to CAS] sim [singlecycle/pipline/OOO] [IM input (machine code)] [DM input] [CAS output]\n"
-    #     read -p "Press Enter to exit"
-    #     exit 1
-    # fi
+    if [ $? -ne 0 ]; then
+        printf "\033[31mCycle Accurate Simulator failed to run the program:\033[0m\nUsage: [path to CAS] sim [singlecycle/pipline/OOO] [IM input (machine code)] [DM input] [CAS output]\n"
+        read -p "Press Enter to exit"
+        exit 1
+    fi
     printf "[INFO $INDEX/$TOTAL ]: "$ProgName" simulated successfully on the PipeLine\n"
 
 ##############################################################################################################
@@ -128,6 +128,8 @@ RunBenchMark_HW()
 
     ProgName=$1
     ProgFolder="./$ProgName/"
+    
+    
     printf "[INFO $INDEX/$TOTAL ]: simulating on single cycle hardware\n"
     BASE_PATH="../singlecycle/SiliCore_Qualifying_code/"
     VERILOG_EXT_SC="VERILOG_SC.vvp"
@@ -135,6 +137,8 @@ RunBenchMark_HW()
     VERILOG_SC=$ProgFolder""$VERILOG_EXT_SC
     VERILOG_SC_OUT=$ProgFolder""$VERILOG_EXT_SC_OUT
     iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SC -D vscode -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" -D MEMORY_SIZE=2048 -D MEMORY_BITS=11 $BASE_PATH"SingleCycle_sim.v"
+    
+    
     vvp $VERILOG_SC > $VERILOG_SC_OUT
     printf "[INFO $INDEX/$TOTAL ]: simulating on pipeline hardware\n"
     BASE_PATH="../PipeLine/PipeLine/"
@@ -213,12 +217,13 @@ Run_BenchMark()
 
 Run_BenchMark "JR_Dependency(Silicore_BenchMark)"
 Run_BenchMark "InsertionSort(SiliCore_version)"
+Run_BenchMark "BubbleSort(Silicore_BenchMark)"
+Run_BenchMark "Fibonacci(Silicore_BenchMark)"
+
 Run_BenchMark "Max&MinArray"
 Run_BenchMark "BinarySearch"
-Run_BenchMark "BubbleSort(Silicore_BenchMark)"
 Run_BenchMark "ControlFlowInstructions"
 Run_BenchMark "DataManipulation"
-Run_BenchMark "Fibonacci(Silicore_BenchMark)"
 Run_BenchMark "SumOfNumbers"
 Run_BenchMark "RemoveDuplicates"
 Run_BenchMark "SelectionSort"
