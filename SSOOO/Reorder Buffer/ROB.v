@@ -11,8 +11,6 @@ outputs:
     - the head of the buffer to commit its result and go to the next one
 */
 
-// `define edged
-
 module ROB
 (
     input clk, rst,
@@ -57,13 +55,10 @@ module ROB
     output reg [31:0] commit_BTA,
 
     input [`ROB_SIZE_bits:0] RP1_ROBEN1, RP1_ROBEN2,
-`ifdef edged
-    output reg [31:0] RP1_Write_Data1, RP1_Write_Data2,
-    output reg RP1_Ready1, RP1_Ready2,
-`else
+
     output [31:0] RP1_Write_Data1, RP1_Write_Data2,
     output RP1_Ready1, RP1_Ready2,
-`endif
+
     output reg [`ROB_SIZE_bits:0] Start_Index,
     output reg [`ROB_SIZE_bits:0] End_Index
 
@@ -116,24 +111,78 @@ endgenerate
 //assign Reg_Valid_test = Reg_Valid[`I(index_test)];
 
 
-`ifdef edged
+reg [31:0] RP1_Write_Data1, RP1_Write_Data2;
+reg RP1_Ready1, RP1_Ready2;
 always@(posedge clk) begin
-RP1_Write_Data1 <= Reg_Write_Data[`Imone(RP1_ROBEN1)];
-RP1_Write_Data2 <= Reg_Write_Data[`Imone(RP1_ROBEN2)];
-RP1_Ready1 <= Reg_Ready[`Imone(RP1_ROBEN1)];
-RP1_Ready2 <= Reg_Ready[`Imone(RP1_ROBEN2)];
+/*
+forward that data coming from:
+    - the commit port
+    - the CDB, the four sources
+*/
+if ((RP1_ROBEN1 == Start_Index) && (Commit_Control_Signals[2] && Commit_Rd != 0)) begin
+RP1_Ready1 <= 1'b1;
+RP1_Write_Data1 <= Commit_Write_Data;
 end
-`else
-assign RP1_Write_Data1 = Reg_Write_Data[`Imone(RP1_ROBEN1)];
-assign RP1_Write_Data2 = Reg_Write_Data[`Imone(RP1_ROBEN2)];
-assign RP1_Ready1 = Reg_Ready[`Imone(RP1_ROBEN1)];
-assign RP1_Ready2 = Reg_Ready[`Imone(RP1_ROBEN2)];
-`endif
+else if (RP1_ROBEN1 == CDB_ROBEN1) begin
+RP1_Ready1 <= 1'b1;
+RP1_Write_Data1 <= CDB_ROBEN1_Write_Data;
+end
+else if (RP1_ROBEN1 == CDB_ROBEN2) begin
+RP1_Ready1 <= 1'b1;
+RP1_Write_Data1 <= CDB_ROBEN2_Write_Data;
+end
+else if (RP1_ROBEN1 == CDB_ROBEN3) begin
+RP1_Ready1 <= 1'b1;
+RP1_Write_Data1 <= CDB_ROBEN3_Write_Data;
+end
+else if (RP1_ROBEN1 == CDB_ROBEN4) begin
+RP1_Ready1 <= 1'b1;
+RP1_Write_Data1 <= CDB_ROBEN4_Write_Data;
+end
+else begin
+RP1_Ready1 <= Reg_Ready[`Imone(RP1_ROBEN1)];
+RP1_Write_Data1 <= Reg_Write_Data[`Imone(RP1_ROBEN1)];
+end
+
+
+if ((RP1_ROBEN2 == Start_Index) && (Commit_Control_Signals[2] && Commit_Rd != 0)) begin
+RP1_Ready2 <= 1'b1;
+RP1_Write_Data2 <= Commit_Write_Data;
+end
+else if (RP1_ROBEN2 == CDB_ROBEN1) begin
+RP1_Ready2 <= 1'b1;
+RP1_Write_Data2 <= CDB_ROBEN1_Write_Data;
+end
+else if (RP1_ROBEN2 == CDB_ROBEN2) begin
+RP1_Ready2 <= 1'b1;
+RP1_Write_Data2 <= CDB_ROBEN2_Write_Data;
+end
+else if (RP1_ROBEN2 == CDB_ROBEN3) begin
+RP1_Ready2 <= 1'b1;
+RP1_Write_Data2 <= CDB_ROBEN3_Write_Data;
+end
+else if (RP1_ROBEN2 == CDB_ROBEN4) begin
+RP1_Ready2 <= 1'b1;
+RP1_Write_Data2 <= CDB_ROBEN4_Write_Data;
+end
+else begin
+RP1_Ready2 <= Reg_Ready[`Imone(RP1_ROBEN2)];
+RP1_Write_Data2 <= Reg_Write_Data[`Imone(RP1_ROBEN2)];
+end
+
+end
+
+// assign RP1_Ready1 = Reg_Ready[`Imone(RP1_ROBEN1)];
+// assign RP1_Write_Data1 = Reg_Write_Data[`Imone(RP1_ROBEN1)];
+
+// assign RP1_Ready2 = Reg_Ready[`Imone(RP1_ROBEN2)];
+// assign RP1_Write_Data2 = Reg_Write_Data[`Imone(RP1_ROBEN2)];
 
 
 // assign FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
 always@(negedge clk)
     FULL_FLAG <= ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
+
 assign EXCEPTION_Flag = Reg_Busy[`Imone(Start_Index)] & Reg_Exception[`Imone(Start_Index)];
 
 
@@ -180,7 +229,7 @@ always@(posedge clk, posedge rst) begin
             Reg_Write_Data[`Imone(End_Index)] <= init_Write_Data;
             Reg_Exception[`Imone(End_Index)] <= 1'b0;
         end
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (Reg_Busy[`Imone(CDB_ROBEN1)] && (|CDB_ROBEN1)) begin
             Reg_Write_Data[`Imone(CDB_ROBEN1)] <= CDB_ROBEN1_Write_Data;
             Reg_Speculation[`Imone(CDB_ROBEN1)][0] <= Reg_Speculation[`Imone(CDB_ROBEN1)][0] & (CDB_Branch_Decision1 ^ Reg_Speculation[`Imone(CDB_ROBEN1)][1]);

@@ -5,52 +5,107 @@
 
 
 
-//`define invalid_instruction_memory
-//`define invalid_data_memory
-//`define simple
-`define bubble
+// `define invalid_instruction_memory
+// `define invalid_data_memory
+// `define simple
+// `define insertion
+// `define bubble
+// `define binary
+
 
 
 `ifdef simple
 `include "./Instruction Queue/code.txt"
 `endif
 
+`ifdef binary
+
+InstMem[ 0] <= 32'h20010000;// addi $1 $0 0x0
+InstMem[ 1] <= 32'h2002000B;// addi $2 $0 0xb
+InstMem[ 2] <= 32'h20030007;// addi $3 $0 0x7
+InstMem[ 3] <= 32'h0041382A;// slt $7 $2 $1
+InstMem[ 4] <= 32'h1407000E;// bne $0 $7 14
+InstMem[ 5] <= 32'h00412020;// add $4 $2 $1
+InstMem[ 6] <= 32'h00042842;// srl $5 $4 1
+InstMem[ 7] <= 32'h8CA60000;// lw $6 0x0 ( $5 )
+InstMem[ 8] <= 32'h10660008;// beq $3 $6 8
+InstMem[ 9] <= 32'h00C3302A;// slt $6 $6 $3
+InstMem[10] <= 32'h10C00002;// beq $6 $0 2
+InstMem[11] <= 32'h0800000E;// j righthalf
+InstMem[12] <= 32'h20A2FFFF;// addi $2 $5 0xffff
+InstMem[13] <= 32'h08000003;// j loop
+InstMem[14] <= 32'h20A10001;// addi $1 $5 0x1
+InstMem[15] <= 32'h08000003;// j loop
+InstMem[16] <= 32'h00054020;// add $8 $0 $5
+InstMem[17] <= 32'h08000014;// j finish
+InstMem[18] <= 32'h2008FFFF;// addi $8 $0 0xffff
+InstMem[19] <= 32'h08000014;// j finish
+InstMem[20] <= 32'h00000000;// nop
+InstMem[21] <= 32'hFC000000;// hlt
+
+`endif
+
+
+`ifdef insertion
+InstMem[ 0] <= 32'h2014000A;// addi $20 $0 10
+InstMem[ 1] <= 32'h20130002;// addi $19 $0 2
+InstMem[ 2] <= 32'h2016FFFF;// addi $22 $0 -1
+InstMem[ 3] <= 32'h0274F822;// sub $31 $19 $20
+InstMem[ 4] <= 32'h03E0082A;// slt $at $31 $0
+InstMem[ 5] <= 32'h10200011;// beq $at $0 17
+InstMem[ 6] <= 32'h8E680000;// lw $8 0 ( $19 )
+InstMem[ 7] <= 32'h2262FFFF;// addi $2 $19 -1
+InstMem[ 8] <= 32'h0056182B;// sgt $3 $2 $22
+InstMem[ 9] <= 32'h10600009;// beq $3 $0 9
+InstMem[10] <= 32'h8C450000;// lw $5 0 ( $2 )
+InstMem[11] <= 32'h00A8202B;// sgt $4 $5 $8
+InstMem[12] <= 32'h00643824;// and $7 $3 $4
+InstMem[13] <= 32'h10E00005;// beq $7 $0 5
+InstMem[14] <= 32'h20460001;// addi $6 $2 1
+InstMem[15] <= 32'hACC50000;// sw $5 0 ( $6 )
+InstMem[16] <= 32'h2042FFFF;// addi $2 $2 -1
+InstMem[17] <= 32'h08000008;// j while_loop
+InstMem[18] <= 32'h20420001;// addi $2 $2 1
+InstMem[19] <= 32'hAC480000;// sw $8 0 ( $2 )
+InstMem[20] <= 32'h22730001;// addi $19 $19 1
+InstMem[21] <= 32'h08000003;// j for_loop
+InstMem[22] <= 32'hFC000000;// hlt
+`endif
+
+
 `ifdef bubble
 // this is bubble sort
-InstMem[ 0] <= 32'h2001000A;// addi $1 $0 10
-InstMem[ 1] <= 32'h00015880;// sll $11 $1 2
-InstMem[ 2] <= 32'h216B0001;// addi $11 $11 1
-InstMem[ 3] <= 32'h20020000;// addi $2 $0 0
-InstMem[ 4] <= 32'h00011820;// add $3 $0 $1
-InstMem[ 5] <= 32'h004B4022;// sub $8 $2 $11
-InstMem[ 6] <= 32'h0100F82A;// slt $31 $8 $0
-InstMem[ 7] <= 32'h13E00006;// beq $31 $0 6
-InstMem[ 8] <= 32'hAC430000;// sw $3 0x0 ( $2 )
-InstMem[ 9] <= 32'hAC430001;// sw $3 0x1 ( $2 )
-InstMem[10] <= 32'h20420002;// addi $2 $2 2
-InstMem[11] <= 32'h2063FFFF;// addi $3 $3 -1
-InstMem[12] <= 32'h1000FFF9;// beq $0 $0 -7
-InstMem[13] <= 32'h20030000;// addi $3 $0 0
-InstMem[14] <= 32'h106B0010;// beq $3 $11 16
-InstMem[15] <= 32'h20040000;// addi $4 $0 0
-InstMem[16] <= 32'h000B3820;// add $7 $0 $11
-InstMem[17] <= 32'h00E33822;// sub $7 $7 $3
-InstMem[18] <= 32'h1087000A;// beq $4 $7 10
-InstMem[19] <= 32'h8C850000;// lw $5 0x0 ( $4 )
-InstMem[20] <= 32'h8C860001;// lw $6 0x1 ( $4 )
-InstMem[21] <= 32'h00A64022;// sub $8 $5 $6
-InstMem[22] <= 32'h0100F82A;// slt $31 $8 $0
-InstMem[23] <= 32'h17E00003;// bne $31 $0 3
-InstMem[24] <= 32'hAC850001;// sw $5 0x1 ( $4 )
-InstMem[25] <= 32'hAC860000;// sw $6 0x0 ( $4 )
-InstMem[26] <= 32'h20840001;// addi $4 $4 1
-InstMem[27] <= 32'h1000FFF7;// beq $0 $0 -9
-InstMem[28] <= 32'h20630001;// addi $3 $3 1
-InstMem[29] <= 32'h1000FFF1;// beq $0 $0 -15
-InstMem[30] <= 32'hFC000000;// hlt
-InstMem[999] <= 32'hFC000000;// hlt
-InstMem[1000] <= 32'h201FFFFF;// addi x31 x0 -1
-InstMem[1001] <= 32'hFC000000;// hlt
+InstMem[  0] <= 32'h2001000A; // addi $1 $0 10
+InstMem[  1] <= 32'h00015880; // sll $11 $1 2
+InstMem[  2] <= 32'h216B0001; // addi $11 $11 1
+InstMem[  3] <= 32'h20020000; // addi $2 $0 0
+InstMem[  4] <= 32'h00011820; // add $3 $0 $1
+InstMem[  5] <= 32'h004B4022; // sub $8 $2 $11
+InstMem[  6] <= 32'h0100082A; // slt $at $8 $0
+InstMem[  7] <= 32'h10200006; // beq $at $0 6
+InstMem[  8] <= 32'hAC430000; // sw $3 0x0 ( $2 )
+InstMem[  9] <= 32'hAC430001; // sw $3 0x1 ( $2 )
+InstMem[ 10] <= 32'h20420002; // addi $2 $2 2
+InstMem[ 11] <= 32'h2063FFFF; // addi $3 $3 -1
+InstMem[ 12] <= 32'h1000FFF9; // beq $0 $0 -7
+InstMem[ 13] <= 32'h20030000; // addi $3 $0 0
+InstMem[ 14] <= 32'h106B0010; // beq $3 $11 16
+InstMem[ 15] <= 32'h20040000; // addi $4 $0 0
+InstMem[ 16] <= 32'h000B3820; // add $7 $0 $11
+InstMem[ 17] <= 32'h00E33822; // sub $7 $7 $3
+InstMem[ 18] <= 32'h1087000A; // beq $4 $7 10
+InstMem[ 19] <= 32'h8C850000; // lw $5 0x0 ( $4 )
+InstMem[ 20] <= 32'h8C860001; // lw $6 0x1 ( $4 )
+InstMem[ 21] <= 32'h00A64022; // sub $8 $5 $6
+InstMem[ 22] <= 32'h0100082A; // slt $at $8 $0
+InstMem[ 23] <= 32'h14200003; // bne $at $0 3
+InstMem[ 24] <= 32'hAC850001; // sw $5 0x1 ( $4 )
+InstMem[ 25] <= 32'hAC860000; // sw $6 0x0 ( $4 )
+InstMem[ 26] <= 32'h20840001; // addi $4 $4 1
+InstMem[ 27] <= 32'h1000FFF7; // beq $0 $0 -9
+InstMem[ 28] <= 32'h20630001; // addi $3 $3 1
+InstMem[ 29] <= 32'h1000FFF1; // beq $0 $0 -15
+InstMem[ 30] <= 32'hFC000000; // hlt
 `endif
 
 
@@ -63,9 +118,6 @@ InstMem[  3] <= 32'h2002007B; // addi $2 $0 123
 InstMem[  4] <= 32'h2003007B; // addi $3 $0 123
 InstMem[  5] <= 32'h2004007B; // addi $4 $0 123
 InstMem[  6] <= 32'hFC000000; // hlt
-InstMem[  999] <= 32'hFC000000; // hlt
-InstMem[  1000] <= 32'h201FFFFF; // addi $31 $zero -1
-InstMem[  1000] <= 32'hFC000000; // hlt
 `endif
 
 `ifdef invalid_data_memory
@@ -75,7 +127,13 @@ InstMem[  1] <= 32'h2002FFFF; // addi $2 $zero -1
 InstMem[  2] <= 32'h206300EA; // addi $3 $3 234
 InstMem[  3] <= 32'hAC410000; // sw $1 0 ( $2 )
 InstMem[  4] <= 32'hFC000000; // hlt
-InstMem[  999] <= 32'hFC000000; // hlt
-InstMem[  1000] <= 32'h201FFFFF; // addi $31 $zero -1
-InstMem[  1000] <= 32'hFC000000; // hlt
 `endif
+
+
+
+
+
+
+InstMem[999] <= 32'hFC000000;// hlt
+InstMem[1000] <= 32'h201FFFFF;// addi x31 x0 -1
+InstMem[1001] <= 32'hFC000000;// hlt

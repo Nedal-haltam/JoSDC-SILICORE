@@ -41,32 +41,51 @@ wire PC_src, clk;
 // InstQ
 wire [3:0] InstQ_ALUOP;
 `ifndef VGA
-    wire [31:0] PC_out;
     reg hlt;
-    wire [ 11:0] InstQ_opcode;
-    wire [ 4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt;
-    wire [15:0] InstQ_immediate;
-    wire [25:0] InstQ_address;
-    wire [31:0] InstQ_PC;
+    wire [31:0] PC_out;
+
+    // wire [ 11:0] InstQ_opcode;
+    // wire [ 4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt;
+    // wire [15:0] InstQ_immediate;
+    // wire [25:0] InstQ_address;
+    // wire [31:0] InstQ_PC;
+
+    reg [ 11:0] InstQ_opcode;
+    reg [ 4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt;
+    reg [15:0] InstQ_immediate;
+    reg [25:0] InstQ_address;
+    reg [31:0] InstQ_PC;
+
+    wire [ 11:0] InstQ_opcode_temp;
+    wire [ 4:0] InstQ_rs_temp, InstQ_rt_temp, InstQ_rd_temp, InstQ_shamt_temp;
+    wire [15:0] InstQ_immediate_temp;
+    wire [25:0] InstQ_address_temp;
+    wire [31:0] InstQ_PC_temp;
 `endif
-wire InstQ_VALID_Inst;
+wire InstQ_VALID_Inst_temp;
+reg InstQ_VALID_Inst;
+
 wire InstQ_FLUSH_Flag;
 
 
 // RegFile
-wire [31:0] RegFile_RP1_Reg1, RegFile_RP1_Reg2;
-wire [`ROB_SIZE_bits:0] RegFile_RP1_Reg1_ROBEN, RegFile_RP1_Reg2_ROBEN;
+reg [31:0] RegFile_RP1_Reg1, RegFile_RP1_Reg2;
+reg [`ROB_SIZE_bits:0] RegFile_RP1_Reg1_ROBEN, RegFile_RP1_Reg2_ROBEN;
+wire [31:0] RegFile_RP1_Reg1_temp, RegFile_RP1_Reg2_temp;
+wire [`ROB_SIZE_bits:0] RegFile_RP1_Reg1_ROBEN_temp, RegFile_RP1_Reg2_ROBEN_temp;
 
 // BPU
 wire [11:0] Decoded_opcode, Commit_opcode;
 wire [1:0] state;  // 2-bit state (00 NT | 01 NT | 10 T | 11 T)
-wire predicted; // prediction (1 = taken, 0 = not taken)
+reg predicted; // prediction (1 = taken, 0 = not taken)
+wire predicted_temp; // prediction (1 = taken, 0 = not taken)
 
 // ROB
 wire ROB_FULL_FLAG;
-wire ROB_EXCEPTION_Flag;
 wire ROB_FLUSH_Flag;
+wire ROB_EXCEPTION_Flag;
 wire ROB_Wrong_prediction;
+
 wire [11:0] ROB_Commit_opcode;
 wire [31:0] ROB_Commit_pc;
 wire [4:0] ROB_Commit_Rd;
@@ -194,21 +213,22 @@ end
     - consider the full flag from all of them, consider it done
 TODO:
 
-    - support functions calling, and macros with arguements
+    - modify the .ROBEN1,.ROBEN2 and .ROBEN1_VAL,.ROBEN2_VAL
+
 
     - make it SS
+    - see about Fmax differences between benchmarks, is it because of IM array of registers, try IP block for IM (use the same one used for DM) (use IM_MIF)
+    - Fmax the design, and pick the best to take to the finals
+
     - continue and display GOL on the screen, we are near
     - MultiCore (dualcore is enough)
 
-    - for optimization: assign statement in ROB 
-    - see about Fmax differences between benchmarks, is it because of IM array of registers, try IP block for IM (use the same one used for DM) (use IM_MIF)
-    - Fmax the design, and pick the best to take to the finals
+    - see exception handler instructions in RTCAS
     - see Quartus warnings, and deal with them
+
+    - support functions calling
 */
 
-always@(negedge clk, posedge rst) begin
-    isjr <= (rst) ? 1'b0 : ((isjr) ? 1'b0 : InstQ_opcode == jr);
-end
 
 always@(posedge clk, posedge rst) begin
     if (rst) begin
@@ -228,40 +248,49 @@ always@(posedge clk, posedge rst) begin
 end
 
 
-// `define other
-`ifdef other
-wire [31:0] add1p, add2, add3, add4, add5;
-assign add1p = ((ROB_Wrong_prediction) ? ROB_Commit_BTA : `exception_handler);
-assign add2 = {6'd0,InstQ_address};
-assign add3 = ((~isjr) ? PC_out : ((~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : PC_out));
-assign add4 = PC_out;
-assign add5 = PC_out + {{16{InstQ_immediate[15]}},InstQ_immediate};
 
-assign PC = (ROB_FLUSH_Flag == 1'b1) ? add1p : 
-(
-    (InstQ_opcode == j || InstQ_opcode == jal || InstQ_opcode == jr || InstQ_opcode == hlt_inst || ((InstQ_opcode == beq || InstQ_opcode == bne) && predicted)) ? 
-    (
-        ({32{InstQ_opcode == j || InstQ_opcode == jal                 }}&add2 ) |
-        ({32{InstQ_opcode == jr                                       }}&add3 ) |
-        ({32{InstQ_opcode == hlt_inst                                 }}&add4 ) |
-        ({32{(InstQ_opcode == beq || InstQ_opcode == bne) && predicted}}&add5)
-    ) : add4 + 1'b1
-);
-`else
+// // `define other
+// `ifdef other
+// wire [31:0] add1p, add2, add3, add4, add5;
+// assign add1p = ((ROB_Wrong_prediction) ? ROB_Commit_BTA : `exception_handler);
+// assign add2 = {6'd0,InstQ_address};
+// assign add3 = ((~isjr) ? PC_out : ((~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : PC_out));
+// assign add4 = PC_out;
+// assign add5 = PC_out + {{16{InstQ_immediate[15]}},InstQ_immediate};
+
+// assign PC = (ROB_FLUSH_Flag == 1'b1) ? add1p : 
+// (
+//     (InstQ_opcode == j || InstQ_opcode == jal || InstQ_opcode_temp == jr || InstQ_opcode == hlt_inst || ((InstQ_opcode == beq || InstQ_opcode == bne) && predicted)) ? 
+//     (
+//         ({32{InstQ_opcode == j || InstQ_opcode == jal                 }}&add2 ) |
+//         ({32{InstQ_opcode_temp == jr                                       }}&add3 ) |
+//         ({32{InstQ_opcode == hlt_inst                                 }}&add4 ) |
+//         ({32{(InstQ_opcode == beq || InstQ_opcode == bne) && predicted}}&add5)
+//     ) : add4 + 1'b1
+// );
+// `else
+
+// get the data for the JR from the right source like the others
+// if RegFile_RP1_Reg1_ROBEN != 0, see the ready bit if not ready then wait, else if found find a way to clear both registers and fetch the new instruction
+`define JR_DESTINATION (~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : (ROB_RP1_Ready1 ? ROB_RP1_Write_Data1 : PC_out)
+
+
 assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA : `exception_handler) : 
 (
-    (InstQ_opcode == j || InstQ_opcode == jal) ? {6'd0,InstQ_address} : 
     (
-        (InstQ_opcode == jr) ? ((~isjr) ? PC_out : ((~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : PC_out)) : 
+        (InstQ_opcode_temp == j || InstQ_opcode_temp == jal) ? {6'd0,InstQ_address_temp} : 
         (
-            (InstQ_opcode == hlt_inst) ? PC_out : 
+            (InstQ_opcode == jr) ? (`JR_DESTINATION) : 
             (
-                ((InstQ_opcode == beq || InstQ_opcode == bne) && predicted) ? PC_out + {{16{InstQ_immediate[15]}},InstQ_immediate} : PC_out + 1'b1
+                (InstQ_opcode == hlt_inst) ? InstQ_PC: 
+                (
+                    ((InstQ_opcode_temp == beq || InstQ_opcode_temp == bne) && predicted_temp) ? InstQ_PC_temp + {{16{InstQ_immediate_temp[15]}},InstQ_immediate_temp} : PC_out + 1'b1
+                )
             )
         )
     )
 );
-`endif
+// `endif
 // assign InstQ_FLUSH_Flag = ~(rst || ~(|(PC[31:10])));
 assign InstQ_FLUSH_Flag = ~(rst || (PC <= `MEMORY_SIZE));
 
@@ -279,16 +308,51 @@ InstQ instq
     .rst(rst),
     .PC(PC_out),
     
-    .opcode(InstQ_opcode),
-    .rs(InstQ_rs), 
-    .rt(InstQ_rt), 
-    .rd(InstQ_rd), 
-    .shamt(InstQ_shamt),
-    .immediate(InstQ_immediate),
-    .address(InstQ_address),
-    .pc(InstQ_PC),
-    .VALID_Inst(InstQ_VALID_Inst)
+    .opcode1(InstQ_opcode_temp),
+    .rs1(InstQ_rs_temp), 
+    .rt1(InstQ_rt_temp), 
+    .rd1(InstQ_rd_temp), 
+    .shamt1(InstQ_shamt_temp),
+    .immediate1(InstQ_immediate_temp),
+    .address1(InstQ_address_temp),
+    .pc1(InstQ_PC_temp),
+    .VALID_Inst(InstQ_VALID_Inst_temp)
 );
+
+always@(negedge clk, posedge rst) begin
+    if (rst) begin
+        InstQ_opcode <= 0;
+        InstQ_VALID_Inst <= 0;
+    end
+    else if (ROB_FLUSH_Flag || RS_FULL_FLAG || LdStB_FULL_FLAG) begin
+        InstQ_rs <= 0;
+        InstQ_rt <= 0;
+        InstQ_rd <= 0;
+        InstQ_opcode <= 0;
+        InstQ_VALID_Inst <= 0;
+        RegFile_RP1_Reg1_ROBEN <= 0;
+        RegFile_RP1_Reg2_ROBEN <= 0;
+        RegFile_RP1_Reg1 <= 0;
+        RegFile_RP1_Reg2 <= 0;
+    end
+    else if (~ROB_FULL_FLAG) begin
+        InstQ_opcode <= InstQ_opcode_temp;
+        InstQ_rs <= InstQ_rs_temp;
+        InstQ_rt <= InstQ_rt_temp;
+        InstQ_rd <= InstQ_rd_temp;
+        InstQ_shamt <= InstQ_shamt_temp;
+        InstQ_immediate <= InstQ_immediate_temp;
+        InstQ_address <= InstQ_address_temp;
+        InstQ_PC <= InstQ_PC_temp;
+        InstQ_VALID_Inst <= InstQ_VALID_Inst_temp;
+        predicted <= predicted_temp;
+
+        RegFile_RP1_Reg1_ROBEN <= RegFile_RP1_Reg1_ROBEN_temp;
+        RegFile_RP1_Reg2_ROBEN <= RegFile_RP1_Reg2_ROBEN_temp;
+        RegFile_RP1_Reg1 <= RegFile_RP1_Reg1_temp;
+        RegFile_RP1_Reg2 <= RegFile_RP1_Reg2_temp;
+    end
+end
 
 
 RegFile regfile
@@ -319,13 +383,14 @@ RegFile regfile
 
     // inputs
     .ROB_FLUSH_Flag(ROB_FLUSH_Flag),
-    .RP1_index1(InstQ_rs), 
-    .RP1_index2(InstQ_rt),
+    
+    .RP1_index1(InstQ_rs_temp), 
+    .RP1_index2(InstQ_rt_temp),
     // outputs
-    .RP1_Reg1(RegFile_RP1_Reg1), 
-    .RP1_Reg2(RegFile_RP1_Reg2),
-    .RP1_Reg1_ROBEN(RegFile_RP1_Reg1_ROBEN), 
-    .RP1_Reg2_ROBEN(RegFile_RP1_Reg2_ROBEN)
+    .RP1_Reg1(RegFile_RP1_Reg1_temp), 
+    .RP1_Reg2(RegFile_RP1_Reg2_temp),
+    .RP1_Reg1_ROBEN(RegFile_RP1_Reg1_ROBEN_temp), 
+    .RP1_Reg2_ROBEN(RegFile_RP1_Reg2_ROBEN_temp)
 );
 
 
@@ -335,9 +400,9 @@ BranchPredictor #(.N(3)) BPU
     .rst(rst), 
     .clk(clk), 
     .Wrong_prediction(ROB_Wrong_prediction), 
-    .Decoded_opcode(InstQ_opcode),
+    .Decoded_opcode(InstQ_opcode_temp),
     .Commit_opcode(ROB_Commit_opcode),
-    .predicted(predicted)
+    .predicted(predicted_temp)
 );
 
 ROB rob
@@ -393,6 +458,7 @@ ROB rob
     .Commit_Control_Signals(ROB_Commit_Control_Signals),
     .commit_BTA(ROB_Commit_BTA),
 
+
     .RP1_ROBEN1(RegFile_RP1_Reg1_ROBEN), 
     .RP1_ROBEN2(RegFile_RP1_Reg2_ROBEN),
 
@@ -425,15 +491,13 @@ RS rs
     .ROBEN(new_End_Index),
     .ROBEN1
     (
-        (~(|RegFile_RP1_Reg1_ROBEN) || InstQ_opcode == sll || InstQ_opcode == srl) ? {(`ROB_SIZE_bits+1){1'b0}} : 
-        (
-            (ROB_RP1_Ready1) ? {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg1_ROBEN
-        )
+        (~(|RegFile_RP1_Reg1_ROBEN) || ROB_RP1_Ready1 || 
+        InstQ_opcode == sll || InstQ_opcode == srl) ?                                 {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg1_ROBEN
     ), 
     .ROBEN2
     (
-        ((InstQ_opcode[11:6] != 6'd0 && InstQ_opcode != beq && InstQ_opcode != bne) || ROB_RP1_Ready2 || ~(|RegFile_RP1_Reg2_ROBEN)) ? 
-            {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg2_ROBEN
+        (~(|RegFile_RP1_Reg2_ROBEN) || ROB_RP1_Ready2 || 
+        (InstQ_opcode[11:6] != 6'd0 && InstQ_opcode != beq && InstQ_opcode != bne)) ? {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg2_ROBEN
     ), 
     .ROBEN1_VAL
     (
@@ -566,20 +630,12 @@ AddressUnit AU
     .Decoded_opcode(InstQ_opcode),
     .ROBEN1
     (
-        (~(|RegFile_RP1_Reg1_ROBEN)) ? {(`ROB_SIZE_bits+1){1'b0}} : 
-        (
-            (ROB_RP1_Ready1) ? {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg1_ROBEN
-        )
+        (~(|RegFile_RP1_Reg1_ROBEN) || ROB_RP1_Ready1) ? {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg1_ROBEN
     ), 
     .ROBEN2
     (
-        (InstQ_opcode == lw) ? {(`ROB_SIZE_bits+1){1'b0}} : 
-        (
-            (~(|RegFile_RP1_Reg2_ROBEN)) ? {(`ROB_SIZE_bits+1){1'b0}} : 
-            (
-                (ROB_RP1_Ready2) ? {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg2_ROBEN
-            )
-        )
+        (~(|RegFile_RP1_Reg2_ROBEN) || ROB_RP1_Ready2 || 
+        InstQ_opcode == lw) ?                            {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg2_ROBEN
     ),
     .ROBEN1_VAL
     (

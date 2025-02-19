@@ -204,7 +204,27 @@ always@(posedge clk, posedge rst) begin
         RS_FU_ROBEN3 <= 0;
     end
     else begin
+        RS_FU_opcode1 <= 0;
+        RS_FU_RS_ID1 <= 0;
+        RS_FU_ROBEN1 <= 0;
+        RS_FU_ALUOP1 <= 0;
+        RS_FU_Val11 <= 0;
+        RS_FU_Val21 <= 0;
+        RS_FU_Immediate1 <= 0;
 
+        for (k = 0; k < `RS_SIZE - 2; k = k + 1) begin
+            if (Reg_Busy[`I(k)] && Reg_ROBEN1[`I(k)] == 0 && Reg_ROBEN2[`I(k)] == 0) begin
+                RS_FU_opcode1 <= Reg_opcode[`I(k)];
+                RS_FU_Val11 <= Reg_ROBEN1_VAL[`I(k)];
+                RS_FU_RS_ID1 <= k + 1'b1;
+                RS_FU_ROBEN1 <= Reg_ROBEN[`I(k)];
+                RS_FU_ALUOP1 <= Reg_ALUOP[`I(k)];
+                RS_FU_Val21 <= Reg_ROBEN2_VAL[`I(k)];
+                RS_FU_Immediate1 <= Reg_Immediate[`I(k)];
+            end
+        end
+
+        
         `define b6 (Reg_Busy[`RS_SIZE-2] && Reg_ROBEN1[`RS_SIZE-2] == 0 && Reg_ROBEN2[`RS_SIZE-2] == 0)
         if (`b6) begin
         RS_FU_opcode2 <= Reg_opcode[`RS_SIZE-2];
@@ -243,26 +263,6 @@ always@(posedge clk, posedge rst) begin
         RS_FU_Val13 <= 0;
         RS_FU_Val23 <= 0;
         RS_FU_Immediate3 <= 0;
-        end
-
-        RS_FU_opcode1 <= 0;
-        RS_FU_RS_ID1 <= 0;
-        RS_FU_ROBEN1 <= 0;
-        RS_FU_ALUOP1 <= 0;
-        RS_FU_Val11 <= 0;
-        RS_FU_Val21 <= 0;
-        RS_FU_Immediate1 <= 0;
-
-        for (k = 0; k < `RS_SIZE - 2; k = k + 1) begin
-            if (Reg_Busy[`I(k)] && Reg_ROBEN1[`I(k)] == 0 && Reg_ROBEN2[`I(k)] == 0) begin
-                RS_FU_opcode1 <= Reg_opcode[`I(k)];
-                RS_FU_Val11 <= Reg_ROBEN1_VAL[`I(k)];
-                RS_FU_RS_ID1 <= k + 1'b1;
-                RS_FU_ROBEN1 <= Reg_ROBEN[`I(k)];
-                RS_FU_ALUOP1 <= Reg_ALUOP[`I(k)];
-                RS_FU_Val21 <= Reg_ROBEN2_VAL[`I(k)];
-                RS_FU_Immediate1 <= Reg_Immediate[`I(k)];
-            end
         end
     end
 end

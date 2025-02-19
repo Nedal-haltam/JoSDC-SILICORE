@@ -31,20 +31,6 @@ reg [`ROB_SIZE_bits:0] Reg_ROBEs [31:0];
 assign output_ROBEN_test = Reg_ROBEs[input_WP1_DRindex_test];
 //
 
-// assign RP1_Reg1 = Regs[RP1_index1];
-// assign RP1_Reg2 = Regs[RP1_index2];
-
-always@(posedge clk, posedge rst) begin
-    if (rst) begin
-        RP1_Reg1 <= 0;
-        RP1_Reg2 <= 0;
-    end
-    else begin
-        RP1_Reg1 <= (RP1_index1 == WP1_DRindex && WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0) ? WP1_Data : Regs[RP1_index1];
-        RP1_Reg2 <= (RP1_index2 == WP1_DRindex && WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0) ? WP1_Data : Regs[RP1_index2];
-    end
-end
-
 integer i;
 always@(posedge clk , posedge rst) begin : Update_Registers_Block
 
@@ -94,13 +80,15 @@ end
 
 
 
-
-always@(posedge clk, posedge rst) begin
+always@(posedge clk, posedge rst) begin : Read_First_ROBEN
     if (rst) begin
         RP1_Reg1_ROBEN <= 0;
     end
         else begin
-        if (ROB_FLUSH_Flag || (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN && WP1_DRindex == RP1_index1)) begin
+        if (Decoded_WP1_Wen && Decoded_WP1_DRindex != 0 && Decoded_WP1_ROBEN != 0 && Decoded_WP1_DRindex == RP1_index1) begin
+            RP1_Reg1_ROBEN <= Decoded_WP1_ROBEN;
+        end
+        else if (ROB_FLUSH_Flag || (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN && WP1_DRindex == RP1_index1)) begin
             RP1_Reg1_ROBEN <= 0;
         end
         else begin
@@ -108,12 +96,15 @@ always@(posedge clk, posedge rst) begin
         end
     end
 end
-always@(posedge clk, posedge rst) begin
+always@(posedge clk, posedge rst) begin : Read_Second_ROBEN
     if (rst) begin
         RP1_Reg2_ROBEN <= 0;
     end
         else begin
-        if (ROB_FLUSH_Flag || (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN && WP1_DRindex == RP1_index2)) begin
+        if (Decoded_WP1_Wen && Decoded_WP1_DRindex != 0 && Decoded_WP1_ROBEN != 0 && Decoded_WP1_DRindex == RP1_index2) begin
+            RP1_Reg2_ROBEN <= Decoded_WP1_ROBEN;
+        end
+        else if (ROB_FLUSH_Flag || (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0 && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN && WP1_DRindex == RP1_index2)) begin
             RP1_Reg2_ROBEN <= 0;
         end
         else begin
@@ -121,6 +112,19 @@ always@(posedge clk, posedge rst) begin
         end
     end
 end
+
+always@(posedge clk, posedge rst) begin : Read_Data
+    if (rst) begin
+        RP1_Reg1 <= 0;
+        RP1_Reg2 <= 0;
+    end
+    else begin
+        RP1_Reg1 <= (RP1_index1 == WP1_DRindex && WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0) ? WP1_Data : Regs[RP1_index1];
+        RP1_Reg2 <= (RP1_index2 == WP1_DRindex && WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0) ? WP1_Data : Regs[RP1_index2];
+    end
+end
+
+
 
 
 `ifdef vscode
