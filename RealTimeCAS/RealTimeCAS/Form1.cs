@@ -109,7 +109,7 @@ namespace RealTimeCAS
                 StringBuilder toout = GetRegsAndDM(regs, DM);
                 output.Lines = toout.ToString().Split('\n');
             }
-            else
+            else if (excep == LibCPU.MIPS.Exceptions.EXCEPTION)
             {
                 lblcycles.Text = "0";
                 StringBuilder toout = new StringBuilder();
