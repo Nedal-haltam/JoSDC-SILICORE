@@ -8,6 +8,13 @@ internal registers:
     - busy bit and ready bit is needed
 */
 
+`define MEMORY_SIZE 2048
+`define MEMORY_BITS 11
+`define ROB_SIZE_bits (4)
+`define BUFFER_SIZE_bitslsbuffer (4)
+`define BUFFER_SIZE_bitsRS (4)
+`define ROB_SIZE ((1 << `ROB_SIZE_bits))
+
 module LSBuffer
 (
     input clk, rst,

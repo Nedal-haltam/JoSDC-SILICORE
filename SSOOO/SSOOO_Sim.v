@@ -4,21 +4,20 @@
 `define ADVANCE_N_CYCLE(N) #(`ONE_CLK * N);
 
 `define MAX_CLOCKS (2 * 900*1000)
-// `define MAX_CLOCKS (2 * 10000)
 `define reset 2 * `ONE_CLK
 
-`ifndef MEMORY_SIZE
-`define MEMORY_SIZE 2048
-`define MEMORY_BITS 11
-`endif
 
 `ifndef vscode
 `timescale 1ns/1ps
 `endif
 
+
+`define MEMORY_SIZE 2048
+`define MEMORY_BITS 11
 `define ROB_SIZE_bits (4)
 `define BUFFER_SIZE_bitslsbuffer (4)
 `define BUFFER_SIZE_bitsRS (4)
+`define ROB_SIZE ((1 << `ROB_SIZE_bits))
 
 `ifdef vscode
 

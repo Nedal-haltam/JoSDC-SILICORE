@@ -33,6 +33,8 @@
 //refer to the applicable agreement for further details, at
 //https://fpgasoftware.intel.com/eula.
 
+`define MEMORY_SIZE 2048
+`define MEMORY_BITS 11
 
 // synopsys translate_off
 `timescale 1 ps / 1 ps

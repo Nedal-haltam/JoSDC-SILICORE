@@ -1,7 +1,10 @@
+`define MEMORY_SIZE 2048
+`define MEMORY_BITS 11
 
 module InstQ
 (
     input clk, rst,
+    input  [31:0] PC_from_assign,
     input  [31:0] PC,
     
     output reg [ 11:0] opcode1,
@@ -20,13 +23,23 @@ module InstQ
     output reg VALID_Inst
 );
 
-
-reg [31:0] InstMem [0 : (`MEMORY_SIZE-1)];
-
 wire [31:0] inst1, inst2;
-
+`ifdef vscode
+reg [31:0] InstMem [0 : (`MEMORY_SIZE-1)];
 assign inst1 = InstMem[PC + 2'd0];
 assign inst2 = InstMem[PC + 2'd1];
+`else
+// `include "./instmemoryip.v"
+instmemoryip instmemory 
+(
+	.address(PC_from_assign + 2'd0),
+	.clock(clk),
+	.data(32'd0),
+	.wren(1'b0),
+	.q(inst1)
+);
+
+`endif
 
 
 always@(negedge clk, posedge rst) begin
@@ -68,6 +81,7 @@ always@(negedge clk, posedge rst) begin
 end
 
 
+`ifdef vscode
 
 integer i;
 initial begin
@@ -80,9 +94,8 @@ for (i = 0; i <= (`MEMORY_SIZE-1); i = i + 1)
 `else
 `include "IM_INIT.INIT"
 `endif
-
-
 end
 
+`endif
 
 endmodule

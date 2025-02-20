@@ -1,5 +1,11 @@
 
 
+`define MEMORY_SIZE 2048
+`define MEMORY_BITS 11
+`define ROB_SIZE_bits (4)
+`define BUFFER_SIZE_bitslsbuffer (4)
+`define BUFFER_SIZE_bitsRS (4)
+`define ROB_SIZE ((1 << `ROB_SIZE_bits))
 
 
 /*
@@ -56,8 +62,8 @@ module ROB
 
     input [`ROB_SIZE_bits:0] RP1_ROBEN1, RP1_ROBEN2,
 
-    output [31:0] RP1_Write_Data1, RP1_Write_Data2,
-    output RP1_Ready1, RP1_Ready2,
+    output reg [31:0] RP1_Write_Data1, RP1_Write_Data2,
+    output reg RP1_Ready1, RP1_Ready2,
 
     output reg [`ROB_SIZE_bits:0] Start_Index,
     output reg [`ROB_SIZE_bits:0] End_Index
@@ -76,7 +82,7 @@ module ROB
 `include "opcodes.txt"
 
 `define I(i) i[`ROB_SIZE_bits - 1:0]
-`define ROB_SIZE ((1 << `ROB_SIZE_bits))
+
 
 `define Imone(i) `I(i) - 1'b1
 `define validbit(i) assign Reg_Valid[i] = ~(Reg_Speculation[i][0] | Reg_Exception[i]) // ~speculative && ~excepted
@@ -111,8 +117,6 @@ endgenerate
 //assign Reg_Valid_test = Reg_Valid[`I(index_test)];
 
 
-reg [31:0] RP1_Write_Data1, RP1_Write_Data2;
-reg RP1_Ready1, RP1_Ready2;
 always@(posedge clk) begin
 /*
 forward that data coming from:

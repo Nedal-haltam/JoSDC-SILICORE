@@ -1,9 +1,11 @@
 
-`ifndef ROB_SIZE_bits
+`define MEMORY_SIZE 2048
+`define MEMORY_BITS 11
 `define ROB_SIZE_bits (4)
 `define BUFFER_SIZE_bitslsbuffer (4)
 `define BUFFER_SIZE_bitsRS (4)
-`endif
+`define ROB_SIZE ((1 << `ROB_SIZE_bits))
+
 
 `ifndef VGA
 module SSOOO_CPU
@@ -209,12 +211,10 @@ end
 
 
 /*
-    - the jr dependency is solved but we can do better in terms of forwarding it from the ROB or the CDB, but it works
-    - consider the full flag from all of them, consider it done
 TODO:
 
-    - modify the .ROBEN1,.ROBEN2 and .ROBEN1_VAL,.ROBEN2_VAL
-
+    - solve JR dependency
+    - collect defs in one file  
 
     - make it SS
     - see about Fmax differences between benchmarks, is it because of IM array of registers, try IP block for IM (use the same one used for DM) (use IM_MIF)
@@ -223,7 +223,6 @@ TODO:
     - continue and display GOL on the screen, we are near
     - MultiCore (dualcore is enough)
 
-    - see exception handler instructions in RTCAS
     - see Quartus warnings, and deal with them
 
     - support functions calling
@@ -306,6 +305,7 @@ InstQ instq
 (
     .clk(clk), 
     .rst(rst),
+    .PC_from_assign(PC),
     .PC(PC_out),
     
     .opcode1(InstQ_opcode_temp),
@@ -421,6 +421,7 @@ ROB rob
     .Decoded_prediction(predicted),
     .Branch_Target_Addr((predicted) ? InstQ_PC + 1'b1 : InstQ_PC + {{16{InstQ_immediate[15]}},InstQ_immediate}),
     .init_Write_Data(InstQ_PC + 1'b1),
+
     .CDB_ROBEN1(CDB_ROBEN1),
     .CDB_ROBEN1_Write_Data(CDB_Write_Data1),
     .CDB_Branch_Decision1(FU_Branch_Decision1),
