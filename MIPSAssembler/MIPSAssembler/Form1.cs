@@ -182,9 +182,9 @@ namespace MIPSAssembler
                 File.WriteAllLines(DM_INIT_filepath, DM_INIT);
 
             if (IM_MIF_filepath != null)
-                File.WriteAllText(IM_MIF_filepath, GetIMMIF(32, 1024, 2).ToString());
+                File.WriteAllText(IM_MIF_filepath, GetIMMIF(32, 2048, 2).ToString());
             if (DM_MIF_filepath != null)
-                File.WriteAllText(DM_MIF_filepath, GetDMMIF(DM, 32, 1024, 10).ToString());
+                File.WriteAllText(DM_MIF_filepath, GetDMMIF(DM, 32, 2048, 10).ToString());
 
 
             Close(); // for now we will close and not parse any other commands
@@ -220,8 +220,12 @@ namespace MIPSAssembler
             StringBuilder sb = new StringBuilder();
             sb.Append(GetMIFHeader(width, depth, "HEX", "HEX"));
             sb.Append(ToMIFentries(0, m_prog.mc, width, from_base));
-            sb.Append($"[{m_prog.mc.Count:X}..{(depth - excep_mc.Count - 1):X}] : 0;\n");
+            
+            sb.Append($"[{m_prog.mc.Count:X}..{(HANDLER_ADDR - 2):X}] : 0;\n");
+
             sb.Append(ToMIFentries(HANDLER_ADDR - 1, excep_mc, width, from_base));
+
+            sb.Append($"[{HANDLER_ADDR + 2:X}..{(depth - 1):X}] : 0;\n");
             sb.Append(GetMIFTail());
 
             return sb;
