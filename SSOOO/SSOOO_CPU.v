@@ -262,7 +262,7 @@ end
 //     (InstQ_opcode == j || InstQ_opcode == jal || InstQ_opcode_temp == jr || InstQ_opcode == hlt_inst || ((InstQ_opcode == beq || InstQ_opcode == bne) && predicted)) ? 
 //     (
 //         ({32{InstQ_opcode == j || InstQ_opcode == jal                 }}&add2 ) |
-//         ({32{InstQ_opcode_temp == jr                                       }}&add3 ) |
+//         ({32{InstQ_opcode_temp == jr                                  }}&add3 ) |
 //         ({32{InstQ_opcode == hlt_inst                                 }}&add4 ) |
 //         ({32{(InstQ_opcode == beq || InstQ_opcode == bne) && predicted}}&add5)
 //     ) : add4 + 1'b1
@@ -271,7 +271,7 @@ end
 
 // get the data for the JR from the right source like the others
 // if RegFile_RP1_Reg1_ROBEN != 0, see the ready bit if not ready then wait, else if found find a way to clear both registers and fetch the new instruction
-`define JR_DESTINATION (~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : (ROB_RP1_Ready1 ? ROB_RP1_Write_Data1 : PC_out)
+`define JR_DESTINATION (~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : (ROB_RP1_Ready1 ? ROB_RP1_Write_Data1 : InstQ_PC)
 
 
 assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA : `exception_handler) : 
@@ -281,9 +281,12 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA 
         (
             (InstQ_opcode == jr) ? (`JR_DESTINATION) : 
             (
-                (InstQ_opcode == hlt_inst) ? InstQ_PC: 
+                (InstQ_opcode_temp == jr) ? InstQ_PC_temp : 
                 (
-                    ((InstQ_opcode_temp == beq || InstQ_opcode_temp == bne) && predicted_temp) ? InstQ_PC_temp + {{16{InstQ_immediate_temp[15]}},InstQ_immediate_temp} : PC_out + 1'b1
+                    (InstQ_opcode == hlt_inst) ? InstQ_PC: 
+                    (
+                        ((InstQ_opcode_temp == beq || InstQ_opcode_temp == bne) && predicted_temp) ? InstQ_PC_temp + {{16{InstQ_immediate_temp[15]}},InstQ_immediate_temp} : PC_out + 1'b1
+                    )
                 )
             )
         )
