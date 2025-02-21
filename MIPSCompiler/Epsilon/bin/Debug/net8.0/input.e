@@ -1,16 +1,7 @@
 
 
-fn funcName(int a, int b, int c) 
-{
-    int x = 1234;
-    return a + b + c;
-}
 
 
-funcName(1, 2, 3);
-
-
-/*
 #define SIZE 12
 #define COPY122 for (int ci = 0; ci < SIZE; ci = ci + 1) { for (int cj = 0; cj < SIZE; cj = cj + 1) { grid2[ci][cj] = grid[ci][cj]; } }
 #define COPY221 for (int ci = 0; ci < SIZE; ci = ci + 1) { for (int cj = 0; cj < SIZE; cj = cj + 1) { grid[ci][cj] = grid2[ci][cj]; } }
@@ -23,8 +14,12 @@ int grid2[SIZE][SIZE];
 #define glider_size 5
 #define blinker_size 3
 int glider_index[glider_size][2] = {{1, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}};
-int blinker_index[blinker_size][2] = {{5, 5}, {5, 6}, {5, 7}};
+int blinker_index[blinker_size][2] = {{2, 8}, {2, 9}, {2, 10}};
 
+/*
+int glider_index[glider_size][2] = {{1, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}};
+int blinker_index[blinker_size][2] = {{3, 7}, {3, 8}, {3, 9}};
+*/
 
 for (int i = 0; i < glider_size; i = i + 1)
 {
@@ -84,4 +79,3 @@ for (int iter = 0; iter < iters; iter = iter + 1)
     }
     COPY221
 }
-*/
