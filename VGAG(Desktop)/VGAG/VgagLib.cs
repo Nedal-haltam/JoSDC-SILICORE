@@ -525,13 +525,13 @@ namespace VGAG
         static void ParseMaps()
         {
             string AlphabetMap = "D:\\GitHub Repos\\JoSDC-SILICORE\\VGAG(Desktop)\\VGAG\\bin\\Debug\\net8.0-windows\\characters\\AlphabetMap.mif";
-            //ParseChars(AlphabetMap, CHARW, CHARH, 26 * 2); // AlphabetMap.mif
+            ParseChars(AlphabetMap, CHARW, CHARH, 26 * 2); // AlphabetMap.mif
 
             string NumbersAndSpecial = "D:\\GitHub Repos\\JoSDC-SILICORE\\VGAG(Desktop)\\VGAG\\bin\\Debug\\net8.0-windows\\characters\\NumbersAndSpecial.mif"; // NumbersAndSpecial.mif
-            //ParseNumsAndSpecial(NumbersAndSpecial, CHARW, CHARH, 12); // NumbersAndSpecial.mif
+            ParseNumsAndSpecial(NumbersAndSpecial, CHARW, CHARH, 12); // NumbersAndSpecial.mif
             
             string CharMem = "D:\\GitHub Repos\\JoSDC-SILICORE\\VGAG(Desktop)\\VGAG\\bin\\Debug\\net8.0-windows\\characters\\CharMem.mif"; // CharMem.mif;
-            //ParseAllInOneFile(NumbersAndSpecial, 11, AlphabetMap, 52, CharMem, CHARW, CHARH);
+            ParseAllInOneFile(NumbersAndSpecial, 13, AlphabetMap, 52, CharMem, CHARW, CHARH);
         }
         static int getindex(int a, int b)
         {
@@ -630,10 +630,19 @@ namespace VGAG
             List<List<Cell>> grid = InitGrid(boundary);
             List<int> newlines = new List<int>();
             bool changed = false;
+            bool IterateGOL = false;
             while (!WindowShouldClose())
             {
-                //GOL(ref grid);
-                //continue;
+                if (IsKeyPressed(KeyboardKey.C)) IterateGOL = !IterateGOL;
+                if (IterateGOL)
+                {
+                    GOL(ref grid);
+                    continue;
+                }
+                if (IsKeyPressed(KeyboardKey.G))
+                {
+                    ParseMaps();
+                }
                 bool Ctrl = IsKeyDown(KeyboardKey.LeftControl) || IsKeyDown(KeyboardKey.RightControl);
                 string FPS = GetFPS().ToString();
                 DrawText($"FPS: {FPS}\nText Shown: {text}", 0, 0, 20, Color.White);
