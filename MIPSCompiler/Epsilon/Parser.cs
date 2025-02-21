@@ -3,6 +3,8 @@
 
 
 
+using System.Reflection.Metadata.Ecma335;
+
 namespace Epsilon
 {
     class Parser
@@ -84,6 +86,10 @@ namespace Epsilon
         bool IsStmtContinue()
         {
             return peek(TokenType.Continue).HasValue;
+        }
+        bool IsFunction()
+        {
+            return peek(TokenType.FN).HasValue;
         }
         bool IsStmtExit()
         {
@@ -927,6 +933,10 @@ namespace Epsilon
                 stmt.type = NodeStmt.NodeStmtType.Continue;
                 stmt.Continue = continuee;
                 return stmt;
+            }
+            else if (IsFunction())
+            {
+                throw new NotImplementedException();
             }
             else if (IsStmtExit())
             {
