@@ -23,11 +23,11 @@ module SSOOO_CPU
     output [31:0] PC_out,
     output reg hlt,
 
-    output [11:0] InstQ_opcode,
-    output [4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt,
-    output [15:0] InstQ_immediate,
-    output [25:0] InstQ_address,
-    output [31:0] InstQ_PC,
+    output reg [11:0] InstQ_opcode,
+    output reg [4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt,
+    output reg [15:0] InstQ_immediate,
+    output reg [25:0] InstQ_address,
+    output reg [31:0] InstQ_PC,
 
     input [9:0] VGA_address,
     input VGA_clk,
@@ -46,24 +46,18 @@ wire [3:0] InstQ_ALUOP;
     reg hlt;
     wire [31:0] PC_out;
 
-    // wire [ 11:0] InstQ_opcode;
-    // wire [ 4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt;
-    // wire [15:0] InstQ_immediate;
-    // wire [25:0] InstQ_address;
-    // wire [31:0] InstQ_PC;
-
     reg [ 11:0] InstQ_opcode;
     reg [ 4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt;
     reg [15:0] InstQ_immediate;
     reg [25:0] InstQ_address;
     reg [31:0] InstQ_PC;
 
-    wire [ 11:0] InstQ_opcode_temp;
-    wire [ 4:0] InstQ_rs_temp, InstQ_rt_temp, InstQ_rd_temp, InstQ_shamt_temp;
-    wire [15:0] InstQ_immediate_temp;
-    wire [25:0] InstQ_address_temp;
-    wire [31:0] InstQ_PC_temp;
 `endif
+wire [ 11:0] InstQ_opcode_temp;
+wire [ 4:0] InstQ_rs_temp, InstQ_rt_temp, InstQ_rd_temp, InstQ_shamt_temp;
+wire [15:0] InstQ_immediate_temp;
+wire [25:0] InstQ_address_temp;
+wire [31:0] InstQ_PC_temp;
 wire InstQ_VALID_Inst_temp;
 reg InstQ_VALID_Inst;
 
@@ -213,17 +207,15 @@ end
 /*
 TODO:
 
-    - solve JR dependency
-    - collect defs in one file  
+    - continue and display GOL on the screen, we are near
 
     - make it SS
-    - see about Fmax differences between benchmarks, is it because of IM array of registers, try IP block for IM (use the same one used for DM) (use IM_MIF)
     - Fmax the design, and pick the best to take to the finals
 
-    - continue and display GOL on the screen, we are near
     - MultiCore (dualcore is enough)
 
     - see Quartus warnings, and deal with them
+    - collect defs in one file  
 
     - support functions calling
 */

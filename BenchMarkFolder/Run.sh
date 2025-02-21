@@ -216,23 +216,23 @@ Run_BenchMark()
 
 
 Run_BenchMark "JR_Dependency(Silicore_BenchMark)"
-# Run_BenchMark "InsertionSort(SiliCore_version)"
-# Run_BenchMark "BubbleSort(Silicore_BenchMark)"
+Run_BenchMark "InsertionSort(SiliCore_version)"
+Run_BenchMark "BubbleSort(Silicore_BenchMark)"
 Run_BenchMark "Fibonacci(Silicore_BenchMark)"
 
-# Run_BenchMark "Max&MinArray"
-# Run_BenchMark "BinarySearch"
+Run_BenchMark "Max&MinArray"
+Run_BenchMark "BinarySearch"
 Run_BenchMark "ControlFlowInstructions"
-# Run_BenchMark "DataManipulation"
-# Run_BenchMark "SumOfNumbers"
-# Run_BenchMark "RemoveDuplicates"
-# Run_BenchMark "SelectionSort"
-# Run_BenchMark "SparseMatrixCount"
-# Run_BenchMark "Swapping"
-# Run_BenchMark "MultiplicationUsingAddition"
+Run_BenchMark "DataManipulation"
+Run_BenchMark "SumOfNumbers"
+Run_BenchMark "RemoveDuplicates"
+Run_BenchMark "SelectionSort"
+Run_BenchMark "SparseMatrixCount"
+Run_BenchMark "Swapping"
+Run_BenchMark "MultiplicationUsingAddition"
 Run_BenchMark "ScalarMultiplicationUsingAddition"
 
 
 
-read -p "Press Enter to exit"
+read -p "Press any key to exit"
 

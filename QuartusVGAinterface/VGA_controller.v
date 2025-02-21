@@ -7,7 +7,8 @@ module VGA_controller
 (
 	input iVGA_CLK,
 	input iRST_n,
-	
+	input word_RunTimeData_FLAG_SW,
+
 	output [`COLORW - 1:0] r_data,
 	output [`COLORW - 1:0] g_data,
 	output [`COLORW - 1:0] b_data,
@@ -46,7 +47,7 @@ wire [4:0] InstQ_rs, InstQ_rt, InstQ_rd, InstQ_shamt;
 wire [15:0] InstQ_immediate;
 wire [25:0] InstQ_address;
 wire [31:0] InstQ_PC;
-wire [9:0] VGA_address;
+wire [10:0] VGA_address;
 wire VGA_clk;
 wire [31:0] VGA_data;
 wire word_RunTimeData_FLAG;
@@ -57,18 +58,22 @@ wire [0 : 2 * 8 - 1] text_rd;
 wire [0 : 2 * 8 - 1] text_shamt;
 wire [0 : 6 * 8 - 1] text_signed_immediate;
 wire [0 : 6 * 8 - 1] text_unsigned_immediate;
-wire [0 : 5 * 8 - 1] text_address = "addrr";
+wire [0 : 5 * 8 - 1] text_address;
 
 
 
 
 ////
-video_sync_generator VSG (.vga_clk(iVGA_CLK),
-                              .reset(~iRST_n),
-                              .blank_n(cBLANK_n),
-                              .HS(cHS),
-                              .VS(cVS),
-										.datasource(datasource));
+video_sync_generator VSG 
+(
+	.vga_clk(iVGA_CLK),
+	.reset(~iRST_n),
+	.blank_n(cBLANK_n),
+	.HS(cHS),
+	.VS(cVS),
+	.datasource(datasource)
+);
+
 ////
 ////Addresss generator
 always@(posedge iVGA_CLK , negedge iRST_n) 
@@ -136,8 +141,7 @@ autoMAN automan
 	.address(VGA_address[7:0]),
 	.word_RunTimeData_FLAG(word_RunTimeData_FLAG),
 	.RunTimeData(VGA_data),
-	// .word({TextCurrentInst}),
-	.word({"Hello World"}),
+	.word({TextCurrentInst}),
 	.RGB_out(RGB_Auto)
 );
 //////////////////////////////////////////////////////////////////////////////
@@ -156,41 +160,46 @@ SSOOO_CPU cpu
 	.InstQ_immediate(InstQ_immediate),
 	.InstQ_address(InstQ_address),
 	.InstQ_PC(InstQ_PC),
-	.VGA_address(10'd500 - VGA_address),
+	.VGA_address(11'd500 - VGA_address),
     .VGA_clk(VGA_clk),
     .VGA_data(VGA_data)
 );
-fivebit2text I2Trd
+FiveBit2text I2Trd
 (
 	.index(InstQ_rd),
 	.text_index(text_rd)
 );
-fivebit2text I2Trs
+FiveBit2text I2Trs
 (
 	.index(InstQ_rs),
 	.text_index(text_rs)
 );
-fivebit2text I2Trt
+FiveBit2text I2Trt
 (
 	.index(InstQ_rt),
 	.text_index(text_rt)
 );
-fivebit2text I2Tshamt
+FiveBit2text I2Tshamt
 (
 	.index(InstQ_shamt),
 	.text_index(text_shamt)
 );
-sixteenbit2text_signed immediate_signed
+SixTeenBit2text_signed immediate_signed
 (
 	.index(InstQ_immediate),
 	.text_index(text_signed_immediate)
 );
-
-sixteenbit2text_unsigned immediate_unsigned
+SixTeenBit2text_unsigned immediate_unsigned
 (
 	.index(InstQ_immediate),
 	.text_index(text_unsigned_immediate)
 );
+TwentySixBit2text_unsigned address
+(
+	.index(InstQ_address),
+	.text_index(text_address)
+);
+
 `define reg_char "X"
 `define open_paren " " 
 `define close_paren " " 
@@ -310,15 +319,13 @@ end
 
 /*
 TODO:
-	- negative numbers
-	- address2text
 	- parenthesis
-	- ability to switch between the modes
+	- ability to switch between modes
 
 - done: static mode: all from `ImageStatic` memory, (datasource = 1'b0)
 - done: automatic mode: text from automAN, (datasource = 1'b1)
 - done: MIX mode: from both (static image & autoMAN which is the current instruction from the CPU), (datasource = (boundary set in video_sync_generator))
-- dualport mode: the VGA reads and the CPU writes
+- done: dualport mode: the VGA reads and the CPU writes
 */
 
 
@@ -337,7 +344,8 @@ assign g_data = (cBLANK_n == 1'b0) ? 0 : RGB_Data[2*`COLORW - 1: 1*`COLORW];
 assign b_data = (cBLANK_n == 1'b0) ? 0 : RGB_Data[3*`COLORW - 1: 2*`COLORW];
 assign FINAL_ADDR = (tempADDRx / `RS) + (tempADDRy / `RS)*(128);
 assign VGA_clk = iVGA_CLK;
-assign VGA_address[9:8] = 2'd0;
+assign VGA_address[10:8] = 3'd0;
+// assign word_RunTimeData_FLAG = word_RunTimeData_FLAG_SW;
 assign word_RunTimeData_FLAG = 1'b1;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -352,7 +360,7 @@ endmodule
  	
 
 
-module fivebit2text
+module FiveBit2text
 (
 	input [4:0] index,
 	output [0 : 2 * 8 - 1] text_index
@@ -366,7 +374,7 @@ assign text_index = { dig1, dig0 };
 
 endmodule
 
-module sixteenbit2text_signed
+module SixTeenBit2text_signed
 (
 	input [15:0] index,
 	output [0 : 6 * 8 - 1] text_index
@@ -399,13 +407,35 @@ assign twoscomp_dig2 = ((twoscomp / 100) % 10   ) + 8'd48;
 assign twoscomp_dig3 = ((twoscomp / 1000) % 10  ) + 8'd48;
 assign twoscomp_dig4 = ((twoscomp / 10000) % 10 ) + 8'd48;
 
-assign text_index = (index[15]) ? { "n", twoscomp_dig4, twoscomp_dig3, twoscomp_dig2, twoscomp_dig1, twoscomp_dig0 } : { " ", dig4, dig3, dig2, dig1, dig0 };
+assign text_index = (index[15]) ? { "-", twoscomp_dig4, twoscomp_dig3, twoscomp_dig2, twoscomp_dig1, twoscomp_dig0 } : { " ", dig4, dig3, dig2, dig1, dig0 };
 
 endmodule
 
-module sixteenbit2text_unsigned
+module SixTeenBit2text_unsigned
 (
 	input [15:0] index,
+	output [0 : 6 * 8 - 1] text_index
+);
+
+wire [7:0] dig0;
+wire [7:0] dig1;
+wire [7:0] dig2;
+wire [7:0] dig3;
+wire [7:0] dig4;
+
+assign dig0 = (index       % 10     ) + 8'd48;
+assign dig1 = ((index / 10) % 10    ) + 8'd48;
+assign dig2 = ((index / 100) % 10   ) + 8'd48;
+assign dig3 = ((index / 1000) % 10  ) + 8'd48;
+assign dig4 = ((index / 10000) % 10 ) + 8'd48;
+assign text_index = { " ", dig4, dig3, dig2, dig1, dig0 };
+
+endmodule
+
+
+module TwentySixBit2text_unsigned
+(
+	input [25:0] index,
 	output [0 : 6 * 8 - 1] text_index
 );
 

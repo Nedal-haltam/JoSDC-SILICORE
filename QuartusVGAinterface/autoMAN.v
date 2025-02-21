@@ -51,7 +51,7 @@ end
 //  0 -> 25 : `A` -> `Z`
 // 26 -> 51 : `a` -> `z`
 // 52 -> 61 : `0` -> `9`
-// 62 		: `=`
+// 62 -> 64	: `=`, `|`, `-`
 
 `define char(dest, src, i) assign dest[i] = src[8*(i) +: 8]
 
@@ -71,7 +71,7 @@ endgenerate
 always@(posedge iVGA_CLK) begin
 	if (word_RunTimeData_FLAG) begin
 		RGB_out <= (RunTimeData != 0) ? 12'hFFF : 12'd0;
-		// RGB_out <= (RunTimeData[0]) ? 12'hFFF : 12'd0;
+		// RGB_out <= (i % 2 == 0) ? 12'hFFF : 12'd0;
 	end
 	else begin
 		RGB_out <= (address >= `length || data[address] == `terminating_char || data[address] == 0 || data[address] == " ") ? 12'd0 : 
@@ -119,15 +119,20 @@ module char2index
 );
 
 
-assign out_index = (in_char == "=") ? 8'd62 : 
+assign out_index = 
+(in_char == "-") ? 8'd64 :
 (
-	("a" <= in_char && in_char <= "z") ? (26 + (in_char - "a")) : 
+	(in_char == "=") ? 8'd62 : 
 	(
-		("A" <= in_char && in_char <= "Z") ? (in_char - "A") : 
+		("a" <= in_char && in_char <= "z") ? (26 + (in_char - "a")) : 
 		(
-			("0" <= in_char && in_char <= "9") ? (52 + (in_char - "0")) : 8'hFF
+			("A" <= in_char && in_char <= "Z") ? (in_char - "A") : 
+			(
+				("0" <= in_char && in_char <= "9") ? (52 + (in_char - "0")) : 8'hFF
+			)
 		)
 	)
-);
+)
+;
 
 endmodule
