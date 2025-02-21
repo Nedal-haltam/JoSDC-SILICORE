@@ -71,7 +71,6 @@ endgenerate
 always@(posedge iVGA_CLK) begin
 	if (word_RunTimeData_FLAG) begin
 		RGB_out <= (RunTimeData != 0) ? 12'hFFF : 12'd0;
-		// RGB_out <= (i % 2 == 0) ? 12'hFFF : 12'd0;
 	end
 	else begin
 		RGB_out <= (address >= `length || data[address] == `terminating_char || data[address] == 0 || data[address] == " ") ? 12'd0 : 

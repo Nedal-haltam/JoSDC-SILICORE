@@ -34,6 +34,10 @@
 //https://fpgasoftware.intel.com/eula.
 
 
+`define MEMORY_SIZE 2048
+`define MEMORY_BITS 11
+
+
 // synopsys translate_off
 `timescale 1 ps / 1 ps
 // synopsys translate_on
@@ -49,8 +53,8 @@ module DataMemory_IP2PORT (
 	q_a,
 	q_b);
 
-	input	[9:0]  address_a;
-	input	[9:0]  address_b;
+	input	[(`MEMORY_BITS-1):0]  address_a;
+	input	[(`MEMORY_BITS-1):0]  address_b;
 	input	  clock_a;
 	input	  clock_b;
 	input	[31:0]  data_a;
@@ -108,8 +112,8 @@ module DataMemory_IP2PORT (
 		altsyncram_component.init_file = "DataMemory_IP2PORT_MIF.MIF",
 		altsyncram_component.intended_device_family = "MAX 10",
 		altsyncram_component.lpm_type = "altsyncram",
-		altsyncram_component.numwords_a = 1024,
-		altsyncram_component.numwords_b = 1024,
+		altsyncram_component.numwords_a = `MEMORY_SIZE,
+		altsyncram_component.numwords_b = `MEMORY_SIZE,
 		altsyncram_component.operation_mode = "BIDIR_DUAL_PORT",
 		altsyncram_component.outdata_aclr_a = "NONE",
 		altsyncram_component.outdata_aclr_b = "NONE",
@@ -118,8 +122,8 @@ module DataMemory_IP2PORT (
 		altsyncram_component.power_up_uninitialized = "FALSE",
 		altsyncram_component.read_during_write_mode_port_a = "NEW_DATA_WITH_NBE_READ",
 		altsyncram_component.read_during_write_mode_port_b = "NEW_DATA_WITH_NBE_READ",
-		altsyncram_component.widthad_a = 10,
-		altsyncram_component.widthad_b = 10,
+		altsyncram_component.widthad_a = `MEMORY_BITS,
+		altsyncram_component.widthad_b = `MEMORY_BITS,
 		altsyncram_component.width_a = 32,
 		altsyncram_component.width_b = 32,
 		altsyncram_component.width_byteena_a = 1,

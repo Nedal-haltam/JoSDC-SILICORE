@@ -1,5 +1,3 @@
-
-
 InstMem[  0] <= 32'h201D01F4; // addi $sp $zero 500
 InstMem[  1] <= 32'h20010000; // addi $1 $zero 0
 InstMem[  2] <= 32'h200201F5; // addi $2 $zero 501
@@ -38,22 +36,22 @@ InstMem[ 34] <= 32'h23BDFFFF; // addi $sp $sp -1
 InstMem[ 35] <= 32'h20010003; // addi $1 $zero 3
 InstMem[ 36] <= 32'hAFA10000; // sw $1 0 ( $sp )
 InstMem[ 37] <= 32'h23BDFFFF; // addi $sp $sp -1
-InstMem[ 38] <= 32'h20010005; // addi $1 $zero 5
+InstMem[ 38] <= 32'h20010002; // addi $1 $zero 2
 InstMem[ 39] <= 32'hAFA10000; // sw $1 0 ( $sp )
 InstMem[ 40] <= 32'h23BDFFFF; // addi $sp $sp -1
-InstMem[ 41] <= 32'h20010005; // addi $1 $zero 5
+InstMem[ 41] <= 32'h20010008; // addi $1 $zero 8
 InstMem[ 42] <= 32'hAFA10000; // sw $1 0 ( $sp )
 InstMem[ 43] <= 32'h23BDFFFF; // addi $sp $sp -1
-InstMem[ 44] <= 32'h20010005; // addi $1 $zero 5
+InstMem[ 44] <= 32'h20010002; // addi $1 $zero 2
 InstMem[ 45] <= 32'hAFA10000; // sw $1 0 ( $sp )
 InstMem[ 46] <= 32'h23BDFFFF; // addi $sp $sp -1
-InstMem[ 47] <= 32'h20010006; // addi $1 $zero 6
+InstMem[ 47] <= 32'h20010009; // addi $1 $zero 9
 InstMem[ 48] <= 32'hAFA10000; // sw $1 0 ( $sp )
 InstMem[ 49] <= 32'h23BDFFFF; // addi $sp $sp -1
-InstMem[ 50] <= 32'h20010005; // addi $1 $zero 5
+InstMem[ 50] <= 32'h20010002; // addi $1 $zero 2
 InstMem[ 51] <= 32'hAFA10000; // sw $1 0 ( $sp )
 InstMem[ 52] <= 32'h23BDFFFF; // addi $sp $sp -1
-InstMem[ 53] <= 32'h20010007; // addi $1 $zero 7
+InstMem[ 53] <= 32'h2001000A; // addi $1 $zero 10
 InstMem[ 54] <= 32'hAFA10000; // sw $1 0 ( $sp )
 InstMem[ 55] <= 32'h23BDFFFF; // addi $sp $sp -1
 InstMem[ 56] <= 32'h20010000; // addi $1 $zero 0
@@ -255,12 +253,7 @@ InstMem[251] <= 32'h23BD0001; // addi $sp $sp 1
 InstMem[252] <= 32'h20010000; // addi $1 $zero 0
 InstMem[253] <= 32'hAFA10000; // sw $1 0 ( $sp )
 InstMem[254] <= 32'h23BDFFFF; // addi $sp $sp -1
-//
-// number of iterations is here
-// InstMem[255] <= 32'h20010001; // addi $1 $zero 
-InstMem[255] <= 32'hFC000000; // HLT
-
-//
+InstMem[255] <= 32'h200100FF; // addi $1 $zero 1
 InstMem[256] <= 32'hAFA10000; // sw $1 0 ( $sp )
 InstMem[257] <= 32'h23BDFFFF; // addi $sp $sp -1
 InstMem[258] <= 32'h8FA10002; // lw $1 2 ( $sp )
@@ -992,3 +985,5 @@ InstMem[983] <= 32'hAFA10001; // sw $1 1 ( $sp )
 InstMem[984] <= 32'h080000FF; // j temp_label18_start
 InstMem[985] <= 32'h23BD0001; // addi $sp $sp 1
 InstMem[986] <= 32'hFC000000; // hlt
+
+

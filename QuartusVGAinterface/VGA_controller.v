@@ -345,8 +345,7 @@ assign b_data = (cBLANK_n == 1'b0) ? 0 : RGB_Data[3*`COLORW - 1: 2*`COLORW];
 assign FINAL_ADDR = (tempADDRx / `RS) + (tempADDRy / `RS)*(128);
 assign VGA_clk = iVGA_CLK;
 assign VGA_address[10:8] = 3'd0;
-// assign word_RunTimeData_FLAG = word_RunTimeData_FLAG_SW;
-assign word_RunTimeData_FLAG = 1'b1;
+assign word_RunTimeData_FLAG = word_RunTimeData_FLAG_SW;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////Delay the iHD, iVD,iDEN for one clock cycle;

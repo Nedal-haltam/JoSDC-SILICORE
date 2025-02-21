@@ -63,9 +63,7 @@ always@(posedge MAX10_CLK2_50) begin
 	clk_divider <= clk_divider + 1'b1;
 end
 
-// assign input_clk = clk_divider[10];
-assign input_clk = clk_divider[15];
-// assign input_clk = clk_divider[24];
+assign input_clk = (SW[0]) ? clk_divider[8] : clk_divider[24];
 
 
 assign LEDR[0] = hlt;
@@ -88,7 +86,7 @@ VGA_controller VGA_CTRL
 (
 	.iVGA_CLK(VGA_CLK), 
 	.iRST_n(DLY_RST), 
-	// .word_RunTimeData_FLAG_SW(),
+	.word_RunTimeData_FLAG_SW(SW[0]),
 
 	.r_data(VGA_R),
 	.g_data(VGA_G),

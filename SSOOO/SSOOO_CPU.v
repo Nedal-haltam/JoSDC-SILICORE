@@ -51,13 +51,19 @@ wire [3:0] InstQ_ALUOP;
     reg [15:0] InstQ_immediate;
     reg [25:0] InstQ_address;
     reg [31:0] InstQ_PC;
-
 `endif
 wire [ 11:0] InstQ_opcode_temp;
 wire [ 4:0] InstQ_rs_temp, InstQ_rt_temp, InstQ_rd_temp, InstQ_shamt_temp;
 wire [15:0] InstQ_immediate_temp;
 wire [25:0] InstQ_address_temp;
 wire [31:0] InstQ_PC_temp;
+
+wire [ 11:0] InstQ_opcode_temp2;
+wire [ 4:0] InstQ_rs_temp2, InstQ_rt_temp2, InstQ_rd_temp2, InstQ_shamt_temp2;
+wire [15:0] InstQ_immediate_temp2;
+wire [25:0] InstQ_address_temp2;
+wire [31:0] InstQ_PC_temp2;
+
 wire InstQ_VALID_Inst_temp;
 reg InstQ_VALID_Inst;
 
@@ -206,18 +212,13 @@ end
 
 /*
 TODO:
-
-    - continue and display GOL on the screen, we are near
-
     - make it SS
+
     - Fmax the design, and pick the best to take to the finals
 
     - MultiCore (dualcore is enough)
 
-    - see Quartus warnings, and deal with them
-    - collect defs in one file  
-
-    - support functions calling
+    - see remaining todos in iphone picture or from teams
 */
 
 
@@ -239,32 +240,7 @@ always@(posedge clk, posedge rst) begin
 end
 
 
-
-// // `define other
-// `ifdef other
-// wire [31:0] add1p, add2, add3, add4, add5;
-// assign add1p = ((ROB_Wrong_prediction) ? ROB_Commit_BTA : `exception_handler);
-// assign add2 = {6'd0,InstQ_address};
-// assign add3 = ((~isjr) ? PC_out : ((~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : PC_out));
-// assign add4 = PC_out;
-// assign add5 = PC_out + {{16{InstQ_immediate[15]}},InstQ_immediate};
-
-// assign PC = (ROB_FLUSH_Flag == 1'b1) ? add1p : 
-// (
-//     (InstQ_opcode == j || InstQ_opcode == jal || InstQ_opcode_temp == jr || InstQ_opcode == hlt_inst || ((InstQ_opcode == beq || InstQ_opcode == bne) && predicted)) ? 
-//     (
-//         ({32{InstQ_opcode == j || InstQ_opcode == jal                 }}&add2 ) |
-//         ({32{InstQ_opcode_temp == jr                                  }}&add3 ) |
-//         ({32{InstQ_opcode == hlt_inst                                 }}&add4 ) |
-//         ({32{(InstQ_opcode == beq || InstQ_opcode == bne) && predicted}}&add5)
-//     ) : add4 + 1'b1
-// );
-// `else
-
-// get the data for the JR from the right source like the others
-// if RegFile_RP1_Reg1_ROBEN != 0, see the ready bit if not ready then wait, else if found find a way to clear both registers and fetch the new instruction
 `define JR_DESTINATION (~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : (ROB_RP1_Ready1 ? ROB_RP1_Write_Data1 : InstQ_PC)
-
 
 assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA : `exception_handler) : 
 (
@@ -277,7 +253,7 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA 
                 (
                     (InstQ_opcode == hlt_inst) ? InstQ_PC: 
                     (
-                        ((InstQ_opcode_temp == beq || InstQ_opcode_temp == bne) && predicted_temp) ? InstQ_PC_temp + {{16{InstQ_immediate_temp[15]}},InstQ_immediate_temp} : PC_out + 1'b1
+                        ((InstQ_opcode_temp == beq || InstQ_opcode_temp == bne) && predicted_temp) ? InstQ_PC_temp + {{16{InstQ_immediate_temp[15]}},InstQ_immediate_temp} : PC_out + 2'd1
                     )
                 )
             )
@@ -311,8 +287,19 @@ InstQ instq
     .immediate1(InstQ_immediate_temp),
     .address1(InstQ_address_temp),
     .pc1(InstQ_PC_temp),
-    .VALID_Inst(InstQ_VALID_Inst_temp)
+    .VALID_Inst(InstQ_VALID_Inst_temp),
+
+    .opcode2(InstQ_opcode_temp2),
+    .rs2(InstQ_rs_temp2), 
+    .rt2(InstQ_rt_temp2), 
+    .rd2(InstQ_rd_temp2), 
+    .shamt2(InstQ_shamt_temp2),
+    .immediate2(InstQ_immediate_temp2),
+    .address2(InstQ_address_temp2),
+    .pc2(InstQ_PC_temp2)
 );
+
+
 
 always@(negedge clk, posedge rst) begin
     if (rst) begin
