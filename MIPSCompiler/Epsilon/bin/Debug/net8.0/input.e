@@ -1,18 +1,5 @@
 
 
-
-
-
-#define type(var) int var
-
-type(var1) = 123;
-
-type(var2) = 321;
-int var = 3213;
-
-
-
-/*
 #define SIZE 12
 #define COPY122 for (int ci = 0; ci < SIZE; ci = ci + 1) { for (int cj = 0; cj < SIZE; cj = cj + 1) { grid2[ci][cj] = grid[ci][cj]; } }
 #define COPY221 for (int ci = 0; ci < SIZE; ci = ci + 1) { for (int cj = 0; cj < SIZE; cj = cj + 1) { grid[ci][cj] = grid2[ci][cj]; } }
@@ -86,5 +73,3 @@ for (int iter = 0; iter < iters; iter = iter + 1)
     }
     COPY221
 }
-
-*/

@@ -138,6 +138,7 @@ namespace Epsilon
                             src = Regex.Replace(macro[word].src, $@"\b{Regex.Escape(macro[word].inputs[i])}\b", inputs[i]);
                         }
                         Tokenizer temp = new(src);
+                        temp.macro = macro;
                         m_tokens.AddRange(temp.Tokenize());
                     }
                     else if (word == "int")
