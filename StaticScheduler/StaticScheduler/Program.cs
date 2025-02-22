@@ -1,232 +1,259 @@
-﻿
-using System.Security.AccessControl;
-using System.Text;
-int pc = 0;
-string initinst = "addi x1, x0, 1\r\naddi x2, x0, 2\r\naddi x3, x0, 3\r\naddi x4, x0, 4\r\naddi x5, x0, 5\r\naddi x6, x0, 6\r\naddi x7, x0, 7\r\naddi x8, x0, 8\r\naddi x9, x0, 9\r\naddi x10, x0, 10\n";
-main();
-return;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
-bool IsDep(Instruction a, Instruction b)
+public enum Aluop
 {
-    bool ardn0 = a.rd != 0; // a's rd is not zero
-    bool brdn0 = b.rd != 0; // b's rd is not zero
-
-    bool RAW = ((a.rs1 == b.rd) || (a.rs2 == b.rd)) && brdn0; // read after write
-    bool WAR = ((a.rd == b.rs1) || (a.rd == b.rs2)) && ardn0; // write after read
-    bool WAW = a.rd == b.rd && brdn0 && ardn0; // write after write
-
-    return RAW || WAR || WAW;
+    addition, subtraction, and, or, xor, sll, srl, slt, sgt
 }
-void PrintInstructions(List<Instruction> instructions)
+
+public enum Mnemonic
 {
-    for (int i = 0; i < instructions.Count; i++)
+    BEQ, BNE, BLTZ, BGEZ, J, JR, JAL, ADD, ADDI, ADDU, SUB, SUBU,
+    AND, ANDI, OR, ORI, XOR, XORI, NOR, SRL, SLL, SLT, SLTI, SGT, LW, SW
+}
+
+public class Instruction
+{
+    public Mnemonic mnem;
+    public int pc;
+    public Aluop aluop;
+    public int rd, rs1, rs2;
+
+    public Instruction(Mnemonic mnem, int pc, Aluop aluop, int rd, int rs1, int rs2)
     {
-        Instruction inst = instructions[i];
-        Console.Write($"PC = {inst.pc,2}: {inst.mnem,3}, x{inst.rd}, x{inst.rs1}, x{inst.rs2}\n");
+        this.mnem = mnem;
+        this.aluop = aluop;
+        this.pc = pc;
+        this.rd = rd;
+        this.rs1 = rs1;
+        this.rs2 = rs2;
     }
 }
-StringBuilder GetInstructions(List<Instruction> instructions)
+
+class Program
 {
-    StringBuilder sb = new();
-    for (int i = 0; i < instructions.Count; i++)
+    static int pc = 0; // Reset counter for each new instruction
+
+    static void Main()
     {
-        Instruction inst = instructions[i];
-        sb.Append($"{inst.mnem,3} x{inst.rd}, x{inst.rs1}, x{inst.rs2}\n");
-    }
-    return sb;
-}
-bool IsValidReg(int reg)
-{
-    return 0 <= reg && reg <= 31;
-}
-bool IsValidInput(List<string> inst)
-{
-    return inst.Count == 3 && inst.All(x => int.TryParse(x, out int reg) && IsValidReg(reg));
-}
-List<Instruction> BackWardIter(List<Instruction> instructions)
-{
-    if (instructions.Count == 0) return [];
-    List<Instruction> scheduled = new(instructions);
-    bool nodep = true;
-    while (nodep)
-    {
-        for (int i = scheduled.Count - 1; i >= 0; i--)
+        List<Instruction> instructions = new List<Instruction>
         {
-            nodep = false;
-            Instruction temp = scheduled[i];
-            int DestIndex = i;
-            for (int j = i - 1; j >= 0; j--)
-            {
-                if (IsDep(temp, scheduled[j]))
-                {
-                    break;
-                }
-                else
-                {
-                    nodep = true;
-                    DestIndex = j;
-                }
-            }
-            scheduled.RemoveAt(i);
-            scheduled.Insert(DestIndex, temp);
-            for (int j = 0; j < scheduled.Count; j++)
-            {
-                Instruction oldpcinst = scheduled[j];
-                oldpcinst.pc = j;
-                scheduled[j] = oldpcinst;
-            }
-        }
-    }
-    return scheduled;
-}
-List<Instruction> GroupMethod(List<Instruction> instructions)
-{
-    if (instructions.Count == 0) return [];
-    List<List<Instruction>> scheduled = [];
+            new Instruction(Mnemonic.ADDI, pc++, Aluop.addition, 1, 0, 0),
+            new Instruction(Mnemonic.ADDI, pc++, Aluop.addition, 2, 0, 0),
+            new Instruction(Mnemonic.LW, pc++, Aluop.addition, 1, 0, 0),
+            new Instruction(Mnemonic.BEQ, pc++, Aluop.addition, 0, 1, 0),
+        };
 
-    for (int i = 0; i < instructions.Count; i++)
-    {
-        Instruction temp = new(instructions[i]);
-        if (scheduled.Count == 0)
+        PrintInstructions(instructions);
+        Schedule(instructions, "TestOutput");
+
+        Console.WriteLine("\r");
+
+        string filePath1 = @"C:";
+        if (File.Exists(filePath1))
         {
-            scheduled.Add([temp]);
-            continue;
+            List<Instruction> backward = ReadInstructionsFromFile(filePath1);
+            PrintInstructions(backward);
         }
 
-        for (int j = scheduled.Count - 1; j >= 0; j--) // for every group
+        Console.WriteLine("\r");
+
+        string filePath2 = @"C:";
+        if (File.Exists(filePath2))
         {
+            List<Instruction> grouped = ReadInstructionsFromFile(filePath2);
+            PrintInstructions(grouped);
+        }
+    }
+
+    static List<Instruction> ReadInstructionsFromFile(string filePath)
+    {
+        List<Instruction> instructions = new List<Instruction>();
+        string[] lines = File.ReadAllLines(filePath);
+        foreach (string line in lines)
+        {
+            string[] parts = line.Split(new[] { ' ', ',', ':' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 4)
+            {
+                string mnem = parts[0];
+                int rd = int.Parse(parts[1].Substring(1));
+                int rs1 = int.Parse(parts[2].Substring(1));
+                int rs2 = int.Parse(parts[3].Substring(1));
+
+                Aluop aluop = GetAluopFromMnemonic(mnem);
+                Mnemonic mnemonic = GetMnemonicFromString(mnem);
+                instructions.Add(new Instruction(mnemonic, instructions.Count, aluop, rd, rs1, rs2));
+            }
+        }
+        return instructions;
+    }
+
+    static Aluop GetAluopFromMnemonic(string mnem)
+    {
+        switch (mnem)
+        {
+            case "ADD": return Aluop.addition;
+            case "SUB": return Aluop.subtraction;
+            case "AND": return Aluop.and;
+            case "OR": return Aluop.or;
+            case "XOR": return Aluop.xor;
+            case "SLL": return Aluop.sll;
+            case "SRL": return Aluop.srl;
+            case "SLT": return Aluop.slt;
+            case "SGT": return Aluop.sgt;
+            default: return Aluop.addition; // Default case
+        }
+    }
+
+    static Mnemonic GetMnemonicFromString(string mnem)
+    {
+        return Enum.TryParse(mnem, out Mnemonic result) ? result : Mnemonic.ADD; // Default case
+    }
+
+    static void Schedule(List<Instruction> instructions, string folder)
+    {
+        List<Instruction> backwardScheduled = BackWardIter(instructions);
+        List<Instruction> groupedScheduled = GroupMethod(instructions);
+
+        if (!Directory.Exists(folder))
+        {
+            Directory.CreateDirectory(folder);
+        }
+
+        WriteInstsToFile(instructions, Path.Combine(folder, "orig.txt"));
+        WriteInstsToFile(backwardScheduled, Path.Combine(folder, "backward.txt"));
+        WriteInstsToFile(groupedScheduled, Path.Combine(folder, "grouped.txt"));
+    }
+
+    static List<Instruction> BackWardIter(List<Instruction> instructions)
+    {
+        List<Instruction> scheduled = new List<Instruction>(instructions);
+        bool nodep = true;
+
+        while (nodep)
+        {
+            for (int i = scheduled.Count - 1; i >= 0; i--)
+            {
+                nodep = false;
+                Instruction temp = scheduled[i];
+                int DestIndex = i;
+
+                for (int j = i - 1; j >= 0; j--)
+                {
+                    if (IsDep(temp, scheduled[j]))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        nodep = true;
+                        DestIndex = j;
+                    }
+                }
+
+                scheduled.RemoveAt(i);
+                scheduled.Insert(DestIndex, temp);
+                for (int j = 0; j < scheduled.Count; j++)
+                {
+                    Instruction oldpcinst = scheduled[j];
+                    oldpcinst.pc = j;
+                    scheduled[j] = oldpcinst;
+                }
+            }
+        }
+
+        return scheduled;
+    }
+
+    static List<Instruction> GroupMethod(List<Instruction> instructions)
+    {
+        List<List<Instruction>> scheduled = new List<List<Instruction>>();
+
+        for (int i = 0; i < instructions.Count; i++)
+        {
+            Instruction temp = new Instruction(instructions[i].mnem, instructions[i].pc, instructions[i].aluop,
+                                               instructions[i].rd, instructions[i].rs1, instructions[i].rs2);
+            if (scheduled.Count == 0)
+            {
+                scheduled.Add(new List<Instruction> { temp });
+                continue;
+            }
+
             bool dep = false;
-            for (int k = 0; k < scheduled[j].Count; k++) // for every instruction in that group
+            for (int j = scheduled.Count - 1; j >= 0; j--)
             {
-                if (IsDep(temp, scheduled[j][k]))
+                for (int k = 0; k < scheduled[j].Count; k++)
                 {
-                    dep = true;
+                    if (IsDep(temp, scheduled[j][k]))
+                    {
+                        dep = true;
+                        break;
+                    }
+                }
+
+                if (dep)
+                {
+                    scheduled[j].Add(temp);
+                    break;
+                }
+                else if (j == 0)
+                {
+                    scheduled[j].Add(temp);
                     break;
                 }
             }
-            if (dep)
-            {
-                if (j == scheduled.Count - 1)
-                {
-                    scheduled.Add([temp]);
-                }
-                else
-                {
-                    scheduled[j + 1].Add(temp);
-                }
-                break;
-            }
-            else if (j == 0)
-            {
-                scheduled[j].Add(temp);
-                break;
-            }
         }
-    }
 
-    int count = 0;
-    List<Instruction> ret = [];
-    foreach (List<Instruction> group in scheduled)
-    {
-        foreach (Instruction inst in group)
+        int count = 0;
+        List<Instruction> ret = new List<Instruction>();
+
+        foreach (List<Instruction> group in scheduled)
         {
-            Instruction toadd = new(inst)
+            foreach (Instruction inst in group)
             {
-                pc = count++
-            };
-            ret.Add(toadd);
+                inst.pc = count++;
+                ret.Add(inst);
+            }
+        }
+
+        return ret;
+    }
+
+    static bool IsDep(Instruction a, Instruction b)
+    {
+        bool ardn0 = a.rd != 0;
+        bool brdn0 = b.rd != 0;
+
+        bool RAW = ((a.rs1 == b.rd) || (a.rs2 == b.rd)) && brdn0;
+        bool WAR = ((a.rd == b.rs1) || (a.rd == b.rs2)) && ardn0;
+        bool WAW = (a.rd == b.rd) && ardn0 && brdn0;
+
+        return RAW || WAR || WAW;
+    }
+
+    static void PrintInstructions(List<Instruction> instructions)
+    {
+        foreach (var inst in instructions)
+        {
+            Console.WriteLine($"PC = {inst.pc,2}: {inst.mnem,3}, x{inst.rd}, x{inst.rs1}, x{inst.rs2}");
         }
     }
-    return ret;
-}
-List<Instruction> GetRandomInsts(int N)
-{
-    List<Instruction> instructions = [];
-    for (int i = 0; i < N; i++)
-    {
-        int rd = Random.Shared.Next(0, 32);
-        int rs1 = Random.Shared.Next(0, 32);
-        int rs2 = Random.Shared.Next(0, 32);
-        Instruction newinst = new(Mnemonic.add, i, Aluop.addition, rd, rs1, rs2);
-        instructions.Add(new(newinst));
-    }
 
-    return instructions;
-}
-bool IsInstEqual(Instruction a, Instruction b)
-{
-    return a.mnem == b.mnem &&
-    a.pc == b.pc &&
-    a.aluop == b.aluop &&
-    a.rs1 == b.rs1 &&
-    a.rs2 == b.rs2 &&
-    a.rd == b.rd;
-}
-(Instruction, string) GetUserInst()
-{
-    string? input = Console.ReadLine();
-    if (input == null)
+    static void WriteInstsToFile(List<Instruction> instructions, string filePath)
     {
-        return (new(), "error: invalid registers");
+        string folder = Path.GetDirectoryName(filePath);
+        if (!Directory.Exists(folder))
+        {
+            Directory.CreateDirectory(folder);
+        }
+        using (StreamWriter writer = new StreamWriter(filePath))
+        {
+            foreach (var inst in instructions)
+            {
+                writer.WriteLine($"{inst.mnem} x{inst.rd}, x{inst.rs1}, x{inst.rs2}");
+            }
+        }
     }
-    if (input == "finish")
-    {
-        return (new(), "finish");
-    }
-    List<string> inst = [.. input.Split(" ")];
-    if (input == "done")
-    {
-        return (new(), "done");
-    }
-    if (!IsValidInput(inst))
-    {
-        return (new(), "error: invalid registers");
-    }
-    Instruction newinst = new(Mnemonic.add, pc++, Aluop.addition, Convert.ToInt32(inst[0]),
-                                                                  Convert.ToInt32(inst[1]),
-                                                                  Convert.ToInt32(inst[2]));
-    return (newinst, "");
-}
-void WriteInstsToFile(List<Instruction> instructions, string FilePath)
-{
-    File.WriteAllText(FilePath, GetInstructions(instructions).ToString());
-}
-void acl(string FilePath)
-{
-    if (!Directory.Exists(FilePath))
-        Directory.CreateDirectory(FilePath);
-    FileSecurity fileSecurity = new FileSecurity(FilePath, AccessControlSections.Owner);
-    fileSecurity.AddAccessRule(new FileSystemAccessRule("Lenovo", FileSystemRights.FullControl, AccessControlType.Allow));
-}
-void Schedule(List<Instruction> instructions, string Folder)
-{
-    List<Instruction> backward = BackWardIter(instructions);
-    List<Instruction> grouped = GroupMethod(instructions);
-
-    string folder = $".\\{Folder}";
-    acl(folder);
-    string OrigPath = $"{Folder}\\orig.txt";
-    WriteInstsToFile(instructions, OrigPath);
-    string BackWardPath = $"{Folder}\\backward.txt";
-    WriteInstsToFile(backward, BackWardPath);
-    string GroupedPath = $"{Folder}\\grouped.txt";
-    WriteInstsToFile(grouped, GroupedPath);
-}
-void main()
-{
-    List<Instruction> instructions = [];
-
-    // this results in 9 cycles
-    instructions = [new(Mnemonic.addi, 0, Aluop.addition, 1, 0, 0),
-                    new(Mnemonic.addi, 0, Aluop.addition, 2, 0, 0),
-                    new(Mnemonic.lw, 0, Aluop.addition, 1, 0, 0),
-                    new(Mnemonic.beq, 0, Aluop.addition, 0, 1, 0)
-                    ];
-    //PrintInstructions(instructions);
-    Schedule(instructions, ".\\tests\\Testone");
-
-    // this results in 8 cycles
-    (instructions[2], instructions[1]) = (instructions[1], instructions[2]);
-    //PrintInstructions(instructions);
-    Schedule(instructions, ".\\tests\\Testtwo");
 }
