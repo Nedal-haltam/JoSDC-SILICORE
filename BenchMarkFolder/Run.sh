@@ -174,19 +174,18 @@ RunBenchMark_HW()
 
     printf "\tSingleCycle: \n" >> $STATS
     printf "\t\t" >> $STATS
-    sed -n '$p' "$VERILOG_SC_OUT" >> $STATS
+    tail -n 1 "$VERILOG_SC_OUT" >> $STATS
 
     printf "\tPipLined: \n" >> $STATS
     printf "\t\t" >> $STATS
-    sed -n '$p'  "$VERILOG_PL_OUT" >> $STATS
+    tail -n 1  "$VERILOG_PL_OUT" >> $STATS
 
     printf "\tSSOOO: \n" >> $STATS
-    printf "\t\t" >> $STATS
-    sed -n '$p'  "$VERILOG_SSOOO_OUT" >> $STATS
+    tail -n 8  "$VERILOG_SSOOO_OUT" >> $STATS
     
     sed -i '$d' "$VERILOG_SC_OUT"
     sed -i '$d' "$VERILOG_PL_OUT"
-    sed -i '$d' "$VERILOG_SSOOO_OUT"
+    head -n -8 "$VERILOG_SSOOO_OUT" > "./temp" && mv "./temp" "$VERILOG_SSOOO_OUT"
 
     printf "[INFO $INDEX/$TOTAL ]: Comparing HardWare Outputs\n"
 
@@ -233,6 +232,7 @@ Run_All()
 # and terminate the program because this cause an index out of bound exception 
 # Run_BenchMark "InsertionSort" 
 
+# Run_BenchMark "JR_Dependency(Silicore_BenchMark)"
 Run_All
 
 

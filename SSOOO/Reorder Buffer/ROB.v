@@ -314,8 +314,8 @@ always@(negedge clk, posedge rst) begin
                 commit_pc <= Reg_PC[`Imone(Start_Index)];
                 Commit_Rd <= Reg_Rd[`Imone(Start_Index)];
                 Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)];
-                Commit_Wen <= (!(Reg_opcode[`Imone(Start_Index)] == jr || Reg_opcode[`Imone(Start_Index)] == sw || Reg_opcode[`Imone(Start_Index)] == beq || 
-                                Reg_opcode[`Imone(Start_Index)] == bne || Reg_opcode[`Imone(Start_Index)] == j));
+                Commit_Wen <= (!(Reg_opcode[`Imone(Start_Index)] == sw || Reg_opcode[`Imone(Start_Index)] == beq || 
+                                Reg_opcode[`Imone(Start_Index)] == bne));
             end
         end
     end

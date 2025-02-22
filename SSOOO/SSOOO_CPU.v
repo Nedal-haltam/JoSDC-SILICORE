@@ -13,7 +13,6 @@ module SSOOO_CPU
     input input_clk, rst,
     output reg [31:0] cycles_consumed,
     output reg [31:0] StallCount,
-    output reg [31:0] ExecutedInstructionCount,
     output reg [31:0] BranchPredictionCount,
     output reg [31:0] BranchPredictionMissCount
 );
@@ -203,16 +202,14 @@ always@(negedge clk , posedge rst) begin
 	if (rst) begin
 		cycles_consumed <= 32'd0;
         StallCount <= 32'd0;
-        ExecutedInstructionCount <= 32'd0;
         BranchPredictionCount <= 32'd0;
         BranchPredictionMissCount <= 32'd0;
     end
 	else begin
 		cycles_consumed <= cycles_consumed + 32'd1;
-        // StallCount
-        // ExecutedInstructionCount
-        // BranchPredictionCount
-        // BranchPredictionMissCount
+        StallCount <= StallCount + ((ROB_Commit_opcode == 12'd0 && ~ROB_Commit_Wen) ? 1'b1 : 1'b0);
+        BranchPredictionCount <= BranchPredictionCount + ((ROB_Commit_opcode == beq || ROB_Commit_opcode == bne) ? 1'b1 : 1'b0);
+        BranchPredictionMissCount <= BranchPredictionMissCount + (((ROB_Commit_opcode == beq || ROB_Commit_opcode == bne) && ROB_Wrong_prediction) ? 1'b1 : 1'b0);
     end
 end
 
