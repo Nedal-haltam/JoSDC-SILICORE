@@ -11,6 +11,7 @@
 module SSOOO_CPU
 (
     input input_clk, rst,
+    input CORE_SELECT,
     output reg [31:0] cycles_consumed,
     output reg [31:0] StallCount,
     output reg [31:0] BranchPredictionCount,
@@ -216,13 +217,11 @@ end
 
 /*
 TODO:
-    - MultiCore (dualcore is enough)
-
     - Fmax the design, and pick the best to take to the finals
 
-    - run the VGAinterface on higher clk speed so we can see GOL better
-
     - calculate: execution time, CPI, throughput
+
+    - run the VGAinterface on higher clk speed so we can see GOL better
 */
 
 
@@ -282,6 +281,7 @@ InstQ instq
     .rst(rst),
     .PC_from_assign(PC),
     .PC(PC_out),
+    .CORE_SELECT(CORE_SELECT),
     
     .opcode1(InstQ_opcode_temp),
     .rs1(InstQ_rs_temp), 

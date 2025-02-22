@@ -6,6 +6,7 @@ module InstQ
     input clk, rst,
     input  [31:0] PC_from_assign,
     input  [31:0] PC,
+    input CORE_SELECT,
     
     output reg [ 11:0] opcode1,
     output reg [ 4:0] rs1, rt1, rd1, shamt1,
@@ -20,13 +21,13 @@ wire [31:0] inst1;
 
 `ifdef vscode
     reg [31:0] InstMem [0 : (`MEMORY_SIZE-1)];
-    assign inst1 = InstMem[PC + 2'd0];
+    assign inst1 = InstMem[PC];
 `else
     `ifdef VGA
         reg [31:0] InstMem [0 : (`MEMORY_SIZE-1)];
-        assign inst1 = InstMem[PC + 2'd0];
+        assign inst1 = InstMem[PC];
     `else
-        instmemoryip lksdjfkldsj
+        instmemoryip instance
         (
             .address(PC_from_assign),
             .clock(clk),
@@ -75,10 +76,14 @@ end
 `else
     `ifdef VGA
         initial begin
-            `include "code.txt"
+            if (CORE_SELECT == 1'b1) begin
+                `include "code.txt"
+            end
+            else begin
+                `include "code2.txt"
+            end
         end
     `endif
 `endif
 
 endmodule
-

@@ -48,6 +48,7 @@ SSOOO_CPU cpu
 (
 	.input_clk(clk), 
 	.rst(rst),
+	.CORE_SELECT(1'b0),
     .cycles_consumed(cycles_consumed),
     .StallCount(StallCount),
     .BranchPredictionCount(BranchPredictionCount),
