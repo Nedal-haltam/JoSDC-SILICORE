@@ -233,10 +233,8 @@ Run_All()
 # and terminate the program because this cause an index out of bound exception 
 # Run_BenchMark "InsertionSort" 
 
-Run_BenchMark "BubbleSort(Silicore_BenchMark)"
 
-
-# Run_All
+Run_All
 
 
 read -p "Press any key to exit"
