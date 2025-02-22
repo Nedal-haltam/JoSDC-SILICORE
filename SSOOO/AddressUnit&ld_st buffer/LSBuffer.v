@@ -9,7 +9,7 @@ internal registers:
 */
 
 `define MEMORY_SIZE 2048
-`define MEMORY_BITS 11
+`define MEMORY_BITS 12
 `define ROB_SIZE_bits (4)
 `define BUFFER_SIZE_bitslsbuffer (4)
 `define BUFFER_SIZE_bitsRS (4)

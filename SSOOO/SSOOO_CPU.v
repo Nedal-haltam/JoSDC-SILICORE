@@ -11,7 +11,11 @@
 module SSOOO_CPU
 (
     input input_clk, rst,
-    output reg [31:0] cycles_consumed
+    output reg [31:0] cycles_consumed,
+    output reg [31:0] StallCount,
+    output reg [31:0] ExecutedInstructionCount,
+    output reg [31:0] BranchPredictionCount,
+    output reg [31:0] BranchPredictionMissCount
 );
 
 `else
@@ -72,9 +76,9 @@ wire [`ROB_SIZE_bits:0] RegFile_RP1_Reg1_ROBEN_temp, RegFile_RP1_Reg2_ROBEN_temp
 
 // BPU
 wire [11:0] Decoded_opcode, Commit_opcode;
-wire [1:0] state;  // 2-bit state (00 NT | 01 NT | 10 T | 11 T)
-reg predicted; // prediction (1 = taken, 0 = not taken)
-wire predicted_temp; // prediction (1 = taken, 0 = not taken)
+wire [1:0] state;
+reg predicted;
+wire predicted_temp;
 
 // ROB
 wire ROB_FULL_FLAG;
@@ -191,30 +195,37 @@ always@(posedge clk, posedge rst) begin
     else
         hlt <= ROB_Commit_opcode == hlt_inst;
 end
-// assign hlt <= ROB_Commit_opcode == hlt_inst;
 
 
 nor hlt_logic(clk, input_clk, hlt);
 
 always@(negedge clk , posedge rst) begin
-	if (rst)
+	if (rst) begin
 		cycles_consumed <= 32'd0;
-	else
+        StallCount <= 32'd0;
+        ExecutedInstructionCount <= 32'd0;
+        BranchPredictionCount <= 32'd0;
+        BranchPredictionMissCount <= 32'd0;
+    end
+	else begin
 		cycles_consumed <= cycles_consumed + 32'd1;
+        // StallCount
+        // ExecutedInstructionCount
+        // BranchPredictionCount
+        // BranchPredictionMissCount
+    end
 end
 
 
 /*
 TODO:
-    - Fmax the design, and pick the best to take to the finals
-
     - MultiCore (dualcore is enough)
+
+    - Fmax the design, and pick the best to take to the finals
 
     - run the VGAinterface on higher clk speed so we can see GOL better
 
-    - see remaining todos in iphone picture or from teams
-
-    - remove benchmarkfolder from .gitignore
+    - calculate: execution time, CPI, throughput
 */
 
 
@@ -259,7 +270,6 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA 
 );
 
 assign InstQ_FLUSH_Flag = ~(rst || (PC <= `MEMORY_SIZE));
-// assign InstQ_FLUSH_Flag = ~(rst || ~(|PC[31:(`MEMORY_BITS)]));
 
 PC_register pcreg
 (
@@ -290,7 +300,6 @@ InstQ instq
 
 
 
-// always@(negedge clk, posedge rst) begin
 always@(negedge clk) begin
     if (rst || ROB_FLUSH_Flag || RS_FULL_FLAG || LdStB_FULL_FLAG) begin
         InstQ_opcode <= 0;
@@ -380,7 +389,7 @@ RegFile regfile
 
 
 
-BranchPredictor #(.N(3)) BPU
+BranchPredictor BPU
 (
     .rst(rst), 
     .clk(clk), 

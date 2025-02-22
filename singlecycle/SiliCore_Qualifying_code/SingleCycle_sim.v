@@ -6,8 +6,8 @@
 
 
 `ifndef MEMORY_SIZE
-`define MEMORY_SIZE 2048
-`define MEMORY_BITS 11
+`define MEMORY_SIZE 4096
+`define MEMORY_BITS 12
 `endif
 
 

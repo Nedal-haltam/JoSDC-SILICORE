@@ -1,9 +1,26 @@
 
 
+module BranchPredictor
+(
+    input rst, clk, Wrong_prediction,
+	input [31:0] PC,
+    input [11:0] Decoded_opcode, Commit_opcode,
+    output predicted
+);
 
+N_BIT_BranchPredictor #(.N(3)) N_BIT_BPU
+(
+    .rst(rst), 
+    .clk(clk), 
+    .Wrong_prediction(Wrong_prediction), 
+    .Decoded_opcode(Decoded_opcode),
+    .Commit_opcode(Commit_opcode),
+    .predicted(predicted)
+);
 
+endmodule
 
-module BranchPredictor#
+module N_BIT_BranchPredictor#
 (
 parameter N = 3
 )
@@ -60,3 +77,5 @@ parameter N = 3
 	));
 
 endmodule
+
+

@@ -43,7 +43,12 @@ module SSOOO_Sim();
 reg clk = 0, rst = 0;
 wire [31 : 0] cycles_consumed;
 
-SSOOO_CPU cpu(clk, rst, cycles_consumed);
+SSOOO_CPU cpu
+(
+	.input_clk(clk), 
+	.rst(rst),
+    .cycles_consumed(cycles_consumed)
+);
 
 
 always #(`HALF_CYCLE) clk <= ~clk;

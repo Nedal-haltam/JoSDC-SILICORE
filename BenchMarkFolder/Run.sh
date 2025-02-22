@@ -137,7 +137,7 @@ RunBenchMark_HW()
     VERILOG_EXT_SC_OUT="VERILOG_SC_OUT.txt"
     VERILOG_SC=$ProgFolder""$VERILOG_EXT_SC
     VERILOG_SC_OUT=$ProgFolder""$VERILOG_EXT_SC_OUT
-    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SC -D vscode -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" -D MEMORY_SIZE=2048 -D MEMORY_BITS=11 $BASE_PATH"SingleCycle_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SC -D vscode -D VCD_OUT=\"$ProgFolder"SingleCycle_WaveForm.vcd"\" -D MEMORY_SIZE=4096 -D MEMORY_BITS=12 $BASE_PATH"SingleCycle_sim.v"
     
     
     vvp $VERILOG_SC > $VERILOG_SC_OUT
@@ -147,7 +147,7 @@ RunBenchMark_HW()
     VERILOG_EXT_PL_OUT="VERILOG_PL_OUT.txt"
     VERILOG_PL=$ProgFolder""$VERILOG_EXT_PL
     VERILOG_PL_OUT=$ProgFolder""$VERILOG_EXT_PL_OUT
-    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_PL -D vscode -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" -D MEMORY_SIZE=2048 -D MEMORY_BITS=11 $BASE_PATH"PipeLine_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_PL -D vscode -D VCD_OUT=\"$ProgFolder"PipeLine_WaveForm.vcd"\" -D MEMORY_SIZE=4096 -D MEMORY_BITS=12 $BASE_PATH"PipeLine_sim.v"
     vvp $VERILOG_PL > $VERILOG_PL_OUT
 
 
@@ -157,7 +157,7 @@ RunBenchMark_HW()
     VERILOG_EXT_SSOOO_OUT="VERILOG_SSOOO_OUT.txt"
     VERILOG_SSOOO=$ProgFolder""$VERILOG_EXT_SSOOO
     VERILOG_SSOOO_OUT=$ProgFolder""$VERILOG_EXT_SSOOO_OUT
-    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SSOOO -D vscode -D VCD_OUT=\"$ProgFolder"SSOOO_WaveForm.vcd"\" -D MEMORY_SIZE=2048 -D MEMORY_BITS=11 $BASE_PATH"SSOOO_sim.v"
+    iverilog -I$ProgFolder -I$BASE_PATH -o $VERILOG_SSOOO -D vscode -D VCD_OUT=\"$ProgFolder"SSOOO_WaveForm.vcd"\" -D MEMORY_SIZE=4096 -D MEMORY_BITS=12 $BASE_PATH"SSOOO_sim.v"
     vvp $VERILOG_SSOOO > $VERILOG_SSOOO_OUT
 
 
@@ -232,7 +232,6 @@ Run_All()
 # it will output 0 by default so it will work but in software (the cycle accurate simulator) it will throw an exception 
 # and terminate the program because this cause an index out of bound exception 
 # Run_BenchMark "InsertionSort" 
-
 
 Run_All
 
