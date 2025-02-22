@@ -29,6 +29,7 @@
 `include "./Register File/RegFile.v"
 `include "./Reorder Buffer/ROB.v"
 `include "./Reservation Station/RS.v"
+`include "./Functional Unit/compare_equal.v"
 `include "./Functional Unit/ALU_OPER.v"
 `include "./Functional Unit/ALU.v"
 `include "PC_register.v"

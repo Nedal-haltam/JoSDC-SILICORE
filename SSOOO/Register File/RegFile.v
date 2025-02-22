@@ -25,8 +25,8 @@ module RegFile
     // for testing purposes, 
     // it is important to separate the testing signal from any other signal in the module 
     // because it will effect the functionality in an unpredicted way even if the design is implemented correctly
-    , input [4:0] input_WP1_DRindex_test
-    , output [4:0] output_ROBEN_test
+    // , input [4:0] input_WP1_DRindex_test
+    // , output [4:0] output_ROBEN_test
 );
 
 
@@ -36,7 +36,7 @@ reg [`ROB_SIZE_bits:0] Reg_ROBEs [31:0];
 
 // for testing purposes
 //
-assign output_ROBEN_test = Reg_ROBEs[input_WP1_DRindex_test];
+// assign output_ROBEN_test = Reg_ROBEs[input_WP1_DRindex_test];
 //
 
 integer i;
@@ -47,20 +47,16 @@ always@(posedge clk , posedge rst) begin : Update_Registers_Block
             Regs[i] <= 0;
         end
     end
-    else if (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0/* && Reg_ROBEs[WP1_DRindex] == WP1_ROBEN*/)
+    else if (WP1_Wen && WP1_DRindex != 0 && WP1_ROBEN != 0)
         Regs[WP1_DRindex] <= WP1_Data;
 end
 
 
 integer j;
-always@(posedge clk , posedge rst) begin : Update_ROB_Entries_Block
+// always@(posedge clk , posedge rst) begin : Update_ROB_Entries_Block
+always@(posedge clk) begin : Update_ROB_Entries_Block
 
-    if (rst) begin
-        for(j = 0; j < 32; j = j + 1) begin
-            Reg_ROBEs[j] <= 0;
-        end
-    end
-    else if (ROB_FLUSH_Flag) begin
+    if (rst || ROB_FLUSH_Flag) begin
         for(j = 0; j < 32; j = j + 1) begin
             Reg_ROBEs[j] <= 0;
         end
@@ -92,7 +88,7 @@ always@(posedge clk, posedge rst) begin : Read_First_ROBEN
     if (rst) begin
         RP1_Reg1_ROBEN <= 0;
     end
-        else begin
+    else begin
         if (Decoded_WP1_Wen && Decoded_WP1_DRindex != 0 && Decoded_WP1_ROBEN != 0 && Decoded_WP1_DRindex == RP1_index1) begin
             RP1_Reg1_ROBEN <= Decoded_WP1_ROBEN;
         end
@@ -108,7 +104,7 @@ always@(posedge clk, posedge rst) begin : Read_Second_ROBEN
     if (rst) begin
         RP1_Reg2_ROBEN <= 0;
     end
-        else begin
+    else begin
         if (Decoded_WP1_Wen && Decoded_WP1_DRindex != 0 && Decoded_WP1_ROBEN != 0 && Decoded_WP1_DRindex == RP1_index2) begin
             RP1_Reg2_ROBEN <= Decoded_WP1_ROBEN;
         end

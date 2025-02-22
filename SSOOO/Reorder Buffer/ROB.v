@@ -21,6 +21,7 @@ module ROB
 (
     input clk, rst,
     input [11:0] Decoded_opcode,
+    input is_jal, is_hlt, is_beq, is_bne,
     input [31:0] Decoded_PC,
     input [4:0] Decoded_Rd,
     input Decoded_prediction,
@@ -57,7 +58,7 @@ module ROB
     output reg [31:0] commit_pc,
     output reg [4:0] Commit_Rd,
     output reg [31:0] Commit_Write_Data,
-    output reg [2:0] Commit_Control_Signals,
+    output reg Commit_Wen,
     output reg [31:0] commit_BTA,
 
     input [`ROB_SIZE_bits:0] RP1_ROBEN1, RP1_ROBEN2,
@@ -123,7 +124,7 @@ forward that data coming from:
     - the commit port
     - the CDB, the four sources
 */
-if ((RP1_ROBEN1 == Start_Index) && (Commit_Control_Signals[2] && Commit_Rd != 0)) begin
+if ((RP1_ROBEN1 == Start_Index) && (Commit_Wen && Commit_Rd != 0)) begin
 RP1_Ready1 <= 1'b1;
 RP1_Write_Data1 <= Commit_Write_Data;
 end
@@ -149,7 +150,7 @@ RP1_Write_Data1 <= Reg_Write_Data[`Imone(RP1_ROBEN1)];
 end
 
 
-if ((RP1_ROBEN2 == Start_Index) && (Commit_Control_Signals[2] && Commit_Rd != 0)) begin
+if ((RP1_ROBEN2 == Start_Index) && (Commit_Wen && Commit_Rd != 0)) begin
 RP1_Ready2 <= 1'b1;
 RP1_Write_Data2 <= Commit_Write_Data;
 end
@@ -176,14 +177,6 @@ end
 
 end
 
-// assign RP1_Ready1 = Reg_Ready[`Imone(RP1_ROBEN1)];
-// assign RP1_Write_Data1 = Reg_Write_Data[`Imone(RP1_ROBEN1)];
-
-// assign RP1_Ready2 = Reg_Ready[`Imone(RP1_ROBEN2)];
-// assign RP1_Write_Data2 = Reg_Write_Data[`Imone(RP1_ROBEN2)];
-
-
-// assign FULL_FLAG = ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
 always@(negedge clk)
     FULL_FLAG <= ~(rst | ~(End_Index == Start_Index && (Reg_Busy[`Imone(Start_Index)])));
 
@@ -226,33 +219,33 @@ always@(posedge clk, posedge rst) begin
             Reg_PC[`Imone(End_Index)] <= Decoded_PC;
             Reg_Rd[`Imone(End_Index)] <= Decoded_Rd;
             Reg_Busy[`Imone(End_Index)] <= 1'b1;
-            Reg_Ready[`Imone(End_Index)] <= Decoded_opcode == hlt_inst || Decoded_opcode == jal;
-            Reg_Speculation[`Imone(End_Index)][0] <= (Decoded_opcode == beq || Decoded_opcode == bne);
+            Reg_Ready[`Imone(End_Index)] <= is_hlt || is_jal;
+            Reg_Speculation[`Imone(End_Index)][0] <= is_beq || is_bne;
             Reg_Speculation[`Imone(End_Index)][1] <= Decoded_prediction;
             Reg_BTA[`Imone(End_Index)] <= Branch_Target_Addr;
             Reg_Write_Data[`Imone(End_Index)] <= init_Write_Data;
             Reg_Exception[`Imone(End_Index)] <= 1'b0;
         end
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (Reg_Busy[`Imone(CDB_ROBEN1)] && (|CDB_ROBEN1)) begin
+        if (|CDB_ROBEN1) begin
             Reg_Write_Data[`Imone(CDB_ROBEN1)] <= CDB_ROBEN1_Write_Data;
             Reg_Speculation[`Imone(CDB_ROBEN1)][0] <= Reg_Speculation[`Imone(CDB_ROBEN1)][0] & (CDB_Branch_Decision1 ^ Reg_Speculation[`Imone(CDB_ROBEN1)][1]);
             Reg_Ready[`Imone(CDB_ROBEN1)] <= 1'b1;
             Reg_Exception[`Imone(CDB_ROBEN1)] <= CDB_EXCEPTION1;
         end
-        if (Reg_Busy[`Imone(CDB_ROBEN2)] && (|CDB_ROBEN2)) begin
+        if (|CDB_ROBEN2) begin
             Reg_Write_Data[`Imone(CDB_ROBEN2)] <= CDB_ROBEN2_Write_Data;
             Reg_Speculation[`Imone(CDB_ROBEN2)] <= 2'b0;
             Reg_Ready[`Imone(CDB_ROBEN2)] <= 1'b1;
             Reg_Exception[`Imone(CDB_ROBEN2)] <= CDB_EXCEPTION2;
         end
-        if (Reg_Busy[`Imone(CDB_ROBEN3)] && (|CDB_ROBEN3)) begin
+        if (|CDB_ROBEN3) begin
             Reg_Write_Data[`Imone(CDB_ROBEN3)] <= CDB_ROBEN3_Write_Data;
             Reg_Speculation[`Imone(CDB_ROBEN3)][0] <= Reg_Speculation[`Imone(CDB_ROBEN3)][0] & (CDB_Branch_Decision2 ^ Reg_Speculation[`Imone(CDB_ROBEN3)][1]);
             Reg_Ready[`Imone(CDB_ROBEN3)] <= 1'b1;
             Reg_Exception[`Imone(CDB_ROBEN3)] <= CDB_EXCEPTION3;
         end
-        if (Reg_Busy[`Imone(CDB_ROBEN4)] && (|CDB_ROBEN4)) begin
+        if (|CDB_ROBEN4) begin
             Reg_Write_Data[`Imone(CDB_ROBEN4)] <= CDB_ROBEN4_Write_Data;
             Reg_Speculation[`Imone(CDB_ROBEN4)][0] <= Reg_Speculation[`Imone(CDB_ROBEN4)][0] & (CDB_Branch_Decision3 ^ Reg_Speculation[`Imone(CDB_ROBEN4)][1]);
             Reg_Ready[`Imone(CDB_ROBEN4)] <= 1'b1;
@@ -295,7 +288,7 @@ always@(negedge clk, posedge rst) begin
         commit_pc <= 0;
         Commit_Rd <= 0;
         Commit_Write_Data <= 0;
-        Commit_Control_Signals <= 0;
+        Commit_Wen <= 0;
         FLUSH_Flag <= 0;
         Wrong_prediction <= 0;
     end
@@ -304,33 +297,25 @@ always@(negedge clk, posedge rst) begin
         commit_pc <= 0;
         Commit_Rd <= 0;
         Commit_Write_Data <= 0;
-        Commit_Control_Signals <= 0;
+        Commit_Wen <= 0;
         FLUSH_Flag <= 0;
         Wrong_prediction <= 0;
         if (Reg_Busy[`Imone(Start_Index)]) begin
-            if (Reg_Valid[`Imone(Start_Index)]) begin // handle ALU, lw, sw that are ready to commit (sw: do nothing, ALU/lw: write on the RegFile)
-                if (Reg_Ready[`Imone(Start_Index)]) begin
-                    Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
-                    commit_pc <= Reg_PC[`Imone(Start_Index)];
-                    Commit_Rd <= Reg_Rd[`Imone(Start_Index)];
-                    Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)];
-                    Commit_Control_Signals <= { (!(Reg_opcode[`Imone(Start_Index)] == jr || Reg_opcode[`Imone(Start_Index)] == sw || Reg_opcode[`Imone(Start_Index)] == beq || 
-                                                Reg_opcode[`Imone(Start_Index)] == bne || Reg_opcode[`Imone(Start_Index)] == j))
-                                            , Reg_opcode[`Imone(Start_Index)] == lw , Reg_opcode[`Imone(Start_Index)] == sw};
-                end
-            end
-            else if (Reg_Speculation[`Imone(Start_Index)][0]) begin // handle branch insts
-                if (Reg_Ready[`Imone(Start_Index)]) begin // if speculative and ready then prediction was wrong
-                    FLUSH_Flag <= 1'b1;
-                    Wrong_prediction <= 1'b1;
-                    Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
-                    commit_BTA <= Reg_BTA[`Imone(Start_Index)];
-                end
-            end
-            else if (Reg_Exception[`Imone(Start_Index)]) begin
+            if (Reg_Exception[`Imone(Start_Index)]) begin
                 FLUSH_Flag <= 1'b1;
                 Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
                 commit_pc <= Reg_PC[`Imone(Start_Index)];
+            end
+            else if (Reg_Ready[`Imone(Start_Index)]) begin
+                FLUSH_Flag <= Reg_Speculation[`Imone(Start_Index)][0];
+                Wrong_prediction <= Reg_Speculation[`Imone(Start_Index)][0];
+                commit_BTA <= Reg_BTA[`Imone(Start_Index)];
+                Commit_opcode <= Reg_opcode[`Imone(Start_Index)];
+                commit_pc <= Reg_PC[`Imone(Start_Index)];
+                Commit_Rd <= Reg_Rd[`Imone(Start_Index)];
+                Commit_Write_Data <= Reg_Write_Data[`Imone(Start_Index)];
+                Commit_Wen <= (!(Reg_opcode[`Imone(Start_Index)] == jr || Reg_opcode[`Imone(Start_Index)] == sw || Reg_opcode[`Imone(Start_Index)] == beq || 
+                                Reg_opcode[`Imone(Start_Index)] == bne || Reg_opcode[`Imone(Start_Index)] == j));
             end
         end
     end
@@ -338,3 +323,8 @@ end
 
 
 endmodule
+
+
+
+
+

@@ -14,6 +14,7 @@ module ALU
     input clk, rst,
     input [`ROB_SIZE_bits:0] ROBEN,
     input [11:0] opcode,
+    input is_beq, is_bne,
     input [31:0] A, B,
     input [3:0] ALUOP,
 
@@ -46,6 +47,10 @@ module ALU
 
 
 reg [31:0] Reg_res;
+wire is_equal;
+compare_equal compare(is_equal, A, B);
+
+
 always @(*) begin
 
 case (ALUOP)
@@ -83,6 +88,7 @@ case (ALUOP)
 endcase
 end
 
+
 assign FU_Is_Free = 1'b1;
 always@(negedge clk, posedge rst) begin
     if (rst) begin
@@ -95,8 +101,7 @@ always@(negedge clk, posedge rst) begin
         FU_ROBEN <= ROBEN;
         FU_res <= Reg_res;
         FU_opcode <= opcode;
-        // FU_ROBEN <= (~FU_Is_Free) ? ROBEN : 0;
-        FU_Branch_Decision <= (opcode == beq && A == B) || (opcode == bne && A != B);
+        FU_Branch_Decision <= (is_beq && is_equal) || (is_bne && ~is_equal);
     end
 end
 

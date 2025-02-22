@@ -92,7 +92,7 @@ wire [11:0] ROB_Commit_opcode;
 wire [31:0] ROB_Commit_pc;
 wire [4:0] ROB_Commit_Rd;
 wire [31:0] ROB_Commit_Write_Data;
-wire [2:0] ROB_Commit_Control_Signals;
+wire ROB_Commit_Wen;
 wire [31:0] ROB_Commit_BTA;
 wire [`ROB_SIZE_bits:0] ROB_Start_Index;
 wire [`ROB_SIZE_bits:0] ROB_End_Index;
@@ -185,11 +185,11 @@ wire CDB_EXCEPTION4;
 
 // misc
 `define exception_handler 32'd1000
-// wire hlt;
-reg isjr;
+reg is_jal, is_j, is_jr, is_beq, is_bne, is_sll, is_srl, is_hlt;
 reg [31:0] EXCEPTION_EPC, EXCEPTION_CAUSE;
 parameter EXCEPTION_CAUSE_INVALID_IM_ADDR = 1,
           EXCEPTION_CAUSE_INVALID_DM_ADDR = 2;
+
 
 always@(posedge clk, posedge rst) begin
     if (rst)
@@ -212,13 +212,15 @@ end
 
 /*
 TODO:
-    - make it SS
-
     - Fmax the design, and pick the best to take to the finals
 
     - MultiCore (dualcore is enough)
 
+    - run the VGAinterface on higher clk speed so we can see GOL better
+
     - see remaining todos in iphone picture or from teams
+
+    - remove benchmarkfolder from .gitignore
 */
 
 
@@ -247,7 +249,7 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA 
     (
         (InstQ_opcode_temp == j || InstQ_opcode_temp == jal) ? {6'd0,InstQ_address_temp} : 
         (
-            (InstQ_opcode == jr) ? (`JR_DESTINATION) : 
+            (is_jr) ? (`JR_DESTINATION) : 
             (
                 (InstQ_opcode_temp == jr) ? InstQ_PC_temp : 
                 (
@@ -260,9 +262,9 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA 
         )
     )
 );
-// `endif
-// assign InstQ_FLUSH_Flag = ~(rst || ~(|(PC[31:10])));
+
 assign InstQ_FLUSH_Flag = ~(rst || (PC <= `MEMORY_SIZE));
+// assign InstQ_FLUSH_Flag = ~(rst || ~(|PC[31:(`MEMORY_BITS)]));
 
 PC_register pcreg
 (
@@ -287,35 +289,32 @@ InstQ instq
     .immediate1(InstQ_immediate_temp),
     .address1(InstQ_address_temp),
     .pc1(InstQ_PC_temp),
-    .VALID_Inst(InstQ_VALID_Inst_temp),
 
-    .opcode2(InstQ_opcode_temp2),
-    .rs2(InstQ_rs_temp2), 
-    .rt2(InstQ_rt_temp2), 
-    .rd2(InstQ_rd_temp2), 
-    .shamt2(InstQ_shamt_temp2),
-    .immediate2(InstQ_immediate_temp2),
-    .address2(InstQ_address_temp2),
-    .pc2(InstQ_PC_temp2)
+    .VALID_Inst(InstQ_VALID_Inst_temp)
 );
 
 
 
-always@(negedge clk, posedge rst) begin
-    if (rst) begin
+// always@(negedge clk, posedge rst) begin
+always@(negedge clk) begin
+    if (rst || ROB_FLUSH_Flag || RS_FULL_FLAG || LdStB_FULL_FLAG) begin
         InstQ_opcode <= 0;
         InstQ_VALID_Inst <= 0;
-    end
-    else if (ROB_FLUSH_Flag || RS_FULL_FLAG || LdStB_FULL_FLAG) begin
         InstQ_rs <= 0;
         InstQ_rt <= 0;
         InstQ_rd <= 0;
-        InstQ_opcode <= 0;
-        InstQ_VALID_Inst <= 0;
         RegFile_RP1_Reg1_ROBEN <= 0;
         RegFile_RP1_Reg2_ROBEN <= 0;
         RegFile_RP1_Reg1 <= 0;
         RegFile_RP1_Reg2 <= 0;
+        is_jal <= 0;
+        is_j <= 0;
+        is_jr <= 0;
+        is_beq <= 0;
+        is_bne <= 0;
+        is_hlt <= 0;
+        is_sll <= 0;
+        is_srl <= 0;
     end
     else if (~ROB_FULL_FLAG) begin
         InstQ_opcode <= InstQ_opcode_temp;
@@ -333,6 +332,15 @@ always@(negedge clk, posedge rst) begin
         RegFile_RP1_Reg2_ROBEN <= RegFile_RP1_Reg2_ROBEN_temp;
         RegFile_RP1_Reg1 <= RegFile_RP1_Reg1_temp;
         RegFile_RP1_Reg2 <= RegFile_RP1_Reg2_temp;
+
+        is_jal <= InstQ_opcode_temp == jal;
+        is_j <= InstQ_opcode_temp == j;
+        is_jr <= InstQ_opcode_temp == jr;
+        is_beq <= InstQ_opcode_temp == beq;
+        is_bne <= InstQ_opcode_temp == bne;
+        is_hlt <= InstQ_opcode_temp == hlt_inst;
+        is_sll <= InstQ_opcode_temp == sll;
+        is_srl <= InstQ_opcode_temp == srl;
     end
 end
 
@@ -342,21 +350,21 @@ RegFile regfile
     .clk(clk),
     .rst(rst),
 
-    .WP1_Wen(ROB_Commit_Control_Signals[2]), 
-    .Decoded_WP1_Wen((!(InstQ_opcode == jr || InstQ_opcode == sw || InstQ_opcode == beq || 
-                        InstQ_opcode == bne || InstQ_opcode == j))),
+    .WP1_Wen(ROB_Commit_Wen), 
+    .Decoded_WP1_Wen((!(is_jr || InstQ_opcode == sw || is_beq || 
+                        InstQ_opcode == bne || is_j))),
     .WP1_ROBEN
     (
         ROB_Start_Index
     ), 
     .Decoded_WP1_ROBEN
     (
-        ((ROB_FULL_FLAG || RS_FULL_FLAG || LdStB_FULL_FLAG) || ROB_FLUSH_Flag) ? {(`ROB_SIZE_bits+1){1'b0}} : ROB_End_Index
+        (ROB_FULL_FLAG || RS_FULL_FLAG || LdStB_FULL_FLAG || ROB_FLUSH_Flag) ? {(`ROB_SIZE_bits+1){1'b0}} : ROB_End_Index
     ), 
     .WP1_DRindex(ROB_Commit_Rd), 
     .Decoded_WP1_DRindex
     (
-        (InstQ_opcode == jal) ? 5'd31 : 
+        (is_jal) ? 5'd31 : 
         (
             (~(|InstQ_opcode[11:6])) ? InstQ_rd : InstQ_rt
         )
@@ -392,10 +400,14 @@ ROB rob
     .clk(clk), 
     .rst(rst),
     .Decoded_opcode(InstQ_opcode),
+    .is_jal(is_jal),
+    .is_hlt(is_hlt),
+    .is_beq(is_beq),
+    .is_bne(is_bne),
     .Decoded_PC(InstQ_PC),
     .Decoded_Rd
     (
-        (InstQ_opcode == jal) ? 5'd31 : 
+        (is_jal) ? 5'd31 : 
         (
             (~(|InstQ_opcode[11:6])) ? InstQ_rd : InstQ_rt
         )
@@ -426,7 +438,7 @@ ROB rob
     .VALID_Inst
     (
         ~rst && 
-         ~ROB_FLUSH_Flag && ~(ROB_FULL_FLAG || RS_FULL_FLAG || LdStB_FULL_FLAG) && InstQ_VALID_Inst && InstQ_opcode != j && InstQ_opcode != jr
+         ~ROB_FLUSH_Flag && ~(ROB_FULL_FLAG || RS_FULL_FLAG || LdStB_FULL_FLAG) && InstQ_VALID_Inst && ~is_j && ~is_jr
     ),
 
     .FULL_FLAG(ROB_FULL_FLAG),
@@ -438,7 +450,7 @@ ROB rob
     .commit_pc(ROB_Commit_pc),
     .Commit_Rd(ROB_Commit_Rd),
     .Commit_Write_Data(ROB_Commit_Write_Data),
-    .Commit_Control_Signals(ROB_Commit_Control_Signals),
+    .Commit_Wen(ROB_Commit_Wen),
     .commit_BTA(ROB_Commit_BTA),
 
 
@@ -456,15 +468,10 @@ ROB rob
 
 
 ALU_OPER alu_op(InstQ_opcode, InstQ_ALUOP);
-/*
-(InstQ_opcode == jal) ? 5'd31 : 
-(
-    (InstQ_opcode == addi || InstQ_opcode == andi || InstQ_opcode == ori || InstQ_opcode == xori || 
-    InstQ_opcode == slti || InstQ_opcode == lw) ? InstQ_rt : InstQ_rd
-)
-*/
 
 wire [`ROB_SIZE_bits:0] new_End_Index = (ROB_End_Index == 1) ? `ROB_SIZE : ROB_End_Index - 1'b1;
+wire [31:0] ROBEN1_VAL = (~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : ROB_RP1_Write_Data1;
+
 RS rs
 (
     .clk(clk), 
@@ -475,16 +482,16 @@ RS rs
     .ROBEN1
     (
         (~(|RegFile_RP1_Reg1_ROBEN) || ROB_RP1_Ready1 || 
-        InstQ_opcode == sll || InstQ_opcode == srl) ?                                 {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg1_ROBEN
+        is_sll || is_srl) ?                                 {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg1_ROBEN
     ), 
     .ROBEN2
     (
         (~(|RegFile_RP1_Reg2_ROBEN) || ROB_RP1_Ready2 || 
-        (InstQ_opcode[11:6] != 6'd0 && InstQ_opcode != beq && InstQ_opcode != bne)) ? {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg2_ROBEN
+        (InstQ_opcode[11:6] != 6'd0 && ~is_beq && ~is_bne)) ? {(`ROB_SIZE_bits+1){1'b0}} : RegFile_RP1_Reg2_ROBEN
     ), 
     .ROBEN1_VAL
     (
-        (~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : ROB_RP1_Write_Data1
+        ROBEN1_VAL
     ), 
     .ROBEN2_VAL
     (
@@ -492,7 +499,7 @@ RS rs
     ), 
     .Immediate
     (
-        (InstQ_opcode == sll || InstQ_opcode == srl) ? {27'd0,InstQ_shamt} : 
+        (is_sll || is_srl) ? {27'd0,InstQ_shamt} : 
         (
             (InstQ_opcode == andi || InstQ_opcode == ori || InstQ_opcode == xori) ? {16'd0,InstQ_immediate} : 
             (
@@ -513,7 +520,7 @@ RS rs
     .VALID_Inst
     (
         InstQ_opcode != hlt_inst && InstQ_VALID_Inst && ~ROB_FULL_FLAG && ~RS_FULL_FLAG && ~ROB_FLUSH_Flag && 
-        InstQ_opcode != lw && InstQ_opcode != sw && InstQ_opcode != jal && InstQ_opcode != j && InstQ_opcode != jr
+        InstQ_opcode != lw && InstQ_opcode != sw && ~is_jal && ~is_j && ~is_jr
     ),
     .FU_Is_Free(FU_Is_Free),
 
@@ -551,6 +558,8 @@ ALU alu1
     .rst(rst),
     .ROBEN(RS_FU_ROBEN1),
     .opcode(RS_FU_opcode1),
+    .is_beq(is_beq),
+    .is_bne(is_bne),
     .A((RS_FU_opcode1 == sll || RS_FU_opcode1 == srl) ? RS_FU_Val21 : RS_FU_Val11), 
     .B
     (
@@ -570,6 +579,8 @@ ALU alu2
     .rst(rst),
     .ROBEN(RS_FU_ROBEN2),
     .opcode(RS_FU_opcode2),
+    .is_beq(is_beq),
+    .is_bne(is_bne),
     .A((RS_FU_opcode2 == sll || RS_FU_opcode2 == srl) ? RS_FU_Val22 : RS_FU_Val12), 
     .B
     (
@@ -589,6 +600,8 @@ ALU alu3
     .rst(rst),
     .ROBEN(RS_FU_ROBEN3),
     .opcode(RS_FU_opcode3),
+    .is_beq(is_beq),
+    .is_bne(is_bne),
     .A((RS_FU_opcode3 == sll || RS_FU_opcode3 == srl) ? RS_FU_Val23 : RS_FU_Val13), 
     .B
     (
@@ -622,7 +635,7 @@ AddressUnit AU
     ),
     .ROBEN1_VAL
     (
-        (~(|RegFile_RP1_Reg1_ROBEN)) ? RegFile_RP1_Reg1 : ROB_RP1_Write_Data1
+        ROBEN1_VAL
     ), 
     .ROBEN2_VAL
     (
