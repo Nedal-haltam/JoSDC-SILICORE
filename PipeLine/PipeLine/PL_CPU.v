@@ -1,15 +1,16 @@
 
-module PL_CPU(PC, input_clk, rst, cycles_consumed);
-
-
-input input_clk, rst;
-output [31:0] PC;
-output reg [31:0] cycles_consumed;
-
-
+module PL_CPU
+(
+	input input_clk, rst, 
+	output [31:0] PC,
+	output reg [31:0] cycles_consumed,
+	output reg [31:0] StallCount,
+	output reg [31:0] BranchPredictionCount,
+	output reg [31:0] BranchPredictionMissCount
+);
 
 wire clk, hlt;
-
+`include "opcodes.txt"
 
 wire [31:0] IF_pc, IF_INST;
 wire [2:0]  pc_src;
@@ -52,11 +53,18 @@ wire idhaz2, exhaz2, memhaz2;
 
 
 always@(negedge clk, posedge rst) begin
-	if (rst)
+	if (rst) begin
 		cycles_consumed <= 0;
-	else
+		StallCount <= 0;
+		BranchPredictionCount <= 0;
+		BranchPredictionMissCount <= 0;
+	end
+	else begin
 		cycles_consumed <= cycles_consumed + 32'd1;
-
+		StallCount <= StallCount + ((STALL_IF_FLUSH || STALL_ID1_FLUSH || STALL_ID2_FLUSH) ? 1'b1 : 1'b0);
+		BranchPredictionCount <= BranchPredictionCount + ((EX2_opcode == beq || EX2_opcode == bne) ? 1'b1 : 1'b0);
+		BranchPredictionMissCount <= BranchPredictionMissCount + (((EX2_opcode == beq || EX2_opcode == bne) && Wrong_prediction) ? 1'b1 : 1'b0);
+	end
 end
 
 

@@ -52,9 +52,18 @@ module PipeLine_sim;
 
 reg input_clk = 0;
 reg rst = 0;
-wire [31:0] PC, cycles_consumed;
-
-PL_CPU cpu(PC, input_clk, rst, cycles_consumed);
+wire [31:0] PC, cycles_consumed, StallCount;
+wire real BranchPredictionCount, BranchPredictionMissCount;
+PL_CPU cpu
+(
+	.input_clk(input_clk), 
+    .rst(rst), 
+	.PC(PC),
+	.cycles_consumed(cycles_consumed),
+    .StallCount(StallCount),
+    .BranchPredictionCount(BranchPredictionCount),
+    .BranchPredictionMissCount(BranchPredictionMissCount)
+);
 
 always #1 input_clk <= ~input_clk;
 initial begin
@@ -75,7 +84,15 @@ rst = 1; #(`reset) rst = 0;
 #(`MAX_CLOCKS + 1);
 
 // we add one to the consumed cycles because it will not count for the hlt instruction (the last instruction)
-$display("Number of cycles consumed: %d", cycles_consumed + 1); 
+$display("\t\tNumber of cycles consumed: %d", cycles_consumed + 1); 
+$display("\t\tStallCount: %d", StallCount);
+$display("\t\tExecuted Instruction   Count: %d", cycles_consumed - StallCount);
+$display("\t\tBranch Prediction      Count: %d", BranchPredictionCount);
+$display("\t\tBranch Prediction HIT  Count: %d", BranchPredictionCount - BranchPredictionMissCount);
+$display("\t\tBranch Prediction HIT  Rate : %.3f%%", ((BranchPredictionCount - BranchPredictionMissCount) / BranchPredictionCount) * 100);
+$display("\t\tBranch Prediction Miss Count: %d", BranchPredictionMissCount);
+$display("\t\tBranch Prediction Miss Rate : %.3f%%", (BranchPredictionMissCount / BranchPredictionCount) * 100);
+
 $finish;
 
 end

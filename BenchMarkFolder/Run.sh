@@ -177,14 +177,13 @@ RunBenchMark_HW()
     tail -n 1 "$VERILOG_SC_OUT" >> $STATS
 
     printf "\tPipLined: \n" >> $STATS
-    printf "\t\t" >> $STATS
-    tail -n 1  "$VERILOG_PL_OUT" >> $STATS
+    tail -n 8  "$VERILOG_PL_OUT" >> $STATS
 
     printf "\tSSOOO: \n" >> $STATS
     tail -n 8  "$VERILOG_SSOOO_OUT" >> $STATS
-    
+
     sed -i '$d' "$VERILOG_SC_OUT"
-    sed -i '$d' "$VERILOG_PL_OUT"
+    head -n -8 "$VERILOG_PL_OUT" > "./temp" && mv "./temp" "$VERILOG_PL_OUT"
     head -n -8 "$VERILOG_SSOOO_OUT" > "./temp" && mv "./temp" "$VERILOG_SSOOO_OUT"
 
     printf "[INFO $INDEX/$TOTAL ]: Comparing HardWare Outputs\n"
