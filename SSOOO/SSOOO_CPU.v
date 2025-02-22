@@ -29,7 +29,7 @@ module SSOOO_CPU
     output reg [25:0] InstQ_address,
     output reg [31:0] InstQ_PC,
 
-    input [9:0] VGA_address,
+    input [10:0] VGA_address,
     input VGA_clk,
     output [31:0] VGA_data
 );
@@ -57,12 +57,6 @@ wire [ 4:0] InstQ_rs_temp, InstQ_rt_temp, InstQ_rd_temp, InstQ_shamt_temp;
 wire [15:0] InstQ_immediate_temp;
 wire [25:0] InstQ_address_temp;
 wire [31:0] InstQ_PC_temp;
-
-wire [ 11:0] InstQ_opcode_temp2;
-wire [ 4:0] InstQ_rs_temp2, InstQ_rt_temp2, InstQ_rd_temp2, InstQ_shamt_temp2;
-wire [15:0] InstQ_immediate_temp2;
-wire [25:0] InstQ_address_temp2;
-wire [31:0] InstQ_PC_temp2;
 
 wire InstQ_VALID_Inst_temp;
 reg InstQ_VALID_Inst;
@@ -255,7 +249,8 @@ assign PC = (ROB_FLUSH_Flag == 1'b1) ? ((ROB_Wrong_prediction) ? ROB_Commit_BTA 
                 (
                     (InstQ_opcode == hlt_inst) ? InstQ_PC: 
                     (
-                        ((InstQ_opcode_temp == beq || InstQ_opcode_temp == bne) && predicted_temp) ? InstQ_PC_temp + {{16{InstQ_immediate_temp[15]}},InstQ_immediate_temp} : PC_out + 2'd1
+                        ((InstQ_opcode_temp == beq || InstQ_opcode_temp == bne) && predicted_temp) ? 
+                        InstQ_PC_temp + {{16{InstQ_immediate_temp[15]}},InstQ_immediate_temp} : PC_out + 2'd1
                     )
                 )
             )

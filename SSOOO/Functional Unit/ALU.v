@@ -101,7 +101,7 @@ always@(negedge clk, posedge rst) begin
         FU_ROBEN <= ROBEN;
         FU_res <= Reg_res;
         FU_opcode <= opcode;
-        FU_Branch_Decision <= (is_beq && is_equal) || (is_bne && ~is_equal);
+        FU_Branch_Decision <= (opcode == beq && is_equal) || (opcode == bne && ~is_equal);
     end
 end
 

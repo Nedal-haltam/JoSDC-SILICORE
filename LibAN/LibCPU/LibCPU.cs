@@ -1331,6 +1331,13 @@ namespace LibCPU {
 
     }
 
+    
+    public struct BranchPredictorEntry
+    {
+        public int PC;
+        public string BranchHistory;
+        public bool outcome;
+    }
 
     public class CPU5STAGE
     {
@@ -1342,6 +1349,8 @@ namespace LibCPU {
         public List<string> DM; // Data Mem
         public List<int> regs;
         public List<string> IM; // Instruction Mem
+        public List<BranchPredictorEntry> dataset = [];
+        public string BranchHistory = "0000000000000000";
 
         Instruction IFID;
         Instruction IDEX1;
@@ -1498,11 +1507,6 @@ namespace LibCPU {
                 }
             }
 
-            if (state == -1 || state == 4)
-            {
-
-            }
-
             return prediction;
         }
 
@@ -1583,7 +1587,15 @@ namespace LibCPU {
             detect_exception(decoded, Stage.decode);
             return decoded;
         }
-
+        public List<string> GetDataSet()
+        {
+            List<string> ret = [];
+            foreach(BranchPredictorEntry entry in dataset)
+            {
+                ret.Add($"{entry.PC.ToString("X").PadLeft(8, '0'),-8}, \"{entry.BranchHistory}\", {(entry.outcome ? "1" : "0")}");
+            }
+            return ret;
+        }
         Instruction execute2(Instruction forwarded)
         {
             Instruction temp = forwarded;
@@ -1599,6 +1611,13 @@ namespace LibCPU {
                                   temp.mnem == Mnemonic.bne && temp.oper1 != temp.oper2;
             WrongPrediction = temp.prediction != BranchDecision;
 
+            if (isbranch(temp.mnem))
+            {
+                dataset.Add(new() { PC = temp.PC, BranchHistory = BranchHistory, outcome = BranchDecision });
+                BranchHistory = (BranchDecision ? "1" : "0") + BranchHistory;
+                if (BranchHistory.Length > 16)
+                    BranchHistory = BranchHistory.Substring(0, 16);
+            }
             ID_HAZ = temp.aluout;
             return temp;
         }
