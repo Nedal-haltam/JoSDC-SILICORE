@@ -44,11 +44,10 @@ reg clk = 0, rst = 0;
 wire [31 : 0] cycles_consumed, StallCount;
 wire real BranchPredictionCount, BranchPredictionMissCount;
 
-SSOOO_CPU cpu
+SSOOO_CPU #(.CORE_SELECT(1'b0)) cpu
 (
 	.input_clk(clk), 
 	.rst(rst),
-	.CORE_SELECT(1'b0),
     .cycles_consumed(cycles_consumed),
     .StallCount(StallCount),
     .BranchPredictionCount(BranchPredictionCount),

@@ -1,13 +1,13 @@
 `define MEMORY_SIZE 2048
 `define MEMORY_BITS 11
 
-module InstQ
+module InstQ#
+(parameter CORE_SELECT = 1'b0)
 (
     input clk, rst,
     input  [31:0] PC_from_assign,
     input  [31:0] PC,
-    input CORE_SELECT,
-    
+
     output reg [ 11:0] opcode1,
     output reg [ 4:0] rs1, rt1, rd1, shamt1,
     output reg [15:0] immediate1,

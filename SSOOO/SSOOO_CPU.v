@@ -8,10 +8,11 @@
 
 
 `ifndef VGA
-module SSOOO_CPU
+module SSOOO_CPU#
+(parameter CORE_SELECT = 1'b0)
 (
     input input_clk, rst,
-    input CORE_SELECT,
+
     output reg [31:0] cycles_consumed,
     output reg [31:0] StallCount,
     output reg [31:0] BranchPredictionCount,
@@ -275,13 +276,12 @@ PC_register pcreg
     clk, rst
 );
 
-InstQ instq
+InstQ #(.CORE_SELECT(CORE_SELECT)) instq
 (
     .clk(clk), 
     .rst(rst),
     .PC_from_assign(PC),
     .PC(PC_out),
-    .CORE_SELECT(CORE_SELECT),
     
     .opcode1(InstQ_opcode_temp),
     .rs1(InstQ_rs_temp), 
