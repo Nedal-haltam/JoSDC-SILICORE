@@ -42,7 +42,11 @@ module SSOOO_Sim();
 
 reg clk = 0, rst = 0;
 wire [31 : 0] cycles_consumed, StallCount;
+`ifdef vscode
 wire real BranchPredictionCount, BranchPredictionMissCount;
+`else
+wire [31:0] BranchPredictionCount, BranchPredictionMissCount;
+`endif
 
 SSOOO_CPU #(.CORE_SELECT(1'b0)) cpu
 (

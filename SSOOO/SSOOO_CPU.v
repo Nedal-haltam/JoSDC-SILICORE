@@ -220,13 +220,6 @@ always@(negedge clk , posedge rst) begin
 end
 
 
-/*
-TODO:
-    - calculate: execution time, CPI, throughput
-    - review the report
-*/
-
-
 always@(posedge clk, posedge rst) begin
     if (rst) begin
         EXCEPTION_EPC <= 0;

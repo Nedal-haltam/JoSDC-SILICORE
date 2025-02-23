@@ -27,7 +27,7 @@ wire [31:0] inst1;
         reg [31:0] InstMem [0 : (`MEMORY_SIZE-1)];
         assign inst1 = InstMem[PC];
     `else
-        instmemoryip instance
+        instmemoryip isnt
         (
             .address(PC_from_assign),
             .clock(clk),
