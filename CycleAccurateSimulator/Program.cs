@@ -94,7 +94,20 @@ namespace main {
 
                     ];
             }
-
+            Dictionary<int, bool> LUT = [];
+            if (!command)
+            {
+                string[] list = File.ReadAllLines("./predictions.csv");
+                
+                for (int i = 1; i < list.Length; i++)
+                {
+                    string[] entry = list[i].Split(',');
+                    if (entry.Length != 4)
+                        throw new Exception($"entry number {i} is not like other entries");
+                    LUT[Convert.ToInt32(entry[0], 16)] = entry[3] == "1";
+                }
+            }
+            if (!command) cpu_type = LibCPU.CPU_type.OOO;
             StringBuilder sb = new StringBuilder();
             if (cpu_type == LibCPU.CPU_type.SingleCycle) {
                 LibCPU.SingleCycle cpu = new(mcs, data_mem_init);
@@ -106,6 +119,7 @@ namespace main {
             }
             else if (cpu_type == LibCPU.CPU_type.PipeLined) {
                 LibCPU.CPU5STAGE cpu = new(mcs, data_mem_init);
+                if (!command) cpu.BranchLUT = LUT;
                 (int cycles, LibCPU.MIPS.Exceptions excep) = cpu.Run();
                 sb.Append(LibCPU.MIPS.get_regs(cpu.regs));
                 sb.Append(LibCPU.MIPS.get_DM(cpu.DM));
@@ -116,6 +130,7 @@ namespace main {
             }
             else if (cpu_type == LibCPU.CPU_type.OOO) {
                 LibCPU.OOO cpu = new(mcs, data_mem_init);
+                //cpu.BranchLUT = LUT;
                 (int cycles, LibCPU.MIPS.Exceptions excep) = cpu.Run();
                 sb.Append(LibCPU.MIPS.get_regs(cpu.regs));
                 sb.Append(LibCPU.MIPS.get_DM(cpu.DM));

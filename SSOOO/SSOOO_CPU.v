@@ -21,10 +21,14 @@ module SSOOO_CPU#
 
 `else
 
-module SSOOO_CPU
+module SSOOO_CPU#
+(parameter CORE_SELECT = 1'b0)
 (
     input input_clk, rst,
     output reg [31:0] cycles_consumed,
+    output reg [31:0] StallCount,
+    output reg [31:0] BranchPredictionCount,
+    output reg [31:0] BranchPredictionMissCount,
     output [31:0] PC_out,
     output reg hlt,
 
@@ -218,11 +222,8 @@ end
 
 /*
 TODO:
-    - Fmax the design, and pick the best to take to the finals
-
     - calculate: execution time, CPI, throughput
-
-    - run the VGAinterface on higher clk speed so we can see GOL better
+    - review the report
 */
 
 

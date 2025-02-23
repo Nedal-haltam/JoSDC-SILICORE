@@ -481,6 +481,7 @@ namespace LibCPU {
         static public bool hlt;
         static public int targetaddress;
         static public int predictorState;
+        public Dictionary<int, bool> BranchLUT = [];
 
         public enum PCsrc { PCplus1, branchTarget, exception, none }
         public PCsrc pcsrc;
@@ -1067,9 +1068,9 @@ namespace LibCPU {
                 else if(!wrongPrediction && predictorState == 3)    predictorState = 3;
                 else throw new Exception($"Prediction combination error");
             }
-                
+
             // 0 = NT & 1 = T
-            if(predictorState == 0) return false;
+            if (predictorState == 0) return false;
             else if(predictorState == 1) return false;
             else if(predictorState == 2) return true;
             else if(predictorState == 3) return true;
@@ -1352,6 +1353,7 @@ namespace LibCPU {
         public List<string> IM; // Instruction Mem
         public List<BranchPredictorEntry> dataset = [];
         public string BranchHistory = "0000000000000000";
+        public Dictionary<int, bool> BranchLUT = [];
 
         Instruction IFID;
         Instruction IDEX1;
@@ -1470,9 +1472,26 @@ namespace LibCPU {
             return inst;
         }
 
-        bool BranchPredictor(Mnemonic ID_opcode)
+        bool BranchPredictor(Instruction decoded)
         {
-            bool prediction = isbranch(ID_opcode) && (state == 2 || state == 3);
+            bool prediction;
+            if (!isbranch(decoded.mnem))
+            {
+                prediction = false;
+            }
+            else
+            {
+                int index = decoded.PC;
+                if (BranchLUT.TryGetValue(index, out bool value))
+                {
+                    prediction = value;
+                }
+                else
+                {
+                    prediction = (state == 2 || state == 3);
+                }
+            }
+
             if (prediction)
             {
                 pcsrc = PCsrc.pfc;
@@ -1576,7 +1595,7 @@ namespace LibCPU {
             try
             {
                 decoded = decodemc(fetched, PC);
-                decoded.prediction = BranchPredictor(decoded.mnem);
+                decoded.prediction = BranchPredictor(decoded);
                 BranchResolver(decoded);
             }
             catch (Exception e)
@@ -1863,10 +1882,6 @@ namespace LibCPU {
                 i++;
                 try
                 {
-                    if (PC == 5)
-                    {
-
-                    }
                     ConsumeInst();
                 }
                 catch (Exception e)

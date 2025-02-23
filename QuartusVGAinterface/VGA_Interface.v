@@ -1,8 +1,5 @@
 
 
-
-
-
 `include "Defs.txt"
 
 module VGA_Interface(
@@ -63,7 +60,13 @@ always@(posedge MAX10_CLK2_50) begin
 	clk_divider <= clk_divider + 1'b1;
 end
 
-assign input_clk = (SW[0]) ? clk_divider[8] : clk_divider[24];
+assign input_clk = (SW[0]) ? 
+(
+	(SW[2]) ? clk_divider[6] : 
+	(
+		(SW[1]) ? clk_divider[7] : clk_divider[8]
+	)
+) : clk_divider[24];
 
 
 assign LEDR[0] = hlt;

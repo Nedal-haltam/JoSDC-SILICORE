@@ -145,7 +145,7 @@ autoMAN automan
 	.RGB_out(RGB_Auto)
 );
 //////////////////////////////////////////////////////////////////////////////
-SSOOO_CPU cpu
+SSOOO_CPU #(.CORE_SELECT(1'b1)) cpu
 (
     .input_clk(input_clk), 
 	.rst(manual_rst),
@@ -318,10 +318,6 @@ end
 
 
 /*
-TODO:
-	- parenthesis
-	- ability to switch between modes
-
 - done: static mode: all from `ImageStatic` memory, (datasource = 1'b0)
 - done: automatic mode: text from automAN, (datasource = 1'b1)
 - done: MIX mode: from both (static image & autoMAN which is the current instruction from the CPU), (datasource = (boundary set in video_sync_generator))

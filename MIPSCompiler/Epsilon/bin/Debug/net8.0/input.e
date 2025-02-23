@@ -12,9 +12,9 @@ int grid[SIZE][SIZE];
 int grid2[SIZE][SIZE];
 
 #define glider_size 5
-#define blinker_size 3
 int glider_index[glider_size][2] = {{1, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}};
-int blinker_index[blinker_size][2] = {{2, 8}, {2, 9}, {2, 10}};
+#define blinker_size 7
+int blinker_index[blinker_size][2] = {{2, 8}, {2, 9}, {2, 10}, {2, 11}, {3,4}, {2, 2}, {1,3}};
 
 /*
 int glider_index[glider_size][2] = {{1, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}};
@@ -33,9 +33,9 @@ for (int i = 0; i < blinker_size; i = i + 1)
 
 // the number of iterations is modified after copying the instruction initialization from the RealTimeCAS to the 
 // D:\GitHub Repos\JoSDC-SILICORE\SSOOO\Instruction Queue\code.txt
-#define iters 1
+#define iters 1000
 
-for (int iter = 0; iter < iters; iter = iter + 1)
+for (;;)
 {
     COPY122
     for (int i = 0; i < SIZE; i = i + 1)
