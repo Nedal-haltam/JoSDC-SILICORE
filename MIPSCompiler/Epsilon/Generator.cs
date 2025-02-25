@@ -534,8 +534,8 @@ namespace Epsilon
                 }
                 else
                 {
-                    vars.m_vars.Add(new(ident.Value, 1));
                     GenExpr_(declare.singlevar.expr, null);
+                    vars.m_vars.Add(new(ident.Value, 1));
                 }
             }
             else if (declare.type == NodeStmtDeclare.NodeStmtDeclareType.Array)
