@@ -82,6 +82,7 @@ parameter vert_front = 10;
 // these parameters are know at compile time
 // but getting data is at runtime from the proc_interface and draw it on the screen
 parameter startx = hori_back;
+// parameter starty = vert_back + (1 * `CHARH * `RS);
 parameter starty = vert_back;
 parameter endx   = startx    + (`WIDTH_CHARS  * `CHARW * `RS);
 parameter endy   = starty    + (`HEIGHT_CHARS * `CHARH * `RS);

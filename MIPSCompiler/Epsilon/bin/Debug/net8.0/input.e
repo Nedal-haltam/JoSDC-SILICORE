@@ -12,14 +12,12 @@ int grid[SIZE][SIZE];
 int grid2[SIZE][SIZE];
 
 #define glider_size 5
+#define blinker_size 3
 int glider_index[glider_size][2] = {{1, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}};
-#define blinker_size 7
-int blinker_index[blinker_size][2] = {{2, 8}, {2, 9}, {2, 10}, {2, 11}, {3,4}, {2, 2}, {1,3}};
+int blinker_index[blinker_size][2] = {{2, 8}, {2, 9}, {2, 10}};
 
-/*
-int glider_index[glider_size][2] = {{1, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}};
-int blinker_index[blinker_size][2] = {{3, 7}, {3, 8}, {3, 9}};
-*/
+//int glider_index[glider_size][2] = {{1, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}};
+//int blinker_index[blinker_size][2] = {{3, 7}, {3, 8}, {3, 9}};
 
 for (int i = 0; i < glider_size; i = i + 1)
 {
