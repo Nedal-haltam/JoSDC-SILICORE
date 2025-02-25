@@ -633,7 +633,7 @@ namespace VGAG
             bool IterateGOL = false;
             while (!WindowShouldClose())
             {
-                if (IsKeyPressed(KeyboardKey.C)) IterateGOL = !IterateGOL;
+                if (IsKeyPressed(KeyboardKey.C) && m != Mode.writing) IterateGOL = !IterateGOL;
                 if (IterateGOL)
                 {
                     GOL(ref grid);

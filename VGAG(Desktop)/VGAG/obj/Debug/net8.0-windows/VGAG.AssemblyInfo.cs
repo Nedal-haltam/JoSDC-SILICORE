@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VGAG")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5025fe98d4a5214d6a2e3eb64f47b75e9de6bd81")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+10cf36de707de501dc1054a87eea23a0918b9c84")]
 [assembly: System.Reflection.AssemblyProductAttribute("VGAG")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VGAG")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
