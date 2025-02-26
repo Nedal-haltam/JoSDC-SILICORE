@@ -325,7 +325,28 @@ ADDi $sp, $sp, 1
 # end forloop
 # begin forloop
 # begin scope
+# begin init
+ADDI $1, $zero, 0
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+# end init
+# begin condition
 TEMP_LABEL18_START:
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## iter
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+SLT $1, $1, $2
+ADDI $1, $1, 0
+BEQ $1, $zero, TEMP_LABEL19_END
+# end condition
 # begin scope
 # begin forloop
 # begin scope
@@ -335,7 +356,7 @@ SW $1, 0($sp)
 ADDI $sp, $sp, -1
 # end init
 # begin condition
-TEMP_LABEL20_START:
+TEMP_LABEL21_START:
 ADDI $1, $zero, 12
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -349,7 +370,7 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 SLT $1, $1, $2
 ADDI $1, $1, 0
-BEQ $1, $zero, TEMP_LABEL21_END
+BEQ $1, $zero, TEMP_LABEL22_END
 # end condition
 # begin scope
 # begin forloop
@@ -360,7 +381,7 @@ SW $1, 0($sp)
 ADDI $sp, $sp, -1
 # end init
 # begin condition
-TEMP_LABEL23_START:
+TEMP_LABEL24_START:
 ADDI $1, $zero, 12
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -374,7 +395,7 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 SLT $1, $1, $2
 ADDI $1, $1, 0
-BEQ $1, $zero, TEMP_LABEL24_END
+BEQ $1, $zero, TEMP_LABEL25_END
 # end condition
 # begin scope
 ########## cj
@@ -401,17 +422,17 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 ADDI $8, $zero, 12
 ADD $9, $zero, $1
-LABEL26_START:
+LABEL27_START:
 ADDI $8, $8, -1
-BEQ $8, $zero, LABEL27_END
+BEQ $8, $zero, LABEL28_END
 ADD $1, $1, $9
-J LABEL26_START
-LABEL27_END:
+J LABEL27_START
+LABEL28_END:
 # end index
 # begin data
 ADD $1, $1, $2
 SUB $1, $zero, $1
-ADDI $1, $1, 308
+ADDI $1, $1, 309
 ADD $1, $1, $sp
 LW $3, 0($1)
 SW $3, 0($sp)
@@ -425,21 +446,21 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 ADDI $8, $zero, 12
 ADD $9, $zero, $1
-LABEL28_START:
+LABEL29_START:
 ADDI $8, $8, -1
-BEQ $8, $zero, LABEL29_END
+BEQ $8, $zero, LABEL30_END
 ADD $1, $1, $9
-J LABEL28_START
-LABEL29_END:
+J LABEL29_START
+LABEL30_END:
 ADD $1, $1, $2
 SUB $1, $zero, $1
-ADDI $1, $1, 162
+ADDI $1, $1, 163
 ADD $1, $1, $sp
 SW $3, 0($1)
 # end scope
 ADDi $sp, $sp, 0
 # begin update
-TEMP_LABEL25_START:
+TEMP_LABEL26_START:
 ADDI $1, $zero, 1
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -455,15 +476,15 @@ ADD $1, $1, $2
 ADDI $1, $1, 0
 SW $1, 1($sp)
 # end update
-J TEMP_LABEL23_START
-TEMP_LABEL24_END:
+J TEMP_LABEL24_START
+TEMP_LABEL25_END:
 # end scope
 ADDi $sp, $sp, 1
 # end forloop
 # end scope
 ADDi $sp, $sp, 0
 # begin update
-TEMP_LABEL22_START:
+TEMP_LABEL23_START:
 ADDI $1, $zero, 1
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -479,8 +500,8 @@ ADD $1, $1, $2
 ADDI $1, $1, 0
 SW $1, 1($sp)
 # end update
-J TEMP_LABEL20_START
-TEMP_LABEL21_END:
+J TEMP_LABEL21_START
+TEMP_LABEL22_END:
 # end scope
 ADDi $sp, $sp, 1
 # end forloop
@@ -492,7 +513,7 @@ SW $1, 0($sp)
 ADDI $sp, $sp, -1
 # end init
 # begin condition
-TEMP_LABEL30_START:
+TEMP_LABEL31_START:
 ADDI $1, $zero, 12
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -506,7 +527,7 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 SLT $1, $1, $2
 ADDI $1, $1, 0
-BEQ $1, $zero, TEMP_LABEL31_END
+BEQ $1, $zero, TEMP_LABEL32_END
 # end condition
 # begin scope
 # begin forloop
@@ -517,7 +538,7 @@ SW $1, 0($sp)
 ADDI $sp, $sp, -1
 # end init
 # begin condition
-TEMP_LABEL33_START:
+TEMP_LABEL34_START:
 ADDI $1, $zero, 12
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -531,7 +552,7 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 SLT $1, $1, $2
 ADDI $1, $1, 0
-BEQ $1, $zero, TEMP_LABEL34_END
+BEQ $1, $zero, TEMP_LABEL35_END
 # end condition
 # begin scope
 ADDI $1, $zero, 0
@@ -556,7 +577,7 @@ SW $1, 0($sp)
 ADDI $sp, $sp, -1
 # end init
 # begin condition
-TEMP_LABEL36_START:
+TEMP_LABEL37_START:
 ADDI $1, $zero, 2
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -581,7 +602,7 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 SLT $1, $1, $2
 ADDI $1, $1, 0
-BEQ $1, $zero, TEMP_LABEL37_END
+BEQ $1, $zero, TEMP_LABEL38_END
 # end condition
 # begin scope
 # begin forloop
@@ -603,7 +624,7 @@ SW $1, 0($sp)
 ADDI $sp, $sp, -1
 # end init
 # begin condition
-TEMP_LABEL39_START:
+TEMP_LABEL40_START:
 ADDI $1, $zero, 2
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -628,10 +649,10 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 SLT $1, $1, $2
 ADDI $1, $1, 0
-BEQ $1, $zero, TEMP_LABEL40_END
+BEQ $1, $zero, TEMP_LABEL41_END
 # end condition
 # begin scope
-LABEL42_START:
+LABEL43_START:
 ########## j
 LW $1, 4($sp)
 SW $1, 0($sp)
@@ -644,14 +665,14 @@ ADDI $sp, $sp, 1
 LW $1, 0($sp)
 ADDI $sp, $sp, 1
 LW $2, 0($sp)
-TEMP_LABEL45_START:
+TEMP_LABEL46_START:
 SUB $1, $1, $2
-BEQ $1, $zero, TEMP_LABEL46_ELSE
+BEQ $1, $zero, TEMP_LABEL47_ELSE
 ADDI $1, $zero, 1
-J TEMP_LABEL47_END
-TEMP_LABEL46_ELSE:
+J TEMP_LABEL48_END
+TEMP_LABEL47_ELSE:
 ADDI $1, $zero, 0
-TEMP_LABEL47_END:
+TEMP_LABEL48_END:
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
 ########## i
@@ -666,14 +687,14 @@ ADDI $sp, $sp, 1
 LW $1, 0($sp)
 ADDI $sp, $sp, 1
 LW $2, 0($sp)
-TEMP_LABEL48_START:
+TEMP_LABEL49_START:
 SUB $1, $1, $2
-BEQ $1, $zero, TEMP_LABEL49_ELSE
+BEQ $1, $zero, TEMP_LABEL50_ELSE
 ADDI $1, $zero, 1
-J TEMP_LABEL50_END
-TEMP_LABEL49_ELSE:
+J TEMP_LABEL51_END
+TEMP_LABEL50_ELSE:
 ADDI $1, $zero, 0
-TEMP_LABEL50_END:
+TEMP_LABEL51_END:
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
 ADDI $sp, $sp, 1
@@ -682,7 +703,7 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 OR $1, $1, $2
 ADDI $1, $1, 0
-BEQ $1, $zero, LABEL44_elifs
+BEQ $1, $zero, LABEL45_elifs
 # begin scope
 ########## dx
 LW $1, 2($sp)
@@ -692,7 +713,7 @@ ADDI $sp, $sp, -1
 LW $1, 2($sp)
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
-LABEL51_START:
+LABEL52_START:
 ADDI $1, $zero, -1
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -704,26 +725,26 @@ ADDI $sp, $sp, 1
 LW $1, 0($sp)
 ADDI $sp, $sp, 1
 LW $2, 0($sp)
-TEMP_LABEL54_START:
+TEMP_LABEL55_START:
 SUB $1, $1, $2
-BEQ $1, $zero, TEMP_LABEL55_ELSE
+BEQ $1, $zero, TEMP_LABEL56_ELSE
 ADDI $1, $zero, 0
-J TEMP_LABEL56_END
-TEMP_LABEL55_ELSE:
+J TEMP_LABEL57_END
+TEMP_LABEL56_ELSE:
 ADDI $1, $zero, 1
-TEMP_LABEL56_END:
+TEMP_LABEL57_END:
 ADDI $1, $1, 0
-BEQ $1, $zero, LABEL53_elifs
+BEQ $1, $zero, LABEL54_elifs
 # begin scope
 ADDI $1, $zero, 11
 ADDI $1, $1, 0
 SW $1, 2($sp)
 # end scope
 ADDi $sp, $sp, 0
-J LABEL52_END
-LABEL53_elifs:
+J LABEL53_END
+LABEL54_elifs:
 # begin scope
-LABEL57_START:
+LABEL58_START:
 ADDI $1, $zero, 12
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -735,28 +756,28 @@ ADDI $sp, $sp, 1
 LW $1, 0($sp)
 ADDI $sp, $sp, 1
 LW $2, 0($sp)
-TEMP_LABEL60_START:
+TEMP_LABEL61_START:
 SUB $1, $1, $2
-BEQ $1, $zero, TEMP_LABEL61_ELSE
+BEQ $1, $zero, TEMP_LABEL62_ELSE
 ADDI $1, $zero, 0
-J TEMP_LABEL62_END
-TEMP_LABEL61_ELSE:
+J TEMP_LABEL63_END
+TEMP_LABEL62_ELSE:
 ADDI $1, $zero, 1
-TEMP_LABEL62_END:
+TEMP_LABEL63_END:
 ADDI $1, $1, 0
-BEQ $1, $zero, LABEL59_elifs
+BEQ $1, $zero, LABEL60_elifs
 # begin scope
 ADDI $1, $zero, 0
 ADDI $1, $1, 0
 SW $1, 2($sp)
 # end scope
 ADDi $sp, $sp, 0
-LABEL59_elifs:
-LABEL58_END:
+LABEL60_elifs:
+LABEL59_END:
 # end scope
 ADDi $sp, $sp, 0
-LABEL52_END:
-LABEL63_START:
+LABEL53_END:
+LABEL64_START:
 ADDI $1, $zero, -1
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -768,26 +789,26 @@ ADDI $sp, $sp, 1
 LW $1, 0($sp)
 ADDI $sp, $sp, 1
 LW $2, 0($sp)
-TEMP_LABEL66_START:
+TEMP_LABEL67_START:
 SUB $1, $1, $2
-BEQ $1, $zero, TEMP_LABEL67_ELSE
+BEQ $1, $zero, TEMP_LABEL68_ELSE
 ADDI $1, $zero, 0
-J TEMP_LABEL68_END
-TEMP_LABEL67_ELSE:
+J TEMP_LABEL69_END
+TEMP_LABEL68_ELSE:
 ADDI $1, $zero, 1
-TEMP_LABEL68_END:
+TEMP_LABEL69_END:
 ADDI $1, $1, 0
-BEQ $1, $zero, LABEL65_elifs
+BEQ $1, $zero, LABEL66_elifs
 # begin scope
 ADDI $1, $zero, 11
 ADDI $1, $1, 0
 SW $1, 1($sp)
 # end scope
 ADDi $sp, $sp, 0
-J LABEL64_END
-LABEL65_elifs:
+J LABEL65_END
+LABEL66_elifs:
 # begin scope
-LABEL69_START:
+LABEL70_START:
 ADDI $1, $zero, 12
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -799,28 +820,28 @@ ADDI $sp, $sp, 1
 LW $1, 0($sp)
 ADDI $sp, $sp, 1
 LW $2, 0($sp)
-TEMP_LABEL72_START:
+TEMP_LABEL73_START:
 SUB $1, $1, $2
-BEQ $1, $zero, TEMP_LABEL73_ELSE
+BEQ $1, $zero, TEMP_LABEL74_ELSE
 ADDI $1, $zero, 0
-J TEMP_LABEL74_END
-TEMP_LABEL73_ELSE:
+J TEMP_LABEL75_END
+TEMP_LABEL74_ELSE:
 ADDI $1, $zero, 1
-TEMP_LABEL74_END:
+TEMP_LABEL75_END:
 ADDI $1, $1, 0
-BEQ $1, $zero, LABEL71_elifs
+BEQ $1, $zero, LABEL72_elifs
 # begin scope
 ADDI $1, $zero, 0
 ADDI $1, $1, 0
 SW $1, 1($sp)
 # end scope
 ADDi $sp, $sp, 0
-LABEL71_elifs:
-LABEL70_END:
+LABEL72_elifs:
+LABEL71_END:
 # end scope
 ADDi $sp, $sp, 0
-LABEL64_END:
-LABEL75_START:
+LABEL65_END:
+LABEL76_START:
 ########## grid
 # begin index
 ########## indexy
@@ -837,22 +858,22 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 ADDI $8, $zero, 12
 ADD $9, $zero, $1
-LABEL78_START:
+LABEL79_START:
 ADDI $8, $8, -1
-BEQ $8, $zero, LABEL79_END
+BEQ $8, $zero, LABEL80_END
 ADD $1, $1, $9
-J LABEL78_START
-LABEL79_END:
+J LABEL79_START
+LABEL80_END:
 # end index
 # begin data
 ADD $1, $1, $2
 SUB $1, $zero, $1
-ADDI $1, $1, 311
+ADDI $1, $1, 312
 ADD $1, $1, $sp
 LW $3, 0($1)
 ADDI $1, $3, 0
 # end data
-BEQ $1, $zero, LABEL77_elifs
+BEQ $1, $zero, LABEL78_elifs
 # begin scope
 ADDI $1, $zero, 1
 SW $1, 0($sp)
@@ -870,16 +891,16 @@ ADDI $1, $1, 0
 SW $1, 5($sp)
 # end scope
 ADDi $sp, $sp, 0
-LABEL77_elifs:
-LABEL76_END:
+LABEL78_elifs:
+LABEL77_END:
 # end scope
 ADDi $sp, $sp, 2
-LABEL44_elifs:
-LABEL43_END:
+LABEL45_elifs:
+LABEL44_END:
 # end scope
 ADDi $sp, $sp, 0
 # begin update
-TEMP_LABEL41_START:
+TEMP_LABEL42_START:
 ADDI $1, $zero, 1
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -895,15 +916,15 @@ ADD $1, $1, $2
 ADDI $1, $1, 0
 SW $1, 1($sp)
 # end update
-J TEMP_LABEL39_START
-TEMP_LABEL40_END:
+J TEMP_LABEL40_START
+TEMP_LABEL41_END:
 # end scope
 ADDi $sp, $sp, 1
 # end forloop
 # end scope
 ADDi $sp, $sp, 0
 # begin update
-TEMP_LABEL38_START:
+TEMP_LABEL39_START:
 ADDI $1, $zero, 1
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -919,12 +940,12 @@ ADD $1, $1, $2
 ADDI $1, $1, 0
 SW $1, 1($sp)
 # end update
-J TEMP_LABEL36_START
-TEMP_LABEL37_END:
+J TEMP_LABEL37_START
+TEMP_LABEL38_END:
 # end scope
 ADDi $sp, $sp, 1
 # end forloop
-LABEL80_START:
+LABEL81_START:
 ########## grid
 # begin index
 ########## j
@@ -941,24 +962,24 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 ADDI $8, $zero, 12
 ADD $9, $zero, $1
-LABEL83_START:
+LABEL84_START:
 ADDI $8, $8, -1
-BEQ $8, $zero, LABEL84_END
+BEQ $8, $zero, LABEL85_END
 ADD $1, $1, $9
-J LABEL83_START
-LABEL84_END:
+J LABEL84_START
+LABEL85_END:
 # end index
 # begin data
 ADD $1, $1, $2
 SUB $1, $zero, $1
-ADDI $1, $1, 307
+ADDI $1, $1, 308
 ADD $1, $1, $sp
 LW $3, 0($1)
 ADDI $1, $3, 0
 # end data
-BEQ $1, $zero, LABEL82_elifs
+BEQ $1, $zero, LABEL83_elifs
 # begin scope
-LABEL85_START:
+LABEL86_START:
 ADDI $1, $zero, 3
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -970,14 +991,14 @@ ADDI $sp, $sp, 1
 LW $1, 0($sp)
 ADDI $sp, $sp, 1
 LW $2, 0($sp)
-TEMP_LABEL88_START:
+TEMP_LABEL89_START:
 SUB $1, $1, $2
-BEQ $1, $zero, TEMP_LABEL89_ELSE
+BEQ $1, $zero, TEMP_LABEL90_ELSE
 ADDI $1, $zero, 1
-J TEMP_LABEL90_END
-TEMP_LABEL89_ELSE:
+J TEMP_LABEL91_END
+TEMP_LABEL90_ELSE:
 ADDI $1, $zero, 0
-TEMP_LABEL90_END:
+TEMP_LABEL91_END:
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
 ADDI $1, $zero, 2
@@ -991,14 +1012,14 @@ ADDI $sp, $sp, 1
 LW $1, 0($sp)
 ADDI $sp, $sp, 1
 LW $2, 0($sp)
-TEMP_LABEL91_START:
+TEMP_LABEL92_START:
 SUB $1, $1, $2
-BEQ $1, $zero, TEMP_LABEL92_ELSE
+BEQ $1, $zero, TEMP_LABEL93_ELSE
 ADDI $1, $zero, 1
-J TEMP_LABEL93_END
-TEMP_LABEL92_ELSE:
+J TEMP_LABEL94_END
+TEMP_LABEL93_ELSE:
 ADDI $1, $zero, 0
-TEMP_LABEL93_END:
+TEMP_LABEL94_END:
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
 ADDI $sp, $sp, 1
@@ -1007,7 +1028,7 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 AND $1, $1, $2
 ADDI $1, $1, 0
-BEQ $1, $zero, LABEL87_elifs
+BEQ $1, $zero, LABEL88_elifs
 # begin scope
 ########## j
 LW $1, 2($sp)
@@ -1028,27 +1049,27 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 ADDI $8, $zero, 12
 ADD $9, $zero, $1
-LABEL94_START:
+LABEL95_START:
 ADDI $8, $8, -1
-BEQ $8, $zero, LABEL95_END
+BEQ $8, $zero, LABEL96_END
 ADD $1, $1, $9
-J LABEL94_START
-LABEL95_END:
+J LABEL95_START
+LABEL96_END:
 ADD $1, $1, $2
 SUB $1, $zero, $1
-ADDI $1, $1, 163
+ADDI $1, $1, 164
 ADD $1, $1, $sp
 SW $3, 0($1)
 # end scope
 ADDi $sp, $sp, 0
-LABEL87_elifs:
-LABEL86_END:
+LABEL88_elifs:
+LABEL87_END:
 # end scope
 ADDi $sp, $sp, 0
-J LABEL81_END
-LABEL82_elifs:
+J LABEL82_END
+LABEL83_elifs:
 # begin scope
-LABEL96_START:
+LABEL97_START:
 ADDI $1, $zero, 3
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -1060,16 +1081,16 @@ ADDI $sp, $sp, 1
 LW $1, 0($sp)
 ADDI $sp, $sp, 1
 LW $2, 0($sp)
-TEMP_LABEL99_START:
+TEMP_LABEL100_START:
 SUB $1, $1, $2
-BEQ $1, $zero, TEMP_LABEL100_ELSE
+BEQ $1, $zero, TEMP_LABEL101_ELSE
 ADDI $1, $zero, 0
-J TEMP_LABEL101_END
-TEMP_LABEL100_ELSE:
+J TEMP_LABEL102_END
+TEMP_LABEL101_ELSE:
 ADDI $1, $zero, 1
-TEMP_LABEL101_END:
+TEMP_LABEL102_END:
 ADDI $1, $1, 0
-BEQ $1, $zero, LABEL98_elifs
+BEQ $1, $zero, LABEL99_elifs
 # begin scope
 ########## j
 LW $1, 2($sp)
@@ -1090,28 +1111,28 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 ADDI $8, $zero, 12
 ADD $9, $zero, $1
-LABEL102_START:
+LABEL103_START:
 ADDI $8, $8, -1
-BEQ $8, $zero, LABEL103_END
+BEQ $8, $zero, LABEL104_END
 ADD $1, $1, $9
-J LABEL102_START
-LABEL103_END:
+J LABEL103_START
+LABEL104_END:
 ADD $1, $1, $2
 SUB $1, $zero, $1
-ADDI $1, $1, 163
+ADDI $1, $1, 164
 ADD $1, $1, $sp
 SW $3, 0($1)
 # end scope
 ADDi $sp, $sp, 0
-LABEL98_elifs:
-LABEL97_END:
+LABEL99_elifs:
+LABEL98_END:
 # end scope
 ADDi $sp, $sp, 0
-LABEL81_END:
+LABEL82_END:
 # end scope
 ADDi $sp, $sp, 1
 # begin update
-TEMP_LABEL35_START:
+TEMP_LABEL36_START:
 ADDI $1, $zero, 1
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -1127,15 +1148,15 @@ ADD $1, $1, $2
 ADDI $1, $1, 0
 SW $1, 1($sp)
 # end update
-J TEMP_LABEL33_START
-TEMP_LABEL34_END:
+J TEMP_LABEL34_START
+TEMP_LABEL35_END:
 # end scope
 ADDi $sp, $sp, 1
 # end forloop
 # end scope
 ADDi $sp, $sp, 0
 # begin update
-TEMP_LABEL32_START:
+TEMP_LABEL33_START:
 ADDI $1, $zero, 1
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -1151,8 +1172,8 @@ ADD $1, $1, $2
 ADDI $1, $1, 0
 SW $1, 1($sp)
 # end update
-J TEMP_LABEL30_START
-TEMP_LABEL31_END:
+J TEMP_LABEL31_START
+TEMP_LABEL32_END:
 # end scope
 ADDi $sp, $sp, 1
 # end forloop
@@ -1164,7 +1185,7 @@ SW $1, 0($sp)
 ADDI $sp, $sp, -1
 # end init
 # begin condition
-TEMP_LABEL104_START:
+TEMP_LABEL105_START:
 ADDI $1, $zero, 12
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -1178,7 +1199,7 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 SLT $1, $1, $2
 ADDI $1, $1, 0
-BEQ $1, $zero, TEMP_LABEL105_END
+BEQ $1, $zero, TEMP_LABEL106_END
 # end condition
 # begin scope
 # begin forloop
@@ -1189,7 +1210,7 @@ SW $1, 0($sp)
 ADDI $sp, $sp, -1
 # end init
 # begin condition
-TEMP_LABEL107_START:
+TEMP_LABEL108_START:
 ADDI $1, $zero, 12
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -1203,7 +1224,7 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 SLT $1, $1, $2
 ADDI $1, $1, 0
-BEQ $1, $zero, TEMP_LABEL108_END
+BEQ $1, $zero, TEMP_LABEL109_END
 # end condition
 # begin scope
 ########## cj
@@ -1230,17 +1251,17 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 ADDI $8, $zero, 12
 ADD $9, $zero, $1
-LABEL110_START:
+LABEL111_START:
 ADDI $8, $8, -1
-BEQ $8, $zero, LABEL111_END
+BEQ $8, $zero, LABEL112_END
 ADD $1, $1, $9
-J LABEL110_START
-LABEL111_END:
+J LABEL111_START
+LABEL112_END:
 # end index
 # begin data
 ADD $1, $1, $2
 SUB $1, $zero, $1
-ADDI $1, $1, 164
+ADDI $1, $1, 165
 ADD $1, $1, $sp
 LW $3, 0($1)
 SW $3, 0($sp)
@@ -1254,21 +1275,21 @@ ADDI $sp, $sp, 1
 LW $2, 0($sp)
 ADDI $8, $zero, 12
 ADD $9, $zero, $1
-LABEL112_START:
+LABEL113_START:
 ADDI $8, $8, -1
-BEQ $8, $zero, LABEL113_END
+BEQ $8, $zero, LABEL114_END
 ADD $1, $1, $9
-J LABEL112_START
-LABEL113_END:
+J LABEL113_START
+LABEL114_END:
 ADD $1, $1, $2
 SUB $1, $zero, $1
-ADDI $1, $1, 306
+ADDI $1, $1, 307
 ADD $1, $1, $sp
 SW $3, 0($1)
 # end scope
 ADDi $sp, $sp, 0
 # begin update
-TEMP_LABEL109_START:
+TEMP_LABEL110_START:
 ADDI $1, $zero, 1
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -1284,15 +1305,15 @@ ADD $1, $1, $2
 ADDI $1, $1, 0
 SW $1, 1($sp)
 # end update
-J TEMP_LABEL107_START
-TEMP_LABEL108_END:
+J TEMP_LABEL108_START
+TEMP_LABEL109_END:
 # end scope
 ADDi $sp, $sp, 1
 # end forloop
 # end scope
 ADDi $sp, $sp, 0
 # begin update
-TEMP_LABEL106_START:
+TEMP_LABEL107_START:
 ADDI $1, $zero, 1
 SW $1, 0($sp)
 ADDI $sp, $sp, -1
@@ -1308,15 +1329,32 @@ ADD $1, $1, $2
 ADDI $1, $1, 0
 SW $1, 1($sp)
 # end update
-J TEMP_LABEL104_START
-TEMP_LABEL105_END:
+J TEMP_LABEL105_START
+TEMP_LABEL106_END:
 # end scope
 ADDi $sp, $sp, 1
 # end forloop
 # end scope
 ADDi $sp, $sp, 0
+# begin update
+TEMP_LABEL20_START:
+ADDI $1, $zero, 1
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+########## iter
+LW $1, 2($sp)
+SW $1, 0($sp)
+ADDI $sp, $sp, -1
+ADDI $sp, $sp, 1
+LW $1, 0($sp)
+ADDI $sp, $sp, 1
+LW $2, 0($sp)
+ADD $1, $1, $2
+ADDI $1, $1, 0
+SW $1, 1($sp)
+# end update
 J TEMP_LABEL18_START
 TEMP_LABEL19_END:
 # end scope
-ADDi $sp, $sp, 0
+ADDi $sp, $sp, 1
 # end forloop

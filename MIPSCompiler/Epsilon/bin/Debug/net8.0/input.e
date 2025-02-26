@@ -33,7 +33,7 @@ for (int i = 0; i < blinker_size; i = i + 1)
 // D:\GitHub Repos\JoSDC-SILICORE\SSOOO\Instruction Queue\code.txt
 #define iters 1000
 
-for (;;)
+for (int iter = 0; iter < 1; iter = iter + 1)
 {
     COPY122
     for (int i = 0; i < SIZE; i = i + 1)
