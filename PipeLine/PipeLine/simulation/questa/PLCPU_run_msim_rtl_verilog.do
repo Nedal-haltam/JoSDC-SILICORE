@@ -13,11 +13,10 @@ vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/P
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/IF_stage.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/MEM_stage.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/WB_stage.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/IM.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/DM.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/CompareEqual.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/DataMemory_IP.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/PL_CPU.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/PipeLine_sim.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/InstMem.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/forwarda.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/forwardb.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/forwardc.v}
@@ -32,14 +31,15 @@ vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/P
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/Immed_Gen_unit.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/ID_stage.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/EX_stage.v}
-vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/IM.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/DataMemory_IP.v}
+vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/PL_CPU.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/branchresolver.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/branchpredictor.v}
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/stalldetectionunit.v}
 
 vlog -vlog01compat -work work +incdir+D:/GitHub\ Repos/JoSDC-SILICORE/PipeLine/PipeLine {D:/GitHub Repos/JoSDC-SILICORE/PipeLine/PipeLine/PipeLine_sim.v}
 
-vsim -t 1ps -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L cycloneive_ver -L rtl_work -L work -voptargs="+acc"  PipeLine_sim
+vsim -t 1ps -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L fiftyfivenm_ver -L rtl_work -L work -voptargs="+acc"  PipeLine_sim
 
 add wave *
 view structure

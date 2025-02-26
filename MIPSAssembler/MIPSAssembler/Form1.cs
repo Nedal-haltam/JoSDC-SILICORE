@@ -184,7 +184,7 @@ namespace MIPSAssembler
             if (IM_MIF_filepath != null)
                 File.WriteAllText(IM_MIF_filepath, GetIMMIF(32, 2048, 2).ToString());
             if (DM_MIF_filepath != null)
-                File.WriteAllText(DM_MIF_filepath, GetDMMIF(DM, 32, 2048, 10).ToString());
+                File.WriteAllText(DM_MIF_filepath, GetDMMIF(DM, 32, 4096, 10).ToString());
 
 
             Close(); // for now we will close and not parse any other commands

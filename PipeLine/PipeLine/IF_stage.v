@@ -17,6 +17,6 @@ PC_src_mux pc_src_mux(inst_mem_in + 1'b1, ID_PFC, inst_mem_in, EX1_PFC, EX2_PFC,
 
 PC_register pc_reg(pc_reg_in, inst_mem_in, PC_write, clk, rst); 
 
-IM inst_mem(inst_mem_in , inst, clk);
+IM inst_mem(pc_reg_in, inst_mem_in , inst, clk);
 
 endmodule

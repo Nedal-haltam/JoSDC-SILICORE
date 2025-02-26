@@ -16,5 +16,10 @@ set_time_format -unit ns -decimal_places 10
 #create_clock -name {input_clk} -period 20.000 -waveform { 0.000 10.000 } [get_ports {input_clk}]
 
 
-create_clock -name {input_clk} -period 12.05 -waveform { 0.000 7.05 } [get_ports {input_clk}]
+
+create_clock -name {input_clk} -period 14.0 -waveform { 0.000 7.75 } [get_ports {input_clk}]
+
+
+
+#create_clock -name {input_clk} -period 12.05 -waveform { 0.000 7.05 } [get_ports {input_clk}]
 # 82.99 => 83.95, 0.081, 0.389

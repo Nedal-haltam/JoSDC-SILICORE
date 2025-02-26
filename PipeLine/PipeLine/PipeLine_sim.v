@@ -53,7 +53,11 @@ module PipeLine_sim;
 reg input_clk = 0;
 reg rst = 0;
 wire [31:0] PC, cycles_consumed, StallCount;
+`ifdef vscode
 wire real BranchPredictionCount, BranchPredictionMissCount;
+`else
+wire [31:0] BranchPredictionCount, BranchPredictionMissCount;
+`endif
 PL_CPU cpu
 (
 	.input_clk(input_clk), 

@@ -4,7 +4,7 @@
 
 set_global_assignment -name FAMILY "Cyclone IV E"
 set_global_assignment -name DEVICE EP4CE115F29C7
-set_global_assignment -name TOP_LEVEL_ENTITY PLCPU
+set_global_assignment -name TOP_LEVEL_ENTITY PL_CPU
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION "16.0.0"
 set_global_assignment -name LAST_QUARTUS_VERSION "23.1std.1 Lite Edition"
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "09:11:59 SEPTEMBER 17,2024"
@@ -38,13 +38,11 @@ set_global_assignment -name PROJECT_CREATION_TIME_DATE "09:11:59 SEPTEMBER 17,20
 #============================================================
 
 
-set_global_assignment -name VERILOG_FILE PLCPU.v
 set_global_assignment -name SDC_FILE PLCPU.SDC
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
-set_global_assignment -name VERILOG_FILE PL_CPU_mod.v
 set_global_assignment -name VERILOG_FILE MUX_4x1.v
 set_global_assignment -name VERILOG_FILE MUX_8x1.v
 set_global_assignment -name VERILOG_FILE ALU.v
@@ -52,7 +50,6 @@ set_global_assignment -name VERILOG_FILE REG_FILE.v
 set_global_assignment -name VERILOG_FILE Branch_flag_Gen.v
 set_global_assignment -name VERILOG_FILE Branch_or_Jump_TargGen.v
 set_global_assignment -name VERILOG_FILE forward_unit.v
-set_global_assignment -name VERILOG_FILE BAL.v
 set_global_assignment -name VERILOG_FILE ALU_OPER.v
 set_global_assignment -name VERILOG_FILE comparator.v
 set_global_assignment -name VERILOG_FILE IF_ID_buffer.v
@@ -71,28 +68,33 @@ set_global_assignment -name VERILOG_FILE exception_detect_unit.v
 set_global_assignment -name VERILOG_FILE MUX_2x1.v
 set_global_assignment -name VERILOG_FILE IM.v
 set_global_assignment -name VERILOG_FILE DM.v
-set_global_assignment -name VERILOG_FILE empty.v
-set_global_assignment -name VERILOG_FILE CPU5STAGE.v
 set_global_assignment -name VERILOG_FILE bcd7seg.v
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name EDA_SIMULATION_TOOL "Questa Intel FPGA (Verilog)"
 set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
 set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
-set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH PC_CPU_mod.v -section_id eda_simulation
-set_global_assignment -name EDA_TEST_BENCH_NAME PC_CPU_mod.v -section_id eda_simulation
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id PC_CPU_mod.v
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME PC_CPU_mod.v -section_id PC_CPU_mod.v
-set_global_assignment -name EDA_TEST_BENCH_FILE PL_CPU_mod.v -section_id PC_CPU_mod.v
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH PipeLine_sim -section_id eda_simulation
 set_global_assignment -name ENABLE_OCT_DONE OFF
 set_global_assignment -name EXTERNAL_FLASH_FALLBACK_ADDRESS 00000000
 set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
-set_global_assignment -name INTERNAL_FLASH_UPDATE_MODE "SINGLE COMP IMAGE WITH ERAM"
+set_global_assignment -name INTERNAL_FLASH_UPDATE_MODE "SINGLE IMAGE WITH ERAM"
 set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
+set_global_assignment -name VERILOG_FILE CompareEqual.v
+set_global_assignment -name QIP_FILE DataMemory_IP.qip
+set_global_assignment -name VERILOG_FILE PL_CPU.v
+set_global_assignment -name VERILOG_FILE PipeLine_sim.v
+set_global_assignment -name EDA_TEST_BENCH_NAME PipeLine_sim -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id PipeLine_sim
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME PipeLine_sim -section_id PipeLine_sim
+set_global_assignment -name EDA_TEST_BENCH_FILE PipeLine_sim.v -section_id PipeLine_sim
+set_global_assignment -name QIP_FILE InstMem.qip
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
+set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

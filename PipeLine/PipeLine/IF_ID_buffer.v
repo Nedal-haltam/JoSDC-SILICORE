@@ -14,6 +14,7 @@ module IF_ID_buffer(IF_PC, IF_INST, IF_FLUSH, if_id_Write, clk,
 	`include "opcodes.txt"
 
 always @ (posedge clk, posedge rst) begin
+	// ID_opcode <= 0;
 	if (rst)
 		{ID_opcode, ID_rs1_ind, ID_rs2_ind, ID_rd_ind, ID_INST, ID_PC} <= 0;
 	else if (if_id_Write && IF_FLUSH)
@@ -25,7 +26,7 @@ always @ (posedge clk, posedge rst) begin
 			ID_rs2_ind <= IF_INST[20:16]; // rt_ind
 
 			ID_opcode[11:6] <= IF_INST[31:26];
-			ID_opcode[5:0] <= (IF_INST[31:26] == 6'd0) ? IF_INST[5:0] : 6'd0;
+			ID_opcode[5:0] <= (~(|IF_INST[31:26])) ? IF_INST[5:0] : 6'd0;
 			ID_rs1_ind <= (({IF_INST[31:26], IF_INST[5:0]} == sll || {IF_INST[31:26], IF_INST[5:0]} == srl)) ? IF_INST[20:16] : IF_INST[25:21];
 			// if the inst is a R-format
 			if (IF_INST[31:26] == 6'd0) begin				
