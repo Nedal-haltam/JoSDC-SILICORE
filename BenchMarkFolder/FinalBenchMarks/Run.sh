@@ -7,7 +7,7 @@
 SWFILE=""
 HWFILE=""
 INDEX=1
-TOTAL=15
+TOTAL=3
 comapre_two_files()
 {
     if diff $1 $2 > /dev/null; then
@@ -34,7 +34,7 @@ Run_BenchMark_SW()
     ASSEMBLER_OUT_DM_MIF=$ProgFolder"DataMem_MIF.mif"
     # define the program and its arguments
     
-    ASSEMBLER="../MIPSAssembler/MIPSAssembler/bin/Debug/net8.0-windows/MIPSAssemblerapp.exe"
+    ASSEMBLER="../../MIPSAssembler/MIPSAssembler/bin/Debug/net8.0-windows/MIPSAssemblerapp.exe"
     ASSEMBLER_ARGS="gen $ASSEMBLER_IN $ASSEMBLER_OUT_TO_CAS_IM $ASSEMBLER_OUT_TO_CAS_DM $ASSEMBLER_OUT_IM_INIT $ASSEMBLER_OUT_DM_INIT $ASSEMBLER_OUT_IM_MIF $ASSEMBLER_OUT_DM_MIF"
 
     # run the the assembler
@@ -56,7 +56,7 @@ Run_BenchMark_SW()
     CAS_PL_OUT=$ProgFolder"CAS_PL_OUT.txt"
     CAS_SSOOO_OUT=$ProgFolder"CAS_SSOOO_OUT.txt"
     # define the program and its arguments
-    CAS="../CycleAccurateSimulator/bin/Debug/net8.0/CAS.exe"
+    CAS="../../CycleAccurateSimulator/bin/Debug/net8.0/CAS.exe"
     
 ##############################################################################################################
     CAS_ARGS="sim singlecycle $CAS_IN_IM $CAS_IN_DM $CAS_SC_OUT"
@@ -69,6 +69,7 @@ Run_BenchMark_SW()
         exit 1
     fi
     printf "[INFO $INDEX/$TOTAL ]: "$ProgName" simulated successfully on the Single Cycle\n"
+
 
 ##############################################################################################################
     CAS_PL_DATASET=$ProgFolder"BranchPredictorDataset.csv"
@@ -123,7 +124,7 @@ Run_BenchMark_SW()
     SWFILE="$CAS_SC_OUT"
 }
 
-RunBenchMark_HW()
+Run_BenchMark_HW()
 {
 
     ProgName=$1
@@ -131,7 +132,7 @@ RunBenchMark_HW()
     
     
     printf "[INFO $INDEX/$TOTAL ]: simulating on single cycle hardware\n"
-    BASE_PATH="../singlecycle/SiliCore_Qualifying_code/"
+    BASE_PATH="../../singlecycle/SiliCore_Qualifying_code/"
     VERILOG_EXT_SC="VERILOG_SC.vvp"
     VERILOG_EXT_SC_OUT="VERILOG_SC_OUT.txt"
     VERILOG_SC=$ProgFolder""$VERILOG_EXT_SC
@@ -141,7 +142,7 @@ RunBenchMark_HW()
     
     vvp $VERILOG_SC > $VERILOG_SC_OUT
     printf "[INFO $INDEX/$TOTAL ]: simulating on pipeline hardware\n"
-    BASE_PATH="../PipeLine/PipeLine/"
+    BASE_PATH="../../PipeLine/PipeLine/"
     VERILOG_EXT_PL="VERILOG_PL.vvp"
     VERILOG_EXT_PL_OUT="VERILOG_PL_OUT.txt"
     VERILOG_PL=$ProgFolder""$VERILOG_EXT_PL
@@ -151,7 +152,7 @@ RunBenchMark_HW()
 
 
     printf "[INFO $INDEX/$TOTAL ]: simulating on SSOOO hardware\n"
-    BASE_PATH="../SSOOO/"
+    BASE_PATH="../../SSOOO/"
     VERILOG_EXT_SSOOO="VERILOG_SSOOO.vvp"
     VERILOG_EXT_SSOOO_OUT="VERILOG_SSOOO_OUT.txt"
     VERILOG_SSOOO=$ProgFolder""$VERILOG_EXT_SSOOO
@@ -203,24 +204,17 @@ Run_BenchMark()
     echo ""
 }
 
-Run_All()
+Run_All_SW()
 {
-    Run_BenchMark "JR_Dependency(Silicore_BenchMark)"
-    Run_BenchMark "InsertionSort(SiliCore_version)"
-    Run_BenchMark "BubbleSort(Silicore_BenchMark)"
-    Run_BenchMark "Fibonacci(Silicore_BenchMark)"
-
-    Run_BenchMark "Max&MinArray"
-    Run_BenchMark "BinarySearch"
-    Run_BenchMark "ControlFlowInstructions"
-    Run_BenchMark "DataManipulation"
-    Run_BenchMark "SumOfNumbers"
-    Run_BenchMark "RemoveDuplicates"
-    Run_BenchMark "SelectionSort"
-    Run_BenchMark "SparseMatrixCount"
-    Run_BenchMark "Swapping"
-    Run_BenchMark "MultiplicationUsingAddition"
-    Run_BenchMark "ScalarMultiplicationUsingAddition"
+    Run_BenchMark_SW "MatrixMultiplication"
+    Run_BenchMark_SW "ThreeSumProblem"
+    Run_BenchMark_SW "Decryption"
+}
+Run_All_HW()
+{
+    Run_BenchMark_HW "Decryption"
+    # Run_BenchMark_HW "MatrixMultiplication"
+    # Run_BenchMark_HW "ThreeSumProblem"
 }
 
 
@@ -230,8 +224,13 @@ Run_All()
 # and terminate the program because this cause an index out of bound exception 
 # Run_BenchMark "InsertionSort" 
 
-# Run_BenchMark "BubbleSort(Silicore_BenchMark)"
-Run_All
+# Run_All_SW
+# Run_All_HW
+
+Run_BenchMark_HW "MatrixMultiplication"
+Run_BenchMark_HW "ThreeSumProblem"
+# Run_BenchMark "Decryption"
+
 
 
 read -p "Press any key to exit"
