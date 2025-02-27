@@ -7,7 +7,7 @@ output [31:0] Data_Out;
 
 
 
-`ifdef vscode
+// `ifdef vscode
 reg [31:0] InstMem [0 : 2047];
 assign Data_Out = InstMem[addr[10:0]];
     integer i;
@@ -17,14 +17,14 @@ assign Data_Out = InstMem[addr[10:0]];
         InstMem[i] <= 0;	 
     `include "IM_INIT.INIT"
     end
-`else
-InstMem instructionmemory
-(
-	.address(addr_from_assign[10:0]),
-	.clock(clk),
-	.q(Data_Out)
-);
-`endif
+// `else
+// InstMem instructionmemory
+// (
+// 	.address(addr_from_assign[10:0]),
+// 	.clock(clk),
+// 	.q(Data_Out)
+// );
+// `endif
 
 
 endmodule

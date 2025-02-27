@@ -34,6 +34,9 @@
 //https://fpgasoftware.intel.com/eula.
 
 
+`define MEMORY_SIZE 4096
+`define MEMORY_BITS 12 
+
 // synopsys translate_off
 `timescale 1 ps / 1 ps
 // synopsys translate_on

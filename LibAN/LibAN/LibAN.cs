@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LibAN
 {
@@ -36,10 +37,22 @@ namespace LibAN
                 if (data_dir[i].IndexOf(":") == -1)
                     continue;
                 string name = data_dir[i].Substring(0, data_dir[i].IndexOf(":"));
-                name = name.Trim();
-                int addr = address;
-                address += data_dir[i].Count(s => s == ',') + 1;
-                addresses.Add(new KeyValuePair<string, int>(name, addr));
+                if (data_dir[i].Substring(data_dir[i].IndexOf(":")+1).IndexOf(":") == -1)
+                {
+                    name = name.Trim();
+                    int addr = address;
+                    address += data_dir[i].Count(s => s == ',') + 1;
+                    addresses.Add(new KeyValuePair<string, int>(name, addr));
+                }
+                else
+                {
+                    name = name.Trim();
+                    string temp = data_dir[i];
+                    string[] datas = data_dir[i].Substring(temp.IndexOf(":")).Replace(".word", "").Split(':');
+                    int addr = address;
+                    address += Convert.ToInt32(datas[2]) - Convert.ToInt32(datas[1]) + 1;
+                    addresses.Add(new KeyValuePair<string, int>(name, addr));
+                }
             }
             for (int i = 0; i < data_dir.Count; i++)
             {
@@ -49,24 +62,36 @@ namespace LibAN
                     string line = data_dir[i].Substring(index + 1);
                     line = line.Trim();
                     line = line.Replace(".word", "");
-                    List<string> vals = line.Split(',').ToList();
-                    foreach (string val in vals)
+                    if (line.Contains(':'))
                     {
-                        int number = 0;
-                        string snum = val.ToLower().Trim();
-                        try
+                        List<string> vals = line.Split(':').ToList();
+                        int count = Convert.ToInt32(vals[1]) - Convert.ToInt32(vals[0]) + 1;
+                        for (int j = 0; j < count; j++)
                         {
-                            if (snum.StartsWith("0x"))
-                                number = Convert.ToInt32(snum, 16);
-                            else
-                                number = Convert.ToInt32(snum);
+                            data.Add("0");
                         }
-                        catch (Exception)
+                    }
+                    else
+                    {
+                        List<string> vals = line.Split(',').ToList();
+                        foreach (string val in vals)
                         {
-                            number = 0;
-                            //throw new Exception("invalid number");
+                            int number = 0;
+                            string snum = val.ToLower().Trim();
+                            try
+                            {
+                                if (snum.StartsWith("0x"))
+                                    number = Convert.ToInt32(snum, 16);
+                                else
+                                    number = Convert.ToInt32(snum);
+                            }
+                            catch (Exception)
+                            {
+                                number = 0;
+                                //throw new Exception("invalid number");
+                            }
+                            data.Add(number.ToString());
                         }
-                        data.Add(number.ToString());
                     }
                 }
             }
@@ -75,8 +100,16 @@ namespace LibAN
             for (int i = 0; i < data.Count; i++)
             {
                 DM_vals.Add(data[i].ToString());
-                string temp = $"DataMem[{i,2}] <= 32'd{data[i]};";
-                DM_INIT.Add(temp);
+                if (data[i][0] == '-')
+                {
+                    string temp = $"DataMem[{i,2}] <= -32'd{data[i].Substring(1)};";
+                    DM_INIT.Add(temp);
+                }
+                else
+                {
+                    string temp = $"DataMem[{i,2}] <= 32'd{data[i]};";
+                    DM_INIT.Add(temp);
+                }
             }
 
             return (DM_INIT, DM_vals, addresses);
@@ -146,6 +179,19 @@ namespace LibAN
             sb.Append(GetMIFTail());
 
             return sb;
+        }
+        public static Dictionary<int, bool> ReadMLPrediction(string filepath)
+        {
+            string[] list = File.ReadAllLines(filepath);
+            Dictionary<int, bool> LUT = [];
+            for (int i = 1; i < list.Length; i++)
+            {
+                string[] entry = list[i].Split(',');
+                if (entry.Length != 4)
+                    throw new Exception($"entry number {i} is not like other entries");
+                LUT[Convert.ToInt32(entry[0], 16)] = entry[3] == "1";
+            }
+            return LUT;
         }
     }
 }

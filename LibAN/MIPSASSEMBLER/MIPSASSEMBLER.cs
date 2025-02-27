@@ -503,6 +503,20 @@ namespace MIPSASSEMBLER
                     }
                     break;
                 }
+                else if (c == '+')
+                {
+                    consume();
+                    string a = buffer.ToString();
+                    buffer.Clear();
+                    while(peek().HasValue && !peek('(').HasValue)
+                    {
+                        buffer.Append(consume());
+                    }
+                    string b = buffer.ToString();
+                    buffer.Clear();
+                    string sum = (Convert.ToInt32(a) + Convert.ToInt32(b)).ToString();
+                    instruction.m_tokens.Add(new Token(sum));
+                }
                 else if (c == '(' || c == ')')
                 {
                     if (buffer.Length != 0)

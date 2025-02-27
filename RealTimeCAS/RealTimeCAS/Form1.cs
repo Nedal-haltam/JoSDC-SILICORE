@@ -61,7 +61,7 @@ namespace RealTimeCAS
             }
             else if (curr_cpu == LibCPU.CPU_type.PipeLined)
             {
-                LibCPU.CPU5STAGE pl = new LibCPU.CPU5STAGE(mc, curr_data);
+                LibCPU.CPU6STAGE pl = new LibCPU.CPU6STAGE(mc, curr_data);
                 (int cycles, LibCPU.MIPS.Exceptions excep) = pl.Run();
                 cpu.regs = pl.regs;
                 cpu.DM = pl.DM;

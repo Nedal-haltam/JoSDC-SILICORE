@@ -1,3 +1,10 @@
+
+
+
+
+`define MEMORY_SIZE 4096
+`define MEMORY_BITS 12 
+
 module DM(address, clock,  data,  rden,  wren,  q);
 
 input clock, rden, wren;

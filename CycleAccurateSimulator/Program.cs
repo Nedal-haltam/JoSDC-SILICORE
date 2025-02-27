@@ -1,5 +1,6 @@
 using System.Text;
 using static LibCPU.MIPS;
+using LibAN;
 
 namespace main {
     internal class Program {
@@ -91,23 +92,16 @@ namespace main {
 "00100000011000110000000000000001",
 "00010000000000001111111111110001",
 "11111100000000000000000000000000",
-
                     ];
             }
             Dictionary<int, bool> LUT = [];
-            if (!command)
+
+            if (!command) 
             {
-                string[] list = File.ReadAllLines("./predictions.csv");
-                
-                for (int i = 1; i < list.Length; i++)
-                {
-                    string[] entry = list[i].Split(',');
-                    if (entry.Length != 4)
-                        throw new Exception($"entry number {i} is not like other entries");
-                    LUT[Convert.ToInt32(entry[0], 16)] = entry[3] == "1";
-                }
+                //LUT = LibAN.LibAN.ReadMLPrediction(filepath); 
             }
-            if (!command) cpu_type = LibCPU.CPU_type.OOO;
+            if (!command) cpu_type = LibCPU.CPU_type.PipeLined;
+
             StringBuilder sb = new StringBuilder();
             if (cpu_type == LibCPU.CPU_type.SingleCycle) {
                 LibCPU.SingleCycle cpu = new(mcs, data_mem_init);
@@ -118,7 +112,7 @@ namespace main {
                 sb.Append($"Number of cycles consumed : {cycles,10}\n");
             }
             else if (cpu_type == LibCPU.CPU_type.PipeLined) {
-                LibCPU.CPU5STAGE cpu = new(mcs, data_mem_init);
+                LibCPU.CPU6STAGE cpu = new(mcs, data_mem_init);
                 if (!command) cpu.BranchLUT = LUT;
                 (int cycles, LibCPU.MIPS.Exceptions excep) = cpu.Run();
                 sb.Append(LibCPU.MIPS.get_regs(cpu.regs));
@@ -130,7 +124,7 @@ namespace main {
             }
             else if (cpu_type == LibCPU.CPU_type.OOO) {
                 LibCPU.OOO cpu = new(mcs, data_mem_init);
-                //cpu.BranchLUT = LUT;
+                cpu.BranchLUT = LUT;
                 (int cycles, LibCPU.MIPS.Exceptions excep) = cpu.Run();
                 sb.Append(LibCPU.MIPS.get_regs(cpu.regs));
                 sb.Append(LibCPU.MIPS.get_DM(cpu.DM));
@@ -145,7 +139,6 @@ namespace main {
                 File.WriteAllText(output_filepath, sb.ToString());
                 if (cpu_type == LibCPU.CPU_type.PipeLined )
                 {
-
                     File.WriteAllLines(dataset_filepath, BranchPredictorDataSet);
                 }
             }

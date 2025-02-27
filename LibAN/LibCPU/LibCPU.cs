@@ -68,7 +68,7 @@ namespace LibCPU {
     public static class MIPS
     {
 
-        public const int MAX_CLOCKS = 900 * 1000;
+        public const int MAX_CLOCKS = 100 * 1000 * 1000;
         public const int HANDLER_ADDR = 1000;
         public const int MEMORY_SIZE_IM = 2048;
         public const int MEMORY_SIZE_DM = 4096;
@@ -85,6 +85,7 @@ namespace LibCPU {
         public const string WRONG_PRED = "WRONG_PRED";
         public const string LOAD_USE = "LOAD_USE";
         public const string JR_INDECODE = "JR_INDECODE";
+        public const string JR_INEX1 = "JR_INEX1";
         public enum Mnemonic
         {
             add, addu, subu, sub, and, or, nor, slt, sgt, xor,
@@ -1341,7 +1342,7 @@ namespace LibCPU {
         public bool outcome;
     }
 
-    public class CPU5STAGE
+    public class CPU6STAGE
     {
         int PC;
         int state = 0;
@@ -1375,7 +1376,7 @@ namespace LibCPU {
             PCplus1, pfc, exception, none
         }
         PCsrc pcsrc;
-        public CPU5STAGE(List<string> insts, List<string> data_mem_init)
+        public CPU6STAGE(List<string> insts, List<string> data_mem_init)
         {
             (IM, DM, regs) = InitMipsCPU(insts, data_mem_init);
 
@@ -1419,7 +1420,10 @@ namespace LibCPU {
         void update_PC() {
             if (pcsrc == PCsrc.none) return;
             else if (pcsrc == PCsrc.PCplus1) PC += 1; 
-            else if (pcsrc == PCsrc.pfc) PC = targetaddress; 
+            else if (pcsrc == PCsrc.pfc)
+            {
+                PC = targetaddress;
+            }
         }
         Instruction decodemc(string mc, int pc)
         {
@@ -1537,10 +1541,6 @@ namespace LibCPU {
                 WrongPrediction = false;
                 throw new Exception(BUBBLE) { Source = WRONG_PRED };
             }
-            else if (decoded.mnem == Mnemonic.jr)
-            {
-                throw new Exception(BUBBLE) { Source = JR_INDECODE };
-            }
             else if (executed1_in_EX_MIPS.mnem == Mnemonic.lw && executed1_in_EX_MIPS.rdind != 0)
             {
                 int rdind1 = executed1_in_EX_MIPS.rdind;
@@ -1556,6 +1556,10 @@ namespace LibCPU {
                 {
                     throw new Exception(BUBBLE) { Source = LOAD_USE };
                 }
+            }
+            else if (decoded.mnem == Mnemonic.jr)
+            {
+                throw new Exception(BUBBLE) { Source = JR_INDECODE };
             }
             if (decoded.mnem == Mnemonic.hlt)
             {
@@ -1631,7 +1635,7 @@ namespace LibCPU {
                                   temp.mnem == Mnemonic.bne && temp.oper1 != temp.oper2;
             WrongPrediction = temp.prediction != BranchDecision;
 
-            if (isbranch(temp.mnem))
+            if (dataset.Count < 10000 && isbranch(temp.mnem))
             {
                 dataset.Add(new() { PC = temp.PC, BranchHistory = BranchHistory, outcome = BranchDecision });
                 BranchHistory = (BranchDecision ? "1" : "0") + BranchHistory;
@@ -1877,8 +1881,10 @@ namespace LibCPU {
         public (int, Exceptions) Run()
         {
             Exceptions excep = Exceptions.NONE;
+
             while (PC < IM.Count)
             {
+
                 i++;
                 try
                 {
@@ -1987,6 +1993,14 @@ namespace LibCPU {
         {
             if (inst.mnem == Mnemonic.lw)
             {
+                if (!is_in_range_inc(inst.aluout, 0, DM.Count - 1))
+                {
+                    Exception e = new Exception($"Memory address {inst.aluout} is an invalid memory address")
+                    {
+                        Source = "SingleCycle::DataMemory"
+                    };
+                    throw e;
+                }
                 string smemout = DM[inst.aluout];
                 inst.memout = Convert.ToInt32(smemout);
             }
@@ -2011,6 +2025,14 @@ namespace LibCPU {
 
             if (iswb(inst.mnem) && inst.rdind != 0)
             {
+                if (!is_in_range_inc(inst.rdind, 0, 31))
+                {
+                    Exception e = new Exception($"register index {inst.rdind} is an invalid index")
+                    {
+                        Source = "SingleCycle::write_back"
+                    };
+                    throw e;
+                }
                 regs[inst.rdind] = (inst.mnem == Mnemonic.lw) ? inst.memout : inst.aluout;
                 //Console.WriteLine($"writereg = {inst.rdind} , writedata = {regs[inst.rdind]}");
             }
@@ -2018,7 +2040,7 @@ namespace LibCPU {
         }
         void ConsumeInst()
         {
-            Instruction inst;
+            Instruction inst = new();
             try
             {
                 // fetching
@@ -2058,6 +2080,10 @@ namespace LibCPU {
             }
             else
                 PC += 1;
+            if (PC > 2047)
+            {
+
+            }
         }
 
         public (int, Exceptions) Run()

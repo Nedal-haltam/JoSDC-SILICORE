@@ -1,6 +1,6 @@
 
 
-`define MAX_CLOCKS (2 * 100 * 1000)
+`define MAX_CLOCKS (100 * 1000 * 1000)
 `define reset 4
 
 `ifndef MEMORY_SIZE
