@@ -326,7 +326,7 @@ namespace LibCPU {
                     {
                         if (inst.oper2 == 0)
                             return inst.oper1;
-                        return Math.Abs(inst.oper1 >> inst.oper2);
+                        return (inst.oper1 >>> inst.oper2);
                     };
                 default: return 0;
             };
@@ -955,7 +955,7 @@ namespace LibCPU {
                 case Aluop.srl: {
                         if (operand2 == 0)
                             return (operand1, ROBEN);
-                        return (Math.Abs(operand1 >> operand2), ROBEN);
+                        return ((operand1 >>> operand2), ROBEN);
                     };
                 default: return (0, 0);
             }
@@ -1541,18 +1541,18 @@ namespace LibCPU {
                 WrongPrediction = false;
                 throw new Exception(BUBBLE) { Source = WRONG_PRED };
             }
-            else if (executed1_in_EX_MIPS.mnem == Mnemonic.lw && executed1_in_EX_MIPS.rdind != 0)
-            {
-                int rdind1 = executed1_in_EX_MIPS.rdind;
-                if (decoded.rsind == rdind1 || decoded.rtind == rdind1)
-                {
-                    throw new Exception(BUBBLE) { Source = LOAD_USE };
-                }
-            }
             else if (executed2_in_EX_MIPS.mnem == Mnemonic.lw && executed2_in_EX_MIPS.rdind != 0)
             {
                 int rdind2 = executed2_in_EX_MIPS.rdind;
                 if (decoded.rsind == rdind2 || decoded.rtind == rdind2)
+                {
+                    throw new Exception(BUBBLE) { Source = LOAD_USE };
+                }
+            }
+            else if (executed1_in_EX_MIPS.mnem == Mnemonic.lw && executed1_in_EX_MIPS.rdind != 0)
+            {
+                int rdind1 = executed1_in_EX_MIPS.rdind;
+                if (decoded.rsind == rdind1 || decoded.rtind == rdind1)
                 {
                     throw new Exception(BUBBLE) { Source = LOAD_USE };
                 }
@@ -2080,10 +2080,6 @@ namespace LibCPU {
             }
             else
                 PC += 1;
-            if (PC > 2047)
-            {
-
-            }
         }
 
         public (int, Exceptions) Run()

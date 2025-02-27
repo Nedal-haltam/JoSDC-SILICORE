@@ -213,8 +213,8 @@ Run_All_SW()
 Run_All_HW()
 {
     Run_BenchMark_HW "Decryption"
-    # Run_BenchMark_HW "MatrixMultiplication"
-    # Run_BenchMark_HW "ThreeSumProblem"
+    Run_BenchMark_HW "MatrixMultiplication"
+    Run_BenchMark_HW "ThreeSumProblem"
 }
 
 
@@ -224,12 +224,8 @@ Run_All_HW()
 # and terminate the program because this cause an index out of bound exception 
 # Run_BenchMark "InsertionSort" 
 
-# Run_All_SW
+Run_All_SW
 # Run_All_HW
-
-Run_BenchMark_HW "MatrixMultiplication"
-Run_BenchMark_HW "ThreeSumProblem"
-# Run_BenchMark "Decryption"
 
 
 
