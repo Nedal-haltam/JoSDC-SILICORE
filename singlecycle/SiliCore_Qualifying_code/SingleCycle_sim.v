@@ -48,8 +48,8 @@ $dumpvars;
 
 `else
 
-$dumpfile("SingleCycle_Waveform.vcd");
-$dumpvars;
+// $dumpfile("SingleCycle_Waveform.vcd");
+// $dumpvars;
 
 `endif
 

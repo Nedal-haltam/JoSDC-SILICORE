@@ -78,8 +78,8 @@ $dumpvars;
 
 `else
 
-$dumpfile("PipeLine_Waveform.vcd");
-$dumpvars;
+// $dumpfile("PipeLine_Waveform.vcd");
+// $dumpvars;
 
 `endif
 
