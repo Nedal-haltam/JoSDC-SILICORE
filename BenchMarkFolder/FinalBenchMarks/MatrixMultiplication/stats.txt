@@ -9,8 +9,15 @@ Software Stats:
 HardWare Stats: 
 	SingleCycle: 
 		Number of cycles consumed:   16691340
+		execution time = cycles_consumed * cycle_time = 16691340 * (1 / 27.78) = 0.6008 seconds
+		CPI = cycles_consumed / executed instructions = 16691340 / 16691340 = 1
+		throughput = Freq / CPI = 27.78 MHz / 1 = 27.78x10e6
+
 	PipLined: 
 		Number of cycles consumed:   17404267
+		execution time = cycles_consumed * cycle_time = 17404267 * (1 / 82.99) = 0.2097
+		CPI = cycles_consumed / executed instructions = 17404267 / 16881697 = 1.0309
+		throughput = Freq / CPI = 82.99 MHz / 1.0309 = 80.5024x10e6
 		StallCount:     522569
 		Executed Instruction   Count:   16881697
 		Branch Prediction      Count: 3892896
@@ -20,6 +27,9 @@ HardWare Stats:
 		Branch Prediction Miss Rate : 4.962%
 	SSOOO: 
 		Number of cycles consumed:   18379222
+		execution time = cycles_consumed * cycle_time = 18379222 * (1 / 62.89) = 0.2922
+		CPI = cycles_consumed / executed instructions = 18379222 / 16691339 = 1.1011
+		throughput = Freq / CPI = 62.89 MHz / 1.1011 = 57.1156x10e6
 		StallCount:    1687883
 		Executed Instruction   Count:   16691339
 		Branch Prediction      Count: 3892896
