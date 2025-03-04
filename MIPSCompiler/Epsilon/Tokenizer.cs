@@ -22,7 +22,7 @@ namespace Epsilon
         // `(` , `)` , `[` , `]` , `,` , (+, -, <, >, &, |, ^, ~|, <<, >>) , `=` , `;` , `\n` (for line increament) , else invalid token
         OpenParen, CloseParen, OpenSquare, CloseSquare, OpenCurly, CloseCurly, Comma, Plus,
         Minus, And, Or, Xor, Nor, Sll, Srl, EqualEqual, NotEqual, Equal, SemiColon, NewLine,
-        Int, Ident, For, While, If, Elif, Else, IntLit, Exit, fslash, star, LessThan, GreaterThan, Break, Continue, FN
+        Int, Ident, For, While, If, Elif, Else, IntLit, Exit, fslash, star, LessThan, GreaterThan, Break, Continue
     }
     class Tokenizer(string thecode)
     {
@@ -36,7 +36,6 @@ namespace Epsilon
             {"while", TokenType.While},
             {"break", TokenType.Break},
             {"continue", TokenType.Continue},
-            {"fn", TokenType.FN},
             {"exit", TokenType.Exit},
             {"(", TokenType.OpenParen},
             {")", TokenType.CloseParen},
@@ -86,7 +85,6 @@ namespace Epsilon
         {
             return m_thecode.ElementAt(m_curr_index++);
         }
-
         bool IsComment()
         {
             return Peek('/').HasValue && Peek('/', 1).HasValue;
@@ -324,7 +322,6 @@ namespace Epsilon
                 {
                     Consume();
                 }
-
                 else
                 {
                     Error(curr_token);

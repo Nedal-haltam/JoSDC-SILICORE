@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.Intrinsics.X86;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
@@ -29,26 +30,54 @@ namespace Epsilon
     }
     class Generator
     {
-        private readonly int STACK_CAPACITY = 500;
+        public readonly int STACK_CAPACITY = 500;
         public NodeProg m_prog;
-        private readonly StringBuilder m_outputcode = new();
+        public readonly StringBuilder m_outputcode = new();
         public Vars vars = new();
-        private readonly Stack<int> m_scopes = [];
-        private int m_labels_count = 0;
-        int m_StackSize = 0;
-        private readonly Stack<string?> m_scopestart = [];
-        private readonly Stack<string?> m_scopeend = [];
-
-        public Generator(NodeProg prog)
-        {
-            m_prog = prog;
-        }
-        void Error(string msg, int line)
+        public readonly Stack<int> m_scopes = [];
+        public int m_labels_count = 0;
+        public int m_StackSize = 0;
+        public readonly Stack<string?> m_scopestart = [];
+        public readonly Stack<string?> m_scopeend = [];
+        public void Error(string msg, int line)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Generator: Error: {msg} on line: {line}");
             Console.ResetColor();
             Environment.Exit(1);
+        }
+        public static string? GetImmedOperation(string imm1, string imm2, NodeBinExpr.NodeBinExprType op)
+        {
+            if (op == NodeBinExpr.NodeBinExprType.add)
+                return (Convert.ToInt32(imm1) + Convert.ToInt32(imm2)).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.sub)
+                return (Convert.ToInt32(imm1) - Convert.ToInt32(imm2)).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.sll)
+                return (Convert.ToInt32(imm1) << Convert.ToInt32(imm2)).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.srl)
+                return (Convert.ToInt32(imm1) >> Convert.ToInt32(imm2)).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.equalequal)
+                return (Convert.ToInt32(imm1) == Convert.ToInt32(imm2) ? 1 : 0).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.notequal)
+                return (Convert.ToInt32(imm1) != Convert.ToInt32(imm2) ? 1 : 0).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.lessthan)
+                return (Convert.ToInt32(imm1) < Convert.ToInt32(imm2) ? 1 : 0).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.greaterthan)
+                return (Convert.ToInt32(imm1) > Convert.ToInt32(imm2) ? 1 : 0).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.and)
+                return (Convert.ToInt32(imm1) & Convert.ToInt32(imm2)).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.or)
+                return (Convert.ToInt32(imm1) | Convert.ToInt32(imm2)).ToString();
+            else if (op == NodeBinExpr.NodeBinExprType.xor)
+                return (Convert.ToInt32(imm1) ^ Convert.ToInt32(imm2)).ToString();
+            return null;
+        }
+    }
+    class MIPSGenerator : Generator
+    {
+        public MIPSGenerator(NodeProg prog)
+        {
+            m_prog = prog;
         }
 
         void GenPush(string reg)
@@ -63,6 +92,10 @@ namespace Epsilon
             m_outputcode.Append("ADDI $sp, $sp, 1\n");
             m_outputcode.Append($"LW {reg}, 0($sp)\n");
             m_StackSize--;
+        }
+        void StackPopEndScope(int popcount)
+        {
+            m_outputcode.Append($"ADDi $sp, $sp, {popcount}\n");
         }
         void BeginScope()
         {
@@ -80,7 +113,7 @@ namespace Epsilon
             {
                 popcount += vars.m_vars[i--].Size;
             }
-            m_outputcode.Append($"ADDi $sp, $sp, {popcount}\n");
+            StackPopEndScope(popcount);
             m_StackSize -= popcount;
             vars.m_vars.RemoveRange(vars.m_vars.Count - Vars_topop, Vars_topop);
         }
@@ -159,7 +192,7 @@ namespace Epsilon
                     m_outputcode.Append($"ADDI {DestinationRegister}, {reg}, 0\n");
                 }
             }
-            else if (term.type == NodeTerm.NodeTermType.ident) 
+            else if (term.type == NodeTerm.NodeTermType.ident)
             {
                 m_outputcode.Append($"########## {term.ident.ident.Value}\n");
                 NodeTermIdent ident = term.ident;
@@ -273,8 +306,8 @@ namespace Epsilon
                 GenPop(source_reg1);
                 GenPop(source_reg2);
                 m_outputcode.Append($"SUB {source_reg1}, {source_reg1}, {source_reg2}\n");
-                if (DestinationRegister == null) {GenPush(source_reg1);}
-                else {m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n");}
+                if (DestinationRegister == null) { GenPush(source_reg1); }
+                else { m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n"); }
             }
             // TODO: support shifting using registers, add it to mips ISA
             else if (binExpr.type == NodeBinExpr.NodeBinExprType.sll)
@@ -291,8 +324,8 @@ namespace Epsilon
                 else
                     Error("expected immediate", -1);
                 m_outputcode.Append($"SLL {source_reg1}, {source_reg1}, {source_reg2}\n");
-                if (DestinationRegister == null) {GenPush(source_reg1);}
-                else {m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n");}
+                if (DestinationRegister == null) { GenPush(source_reg1); }
+                else { m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n"); }
             }
             else if (binExpr.type == NodeBinExpr.NodeBinExprType.srl)
             {
@@ -308,8 +341,8 @@ namespace Epsilon
                 else
                     Error("expected immediate", -1);
                 m_outputcode.Append($"SRL {source_reg1}, {source_reg1}, {source_reg2}\n");
-                if (DestinationRegister == null) {GenPush(source_reg1);}
-                else {m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n");}
+                if (DestinationRegister == null) { GenPush(source_reg1); }
+                else { m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n"); }
             }
             else if (binExpr.type == NodeBinExpr.NodeBinExprType.equalequal)
             {
@@ -330,8 +363,8 @@ namespace Epsilon
                 m_outputcode.Append($"{new_label_else}:\n");
                 m_outputcode.Append($"ADDI {source_reg1}, $zero, 1\n");
                 m_outputcode.Append($"{new_label_end}:\n");
-                if (DestinationRegister == null) {GenPush(source_reg1);}
-                else {m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n");}
+                if (DestinationRegister == null) { GenPush(source_reg1); }
+                else { m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n"); }
             }
             else if (binExpr.type == NodeBinExpr.NodeBinExprType.notequal)
             {
@@ -352,8 +385,8 @@ namespace Epsilon
                 m_outputcode.Append($"{new_label_else}:\n");
                 m_outputcode.Append($"ADDI {source_reg1}, $zero, 0\n");
                 m_outputcode.Append($"{new_label_end}:\n");
-                if (DestinationRegister == null) {GenPush(source_reg1);}
-                else {m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n");}
+                if (DestinationRegister == null) { GenPush(source_reg1); }
+                else { m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n"); }
             }
             else if (binExpr.type == NodeBinExpr.NodeBinExprType.lessthan)
             {
@@ -363,8 +396,8 @@ namespace Epsilon
                 GenPop(source_reg1);
                 GenPop(source_reg2);
                 m_outputcode.Append($"SLT {source_reg1}, {source_reg1}, {source_reg2}\n");
-                if (DestinationRegister == null) {GenPush(source_reg1);}
-                else {m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n");}
+                if (DestinationRegister == null) { GenPush(source_reg1); }
+                else { m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n"); }
             }
             else if (binExpr.type == NodeBinExpr.NodeBinExprType.greaterthan)
             {
@@ -374,8 +407,8 @@ namespace Epsilon
                 GenPop(source_reg1);
                 GenPop(source_reg2);
                 m_outputcode.Append($"SGT {source_reg1}, {source_reg1}, {source_reg2}\n");
-                if (DestinationRegister == null) {GenPush(source_reg1);}
-                else {m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n");}
+                if (DestinationRegister == null) { GenPush(source_reg1); }
+                else { m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n"); }
             }
             else if (binExpr.type == NodeBinExpr.NodeBinExprType.and)
             {
@@ -385,8 +418,8 @@ namespace Epsilon
                 GenPop(source_reg1);
                 GenPop(source_reg2);
                 m_outputcode.Append($"AND {source_reg1}, {source_reg1}, {source_reg2}\n");
-                if (DestinationRegister == null) {GenPush(source_reg1);}
-                else {m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n");}
+                if (DestinationRegister == null) { GenPush(source_reg1); }
+                else { m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n"); }
             }
             else if (binExpr.type == NodeBinExpr.NodeBinExprType.or)
             {
@@ -396,8 +429,8 @@ namespace Epsilon
                 GenPop(source_reg1);
                 GenPop(source_reg2);
                 m_outputcode.Append($"OR {source_reg1}, {source_reg1}, {source_reg2}\n");
-                if (DestinationRegister == null) {GenPush(source_reg1);}
-                else {m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n");}
+                if (DestinationRegister == null) { GenPush(source_reg1); }
+                else { m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n"); }
             }
             else if (binExpr.type == NodeBinExpr.NodeBinExprType.xor)
             {
@@ -407,33 +440,16 @@ namespace Epsilon
                 GenPop(source_reg1);
                 GenPop(source_reg2);
                 m_outputcode.Append($"XOR {source_reg1}, {source_reg1}, {source_reg2}\n");
-                if (DestinationRegister == null) {GenPush(source_reg1);}
-                else {m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n");}
+                if (DestinationRegister == null) { GenPush(source_reg1); }
+                else { m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n"); }
             }
             else
             {
                 Error("expected binary operator", -1);
             }
         }
-        void GenExpr(NodeExpr expr, string? DestinationRegister)
-        {
-            if (expr.type == NodeExpr.NodeExprType.term)
-            {
-                GenTerm(expr.term, DestinationRegister);
-            }
-            else if (expr.type == NodeExpr.NodeExprType.binExpr)
-            {
-                GenBinExpr(expr.binexpr, DestinationRegister);
-            }
-        }
         void GenExpr_(NodeExpr expr, string? DestinationRegister)
         {
-            //GenExpr(expr, null);
-            //if (DestinationRegister != null)
-            //{
-            //    GenPop(DestinationRegister);
-            //}
-            //return;
             if (expr.type == NodeExpr.NodeExprType.term)
             {
                 GenTerm(expr.term, DestinationRegister);
@@ -469,33 +485,6 @@ namespace Epsilon
             }
             return null;
 
-        }
-
-        public static string? GetImmedOperation(string imm1, string imm2, NodeBinExpr.NodeBinExprType op)
-        {
-            if (op == NodeBinExpr.NodeBinExprType.add)
-                return (Convert.ToInt32(imm1) + Convert.ToInt32(imm2)).ToString();
-            else if (op == NodeBinExpr.NodeBinExprType.sub)
-                return (Convert.ToInt32(imm1) - Convert.ToInt32(imm2)).ToString();
-            else if (op == NodeBinExpr.NodeBinExprType.sll)
-                return (Convert.ToInt32(imm1) << Convert.ToInt32(imm2)).ToString();
-            else if (op == NodeBinExpr.NodeBinExprType.srl)
-                return (Convert.ToInt32(imm1) >> Convert.ToInt32(imm2)).ToString();
-            else if (op == NodeBinExpr.NodeBinExprType.equalequal)
-                return (Convert.ToInt32(imm1) == Convert.ToInt32(imm2) ? 1 : 0).ToString();
-            else if (op == NodeBinExpr.NodeBinExprType.notequal)
-                return (Convert.ToInt32(imm1) != Convert.ToInt32(imm2) ? 1 : 0).ToString();
-            else if (op == NodeBinExpr.NodeBinExprType.lessthan)
-                return (Convert.ToInt32(imm1) < Convert.ToInt32(imm2) ? 1 : 0).ToString();
-            else if (op == NodeBinExpr.NodeBinExprType.greaterthan)
-                return (Convert.ToInt32(imm1) > Convert.ToInt32(imm2) ? 1 : 0).ToString();
-            else if (op == NodeBinExpr.NodeBinExprType.and)
-                return (Convert.ToInt32(imm1) & Convert.ToInt32(imm2)).ToString();
-            else if (op == NodeBinExpr.NodeBinExprType.or)
-                return (Convert.ToInt32(imm1) | Convert.ToInt32(imm2)).ToString();
-            else if (op == NodeBinExpr.NodeBinExprType.xor)
-                return (Convert.ToInt32(imm1) ^ Convert.ToInt32(imm2)).ToString();
-            return null;
         }
         string? GenImmedExpr(NodeExpr Iexpr)
         {
@@ -553,14 +542,14 @@ namespace Epsilon
                         int dim2 = Convert.ToInt32(declare.array.dim2.Value.intlit.Value);
                         if (declare.array.values2.Count == 0)
                         {
-                            m_outputcode.Append($"ADDI $sp, $sp, -{dim1*dim2}\n");
+                            m_outputcode.Append($"ADDI $sp, $sp, -{dim1 * dim2}\n");
                             m_StackSize += (dim1 * dim2);
                         }
                         else
                         {
                             GenArrayInit2D(declare.array.values2);
                         }
-                        vars.m_vars.Add(new(ident.Value, dim1*dim2));
+                        vars.m_vars.Add(new(ident.Value, dim1 * dim2));
                     }
                     else
                     {
@@ -819,14 +808,14 @@ namespace Epsilon
         void GenStmtCleanStack(NodeStmtCleanStack CleanStack)
         {
             m_outputcode.Append($"ADDI $1, $zero, 0\n");
-            m_outputcode.Append($"ADDI $2, $zero, {STACK_CAPACITY+1}\n");
+            m_outputcode.Append($"ADDI $2, $zero, {STACK_CAPACITY + 1}\n");
             m_outputcode.Append($"Clean_Loop:\n");
             m_outputcode.Append($"SW $zero, 0($1)\n");
             m_outputcode.Append($"ADDI $1, $1, 1\n");
             m_outputcode.Append($"BNE $1, $2, Clean_Loop\n");
         }
         void GenStmt(NodeStmt stmt)
-        {            
+        {
             if (stmt.type == NodeStmt.NodeStmtType.declare)
             {
                 GenStmtDeclare(stmt.declare);
@@ -854,7 +843,7 @@ namespace Epsilon
             else if (stmt.type == NodeStmt.NodeStmtType.Continue)
             {
                 GenStmtContinue(stmt.Continue);
-            } 
+            }
             else if (stmt.type == NodeStmt.NodeStmtType.Exit)
             {
                 GenStmtExit(stmt.Exit);

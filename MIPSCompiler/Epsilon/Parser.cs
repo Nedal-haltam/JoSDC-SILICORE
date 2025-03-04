@@ -87,10 +87,6 @@ namespace Epsilon
         {
             return peek(TokenType.Continue).HasValue;
         }
-        bool IsFunction()
-        {
-            return peek(TokenType.FN).HasValue;
-        }
         bool IsStmtExit()
         {
             return peek(TokenType.Exit).HasValue &&
@@ -933,10 +929,6 @@ namespace Epsilon
                 stmt.type = NodeStmt.NodeStmtType.Continue;
                 stmt.Continue = continuee;
                 return stmt;
-            }
-            else if (IsFunction())
-            {
-                throw new NotImplementedException();
             }
             else if (IsStmtExit())
             {

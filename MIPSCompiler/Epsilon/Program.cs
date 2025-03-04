@@ -25,9 +25,8 @@ namespace Epsilon
             Parser parser = new(TokenizedProgram);
             NodeProg ParsedProgram  = parser.ParseProg(); // parsed program
 
-            // TODO: make this as a MIPSCodeGenerator and make a new Generator for x86
-            // make such that the codegenerator calls on the generators MIPS, x86, ... using enums for example
-            Generator generator = new(ParsedProgram);
+            // TODO: make a new Generator for x86
+            MIPSGenerator generator = new(ParsedProgram);
             StringBuilder GeneratedProgram = generator.GenProg();
 
             File.WriteAllText("./output.mips", GeneratedProgram.ToString());
