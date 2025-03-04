@@ -26,6 +26,35 @@ namespace Epsilon
     }
     class Tokenizer(string thecode)
     {
+        Dictionary<string, TokenType> tokens = new()
+        {
+            { "int", TokenType.Int},
+            {"if", TokenType.If},
+            {"elif", TokenType.Elif},
+            {"else", TokenType.Else},
+            {"for", TokenType.For},
+            {"while", TokenType.While},
+            {"break", TokenType.Break},
+            {"continue", TokenType.Continue},
+            {"fn", TokenType.FN},
+            {"exit", TokenType.Exit},
+            {"(", TokenType.OpenParen},
+            {")", TokenType.CloseParen},
+            {"[", TokenType.OpenSquare},
+            {"]", TokenType.CloseSquare},
+            {"{", TokenType.OpenCurly},
+            {"}", TokenType.CloseCurly},
+            {",", TokenType.Comma},
+            {"+", TokenType.Plus},
+            {"-", TokenType.Minus},
+            {"&", TokenType.And},
+            {"|", TokenType.Or},
+            {"^", TokenType.Xor},
+            {"<", TokenType.LessThan},
+            {"=", TokenType.Equal },
+            {";", TokenType.SemiColon},
+
+        };
         private string m_thecode = thecode;
         private int m_curr_index = 0;
         private List<Token> m_tokens = [];
@@ -92,7 +121,7 @@ namespace Epsilon
             while (Peek().HasValue)
             {
                 char curr_token = Peek().Value;
-                // it may be the follwing
+
                 if (char.IsAsciiLetter(curr_token) || curr_token == '_')
                 {
                     buffer.Append(Consume());
@@ -101,8 +130,6 @@ namespace Epsilon
                     {
                         buffer.Append(Consume());
                     }
-                    // and then check if it is one of the supported keywords or not and it may be the follwing
-                    // reg , mem , identifier (aka. var) , hlt (exit), if , elif , else , for , 
                     string word = buffer.ToString();
                     if (macro.ContainsKey(word))
                     {
@@ -141,45 +168,9 @@ namespace Epsilon
                         temp.macro = macro;
                         m_tokens.AddRange(temp.Tokenize());
                     }
-                    else if (word == "int")
+                    else if (tokens.TryGetValue(word, out TokenType tt))
                     {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.Int, Line = line });
-                    }
-                    else if (word == "if")
-                    {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.If, Line = line });
-                    }
-                    else if (word == "elif")
-                    {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.Elif, Line = line });
-                    }
-                    else if (word == "else")
-                    {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.Else, Line = line });
-                    }
-                    else if (word == "for")
-                    {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.For, Line = line });
-                    }
-                    else if (word == "while")
-                    {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.While, Line = line });
-                    }
-                    else if (word == "break")
-                    {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.Break, Line = line });
-                    }
-                    else if (word == "continue")
-                    {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.Continue, Line = line });
-                    }
-                    else if (word == "fn")
-                    {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.FN, Line = line });
-                    }
-                    else if (word == "exit")
-                    {
-                        m_tokens.Add(new() { Value = word, Type = TokenType.Exit, Line = line });
+                        m_tokens.Add(new() { Value = word, Type = tt, Line = line });
                     }
                     else // else it is a variable (identifier)
                     {
@@ -206,6 +197,8 @@ namespace Epsilon
                         Consume();
                     }
                 }
+
+                // multi-token operators
                 else if (Peek('/').HasValue && Peek('*', 1).HasValue)
                 {
                     Consume();
@@ -231,128 +224,6 @@ namespace Epsilon
                         Consume();
                     }
                 }
-                else if (curr_token == '(')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.OpenParen, Line = line });
-                }
-                else if (curr_token == ')')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.CloseParen, Line = line });
-                }
-                else if (curr_token == '[')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.OpenSquare, Line = line });
-                }
-                else if (curr_token == ']')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.CloseSquare, Line = line });
-                }
-                else if (curr_token == '{')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.OpenCurly, Line = line });
-                }
-                else if (curr_token == '}')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.CloseCurly, Line = line });
-                }
-                else if (curr_token == ',')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Comma, Line = line });
-                }
-                else if (curr_token == '#')
-                {
-                    if (IsMacro())
-                    {
-                        // aready consumed, now we get the name and the value
-                        while (Peek(' ').HasValue) Consume();
-                        while (Peek().HasValue && (char.IsAsciiLetterOrDigit(Peek().Value) || Peek('_').HasValue))
-                        {
-                            buffer.Append(Consume());
-                        }
-                        string macroname = buffer.ToString();
-                        buffer.Clear();
-                        while (Peek(' ').HasValue) Consume();
-                        List<string> inputs = [];
-                        if (Peek('(').HasValue)
-                        {
-                            Consume();
-                            while(!Peek(')').HasValue)
-                            {
-                                if (Peek(',').HasValue)
-                                {
-                                    if (string.IsNullOrEmpty(buffer.ToString()) || string.IsNullOrWhiteSpace(buffer.ToString()))
-                                        throw new Exception("invalid macro input");
-                                    inputs.Add(buffer.ToString());
-                                    buffer.Clear();
-                                }
-                                else
-                                {
-                                    buffer.Append(Consume());
-                                }
-                            }
-                            Consume();
-                        }
-                        inputs.Add(buffer.ToString());
-                        buffer.Clear();
-
-                        
-                        while (!Peek('\n').HasValue)
-                        {
-                            buffer.Append(Consume()); 
-                        }
-                        Consume();
-                        string MacroSrc = buffer.ToString();
-                        Tokenizer temp = new(MacroSrc);
-                        List<Token> macrovalue = temp.Tokenize();
-                        for (int i = 0; i < macrovalue.Count; i++)
-                        {
-                            if (macro.ContainsKey(macrovalue[i].Value))
-                            {
-                                Token t = macrovalue[i];
-                                macrovalue.RemoveAt(i);
-                                macrovalue.InsertRange(i, macro[t.Value].value);
-                            }
-                        }
-                        macro.Add(macroname, new() { src = MacroSrc, inputs = inputs, value = macrovalue });
-                    }
-                    else
-                    {
-                        Error(curr_token);
-                    }
-                }
-                // operators
-                else if (curr_token == '+')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Plus, Line = line });
-                }
-                else if (curr_token == '-')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Minus, Line = line });
-                }
-                else if (curr_token == '&')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.And, Line = line });
-                }
-                else if (curr_token == '|')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Or, Line = line });
-                }
-                else if (curr_token == '^')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Xor, Line = line });
-                }
                 else if ((Peek('<').HasValue && Peek('<', 1).HasValue))
                 {
                     buffer.Append(Consume());
@@ -377,22 +248,72 @@ namespace Epsilon
                     buffer.Append(Consume());
                     m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.NotEqual, Line = line });
                 }
-                else if (Peek('<').HasValue)
+                
+                else if (tokens.TryGetValue(curr_token.ToString(), out TokenType tt))
                 {
                     buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.LessThan, Line = line });
+                    m_tokens.Add(new() { Value = buffer.ToString(), Type = tt, Line = line });
                 }
-                // end operators
-                else if (curr_token == '=')
+                else if (curr_token == '#')
                 {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.Equal, Line = line });
-                }
+                    if (IsMacro())
+                    {
+                        // aready consumed, now we get the name and the value
+                        while (Peek(' ').HasValue) Consume();
+                        while (Peek().HasValue && (char.IsAsciiLetterOrDigit(Peek().Value) || Peek('_').HasValue))
+                        {
+                            buffer.Append(Consume());
+                        }
+                        string macroname = buffer.ToString();
+                        buffer.Clear();
+                        while (Peek(' ').HasValue) Consume();
+                        List<string> inputs = [];
+                        if (Peek('(').HasValue)
+                        {
+                            Consume();
+                            while (!Peek(')').HasValue)
+                            {
+                                if (Peek(',').HasValue)
+                                {
+                                    if (string.IsNullOrEmpty(buffer.ToString()) || string.IsNullOrWhiteSpace(buffer.ToString()))
+                                        throw new Exception("invalid macro input");
+                                    inputs.Add(buffer.ToString());
+                                    buffer.Clear();
+                                }
+                                else
+                                {
+                                    buffer.Append(Consume());
+                                }
+                            }
+                            Consume();
+                        }
+                        inputs.Add(buffer.ToString());
+                        buffer.Clear();
 
-                else if (curr_token == ';')
-                {
-                    buffer.Append(Consume());
-                    m_tokens.Add(new() { Value = buffer.ToString(), Type = TokenType.SemiColon, Line = line });
+
+                        while (!Peek('\n').HasValue)
+                        {
+                            buffer.Append(Consume());
+                        }
+                        Consume();
+                        string MacroSrc = buffer.ToString();
+                        Tokenizer temp = new(MacroSrc);
+                        List<Token> macrovalue = temp.Tokenize();
+                        for (int i = 0; i < macrovalue.Count; i++)
+                        {
+                            if (macro.ContainsKey(macrovalue[i].Value))
+                            {
+                                Token t = macrovalue[i];
+                                macrovalue.RemoveAt(i);
+                                macrovalue.InsertRange(i, macro[t.Value].value);
+                            }
+                        }
+                        macro.Add(macroname, new() { src = MacroSrc, inputs = inputs, value = macrovalue });
+                    }
+                    else
+                    {
+                        Error(curr_token);
+                    }
                 }
                 else if (curr_token == '\n')
                 {
