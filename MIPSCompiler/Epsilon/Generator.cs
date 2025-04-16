@@ -30,7 +30,7 @@ namespace Epsilon
     }
     class Generator
     {
-        public readonly int STACK_CAPACITY = 500;
+        public readonly int STACK_CAPACITY = 100;
         public NodeProg m_prog;
         public readonly StringBuilder m_outputcode = new();
         public Vars vars = new();
