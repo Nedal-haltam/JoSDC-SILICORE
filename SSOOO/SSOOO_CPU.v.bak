@@ -110,13 +110,6 @@ always@(negedge clk , posedge rst) begin
 		cycles_consumed <= cycles_consumed + 32'd1;
 end
 
-
-/*
-PC_src_mux:
-    - change the PC_src value based on decoded or commit instruction
-TODO:
-    - jr in case of dependecy: it happens when you fetch the jr instruction and the register it needs to jump is unavailable
-*/
 assign PC = (ROB_FLUSH_Flag == 1'b1) ? ROB_Commit_Write_Data :
 (
     (InstQ_opcode == j || InstQ_opcode == jal) ? {6'd0,InstQ_address} : 

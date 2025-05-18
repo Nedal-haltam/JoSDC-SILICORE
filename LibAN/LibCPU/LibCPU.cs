@@ -487,7 +487,7 @@ namespace LibCPU {
         public enum PCsrc { PCplus1, branchTarget, exception, none }
         public PCsrc pcsrc;
 
-        public enum handlerAddress { overflow = 100, underflow = 110, invalidAddress = 120 } // todo: change these to the right ones
+        public enum handlerAddress { overflow = 100, underflow = 110, invalidAddress = 120 } // t o d o: change these to the right ones
 
         public List<string> DM; // Data Mem
         public List<int> regs; // register file
