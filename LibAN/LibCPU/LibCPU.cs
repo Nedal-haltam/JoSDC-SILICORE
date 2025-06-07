@@ -89,15 +89,15 @@ namespace LibCPU {
         public enum Mnemonic
         {
             add, addu, subu, sub, and, or, nor, slt, sgt, xor,
-            addi, andi, ori, xori, slti, sll, srl,
+            addi, andi, ori, xori, slti, sll, srl, mult,
             beq, bne,
-            j, jr, jal,
+            j, jr, jal, 
             lw, sw,
             nop, hlt
         }
         public enum Aluop
         {
-            add, sub, and, or, xor, nor, sll, srl, slt, sgt, div
+            add, sub, and, or, xor, nor, sll, srl, slt, sgt, div, mult
         }
         public struct Instruction
         {
@@ -205,6 +205,7 @@ namespace LibCPU {
             // R-format depends on the funct field, if opcode = "000000" then it is R-format else (it is an I-format or J-format either way it depends on distinct opcodes)
             // rd = rd, rs1 = rs, rs2 = rt
             { "000000100000" , Mnemonic.add  }, // R[rd] = R[rs] op R[rt]
+            { "000000101000" , Mnemonic.mult  }, // R[rd] = R[rs] op R[rt]
             { "000000100001" , Mnemonic.addu }, // R[rd] = R[rs] op R[rt]
             { "000000100010" , Mnemonic.sub  }, // R[rd] = R[rs] op R[rt]
             { "000000100011" , Mnemonic.subu }, // R[rd] = R[rs] op R[rt]
@@ -249,6 +250,7 @@ namespace LibCPU {
         return mnem switch
         {
             Mnemonic.add => Aluop.add,
+            Mnemonic.mult => Aluop.mult,
             Mnemonic.sub => Aluop.sub,
             Mnemonic.and => Aluop.and,
             Mnemonic.andi => Aluop.and,
@@ -281,6 +283,7 @@ namespace LibCPU {
         return mnem switch
         {
             Mnemonic.add => "R",
+            Mnemonic.mult => "R",
             Mnemonic.sub => "R",
             Mnemonic.and => "R",
             Mnemonic.andi => "I",
@@ -314,6 +317,7 @@ namespace LibCPU {
             switch (inst.aluop)
             {
                 case Aluop.add: return inst.oper1 + inst.oper2;
+                case Aluop.mult: return inst.oper1 * inst.oper2;
                 case Aluop.sub: return inst.oper1 - inst.oper2;
                 case Aluop.and: return inst.oper1 & inst.oper2;
                 case Aluop.or: return inst.oper1 | inst.oper2;
@@ -336,6 +340,7 @@ namespace LibCPU {
         return mnem switch
         {
             Mnemonic.add => true,
+            Mnemonic.mult => true,
             Mnemonic.sub => true,
             Mnemonic.and => true,
             Mnemonic.andi => true,
@@ -944,6 +949,7 @@ namespace LibCPU {
         public (int, int) execute(Aluop ALUop, int operand1, int operand2, int ROBEN) {
             switch (ALUop) {
                 case Aluop.add: return (operand1 + operand2, ROBEN);
+                case Aluop.mult: return (operand1 * operand2, ROBEN);
                 case Aluop.sub: return (operand1 - operand2, ROBEN);
                 case Aluop.and: return (operand1 & operand2, ROBEN);
                 case Aluop.or : return (operand1 | operand2, ROBEN);

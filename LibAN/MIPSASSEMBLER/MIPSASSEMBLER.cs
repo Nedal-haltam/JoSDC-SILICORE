@@ -82,6 +82,7 @@ namespace MIPSASSEMBLER
 
             // R-format , opcode = 0
             { "add"  , "100000" },
+            { "mul"  , "101000" },
             { "addu" , "100001" },
             { "sub"  , "100010" },
             { "subu" , "100011" },
@@ -116,7 +117,7 @@ namespace MIPSASSEMBLER
             return name switch
             {
                 "add" or "addu" or "sub" or "subu" or "and" or "or" or "xor" or "nor" or "slt" or 
-                "sgt" or "sll" or "srl" or "jr" or "nop" => InstructionType.rtype,
+                "sgt" or "sll" or "srl" or "jr" or "nop" or "mul" => InstructionType.rtype,
                 "addi" or "andi" or "ori" or "xori" or "slti" or "lw" or "sw" or "beq" or "bne" or "hlt" => InstructionType.itype,
                                                                                                                   
                 "j" or "jal" => InstructionType.jtype,
