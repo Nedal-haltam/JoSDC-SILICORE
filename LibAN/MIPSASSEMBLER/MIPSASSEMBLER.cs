@@ -91,6 +91,8 @@ namespace MIPSASSEMBLER
             { "xor"  , "100110" },
             { "nor"  , "100111" },
             { "slt"  , "101010" },
+            { "seq"  , "101100" },
+            { "sne"  , "101101" },
             { "sgt"  , "101011" },
             { "sll"  , "000000" },
             { "srl"  , "000010" },
@@ -116,7 +118,7 @@ namespace MIPSASSEMBLER
         {
             return name switch
             {
-                "add" or "addu" or "sub" or "subu" or "and" or "or" or "xor" or "nor" or "slt" or 
+                "add" or "addu" or "sub" or "subu" or "and" or "or" or "xor" or "nor" or "slt" or "seq" or "sne" or 
                 "sgt" or "sll" or "srl" or "jr" or "nop" or "mul" => InstructionType.rtype,
                 "addi" or "andi" or "ori" or "xori" or "slti" or "lw" or "sw" or "beq" or "bne" or "hlt" => InstructionType.itype,
                                                                                                                   

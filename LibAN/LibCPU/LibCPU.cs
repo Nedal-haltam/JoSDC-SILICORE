@@ -88,7 +88,7 @@ namespace LibCPU {
         public const string JR_INEX1 = "JR_INEX1";
         public enum Mnemonic
         {
-            add, addu, subu, sub, and, or, nor, slt, sgt, xor,
+            add, addu, subu, sub, and, or, nor, slt, seq, sne, sgt, xor,
             addi, andi, ori, xori, slti, sll, srl, mult,
             beq, bne,
             j, jr, jal, 
@@ -97,7 +97,7 @@ namespace LibCPU {
         }
         public enum Aluop
         {
-            add, sub, and, or, xor, nor, sll, srl, slt, sgt, div, mult
+            add, sub, and, or, xor, nor, sll, srl, slt, seq, sne, sgt, div, mult
         }
         public struct Instruction
         {
@@ -214,6 +214,8 @@ namespace LibCPU {
             { "000000100110" , Mnemonic.xor  }, // R[rd] = R[rs] op R[rt]
             { "000000100111" , Mnemonic.nor  }, // R[rd] = R[rs] op R[rt]
             { "000000101010" , Mnemonic.slt  }, // R[rd] = R[rs] op R[rt]
+            { "000000101100" , Mnemonic.seq  }, // R[rd] = R[rs] op R[rt]
+            { "000000101101" , Mnemonic.sne  }, // R[rd] = R[rs] op R[rt]
             { "000000101011" , Mnemonic.sgt  }, // R[rd] = R[rs] op R[rt]
             { "000000000000" , Mnemonic.sll  }, // R[rd] = R[rt] op shamt
             { "000000000010" , Mnemonic.srl  }, // R[rd] = R[rt] op shamt
@@ -260,6 +262,8 @@ namespace LibCPU {
             Mnemonic.xori => Aluop.xor,
             Mnemonic.nor => Aluop.nor,
             Mnemonic.slt => Aluop.slt,
+            Mnemonic.seq => Aluop.seq,
+            Mnemonic.sne => Aluop.sne,
             Mnemonic.slti => Aluop.slt,
             Mnemonic.sgt => Aluop.sgt,
             Mnemonic.sll => Aluop.sll,
@@ -293,6 +297,8 @@ namespace LibCPU {
             Mnemonic.xori => "I",
             Mnemonic.nor => "R",
             Mnemonic.slt => "R",
+            Mnemonic.seq => "R",
+            Mnemonic.sne => "R",
             Mnemonic.sgt => "R",
             Mnemonic.slti => "I",
             Mnemonic.sll => "R",
@@ -324,6 +330,8 @@ namespace LibCPU {
                 case Aluop.xor: return inst.oper1 ^ inst.oper2;
                 case Aluop.nor: return ~(inst.oper1 | inst.oper2);
                 case Aluop.slt: return (inst.oper1 < inst.oper2) ? 1 : 0;
+                case Aluop.seq: return (inst.oper1 == inst.oper2) ? 1 : 0;
+                case Aluop.sne: return (inst.oper1 != inst.oper2) ? 1 : 0;
                 case Aluop.sgt: return (inst.oper1 > inst.oper2) ? 1 : 0;
                 case Aluop.sll: return inst.oper1 << inst.oper2;
                 case Aluop.srl:
@@ -350,6 +358,8 @@ namespace LibCPU {
             Mnemonic.xori => true,
             Mnemonic.nor => true,
             Mnemonic.slt => true,
+            Mnemonic.seq => true,
+            Mnemonic.sne => true,
             Mnemonic.sgt => true,
             Mnemonic.slti => true,
             Mnemonic.sll => true,
@@ -956,6 +966,8 @@ namespace LibCPU {
                 case Aluop.xor: return (operand1 ^ operand2, ROBEN);
                 case Aluop.nor: return (~(operand1 | operand2), ROBEN);
                 case Aluop.slt: return (((operand1 < operand2) ? 1 : 0), ROBEN);
+                case Aluop.seq: return (((operand1 == operand2) ? 1 : 0), ROBEN);
+                case Aluop.sne: return (((operand1 != operand2) ? 1 : 0), ROBEN);
                 case Aluop.sgt: return (((operand1 > operand2) ? 1 : 0), ROBEN);
                 case Aluop.sll: return (operand1 << operand2, ROBEN);
                 case Aluop.srl: {
@@ -1727,7 +1739,9 @@ namespace LibCPU {
             PC = HANDLER_ADDR;
             IFID.mc = fetch();
 
-            string s = e.Source;
+            string s = "NO MESSAGE (handle_exception)";
+            if (e.Source != null)
+                s = e.Source;
 
             if (s == DECODE)
             {
@@ -1868,7 +1882,7 @@ namespace LibCPU {
             {
                 if (e.Message == BUBBLE)
                 {
-                    InsertBubble(e.Source);
+                    InsertBubble(e.Source ?? "NO MESSAGE (ConsumeInst)");
                     return; // and then return and not fetch a new instruction
                 }
                 else if (e.Message == EXCEPTION)
@@ -2098,7 +2112,7 @@ namespace LibCPU {
                 {
                     ConsumeInst();
                 }
-                catch (Exception e)
+                catch
                 {
                     //Console.WriteLine($"cycles consumed = {i}");
                     i--;
