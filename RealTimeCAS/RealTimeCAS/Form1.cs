@@ -119,7 +119,6 @@ namespace RealTimeCAS
                 toout.Append(LibCPU.MIPS.get_DM(DM));
                 output.Lines = toout.ToString().Split('\n');
             }
-
         }
         private void layout_size()
         {
@@ -240,7 +239,7 @@ namespace RealTimeCAS
             (int cycles, LibCPU.MIPS.Exceptions excep, LibCPU.MIPS.CPU cpu) = SimulateCPU(m_prog.mc);
 
             lblexception.Visible = excep != LibCPU.MIPS.Exceptions.NONE;
-            
+
             update(m_prog.mc, cycles, excep, cpu.regs, cpu.DM);
 
             lblNoErr.Visible = !(lblErrInfloop.Visible || lblErrInvinst.Visible || lblErrInvlabel.Visible || lblErrMultlabels.Visible || lblexception.Visible);
@@ -251,6 +250,7 @@ namespace RealTimeCAS
                 if (errors[i].Visible)
                     errors[i].Location = locations[j++];
             }
+            layout_size();
         }
         private void MIF_COMBO_BOX_CHANGED_INDEX(object sender, EventArgs e)
         {
