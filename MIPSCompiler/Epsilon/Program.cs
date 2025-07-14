@@ -25,9 +25,6 @@ namespace Epsilon
             Parser parser = new(TokenizedProgram);
             NodeProg ParsedProgram  = parser.ParseProg(); // parsed program
 
-            // TODO: make a new Generator for x86 or 
-            // you can edd it when you generate as an extra if condition that chacks the deisred target 
-            // to see the symmetry in the generation of the assembly instructions
             MIPSGenerator generator = new(ParsedProgram);
             StringBuilder GeneratedProgram = generator.GenProg();
 

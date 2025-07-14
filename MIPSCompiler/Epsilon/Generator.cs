@@ -286,7 +286,6 @@ namespace Epsilon
         }
         void GenBinExpr(NodeBinExpr binExpr, string? DestinationRegister)
         {
-            // TODO: add an instruction to ISA to enable us to evaluate (`==`, `!=`), like for example (seq, sneq) -> (set if equal, set if not equal)
             if (binExpr.type == NodeBinExpr.NodeBinExprType.add)
             {
                 string source_reg1 = "$1", source_reg2 = "$2";
@@ -309,7 +308,6 @@ namespace Epsilon
                 if (DestinationRegister == null) { GenPush(source_reg1); }
                 else { m_outputcode.Append($"ADDI {DestinationRegister}, {source_reg1}, 0\n"); }
             }
-            // TODO: support shifting using registers, add it to mips ISA
             else if (binExpr.type == NodeBinExpr.NodeBinExprType.sll)
             {
                 string source_reg1 = "$1", source_reg2 = "$2";
@@ -354,7 +352,6 @@ namespace Epsilon
                 string new_label_start = $"TEMP_LABEL{m_labels_count++}_START";
                 string new_label_else = $"TEMP_LABEL{m_labels_count++}_ELSE";
                 string new_label_end = $"TEMP_LABEL{m_labels_count++}_END";
-                // TODO: optimize the comparison by adding seq, sneq instructions
                 m_outputcode.Append($"{new_label_start}:\n");
                 m_outputcode.Append($"SUB {source_reg1}, {source_reg1}, {source_reg2}\n");
                 m_outputcode.Append($"BEQ {source_reg1}, $zero, {new_label_else}\n");
@@ -376,7 +373,6 @@ namespace Epsilon
                 string new_label_start = $"TEMP_LABEL{m_labels_count++}_START";
                 string new_label_else = $"TEMP_LABEL{m_labels_count++}_ELSE";
                 string new_label_end = $"TEMP_LABEL{m_labels_count++}_END";
-                // TODO: optimize the comparison by adding seq, sneq instructions
                 m_outputcode.Append($"{new_label_start}:\n");
                 m_outputcode.Append($"SUB {source_reg1}, {source_reg1}, {source_reg2}\n");
                 m_outputcode.Append($"BEQ {source_reg1}, $zero, {new_label_else}\n");
