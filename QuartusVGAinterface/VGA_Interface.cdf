@@ -4,7 +4,7 @@ JedecChain;
 	DefaultMfr(6E);
 
 	P ActionCode(Cfg)
-		Device PartName(10M50DAF484) Path("D:/GitHub Repos/JoSDC-SILICORE/QuartusVGAinterface/") File("VGA_Interface.sof") MfrSpec(OpMask(1));
+		Device PartName(10M50DAF484) Path("D:/GitHub-Repos/JoSDC-SILICORE/QuartusVGAinterface/") File("VGA_Interface.sof") MfrSpec(OpMask(1));
 
 ChainEnd;
 
