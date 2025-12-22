@@ -6,7 +6,7 @@ Beyond the hardware, this project features a custom-built software toolchain—i
 ## System Architecture 
 
 ### Advanced Out-of-Order Execution
-To prove the performance gains, the project implements the processor in three distinct evolutionary stages, allowing for direct silicon-level benchmarking:
+To prove the performance gains, the project implements the processor in three distinct evolutionary stages:
 <p align="center">
    <img src="https://github.com/user-attachments/assets/51fe9b8c-442a-489f-a1c1-4eac4cc5b9ab" alt="Stages" width=70%>
  </p>
