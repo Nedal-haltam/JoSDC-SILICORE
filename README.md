@@ -30,7 +30,7 @@ simulator, and a real-time cycle-accurate simulator.
 Traditionally, branch predictors relied on hardware-based heuristics, but Machine Learning (ML) offers a more adaptive and efficient approach by leveraging data-driven models to recognize complex patterns in branch behavior.
 
 <p align="center">
-   <img src="https://github.com/user-attachments/assets/0957614e-01cc-4e24-85e1-a4286793dae5" alt="MLBranch" width=100%>
+   <img src="https://github.com/user-attachments/assets/0957614e-01cc-4e24-85e1-a4286793dae5" alt="MLBranch" width=80%>
  </p>
 
  ### C# Static Scheduling 
