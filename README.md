@@ -33,7 +33,12 @@ Traditionally, branch predictors relied on hardware-based heuristics, but Machin
    <img src="https://github.com/user-attachments/assets/0957614e-01cc-4e24-85e1-a4286793dae5" alt="MLBranch" width=100%>
  </p>
 
- ### FPGA & VGA Visualization 
+ ### C# Static Scheduling 
+The algorithms used for scheduling aim to minimize stalls and maximize parallel execution. It takes user-defined instructions, organizes them and saves the output to specified text files. 
+
+ <p align="center">
+   <img src="https://github.com/user-attachments/assets/94108b9a-bed6-4aa1-9cb1-42db9f3dd348" alt="StatSched" width=70%>
+ </p>
 
  ### Performance Benchmarks
 
