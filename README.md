@@ -1,7 +1,7 @@
 # Silicore: Advanced Out-of-Order Processor with ML Branch Prediction 
 Silicore is a comprehensive processor design project developed for the JoSDC'24 competition which scored 3rd place nationally. It evolves from a standard single-cycle architecture into a high-performance **Out-of-Order (OOO) execution engine**. 
 
-Beyond the hardware, this project features a custom-built software toolchain—including the **"Epsilon" Compiler**, a **Real-Time Cycle-Accurate Simulator**, and an **AI-driven Branch Predictor**—to demonstrate a complete hardware/software co-design approach.
+Beyond the hardware, this project features a custom-built software toolchain, including the **"Epsilon" Compiler**, a **Real-Time Cycle-Accurate Simulator**, and an **AI-driven Branch Predictor**, to demonstrate a complete hardware/software co-design approach.
 
 ## System Architecture 
 
